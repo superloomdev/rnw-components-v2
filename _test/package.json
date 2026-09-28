@@ -1,0 +1,24 @@
+{
+  "name": "_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate:roster": "node fixtures/generate-roster.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@carbon/ibm-products": "2.99.0",
+    "@carbon/react": "1.115.0",
+    "@carbon/react-native": "9.0.7",
+    "@carbon/styles": "1.115.0",
+    "@material-symbols/svg-400": "0.47.4",
+    "@material/web": "2.5.0",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0"
+  }
+}
