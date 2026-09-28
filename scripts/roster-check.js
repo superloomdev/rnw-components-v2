@@ -52,6 +52,9 @@ for (const row of roster.rows) {
   if (!nonEmpty(row.description) || !/[.!?]$/.test(row.description)) {
     fail(`${row.name}: description is not one sentence`);
   }
+  if (row.status !== 'pending' && /^\S+ is a component in the \S+ family[.;]/.test(row.description)) {
+    fail(`${row.name}: built row still carries a placeholder description`);
+  }
   if (!row.platform || !supports.has(row.platform.support) || !nonEmpty(row.platform.fallback)) {
     fail(`${row.name}: invalid platform`);
   }

@@ -220,27 +220,31 @@
     },
     {
       "name": "IconButton",
-      "family": "Icon",
+      "family": "Button",
       "tier": "atom",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "IconButton"
       },
-      "description": "IconButton is a component in the Icon family.",
+      "description": "IconButton is a square button that shows one icon token and a tooltip label.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
-      "behaviors": [],
+      "enums": [
+        "feedback.press"
+      ],
+      "behaviors": [
+        "press"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "IconButton",
-      "material_twin": "md-icon",
+      "material_twin": "md-icon-button",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1344,7 +1348,7 @@
     {
       "name": "TagOverflow",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
         "version": "2.99.0",
@@ -1371,7 +1375,7 @@
     {
       "name": "TagSet",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
         "version": "2.99.0",
@@ -1433,8 +1437,8 @@
       },
       "description": "LandingView is a component in the View family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -1460,8 +1464,8 @@
       },
       "description": "ViewWrapper is a component in the View family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -1487,8 +1491,8 @@
       },
       "description": "AcceptTerms is a component in the AcceptTerms family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2156,8 +2160,8 @@
       },
       "description": "DocumentViewer is a component in the DocumentViewer family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2237,8 +2241,8 @@
       },
       "description": "ErrorState is a component in the ErrorState family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2432,8 +2436,8 @@
       },
       "description": "GrantPermission is a component in the GrantPermission family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2652,8 +2656,8 @@
       },
       "description": "InlineLink is a component in the InlineLink family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2679,8 +2683,8 @@
       },
       "description": "List is a component in the List family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -2876,8 +2880,8 @@
       },
       "description": "Notification is a component in the Notification family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [
         "anatomy.status_marker"
@@ -3145,8 +3149,8 @@
       },
       "description": "Overlay is a component in the Overlay family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -3459,8 +3463,8 @@
       },
       "description": "SafeAreaWrapper is a component in the SafeAreaWrapper family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "zero insets where the host reports none"
       },
       "enums": [],
       "behaviors": [],
@@ -4782,8 +4786,8 @@
       },
       "description": "UiPanel is a component in the UiPanel family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -4809,8 +4813,8 @@
       },
       "description": "UiPanelItem is a component in the UiPanel family; it must be composed inside UiPanel.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -4930,8 +4934,8 @@
       },
       "description": "BottomToolbar is a component in the AppSwitcher family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -4957,8 +4961,8 @@
       },
       "description": "BottomToolbarPrimaryAction is a component in the AppSwitcher family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
@@ -5190,8 +5194,8 @@
       },
       "description": "DataTableCell is a component in the DataTable family; it must be composed inside DataTable.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -5222,8 +5226,8 @@
       },
       "description": "DataTableHeader is a component in the DataTable family; it must be composed inside DataTable.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -5254,8 +5258,8 @@
       },
       "description": "DataTableHeaderSelected is a component in the DataTable family; it must be composed inside DataTable.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -5286,8 +5290,8 @@
       },
       "description": "DataTableRow is a component in the DataTable family; it must be composed inside DataTable.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -6052,8 +6056,8 @@
       },
       "description": "DateInput is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [
         "anatomy.label",
@@ -6087,8 +6091,8 @@
       },
       "description": "DatePicker is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
       "platform": {
-        "support": "adapter",
-        "fallback": "renders nothing without an adapter"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [
         "anatomy.label",
@@ -6122,8 +6126,8 @@
       },
       "description": "DatePickerInput is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
       "platform": {
-        "support": "adapter",
-        "fallback": "renders nothing without an adapter"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [
         "anatomy.label",
@@ -6855,8 +6859,8 @@
       },
       "description": "TopNavigationBar is a component in the Header family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -6885,8 +6889,8 @@
       },
       "description": "TopNavigationBarLogin is a component in the Header family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -6915,8 +6919,8 @@
       },
       "description": "WebHeader is a component in the Header family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -7225,8 +7229,8 @@
       },
       "description": "ActionSheet is a component in the Modal family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [
         "anatomy.dialog_actions"
@@ -7423,8 +7427,8 @@
       },
       "description": "BottomNavigationBar is a component in the Navigation family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -7453,8 +7457,8 @@
       },
       "description": "NavigationList is a component in the Navigation family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
@@ -7483,8 +7487,8 @@
       },
       "description": "NavigationListItem is a component in the Navigation family.",
       "platform": {
-        "support": "native",
-        "fallback": "renders nothing on web"
+        "support": "both",
+        "fallback": "none"
       },
       "enums": [],
       "behaviors": [
