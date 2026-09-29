@@ -16,6 +16,7 @@
     "@carbon/styles": "1.115.0",
     "@material-symbols/svg-400": "0.47.4",
     "@material/web": "2.5.0",
+    "@react-native/assets-registry": "^0.87.0",
     "helper-debug": "npm:@superloomdev/js-helper-debug@^1.0.0",
     "helper-themer": "npm:@superloomdev/js-client-helper-themer@^1.0.0",
     "helper-themer-template-carbon": "npm:@superloomdev/js-client-helper-themer-template-carbon@^1.0.0",
