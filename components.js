@@ -118,8 +118,9 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
 
   // Init the platform answer, the spec sheets and the registry
   const platform = createPlatform(Lib.ReactNative, Utils);
+  const names = Object.keys(factories);
   const specs = {};
-  for (const name of Object.keys(factories)) {
+  for (const name of names) {
     if (!Utils.isFunction(factories[name])) {
       throw new TypeError('factory "' + name + '" must be a function');
     }
@@ -132,12 +133,12 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
   // Build the context, then every component; a factory may read the
   // registry lazily at render time, so build order does not matter
   const ctx = createContext(Lib, config, built, breakpoint, platform, contract, specs, Registry);
-  for (const name of Object.keys(factories)) {
+  for (const name of names) {
     Registry[name] = factories[name](ctx);
   }
 
   // Report the unsupported-token count at debug level; warnings are informational
-  Lib.Debug.debug('createSystem built ' + Object.keys(Registry).length + ' components; ' +
+  Lib.Debug.debug('createSystem built ' + names.length + ' components; ' +
     report.warnings.length + ' theme tokens outside the supported set');
 
   // Return the frozen registry

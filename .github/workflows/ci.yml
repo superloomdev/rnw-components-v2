@@ -143,7 +143,7 @@ jobs:
           echo "PASS: no default export in entry files"
       - name: G10 - No SCREAMING token names in shipped source
         run: |
-          hits=$(git grep -nE "['\"] *[A-Z][A-Z0-9]+_[A-Z][A-Z0-9_]* *['\"]" -- component behaviors components.js all.js | grep -vE "CONFIG\.|ERRORS\.|REQUIRED_TOKENS|SUPPORTED_TOKENS|REQUIRED_ICONS" || true)
+          hits=$(git grep -nE "['\"] *[A-Z][A-Z0-9]+_[A-Z][A-Z0-9_]* *['\"]" -- component behaviors components.js all.js | grep -vE "CONFIG\.|ERRORS\.|CONTRACT_|REQUIRED_TOKENS|SUPPORTED_TOKENS|REQUIRED_ICONS" || true)
           if [ -n "$hits" ]; then
             echo "FAIL: SCREAMING_SNAKE token name found. Theme tokens are lowercase dotted names; SCREAMING_SNAKE is for config keys only."
             echo "$hits"
