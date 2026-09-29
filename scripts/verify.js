@@ -8,8 +8,9 @@
 // The workflow stays the single source of truth for what a gate asserts.
 //
 // Usage:
-//   node scripts/verify.js           gates + clean install + lint + unit tests,
-//                                    then the parity assertion and the stamp
+//   node scripts/verify.js           gates + clean install + lint + docs diff +
+//                                    unit tests + browser gates + fire, then the
+//                                    parity assertion and the stamp
 //   node scripts/verify.js --gates   enforcement gates only
 //   node scripts/verify.js --fast    skips the browser tier (inner loop); never
 //                                    writes .verify-stamp, so a push to main
@@ -233,6 +234,16 @@ if (!GATES_ONLY) {
   }
   executed.push('eslint');
 
+  if (runCheck('docs regenerated', function () {
+    sh('node scripts/docs-generate.js');
+    sh('git diff --exit-code -- docs/components');
+  })) {
+    passed++;
+  } else {
+    failed.push('docs regenerated');
+  }
+  executed.push('docs regenerated');
+
   if (runCheck('unit tests (_test)', function () {
     sh('npm test', path.join(REPO_ROOT, '_test'));
   })) {
@@ -241,6 +252,29 @@ if (!GATES_ONLY) {
     failed.push('unit tests (_test)');
   }
   executed.push('unit tests (_test)');
+
+  if (!FAST) {
+
+    if (runCheck('browser gates', function () {
+      sh('npx playwright install --with-deps chromium', path.join(REPO_ROOT, '_test'));
+      sh('npm run test:browser', path.join(REPO_ROOT, '_test'));
+    })) {
+      passed++;
+    } else {
+      failed.push('browser gates');
+    }
+    executed.push('browser gates');
+
+    if (runCheck('fire', function () {
+      sh('node fire.js', path.join(REPO_ROOT, '_test'));
+    })) {
+      passed++;
+    } else {
+      failed.push('fire');
+    }
+    executed.push('fire');
+
+  }
 
 }
 

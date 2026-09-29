@@ -10,7 +10,7 @@
         "version": "1.0.0",
         "export": "Icon"
       },
-      "description": "Icon is a component in the Icon family; it has no upstream visual reference; its anatomy is a Superloom decision.",
+      "description": "Icon draws one semantic glyph from the theme through react-native-svg at a token size and color; it is the only icon-aware component and never substitutes a glyph; it has no upstream visual reference because icon sets are data in both reference systems; its anatomy is a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -29,7 +29,7 @@
         "no_reference",
         "superloom_decision"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Text",

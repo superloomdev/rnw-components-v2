@@ -6,7 +6,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "test": "node --import ./harness/register.js --test",
+    "test": "mkdir -p test-results && node --import ./harness/register.js --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=tap --test-reporter-destination=test-results/node.tap",
+    "manifest": "node ../scripts/manifest-generate.js",
+    "bundle": "npm run manifest --silent && npx esbuild harness/entry.js --bundle --format=esm --outfile=harness/bundle.js --platform=browser --alias:react-native=react-native-web --alias:node:module=./harness/node-module-stub.js --alias:@react-native/assets-registry/registry=react-native-web/dist/modules/AssetRegistry/index.js --resolve-extensions=.web.js,.js,.json --define:process.env.NODE_ENV=\\\"development\\\" --define:global=globalThis --define:__DEV__=true --log-level=warning",
+    "test:browser": "npm run bundle && npx playwright test",
+    "fire": "node fire.js",
     "generate:roster": "node fixtures/generate-roster.js"
   },
   "devDependencies": {
@@ -16,7 +20,9 @@
     "@carbon/styles": "1.115.0",
     "@material-symbols/svg-400": "0.47.4",
     "@material/web": "2.5.0",
+    "@playwright/test": "^1.63.0",
     "@react-native/assets-registry": "^0.87.0",
+    "esbuild": "^0.28.2",
     "helper-debug": "npm:@superloomdev/js-helper-debug@^1.0.0",
     "helper-themer": "npm:@superloomdev/js-client-helper-themer@^1.0.0",
     "helper-themer-template-carbon": "npm:@superloomdev/js-client-helper-themer-template-carbon@^1.0.0",

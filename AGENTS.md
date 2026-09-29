@@ -4,9 +4,12 @@
 
 From the repo root:
 
-- `npm run verify` - **run this before every push to `main`.** Every gate `ci.yml` runs, in CI order, plus the parity assertion that every mapped CI step executed
-- `npm run verify:fast` - the same gates minus the browser tier, for the inner loop
+- `npm run check -- <Name>` - inner loop after every edit: eslint on changed files, purity scan, the component's tests and its accessibility-identity rows
+- `npm run batch` - every 8-12 components: docs regeneration, eslint, every Node gate, the browser gates against a fresh bundle, then `scripts/defects.js` and `scripts/evidence.js` from the machine output
+- `npm run verify` - **run this before every push to `main`.** Every gate `ci.yml` runs, in CI order (enforcement greps, clean install, eslint, docs diff, Node gates, browser gates, fire), plus the parity assertion that every mapped CI step executed
+- `npm run verify:fast` - the same minus the browser tier and fire, for the inner loop
 - `npm run verify:gates` - the enforcement greps only
+- `npm run docs:generate` - regenerate `docs/components/` from `api.js`, `spec.js`, `sample.js`, the roster and `notes.md` (G16 and `docs.test.js` fail when it is stale)
 - `npm run lint` - eslint .
 - `npm run lint:fix` - eslint . --fix
 - `npm run roster:check` - validates `data/roster.json` against its schema and the pinned upstream exports
@@ -14,7 +17,9 @@ From the repo root:
 
 From `_test/`:
 
-- `npm install && npm test` - unit, purity, accessibility and docs tests on clean install
+- `npm install && npm test` - the Node gates on clean install: behaviors, system, icon, purity, a11y identity, enum render, docs
+- `npm run test:browser` - manifest + esbuild bundle (real react-native-web and react-native-svg) + Playwright: structural, measure, perceptual, contact sheet (`test-results/sheet/`)
+- `node fire.js` - plants every row of `fixtures/assertion-integrity.json`, asserts the named test fails, restores byte-for-byte
 
 Always delete `node_modules` and `package-lock.json` before testing. The package is pinned at 1.0.0; npm keeps stale copies otherwise.
 

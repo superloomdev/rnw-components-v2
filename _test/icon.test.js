@@ -101,11 +101,13 @@ describe('Icon: size, glyph choice, fill', function () {
 
   test('carbon at 16 uses the set\'s own 16px glyph; at 32 the base glyph', async function () {
     const Registry = buildSystem('carbon', { Icon: factories.Icon });
-    const literal = buildNative('carbon').tokens['icon.close'];
-    const small = (await render(React.createElement(Registry.Icon, { name: 'close', size: 16 }))).querySelector('svg');
+    // chevron_down is one of the glyphs the set draws on its own small grid
+    const literal = buildNative('carbon').tokens['icon.chevron_down'];
+    assert.notEqual(literal.sizes['16'].viewBox, literal.viewBox, 'fixture: the 16px grid must differ from the base grid');
+    const small = (await render(React.createElement(Registry.Icon, { name: 'chevron_down', size: 16 }))).querySelector('svg');
     assert.equal(small.getAttribute('viewBox'), literal.sizes['16'].viewBox);
     assert.equal(small.querySelector('path').getAttribute('d'), literal.sizes['16'].paths[0].d);
-    const large = (await render(React.createElement(Registry.Icon, { name: 'close', size: 32 }))).querySelector('svg');
+    const large = (await render(React.createElement(Registry.Icon, { name: 'chevron_down', size: 32 }))).querySelector('svg');
     assert.equal(large.getAttribute('viewBox'), literal.viewBox);
     assert.equal(large.querySelector('path').getAttribute('d'), literal.paths[0].d);
   });

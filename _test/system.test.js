@@ -191,11 +191,12 @@ describe('context: icon', function () {
 
   test('carbon: a size the set draws itself returns that glyph with its own viewBox', function () {
     const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
-    const literal = buildNative('carbon').tokens['icon.close'];
-    const small = ctx.icon('close', 16);
+    const literal = buildNative('carbon').tokens['icon.chevron_down'];
+    assert.notEqual(literal.sizes['16'].viewBox, literal.viewBox, 'fixture: the 16px grid must differ from the base grid');
+    const small = ctx.icon('chevron_down', 16);
     assert.equal(small.viewBox, literal.sizes['16'].viewBox);
     assert.deepEqual(small.paths, literal.sizes['16'].paths);
-    const large = ctx.icon('close', 32);
+    const large = ctx.icon('chevron_down', 32);
     assert.equal(large.viewBox, literal.viewBox);
     assert.deepEqual(large.paths, literal.paths);
   });

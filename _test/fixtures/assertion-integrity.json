@@ -1,0 +1,129 @@
+{
+  "info": [
+    "Fire manifest. Each row names one production edit that must make exactly one named test fail.",
+    "file is repo-relative; find/replace is a literal substring edit; runner is node or pw (the bundle is rebuilt for pw rows).",
+    "A new gate is trusted only after it has a row here and fire.js has seen it fire."
+  ],
+  "rows": [
+    {
+      "id": "purity-color-literal",
+      "file": "behaviors/press.js",
+      "find": "  const platform = deps.platform;",
+      "replace": "  const platform = deps.platform; const planted = '#fff';",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "no forbidden construct in any shipped file",
+      "why": "a color literal inside a string in shipped source must fail the purity scan"
+    },
+    {
+      "id": "purity-declared-tokens",
+      "file": "component/contract.js",
+      "find": "const ICON_REQUIRED = ['size.icon_02', 'color.icon_primary'];",
+      "replace": "const ICON_REQUIRED = ['color.icon_primary'];",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "REQUIRED_TOKENS, SUPPORTED_TOKENS and REQUIRED_ICONS reconcile with spec.js and api.js",
+      "why": "a token a spec sheet reads but the library does not declare must fail reconciliation"
+    },
+    {
+      "id": "behaviors-state-keys",
+      "file": "behaviors/controls.js",
+      "find": "useButton.stateKeys = ['focused', 'hovered', 'pressed', 'disabled', 'selected'];",
+      "replace": "useButton.stateKeys = ['focused', 'pressed', 'disabled', 'selected'];",
+      "runner": "node",
+      "test": "behaviors.test.js",
+      "testName": "useButton",
+      "why": "published state keys must equal the rendered state"
+    },
+    {
+      "id": "system-required-presence",
+      "file": "components.js",
+      "find": "  if (!Utils.isEmptyArray(presence)) {",
+      "replace": "  if (false && !Utils.isEmptyArray(presence)) {",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a missing required token throws one TypeError naming all missing tokens",
+      "why": "a theme missing a required token must be rejected"
+    },
+    {
+      "id": "system-native-projection",
+      "file": "components.js",
+      "find": "  if (dimension !== undefined && !Utils.isNumber(built.tokens[dimension])) {",
+      "replace": "  if (false) {",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a theme built for the web projection is rejected",
+      "why": "a web-projection theme carries unit strings native cannot draw"
+    },
+    {
+      "id": "context-enum-list",
+      "file": "component/context.js",
+      "find": "    if (!Utils.inArray(definition.values, value)) {",
+      "replace": "    if (false) {",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a value outside the contract list is rejected",
+      "why": "an enum value the contract does not list must be rejected"
+    },
+    {
+      "id": "context-icon-size-variant",
+      "file": "component/context.js",
+      "find": "    const variant = Utils.isObject(literal.sizes) ? literal.sizes[String(size)] : undefined;",
+      "replace": "    const variant = undefined;",
+      "runner": "node",
+      "test": "icon.test.js",
+      "testName": "carbon at 16 uses the set's own 16px glyph; at 32 the base glyph",
+      "why": "a set's own small glyph must be used at its size"
+    },
+    {
+      "id": "icon-decorative-hidden",
+      "file": "component/atom/icon/icon.js",
+      "find": "      'aria-hidden': labelled ? undefined : true,",
+      "replace": "      'aria-hidden': undefined,",
+      "runner": "node",
+      "test": "icon.test.js",
+      "testName": "without a label it is decorative and hidden",
+      "why": "an unlabelled icon must be hidden from assistive technology"
+    },
+    {
+      "id": "a11y-identity-across-templates",
+      "file": "component/atom/icon/icon.js",
+      "find": "      accessibilityLabel: labelled ? props.accessibilityLabel : undefined,",
+      "replace": "      accessibilityLabel: labelled ? props.accessibilityLabel + fill : undefined,",
+      "runner": "node",
+      "test": "a11y-identity.test.js",
+      "testName": "Icon / default",
+      "why": "a template-dependent accessible name is a semantic difference between templates"
+    },
+    {
+      "id": "docs-regeneration",
+      "file": "docs/components/Icon.md",
+      "find": "# Icon\n",
+      "replace": "# Icon (edited by hand)\n",
+      "runner": "node",
+      "test": "docs.test.js",
+      "testName": "committed docs/components equals a fresh regeneration",
+      "why": "a hand-edited generated page must fail the docs gate"
+    },
+    {
+      "id": "structural-zero-errors",
+      "file": "component/atom/icon/icon.js",
+      "find": "    const glyph = ctx.icon(props.name, size);",
+      "replace": "    const glyph = ctx.icon(props.name + '_planted', size);",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "the showcase renders every component with zero errors",
+      "why": "a render-time throw must surface as a page error in the browser gate"
+    },
+    {
+      "id": "perceptual-pipeline",
+      "file": "component/atom/icon/icon.js",
+      "find": "      fill: fill,",
+      "replace": "      fill: 'none',",
+      "runner": "pw",
+      "test": "perceptual.spec.js",
+      "testName": "the pixel pipeline discriminates: self is 0, blank is not",
+      "why": "an invisible render must not pass the pixel pipeline"
+    }
+  ]
+}

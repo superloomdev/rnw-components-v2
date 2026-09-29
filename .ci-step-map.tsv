@@ -4,3 +4,6 @@ name	Install dependencies	clean install
 name	Install test dependencies	clean install	
 name	Run ESLint	eslint	
 name	Run tests	unit tests (_test)	
+name	Install Playwright browsers	browser gates	
+name	Run browser gates	browser gates	
+name	Run fire	fire	

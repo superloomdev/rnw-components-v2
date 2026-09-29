@@ -56,6 +56,37 @@ jobs:
         working-directory: _test
         run: npm test
 
+  browser:
+    name: Browser Gates
+    runs-on: ubuntu-latest
+    needs: [lint]
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install test dependencies
+        working-directory: _test
+        run: npm install
+      - name: Install Playwright browsers
+        working-directory: _test
+        run: npx playwright install --with-deps chromium
+      - name: Run browser gates
+        working-directory: _test
+        run: npm run test:browser
+      - name: Run fire
+        working-directory: _test
+        run: node fire.js
+      - name: Upload browser results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-results
+          path: _test/test-results
+
   enforcement:
     name: Enforcement Greps
     runs-on: ubuntu-latest
@@ -187,6 +218,14 @@ jobs:
         run: |
           node scripts/roster-check.js
           node scripts/icons-check.js
+      - name: G16 - Generated docs are current
+        run: |
+          node scripts/docs-generate.js
+          if ! git diff --exit-code -- docs/components; then
+            echo "FAIL: docs/components is stale. Run node scripts/docs-generate.js and commit."
+            exit 1
+          fi
+          echo "PASS: generated docs are current"
       - name: G15 - CI step map covers every workflow step
         run: |
           node scripts/ci-census.js --check-map
@@ -194,8 +233,8 @@ jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
-    needs: [test, enforcement]
-    if: github.ref == 'refs/heads/main' && !cancelled() && needs.test.result == 'success' && needs.enforcement.result == 'success'
+    needs: [test, browser, enforcement]
+    if: github.ref == 'refs/heads/main' && !cancelled() && needs.test.result == 'success' && needs.browser.result == 'success' && needs.enforcement.result == 'success'
     env:
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:

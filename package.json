@@ -32,9 +32,12 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "check": "node scripts/check.js",
+    "batch": "node scripts/batch.js",
     "verify": "node scripts/verify.js",
     "verify:fast": "node scripts/verify.js --fast",
     "verify:gates": "node scripts/verify.js --gates",
+    "docs:generate": "node scripts/docs-generate.js",
     "roster:check": "node scripts/roster-check.js",
     "icons:check": "node scripts/icons-check.js"
   },

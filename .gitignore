@@ -17,8 +17,10 @@ npm-debug.log*
 .npm
 
 # Verification artifacts (generated at test time, never committed)
-_test/harness/bundle.js
-_test/harness/dist/
 _test/test-results/
 _test/playwright-report/
 .verify-stamp
+
+# Browser tier and batch artifacts (generated, never committed)
+_test/harness/manifest.js
+_test/harness/bundle.js
