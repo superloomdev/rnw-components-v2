@@ -25,7 +25,7 @@ Always delete `node_modules` and `package-lock.json` before testing. The package
 
 ### `npm run lint` is not the lint gate
 
-The CI `enforcement` job runs `git grep` gates (`G1`..`Gn`) written inline in `.github/workflows/ci.yml`; `npm run lint` covers ESLint only. `npm run verify` extracts and replays every gate from the workflow through `scripts/ci-census.js` and `.ci-step-map.tsv`, so a workflow step with no local counterpart fails the run as `UNMAPPED` instead of being skipped. Every gate is a `git grep`, which sees tracked content only: `verify` refuses to run while untracked files exist (`git add -N` them first).
+The CI `enforcement` job runs `git grep` gates (`G1`..`Gn`) written inline in `.github/workflows/ci.yml`; `npm run lint` covers ESLint only. `npm run verify` extracts and replays every gate from the workflow through `scripts/ci-census.js` and `.ci-step-map.tsv`, so a workflow step with no local counterpart fails the run as `UNMAPPED` instead of being skipped. Every gate is a `git grep`, which sees tracked content only: `verify` refuses to run while untracked files exist (`git add -N` them first). `verify` replays each CI job's steps with that job's filesystem: every `node_modules` the job does not install is set aside (`node_modules.verify-aside`) and restored afterwards, so a step reading packages its job never installs fails locally as it does on CI.
 
 ## Hooks
 

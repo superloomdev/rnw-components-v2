@@ -91,8 +91,19 @@ jobs:
     name: Enforcement Greps
     runs-on: ubuntu-latest
     needs: [lint]
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+      # G14 resolves the pinned upstream roster and icon packages from
+      # _test/node_modules; every step here reads only what this job installs
+      - name: Install test dependencies
+        working-directory: _test
+        run: npm install
       - name: G1 - No banned accessibility props in shipped source
         run: |
           hits=$(git grep -nE "accessibilityState|accessibilityValue|accessibilityHint|accessibilityViewIsModal|importantForAccessibility" -- component behaviors components.js all.js catalog.js || true)
