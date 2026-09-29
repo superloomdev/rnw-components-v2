@@ -7,11 +7,11 @@ const modulesRoot = path.join(repoRoot, '_test', 'node_modules');
 const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data', 'icons.json'), 'utf8'));
 const imports = JSON.parse(fs.readFileSync(
   path.join(repoRoot, 'data', 'icon-imports.candidate.json'),
-  'utf8',
+  'utf8'
 ));
 const metadata = JSON.parse(fs.readFileSync(
   path.join(modulesRoot, '@carbon/icons/metadata.json'),
-  'utf8',
+  'utf8'
 ));
 
 const oldSemanticNames = [
@@ -22,7 +22,7 @@ const oldSemanticNames = [
   'notification', 'share', 'download', 'edit', 'checkmark_filled',
   'information_filled', 'warning_filled', 'document', 'checkbox',
   'checkbox_unchecked', 'tools', 'accessibility', 'task_complete', 'group',
-  'grid', 'layers', 'cube',
+  'grid', 'layers', 'cube'
 ];
 const sizes = [16, 20, 24, 32];
 const failures = [];
@@ -36,7 +36,9 @@ if (manifest.schema !== 1 || !manifest.icons || typeof manifest.icons !== 'objec
 if (manifest.sources.carbon.version !== imports.sources['@carbon/icons']) {
   fail('Carbon source version differs from scanned package');
 }
-if (manifest.sources.material.style !== 'outlined') fail('Material style is not outlined');
+if (manifest.sources.material.style !== 'outlined') {
+  fail('Material style is not outlined');
+}
 
 const names = Object.keys(manifest.icons);
 if (JSON.stringify(names) !== JSON.stringify([...names].sort())) {
@@ -45,7 +47,9 @@ if (JSON.stringify(names) !== JSON.stringify([...names].sort())) {
 
 for (const semantic of names) {
   const mapping = manifest.icons[semantic];
-  if (!/^[a-z][a-z0-9_]*$/.test(semantic)) fail(`${semantic}: invalid semantic name`);
+  if (!/^[a-z][a-z0-9_]*$/.test(semantic)) {
+    fail(`${semantic}: invalid semantic name`);
+  }
   if (!mapping || Object.keys(mapping).join(',') !== 'carbon,material') {
     fail(`${semantic}: mapping must contain carbon then material`);
     continue;
@@ -64,7 +68,9 @@ for (const semantic of names) {
     const available = new Set(carbon.output.map((output) => output.size));
     const fallback = available.has(32) ? 32 : [...available][0];
     for (const size of sizes) {
-      if (!available.has(size) && !fallback) fail(`${semantic}: no Carbon fallback at ${size}`);
+      if (!available.has(size) && !fallback) {
+        fail(`${semantic}: no Carbon fallback at ${size}`);
+      }
     }
     for (const asset of carbon.assets) {
       if (/<switch\b|<foreignObject\b/i.test(asset.source)) {
@@ -76,7 +82,7 @@ for (const semantic of names) {
   const materialFile = path.join(
     modulesRoot,
     '@material-symbols/svg-400/outlined',
-    `${mapping.material}.svg`,
+    `${mapping.material}.svg`
   );
   if (!fs.existsSync(materialFile)) {
     fail(`${semantic}: Material icon '${mapping.material}' does not exist`);
@@ -84,10 +90,14 @@ for (const semantic of names) {
 }
 
 for (const name of oldSemanticNames) {
-  if (!manifest.icons[name]) fail(`old semantic name missing: ${name}`);
+  if (!manifest.icons[name]) {
+    fail(`old semantic name missing: ${name}`);
+  }
 }
 for (const carbon of imports.carbonNames) {
-  if (!mappedCarbon.has(carbon)) fail(`scanned Carbon icon unmapped: ${carbon}`);
+  if (!mappedCarbon.has(carbon)) {
+    fail(`scanned Carbon icon unmapped: ${carbon}`);
+  }
 }
 
 if (failures.length > 0) {
@@ -98,5 +108,5 @@ if (failures.length > 0) {
 const count = names.length;
 process.stdout.write(
   `OK ${count} names; carbon resolves ${count}/${count} at sizes 16,20,24,32; `
-  + `material resolves ${count}/${count}; no switch elements\n`,
+  + `material resolves ${count}/${count}; no switch elements\n`
 );

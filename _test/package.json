@@ -1,16 +1,14 @@
 {
-  "name": "_test",
+  "name": "rnw-components-test",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Verification harness for @superloomdev/rnw-components: unit, purity, accessibility, docs and browser gates, plus the roster and icon generators that read the pinned upstream packages.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
   "scripts": {
+    "test": "node --test",
     "generate:roster": "node fixtures/generate-roster.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "private": true,
   "devDependencies": {
     "@carbon/ibm-products": "2.99.0",
     "@carbon/react": "1.115.0",

@@ -1,0 +1,6 @@
+match_field	pattern	local_gate	note
+name	G[0-9]+.*	gates	Every enforcement grep is extracted from ci.yml and replayed verbatim.
+name	Install dependencies	clean install	
+name	Install test dependencies	clean install	
+name	Run ESLint	eslint	
+name	Run tests	unit tests (_test)	

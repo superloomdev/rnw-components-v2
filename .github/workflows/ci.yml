@@ -1,0 +1,236 @@
+# CI Pipeline: Test and Publish rnw-components
+#
+# Strategy:
+#   1. Lint the module source
+#   2. Run the test suite from _test/ (pure Node, no container, no emulator)
+#   3. Run the enforcement greps (G1..Gn) and the step-map parity check
+#   4. Publish to GitHub Packages on main push once the package is public and
+#      the version is not on the registry
+#
+# Every enforcement gate is a `git grep`, so it sees tracked content only.
+# `scripts/verify.js` replays these same steps locally by extracting them
+# from this file through `scripts/ci-census.js` and `.ci-step-map.tsv`.
+# Native simulator runs live in the demo repository's native-gate workflow.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install dependencies
+        run: npm install
+      - name: Run ESLint
+        run: npm run lint
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [lint]
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install test dependencies
+        working-directory: _test
+        run: npm install
+      - name: Run tests
+        working-directory: _test
+        run: npm test
+
+  enforcement:
+    name: Enforcement Greps
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v7
+      - name: G1 - No banned accessibility props in shipped source
+        run: |
+          hits=$(git grep -nE "accessibilityState|accessibilityValue|accessibilityHint|accessibilityViewIsModal|importantForAccessibility" -- component behaviors components.js all.js || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: banned accessibility prop found. Use aria-* props; accessibilityRole and accessibilityLabel stay."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no banned accessibility props"
+      - name: G2 - No LayoutAnimation, createPortal, useWindowDimensions or __DEV__ in shipped source
+        run: |
+          hits=$(git grep -nE "LayoutAnimation|createPortal|useWindowDimensions|__DEV__" -- component behaviors components.js all.js || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: banned mechanism found. Overlays go through the overlay behavior, breakpoints through createSystem, dev checks through Lib.Debug."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no banned mechanisms"
+      - name: G3 - No direct react or react-native import in shipped source
+        run: |
+          hits=$(git grep -nE "(require\(|from )['\"](react|react-dom|react-native|react-native-web|react-native-svg)['\"]" -- component behaviors components.js all.js || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: direct framework import found. React, React Native and react-native-svg reach components through shared_libs."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no direct framework imports"
+      - name: G4 - Platform reads only in component/platform.js
+        run: |
+          hits=$(git grep -nE "Platform\.(OS|select)|\.OS *===|\.OS *!==" -- component behaviors components.js all.js ':(exclude)component/platform.js' || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: platform read outside component/platform.js. Use createPlatformSplit({ web, native })."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: platform is read in one place"
+      - name: G5 - No color literals in shipped source
+        run: |
+          hits=$(git grep -nE "#[0-9a-fA-F]{3,8}([^0-9a-zA-Z]|$)|rgba?\(|hsla?\(" -- component behaviors components.js all.js || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: color literal found. Every color is a token; createSystem validates the required set, so a literal is never a fallback."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no color literals"
+      - name: G6 - No vendor names in what the package ships
+        run: |
+          hits=$(git grep -niE "carbon|material|ibm" -- component behaviors components.js all.js README.md ROBOTS.md || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: vendor name found in shipped source. Vendor knowledge lives in data/, scripts/, DECISIONS.md and _test/ only."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: shipped source is vendor-free"
+      - name: G7 - No vendor or overlay runtime dependency
+        run: |
+          if grep -nE "@carbon|@material|downshift|flatpickr|floating-ui" package.json; then
+            echo "FAIL: forbidden dependency in package.json. Upstream packages are measurement oracles under _test/ only."
+            exit 1
+          fi
+          echo "PASS: no forbidden dependency"
+      - name: G8 - Only the four tiers under component/
+        run: |
+          FAIL=0
+          for d in component/*/; do
+            [ -d "$d" ] || continue
+            case "$(basename "$d")" in
+              atom|molecule|composite|provider) ;;
+              *) echo "FAIL: $d is not a tier directory (atom, molecule, composite, provider)"; FAIL=1 ;;
+            esac
+          done
+          [ "$FAIL" -eq 0 ] && echo "PASS: tier directories only" || exit 1
+      - name: G9 - No default export in components.js or all.js
+        run: |
+          if git grep -nE "^export default" -- components.js all.js; then
+            echo "FAIL: a package entry file declares a default export. createSystem and the named maps are the whole surface."
+            exit 1
+          fi
+          echo "PASS: no default export in entry files"
+      - name: G10 - No SCREAMING token names in shipped source
+        run: |
+          hits=$(git grep -nE "['\"] *[A-Z][A-Z0-9]+_[A-Z][A-Z0-9_]* *['\"]" -- component behaviors components.js all.js | grep -vE "CONFIG\.|ERRORS\.|REQUIRED_TOKENS|SUPPORTED_TOKENS|REQUIRED_ICONS" || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: SCREAMING_SNAKE token name found. Theme tokens are lowercase dotted names; SCREAMING_SNAKE is for config keys only."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no SCREAMING token names"
+      - name: G11 - No unit strings in shipped source or data
+        run: |
+          hits=$(git grep -nE "['\"][0-9.]+(rem|em|px|vw|vh|ms|%)['\"]" -- component behaviors components.js all.js data || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: unit string found. Values are numbers in the native projection; RNW is the web projection."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no unit strings"
+      - name: G12 - Prose mechanics (no British spelling, no em dash)
+        run: |
+          hits=$(git grep -niE "colour|behaviour|recognis|initialis|optimise|optimisation|authoris|prioritis" -- . ':(exclude).github/*' || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: British spelling found. Use American English (color, behavior, recognize, initialize, optimize, authorize, prioritize)."
+            echo "$hits"
+            exit 1
+          fi
+          em=$(git grep -n "—" -- . ':(exclude).github/*' || true)
+          if [ -n "$em" ]; then
+            echo "FAIL: em dash found. Use a comma, a period, or ' - ' instead."
+            echo "$em"
+            exit 1
+          fi
+          echo "PASS: no British spelling or em dash in tracked files"
+      - name: G13 - Peer-dep utilization (Lib.Utils primitives, not raw checks)
+        run: |
+          hits=$(git grep -nE "\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1" -- component behaviors components.js all.js || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: raw length, keys or indexOf check found. Use Lib.Utils.isEmptyArray, isEmptyObject, isEmptyString or inArray."
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: no raw membership or emptiness checks"
+      - name: G14 - Roster and icon data validate
+        run: |
+          node scripts/roster-check.js
+          node scripts/icons-check.js
+      - name: G15 - CI step map covers every workflow step
+        run: |
+          node scripts/ci-census.js --check-map
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: [test, enforcement]
+    if: github.ref == 'refs/heads/main' && !cancelled() && needs.test.result == 'success' && needs.enforcement.result == 'success'
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Check if version needs publishing
+        id: check
+        run: |
+          PKG_NAME=$(jq -r '.name' package.json)
+          PKG_VERSION=$(jq -r '.version' package.json)
+          if [ "$(jq -r '.private' package.json)" = "true" ]; then
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "$PKG_NAME is private until launch; publish skipped"
+            exit 0
+          fi
+          LOCAL_SHASUM=$(npm pack --dry-run --json 2>/dev/null | jq -r '.[0].shasum')
+          REGISTRY_SHASUM=$(npm view "$PKG_NAME@$PKG_VERSION" dist.shasum 2>/dev/null || echo "")
+          if [ -n "$REGISTRY_SHASUM" ] && [ "$LOCAL_SHASUM" = "$REGISTRY_SHASUM" ]; then
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "Registry already serves $PKG_NAME@$PKG_VERSION with identical content (shasum $LOCAL_SHASUM)"
+          elif [ -n "$REGISTRY_SHASUM" ] && [ "$LOCAL_SHASUM" != "$REGISTRY_SHASUM" ]; then
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "FAIL: $PKG_NAME@$PKG_VERSION exists on registry with a different shasum."
+            echo "Local:  $LOCAL_SHASUM"
+            echo "Remote: $REGISTRY_SHASUM"
+            echo "Delete the version from the registry before pushing, then push again."
+            echo "Never bump the version number to work around this."
+            exit 1
+          else
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Version $PKG_NAME@$PKG_VERSION needs publishing (shasum $LOCAL_SHASUM)"
+          fi
+      - name: Publish to GitHub Packages
+        if: steps.check.outputs.needs_publish == 'true'
+        run: npm publish

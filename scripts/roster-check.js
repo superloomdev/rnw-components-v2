@@ -12,19 +12,21 @@ const references = new Set(['render-web', 'parse-rn', 'none']);
 const statuses = new Set(['pending', 'built', 'measured', 'frozen']);
 const flagNames = new Set([
   'deferred_gap', 'no_reference', 'web_only', 'requires_parent',
-  'superloom_decision', 'not_applicable',
+  'superloom_decision', 'not_applicable'
 ]);
 const requiredKeys = [
   'name', 'family', 'tier', 'source', 'description', 'platform', 'enums',
   'behaviors', 'parent', 'reference', 'carbon_twin', 'material_twin',
-  'diff_budget', 'flags', 'status',
+  'diff_budget', 'flags', 'status'
 ];
 
 const failures = [];
 const fail = (message) => failures.push(message);
 const nonEmpty = (value) => typeof value === 'string' && value.length > 0;
 
-if (roster.schema !== 1 || !Array.isArray(roster.rows)) fail('invalid roster envelope');
+if (roster.schema !== 1 || !Array.isArray(roster.rows)) {
+  fail('invalid roster envelope');
+}
 if (roster.rows.length !== candidate.rows.length + 2) {
   fail(`row count ${roster.rows.length} != candidate ${candidate.rows.length} + 2 substrate rows`);
 }
@@ -36,7 +38,9 @@ for (const row of roster.rows) {
     fail(`${row.name ?? '<unnamed>'}: wrong keys or key order`);
     continue;
   }
-  if (rosterNames.has(row.name)) fail(`${row.name}: duplicate name`);
+  if (rosterNames.has(row.name)) {
+    fail(`${row.name}: duplicate name`);
+  }
   rosterNames.add(row.name);
   if (!nonEmpty(row.name) || !nonEmpty(row.family) || !tiers.has(row.tier)) {
     fail(`${row.name}: empty name/family or invalid tier`);
@@ -46,7 +50,9 @@ for (const row of roster.rows) {
     fail(`${row.name}: invalid source`);
   } else {
     const key = `${row.source.package}\u001f${row.source.export}`;
-    if (sources.has(key)) fail(`${row.name}: duplicate source also used by ${sources.get(key)}`);
+    if (sources.has(key)) {
+      fail(`${row.name}: duplicate source also used by ${sources.get(key)}`);
+    }
     sources.set(key, row.name);
   }
   if (!nonEmpty(row.description) || !/[.!?]$/.test(row.description)) {
@@ -62,7 +68,9 @@ for (const row of roster.rows) {
       || !Array.isArray(row.flags) || row.flags.some((flag) => !flagNames.has(flag))) {
     fail(`${row.name}: invalid enum/behavior/flag list`);
   }
-  if (row.parent !== null && !nonEmpty(row.parent)) fail(`${row.name}: invalid parent`);
+  if (row.parent !== null && !nonEmpty(row.parent)) {
+    fail(`${row.name}: invalid parent`);
+  }
   if (!row.reference || !references.has(row.reference.kind)
       || !nonEmpty(row.reference.package)) {
     fail(`${row.name}: invalid reference`);
@@ -80,7 +88,7 @@ for (const row of roster.rows) {
     web_only: 'web-only',
     requires_parent: 'must be composed inside',
     superloom_decision: 'Superloom decision',
-    not_applicable: 'does not render a component',
+    not_applicable: 'does not render a component'
   };
   for (const flag of row.flags) {
     if (!row.description.includes(noteTerms[flag])) {
@@ -91,16 +99,20 @@ for (const row of roster.rows) {
 
 for (const row of candidate.rows) {
   const key = `${row.source.package}\u001f${row.source.export}`;
-  if (!sources.has(key)) fail(`candidate source missing: ${key}`);
+  if (!sources.has(key)) {
+    fail(`candidate source missing: ${key}`);
+  }
 }
 for (const name of ['Icon', 'View']) {
   const row = roster.rows.find((item) => item.name === name);
-  if (!row || row.source.package !== 'local') fail(`substrate row missing: ${name}`);
+  if (!row || row.source.package !== 'local') {
+    fail(`substrate row missing: ${name}`);
+  }
 }
 const expectedFirst = [
   'Icon', 'Text', 'View', 'Button', 'Checkbox', 'TextInput', 'Select',
   'IconButton', 'TextArea', 'Dropdown', 'RadioButton', 'Toggle', 'Tag', 'Tabs',
-  'Menu', 'Modal', 'ToastNotification', 'ProgressBar', 'Tooltip',
+  'Menu', 'Modal', 'ToastNotification', 'ProgressBar', 'Tooltip'
 ];
 if (JSON.stringify(roster.rows.slice(0, expectedFirst.length).map((row) => row.name))
     !== JSON.stringify(expectedFirst)) {
