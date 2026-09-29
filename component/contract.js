@@ -16,8 +16,15 @@ const CONTEXT_TOKENS = [
   'focus.width'
 ];
 
-export const REQUIRED_TOKENS = Object.freeze([].concat(CONTEXT_TOKENS));
+// Tokens each component's spec.js and api.js name (required = always read)
+const ICON_REQUIRED = ['size.icon_02', 'color.icon_primary'];
+const ICON_SUPPORTED = [
+  'color.icon_secondary', 'color.icon_interactive', 'color.icon_disabled',
+  'color.icon_inverse', 'color.icon_on_color', 'color.icon_on_color_disabled'
+];
 
-export const SUPPORTED_TOKENS = Object.freeze([].concat(REQUIRED_TOKENS));
+export const REQUIRED_TOKENS = Object.freeze([].concat(CONTEXT_TOKENS, ICON_REQUIRED));
+
+export const SUPPORTED_TOKENS = Object.freeze([].concat(REQUIRED_TOKENS, ICON_SUPPORTED));
 
 export const REQUIRED_ICONS = Object.freeze([]);

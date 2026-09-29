@@ -98,6 +98,15 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
     }).join(', '));
   }
 
+  // Validate every required token carries a value; the engine reports a
+  // key whose rule resolved to nothing as present, so this closes that gap
+  const empty = REQUIRED_TOKENS.filter(function (name) {
+    return built.tokens[name] === undefined;
+  });
+  if (!Utils.isEmptyArray(empty)) {
+    throw new TypeError('theme resolves required tokens to no value: ' + empty.join(', '));
+  }
+
   // Validate the native projection: a dimension token must be a number
   const dimension = Object.keys(contract.meta).find(function (name) {
     return contract.meta[name].group === 'dimension' && built.tokens[name] !== undefined;

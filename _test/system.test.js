@@ -79,6 +79,14 @@ describe('createSystem: validation', function () {
     });
   });
 
+  test('a required token whose value resolved to nothing is rejected, naming it', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, { 'color.focus': undefined });
+    assert.throws(function () {
+      buildSystem('default', {}, { built: Object.assign({}, built, { tokens: tokens }) });
+    }, /resolves required tokens to no value: color\.focus/);
+  });
+
   test('a theme built for the web projection is rejected', function () {
     const web = Lib.Themer.buildTheme(TEMPLATES.default, [], 'web');
     assert.throws(function () {
