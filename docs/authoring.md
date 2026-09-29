@@ -1,6 +1,6 @@
 # Authoring a component
 
-This is the briefing an author reads before writing or fixing a component, together with `DECISIONS.md`, the batch's roster rows, `behaviors/ROBOTS.md`, one exemplar folder (`component/atom/icon/`), the current defects list and the contact sheet. Nothing else is required reading.
+This is the briefing an author reads before writing or fixing a component (the `/rnw-component add <Name>` and `/rnw-component fix <Name>` workflow walks it phase by phase), together with `DECISIONS.md`, the batch's roster rows, `behaviors/ROBOTS.md`, one exemplar folder (`component/atom/icon/`), the current defects list and the contact sheet. Nothing else is required reading.
 
 ## What a component is
 
@@ -20,7 +20,7 @@ component/<tier>/<family>/notes.md           vendor-free prose: decisions, flags
 _test/<name>.test.js                         unit + accessibility tests for this component
 ```
 
-`<tier>` is one of `atom`, `molecule`, `composite`, `provider` (gate G8). A family folder may hold several components (`button/button.js`, `button/icon-button.js`); each has its own `api.js`, `spec.js`, `sample.js`, and the family shares `notes.md` when the roster puts them in one family.
+`<tier>` is one of `atom`, `molecule`, `composite`, `provider` (gate G8). A family folder may hold several components (`button/button.js`, `button/icon-button.js`): the first keeps `api.js`, `spec.js`, `sample.js`, `reference.js`, each further one names its data files by its stem (`api.icon-button.js`, `spec.icon-button.js`, ...), and the family shares `notes.md`. `scripts/lib/components.js` discovers components by these file names.
 
 ## The factory
 
