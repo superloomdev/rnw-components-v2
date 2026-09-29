@@ -236,7 +236,8 @@ if (!GATES_ONLY) {
 
   if (runCheck('docs regenerated', function () {
     sh('node scripts/docs-generate.js');
-    sh('git diff --exit-code -- docs/components');
+    sh('node scripts/catalog-generate.js');
+    sh('git diff --exit-code -- docs/components catalog.js');
   })) {
     passed++;
   } else {

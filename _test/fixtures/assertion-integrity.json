@@ -106,6 +106,16 @@
       "why": "a hand-edited generated page must fail the docs gate"
     },
     {
+      "id": "catalog-regeneration",
+      "file": "catalog.js",
+      "find": "family: 'Icon'",
+      "replace": "family: 'Planted'",
+      "runner": "node",
+      "test": "docs.test.js",
+      "testName": "committed catalog.js equals a fresh regeneration",
+      "why": "a hand-edited or stale host catalog must fail the docs gate"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",

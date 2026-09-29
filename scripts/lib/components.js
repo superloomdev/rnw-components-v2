@@ -11,7 +11,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const COMPONENT_ROOT = join(REPO_ROOT, 'component');
 export const TIERS = Object.freeze(['atom', 'molecule', 'composite', 'provider']);
-export const SHIPPED_SOURCE = Object.freeze(['component', 'behaviors', 'components.js', 'all.js']);
+export const SHIPPED_SOURCE = Object.freeze(['component', 'behaviors', 'components.js', 'all.js', 'catalog.js']);
 
 
 /********************************************************************

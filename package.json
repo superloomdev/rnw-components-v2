@@ -13,12 +13,14 @@
   "exports": {
     ".": "./components.js",
     "./all": "./all.js",
+    "./catalog": "./catalog.js",
     "./data/roster.json": "./data/roster.json",
     "./package.json": "./package.json"
   },
   "files": [
     "components.js",
     "all.js",
+    "catalog.js",
     "component/",
     "behaviors/",
     "data/roster.json",
@@ -39,7 +41,8 @@
     "verify:gates": "node scripts/verify.js --gates",
     "docs:generate": "node scripts/docs-generate.js",
     "roster:check": "node scripts/roster-check.js",
-    "icons:check": "node scripts/icons-check.js"
+    "icons:check": "node scripts/icons-check.js",
+    "catalog:generate": "node scripts/catalog-generate.js"
   },
   "peerDependencies": {
     "react": ">=18",

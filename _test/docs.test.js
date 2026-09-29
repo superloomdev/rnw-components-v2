@@ -34,6 +34,18 @@ describe('docs: generated pages', function () {
     }
   });
 
+  test('committed catalog.js equals a fresh regeneration', function () {
+    const temp = mkdtempSync(join(tmpdir(), 'rnw-catalog-'));
+    try {
+      const file = join(temp, 'catalog.js');
+      execFileSync('node', [join(REPO_ROOT, 'scripts', 'catalog-generate.js'), file], { stdio: 'pipe' });
+      assert.equal(readFileSync(join(REPO_ROOT, 'catalog.js'), 'utf8'), readFileSync(file, 'utf8'),
+        'catalog.js is stale; run node scripts/catalog-generate.js and commit');
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
   test('every flag that demands an explanation is explained in notes.md', async function () {
     const components = await discoverComponents();
     const rows = {};

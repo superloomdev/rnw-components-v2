@@ -60,5 +60,5 @@ The package is `private: true` until launch; the CI publish job detects that and
 When this package moves to normal SemVer, delete those two lines. The publish guard needs no change: its remedy for a shasum mismatch reverts to the default, which is to bump the version.
 
 - The package has `"type": "module"`, `"exports"`, and no `"main"`.
-- `exports` are `"."`, `"./all"`, `"./data/roster.json"` and `"./package.json"`. Themes are built through the injected Themer engine (`shared_libs.Themer.buildTheme(template, layers, 'native')`), never a package subpath.
-- `files` is an allowlist. What ships is `components.js`, `all.js`, `component/`, `behaviors/`, `data/roster.json`, the two docs and the license; the vendor-name gate runs over exactly that set minus the roster.
+- `exports` are `"."`, `"./all"`, `"./catalog"` (generated, gate G16), `"./data/roster.json"` and `"./package.json"`. Themes are built through the injected Themer engine (`shared_libs.Themer.buildTheme(template, layers, 'native')`), never a package subpath.
+- `files` is an allowlist. What ships is `components.js`, `all.js`, `catalog.js`, `component/`, `behaviors/`, `data/roster.json`, the two docs and the license; the vendor-name gate runs over exactly that set minus the roster.

@@ -32,6 +32,7 @@ function step (label, cmd, args, cwd) {
 
 
 step('docs regenerate', 'node', ['scripts/docs-generate.js'], REPO_ROOT);
+step('catalog regenerate', 'node', ['scripts/catalog-generate.js'], REPO_ROOT);
 step('eslint', 'npx', ['eslint', '.'], REPO_ROOT);
 step('node gates', 'npm', ['test'], TEST);
 step('browser gates', 'npm', ['run', 'test:browser'], TEST);
