@@ -2,7 +2,19 @@
 // component's sample.js. Do not edit. Exported as `./catalog`.
 
 import IconSample from './component/atom/icon/sample.js';
+import TextSample from './component/atom/text/sample.js';
+import ViewSample from './component/atom/view/sample.js';
+import ButtonSample from './component/molecule/button/sample.js';
+import CheckboxSample from './component/molecule/checkbox/sample.js';
+import TextInputSample from './component/molecule/text-input/sample.js';
+import SelectSample from './component/composite/select/sample.js';
 
 export const catalog = Object.freeze([
-  Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), sample: IconSample })
+  Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), sample: IconSample }),
+  Object.freeze({ name: 'Text', family: 'Text', tier: 'atom', platform: 'both', flags: Object.freeze([]), sample: TextSample }),
+  Object.freeze({ name: 'View', family: 'View', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), sample: ViewSample }),
+  Object.freeze({ name: 'Button', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision', 'deferred_gap']), sample: ButtonSample }),
+  Object.freeze({ name: 'Checkbox', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze(['deferred_gap']), sample: CheckboxSample }),
+  Object.freeze({ name: 'TextInput', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['deferred_gap']), sample: TextInputSample }),
+  Object.freeze({ name: 'Select', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['deferred_gap']), sample: SelectSample })
 ]);

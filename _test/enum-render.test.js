@@ -67,7 +67,8 @@ describe('enum render: every listed enum value changes the render', function () 
         for (const value of values) {
           const Registry = systemWith(token, value);
           const container = await render(React.createElement(Registry[component.name], component.sample[0].props));
-          renders[value] = container.innerHTML;
+          // Generated ids differ on every render; only the render the enum drives may differ
+          renders[value] = container.innerHTML.replace(/(id|aria-labelledby|aria-describedby|aria-controls)="[^"]*"/g, '$1="*"');
         }
         const distinct = new Set(Object.values(renders));
         assert.equal(distinct.size, values.length,

@@ -87,9 +87,14 @@ function renderComponent (component, row) {
   out.push('');
   out.push('### Metrics');
   out.push('');
-  out.push('| Metric | Rule |');
-  out.push('|---|---|');
-  for (const metric of Object.keys(component.spec)) {
+  const metrics = Object.keys(component.spec);
+  if (metrics.length === 0) {
+    out.push('None: every value this component draws is a token named in its props or listed under `tokens`.');
+  } else {
+    out.push('| Metric | Rule |');
+    out.push('|---|---|');
+  }
+  for (const metric of metrics) {
     out.push('| `' + metric + '` | ' + describeMetric(component.spec[metric]) + ' |');
   }
   if ((component.api.colors || []).length) {

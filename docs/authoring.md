@@ -62,6 +62,10 @@ Name.spec = SPEC;
 | `ctx.enum('anatomy.label')` | the theme's choice, checked against the contract's list | not an enum, value outside the list |
 | `ctx.icon('close', 16)` | `{ viewBox, paths }`; the set's own 16px glyph when it has one | the theme lacks the icon |
 | `ctx.focusPresentation(focused)` | style fragment for the theme's `feedback.focus` mode | - |
+| `ctx.pressPresentation(state, palette)` | `{ container, layer, engaged }` for the theme's `feedback.press` mode; `palette` is `{ rest, hover, active, content }` color leaves (`null` fill = none); `engaged` is true while a highlight fill replaces the rest fill | a leaf the theme lacks |
+| `ctx.fieldPresentation(state, options)` | `{ frame, label, raised, placeholder }` for the theme's `feedback.field` frame and `anatomy.label` placement; `options` is `{ height, paddingInline, radius, surface }` | a leaf the theme lacks |
+
+A component that shows press or a field frame uses the presentation, never its own branch on the enum, and always mounts the parts a presentation may hide (the state layer, the label), so the element tree and the accessibility tree are the same under every template. The tokens a presentation reads are declared in the calling component's `api.tokens`.
 
 Also on `ctx`: `React`, `ReactNative`, `Svg`, `Utils`, `Debug`, `Registry`, `behaviors`, `breakpoint`, `platform` (`{ os, isNative, split }`), `config`.
 

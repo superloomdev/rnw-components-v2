@@ -3,6 +3,10 @@
 // read (`token`, `color`, `typeStyle`, `metric`), every shape choice as an
 // enum read (`enum`), every glyph as an icon read (`icon`). A read of a
 // token the theme lacks throws; nothing falls back, nothing substitutes.
+// The presentations (`focusPresentation`, `pressPresentation`,
+// `fieldPresentation`) implement every value of an enum once, as style
+// fragments, so every component that shows focus, press or a field frame
+// draws the theme's choice the same way.
 //
 // The context also carries the injected frameworks (`React`, `ReactNative`,
 // `Svg`), the helpers, the platform answer, the behaviors and the registry,
@@ -267,6 +271,169 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
 
+  /********************************************************************
+  Build the transition fragment every presentation shares: one property,
+  the theme's fast duration and its standard easing curve.
+
+  @param {String} property - CSS property that transitions
+
+  @return {Object} - Style fragment
+  *********************************************************************/
+  function transition (property) {
+
+    return {
+      transitionDuration: token('motion.duration_fast_01') + 'ms',
+      transitionProperty: property,
+      transitionTimingFunction: 'cubic-bezier(' + token('motion.easing_standard_productive').join(', ') + ')'
+    };
+
+  }
+
+
+  /********************************************************************
+  The press presentation the theme chose, as two style fragments: one for
+  the control's container and one for the state layer the component
+  always mounts, so the element tree never depends on the theme. Every
+  mode reads its colors, opacities and timing from the theme; a disabled
+  control shows no hover or press.
+
+  @param {Object} state   - { hovered, pressed, focused, disabled }
+  @param {Object} palette - Color leaves { rest, hover, active, content };
+                            a null fill leaf means no fill
+
+  @return {Object} - { container, layer, engaged }; `engaged` is true
+                     while a highlight fill replaces the rest fill, so a
+                     component can switch content that sits on that fill
+  *********************************************************************/
+  function pressPresentation (state, palette) {
+
+    // Init the theme's choice and the live interaction state
+    const mode = enumValue('feedback.press');
+    const live = state.disabled !== true;
+    const pressed = live && state.pressed === true;
+    const hovered = live && state.hovered === true;
+
+    // Resolve a fill leaf; null draws no fill
+    const fill = function (leaf) {
+      return Utils.isNullOrUndefined(leaf) ? 'transparent' : color(leaf);
+    };
+
+    // Highlight: the container's own fill follows the state
+    if (mode === 'highlight') {
+      const leaf = pressed ? palette.active : hovered ? palette.hover : palette.rest;
+      return {
+        container: Object.assign({ backgroundColor: fill(leaf) }, transition('background-color')),
+        layer: { display: 'none' },
+        engaged: pressed || hovered
+      };
+    }
+
+    // Opacity: the whole control fades by the theme's state opacity
+    if (mode === 'opacity') {
+      const fade = pressed ? token('state.pressed_opacity') : hovered ? token('state.hover_opacity') : 0;
+      return {
+        container: Object.assign({ backgroundColor: fill(palette.rest), opacity: 1 - fade }, transition('opacity')),
+        layer: { display: 'none' },
+        engaged: false
+      };
+    }
+
+    // Ripple: a state layer in the content color at the theme's opacity
+    const focused = live && state.focused === true;
+    const strength = pressed ? token('state.pressed_opacity')
+      : hovered ? token('state.hover_opacity')
+        : focused ? token('state.focus_opacity') : 0;
+
+    return {
+      container: { backgroundColor: fill(palette.rest) },
+      layer: Object.assign({ backgroundColor: color(palette.content), opacity: strength, pointerEvents: 'none' }, transition('opacity')),
+      engaged: false
+    };
+
+  }
+
+
+  /********************************************************************
+  The field presentation the theme chose: the frame `feedback.field`
+  draws and the label placement `anatomy.label` draws. The label keeps
+  the same place in the element tree under both placements (the first
+  child of the field root); only its style moves it, so the accessibility
+  tree never depends on the theme. A floating label rests inside the
+  frame and rises into its top border, occluding it with the surface
+  color, when the field is focused or populated.
+
+  @param {Object} state   - { focused, hovered, disabled, invalid, populated }
+  @param {Object} options - { height, paddingInline, radius, surface }: the
+                            field's own metrics and the color leaf it sits on
+
+  @return {Object} - { frame, label, raised, placeholder }
+  *********************************************************************/
+  function fieldPresentation (state, options) {
+
+    // Init the theme's choices and the shared values
+    const mode = enumValue('feedback.field');
+    const placement = enumValue('anatomy.label');
+    const width = token('border.width_01');
+    const disabled = state.disabled === true;
+    const borderLeaf = disabled ? 'border_disabled' : state.invalid === true ? 'support_error' : 'border_strong_01';
+    const labelColor = color(disabled ? 'text_disabled' : 'text_secondary');
+
+    // Frame: shared geometry, then the mode's border and fill
+    const frame = {
+      alignItems: 'center',
+      borderColor: color(borderLeaf),
+      borderRadius: options.radius,
+      flexDirection: 'row',
+      height: options.height,
+      paddingHorizontal: options.paddingInline
+    };
+    if (mode === 'underline') {
+      Object.assign(frame, {
+        backgroundColor: color(!disabled && state.hovered === true ? 'field_hover_01' : 'field_01'),
+        borderBottomWidth: width
+      });
+    } else {
+      Object.assign(frame, { backgroundColor: 'transparent', borderWidth: width });
+    }
+
+    // Above: the label sits over the frame in the flow
+    if (placement === 'above') {
+      return {
+        frame: frame,
+        label: Object.assign({}, typeStyle('label01'), { color: labelColor, marginBottom: token('spacing.spacing_03') }),
+        raised: false,
+        placeholder: true
+      };
+    }
+
+    // Floating: the label is laid over the frame, resting or raised
+    const raised = state.focused === true || state.populated === true;
+    const inset = token('spacing.spacing_02');
+    const small = typeStyle('label01');
+    const body = typeStyle('body_compact_01');
+    const label = raised
+      ? Object.assign({}, small, {
+        backgroundColor: color(options.surface),
+        left: options.paddingInline - inset,
+        paddingHorizontal: inset,
+        top: -(small.lineHeight / 2)
+      })
+      : Object.assign({}, body, {
+        left: options.paddingInline,
+        top: (options.height - body.lineHeight) / 2
+      });
+
+    // Return the floating presentation; the placeholder shows once raised
+    return {
+      frame: frame,
+      label: Object.assign(label, { color: labelColor, pointerEvents: 'none', position: 'absolute', zIndex: 1 }),
+      raised: raised,
+      placeholder: raised
+    };
+
+  }
+
+
   // Behaviors are built once per system from the same dependencies
   const behaviors = createBehaviors({
     React: Lib.React,
@@ -289,9 +456,11 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     platform: platform,
     color: color,
     enum: enumValue,
+    fieldPresentation: fieldPresentation,
     focusPresentation: focusPresentation,
     icon: icon,
     metric: metric,
+    pressPresentation: pressPresentation,
     token: token,
     typeStyle: typeStyle
   });

@@ -17,7 +17,7 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 
 - `useTextField({ value, onChangeText, label, invalid, disabled, onFocus, onBlur })` -> `{ rootProps, inputProps, labelProps, state }` | state: `focused, hovered, disabled, invalid, populated`
 - `useButton({ children, disabled, selected, onPress, accessibilityLabel })` -> `{ rootProps, state }` | state: `focused, hovered, pressed, disabled, selected`
-- `useCheckbox({ checked, indeterminate, disabled, label, onChange })` -> `{ rootProps, inputProps, labelProps, state }` | state: `checked, indeterminate, focused, hovered, pressed, disabled`
+- `useCheckbox({ checked, indeterminate, disabled, label, onChange })` -> `{ rootProps, inputProps, labelProps, state }` | state: `checked, indeterminate, focused, hovered, pressed, disabled` (`rootProps.onKeyDown` toggles on Space, which the web press responder does not)
 - `useSelect({ items, value, disabled, label, onChange })` -> `{ rootProps, triggerProps, listProps, labelProps, getOptionProps(i), state }` | state: `open, focused, disabled, selectedIndex, highlightedIndex`
 
 ## Local state (`local.js`, `state.js`)

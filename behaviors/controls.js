@@ -251,7 +251,17 @@ export default function createControlsBehaviors (deps) {
         'aria-labelledby': labelId,
         'aria-checked': indeterminate ? 'mixed' : checked === true,
         'aria-disabled': disabled ? true : undefined,
+        disabled: disabled,
         onPress: disabled ? undefined : toggle,
+        // The web press responder activates a checkbox on Enter only; the
+        // checkbox pattern toggles on Space, so Space is handled here
+        onKeyDown: function (event) {
+          if (disabled || event.key !== ' ') {
+            return;
+          }
+          event.preventDefault();
+          toggle();
+        },
         onPressIn: function () {
           setPressed(true);
         },
@@ -387,6 +397,7 @@ export default function createControlsBehaviors (deps) {
         'aria-expanded': open,
         'aria-controls': listId,
         'aria-disabled': disabled ? true : undefined,
+        disabled: disabled,
         onKeyDown: onKeyDown,
         onPress: disabled ? undefined : function () {
           setOpen(!open);

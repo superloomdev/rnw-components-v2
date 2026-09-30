@@ -116,6 +116,206 @@
       "why": "a hand-edited or stale host catalog must fail the docs gate"
     },
     {
+      "id": "context-press-focus-layer",
+      "file": "component/context.js",
+      "find": "        : focused ? token('state.focus_opacity') : 0;",
+      "replace": "        : 0;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "ripple: a state layer in the content color at the pressed, hovered or focused opacity",
+      "why": "a ripple state layer must show the focus opacity while focused"
+    },
+    {
+      "id": "context-press-opacity-fade",
+      "file": "component/context.js",
+      "find": "opacity: 1 - fade",
+      "replace": "opacity: 1",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "opacity: the container fades by the theme",
+      "why": "the opacity press mode must fade the control by the theme's state opacity"
+    },
+    {
+      "id": "context-field-floating-populated",
+      "file": "component/context.js",
+      "find": "    const raised = state.focused === true || state.populated === true;",
+      "replace": "    const raised = state.focused === true;",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "floating: the label rests in the frame, rises over the surface on focus, and stays raised once populated",
+      "why": "a floating label must stay raised while the field holds a value"
+    },
+    {
+      "id": "context-field-underline-hover",
+      "file": "component/context.js",
+      "find": "backgroundColor: color(!disabled && state.hovered === true ? 'field_hover_01' : 'field_01'),",
+      "replace": "backgroundColor: color('field_01'),",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "underline: hover fills the frame with field_hover_01",
+      "why": "an underline field must fill with the hover color on hover"
+    },
+    {
+      "id": "enum-render-field-mode",
+      "file": "component/context.js",
+      "find": "    if (mode === 'underline') {\n      Object.assign(frame, {",
+      "replace": "    if (true) {\n      Object.assign(frame, {",
+      "runner": "node",
+      "test": "enum-render.test.js",
+      "testName": "TextInput / feedback.field",
+      "why": "a field that draws one frame for both feedback.field values must fail enum coverage"
+    },
+    {
+      "id": "text-default-type",
+      "file": "component/atom/text/text.js",
+      "find": ": 'body_compact_02');",
+      "replace": ": 'body_compact_01');",
+      "runner": "node",
+      "test": "text.test.js",
+      "testName": "default / default: type set and color come from the theme",
+      "why": "Text's default type set must be the declared default"
+    },
+    {
+      "id": "text-break-mode",
+      "file": "component/atom/text/text.js",
+      "find": "    const cut = Utils.inArray(CUT_MODES, props.breakMode);",
+      "replace": "    const cut = false;",
+      "runner": "node",
+      "test": "text.test.js",
+      "testName": "tail cuts one line with an ellipsis",
+      "why": "a cut break mode must render one line with an ellipsis"
+    },
+    {
+      "id": "view-background-leaf",
+      "file": "component/atom/view/view.js",
+      "find": "      style.backgroundColor = ctx.color(props.background);",
+      "replace": "      style.backgroundColor = ctx.color('layer_01');",
+      "runner": "node",
+      "test": "view.test.js",
+      "testName": "carbon / layer 02: draws exactly the named leaves",
+      "why": "View must draw the fill leaf the caller names"
+    },
+    {
+      "id": "button-kind-palette",
+      "file": "component/molecule/button/button.js",
+      "find": "    secondary: { rest: 'button_secondary',",
+      "replace": "    secondary: { rest: 'button_primary',",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / secondary: geometry, fill and label come from the theme",
+      "why": "each kind must fill with its own color leaf"
+    },
+    {
+      "id": "button-engaged-content",
+      "file": "component/molecule/button/button.js",
+      "find": "    const contentLeaf = press.engaged && Utils.isString(palette.engaged) ? palette.engaged : palette.content;",
+      "replace": "    const contentLeaf = palette.content;",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "highlight: hover, press and release change the fill",
+      "why": "an outlined kind must switch its label color on an engaged highlight fill"
+    },
+    {
+      "id": "button-size-height",
+      "file": "component/molecule/button/button.js",
+      "find": "    sm: 'heightSmall',",
+      "replace": "    sm: 'height',",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / small: geometry, fill and label come from the theme",
+      "why": "each size must draw its own height token"
+    },
+    {
+      "id": "checkbox-space-toggles",
+      "file": "behaviors/controls.js",
+      "find": "          if (disabled || event.key !== ' ') {",
+      "replace": "          if (true) {",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "press and Space toggle an uncontrolled checkbox",
+      "why": "Space must toggle a checkbox on the web, where the press responder does not"
+    },
+    {
+      "id": "checkbox-disabled-announced",
+      "file": "behaviors/controls.js",
+      "find": "        'aria-checked': indeterminate ? 'mixed' : checked === true,\n        'aria-disabled': disabled ? true : undefined,\n        disabled: disabled,",
+      "replace": "        'aria-checked': indeterminate ? 'mixed' : checked === true,\n        'aria-disabled': disabled ? true : undefined,",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / disabled: box, mark, label and message come from the theme",
+      "why": "a disabled checkbox must be announced as disabled"
+    },
+    {
+      "id": "checkbox-mixed-glyph",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "      name: state.indeterminate ? 'subtract' : 'checkmark',",
+      "replace": "      name: 'checkmark',",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / indeterminate: box, mark, label and message come from the theme",
+      "why": "a mixed checkbox must draw the mixed glyph"
+    },
+    {
+      "id": "text-input-unlabelled-placeholder",
+      "file": "component/molecule/text-input/text-input.js",
+      "find": "          placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,",
+      "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "material / unlabelled: frame, label, input and message come from the theme",
+      "why": "an unlabelled field must show its placeholder under every label placement"
+    },
+    {
+      "id": "select-caret-enum",
+      "file": "component/composite/select/select.js",
+      "find": "display: ctx.enum('anatomy.caret') === 'shown' ? 'flex' : 'none'",
+      "replace": "display: 'flex'",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "anatomy.caret: shown displays the caret",
+      "why": "the caret must follow anatomy.caret"
+    },
+    {
+      "id": "select-placeholder-in-tree",
+      "file": "component/composite/select/select.js",
+      "find": "}, selected === null ? placeholder : selected.label),",
+      "replace": "}, selected === null ? '' : selected.label),",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "carbon / default: frame, label, trigger, caret and message come from the theme",
+      "why": "the trigger must hold the placeholder while nothing is selected"
+    },
+    {
+      "id": "select-list-level",
+      "file": "component/composite/select/select.js",
+      "find": "        zIndex: ctx.metric('Select', 'listLevel')",
+      "replace": "        zIndex: 1",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "a press opens the listbox below the frame",
+      "why": "the option list must sit at the dropdown stacking level"
+    },
+    {
+      "id": "a11y-identity-select-placeholder",
+      "file": "component/composite/select/select.js",
+      "find": "}, selected === null ? placeholder : selected.label),",
+      "replace": "}, selected === null ? (presentation.placeholder ? placeholder : '') : selected.label),",
+      "runner": "node",
+      "test": "a11y-identity.test.js",
+      "testName": "Select / default",
+      "why": "a trigger whose text depends on the label placement must fail accessibility identity across templates"
+    },
+    {
+      "id": "select-sizer",
+      "file": "component/composite/select/select.js",
+      "find": "[placeholder].concat(items.map(",
+      "replace": "[].concat(items.map(",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger is sized by a hidden sizer",
+      "why": "the trigger must be sized by its widest text, placeholder included"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",
