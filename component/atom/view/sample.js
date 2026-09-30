@@ -8,5 +8,5 @@ export default Object.freeze([
   Object.freeze({ label: 'rounded', props: Object.freeze({ padding: 'spacing_07', background: 'layer_accent_01', radius: 'radius_08' }) }),
   Object.freeze({ label: 'layer 02', props: Object.freeze({ padding: 'spacing_07', background: 'layer_02' }) }),
   Object.freeze({ label: 'inverse', props: Object.freeze({ padding: 'spacing_07', background: 'background_inverse' }) }),
-  Object.freeze({ label: 'plain', props: Object.freeze({ padding: 'spacing_07' }) })
+  Object.freeze({ label: 'pill', props: Object.freeze({ padding: 'spacing_05', background: 'layer_accent_01', radius: 'radius_max' }) })
 ]);

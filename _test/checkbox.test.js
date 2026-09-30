@@ -43,7 +43,7 @@ Render one Checkbox and return its parts.
 @param {Object} Registry - Registry
 @param {Object} props    - Checkbox props
 
-@return {Promise<Object>} - { root, layer, box, label, message }
+@return {Promise<Object>} - { root, layer, box, label, message, messageIcon }
 *********************************************************************/
 async function renderCheckbox (Registry, props) {
 
@@ -56,7 +56,8 @@ async function renderCheckbox (Registry, props) {
     layer: boxWrap.children[0],
     box: boxWrap.children[1],
     label: root.children[1],
-    message: container.firstElementChild.children[1] || null
+    message: container.firstElementChild.children[1] ? container.firstElementChild.children[1].lastElementChild : null,
+    messageIcon: container.firstElementChild.children[1] ? container.firstElementChild.children[1].querySelector('svg') : null
   };
 
 }
@@ -94,7 +95,7 @@ describe('Checkbox: every sample state under every template', function () {
         // Box geometry and colors
         assert.equal(parts.box.style.width, t['size.icon_01'] + 'px');
         assert.equal(parts.box.style.height, t['size.icon_01'] + 'px');
-        assert.equal(parts.box.style.borderTopWidth, t['border.width_01'] + 'px');
+        assert.equal(parts.box.style.borderTopWidth, (marked && !invalid ? 0 : t['border.width_01']) + 'px');
         assert.equal(parts.box.style.borderTopLeftRadius, t['shape.radius_02'] + 'px');
         assert.equal(parts.box.style.borderTopColor, cssValue('borderTopColor', t['color.' + edge]));
         assert.equal(parts.box.style.backgroundColor, marked ? cssValue('backgroundColor', t['color.' + fill]) : TRANSPARENT);
@@ -116,7 +117,8 @@ describe('Checkbox: every sample state under every template', function () {
         assert.equal(parts.label.textContent, props.label);
         assert.equal(parts.label.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'text_disabled' : 'text_primary')]));
-        assert.equal(parts.label.style.marginLeft, t['spacing.spacing_03'] + 'px');
+        assert.equal(parts.label.style.marginLeft, (t['spacing.spacing_04'] + t['spacing.spacing_01']) + 'px');
+        assert.equal(parts.root.style.minHeight, (t['spacing.spacing_05'] + t['spacing.spacing_02']) + 'px');
         const message = invalid ? [props.invalidText, 'text_error'] : props.helperText ? [props.helperText, 'text_helper'] : null;
         if (message === null) {
           assert.equal(parts.message, null);
@@ -124,6 +126,13 @@ describe('Checkbox: every sample state under every template', function () {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
           assert.equal(parts.message.style.fontSize, t['type.helper_text_01'].fontSize + 'px');
+          if (invalid) {
+            assert.equal(parts.messageIcon.getAttribute('fill'), t['color.support_error']);
+            assert.equal(parts.messageIcon.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
+            assert.equal(parts.message.style.marginLeft, t['spacing.spacing_03'] + 'px');
+          } else {
+            assert.equal(parts.messageIcon, null);
+          }
         }
 
         // Accessibility answer

@@ -8,7 +8,7 @@
   "scripts": {
     "test": "mkdir -p test-results && node --import ./harness/register.js --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=tap --test-reporter-destination=test-results/node.tap",
     "manifest": "node ../scripts/manifest-generate.js",
-    "bundle": "npm run manifest --silent && npx esbuild harness/entry.js --bundle --format=esm --outfile=harness/bundle.js --platform=browser --alias:react-native=react-native-web --alias:node:module=./harness/node-module-stub.js --alias:@react-native/assets-registry/registry=react-native-web/dist/modules/AssetRegistry/index.js --resolve-extensions=.web.js,.js,.json --define:process.env.NODE_ENV=\\\"development\\\" --define:global=globalThis --define:__DEV__=true --log-level=warning",
+    "bundle": "npm run manifest --silent && npx esbuild harness/entry.js --bundle --format=esm --outfile=harness/bundle.js --platform=browser --alias:react-native=react-native-web --alias:node:module=./harness/node-module-stub.js --alias:@react-native/assets-registry/registry=react-native-web/dist/modules/AssetRegistry/index.js --resolve-extensions=.web.js,.js,.json --define:process.env.NODE_ENV=\\\"development\\\" --define:global=globalThis --define:__DEV__=true --log-level=warning && npx esbuild harness/reference-entry.js --alias:@carbon/themes/src/g10.js=./harness/upstream-theme-g10.cjs --alias:@carbon/themes/src/g100.js=./harness/upstream-theme-g100.cjs --bundle --format=esm --outfile=harness/reference-bundle.js --platform=browser --alias:react-native=react-native-web --alias:node:module=./harness/node-module-stub.js --alias:@react-native/assets-registry/registry=react-native-web/dist/modules/AssetRegistry/index.js --resolve-extensions=.web.js,.js,.json --define:process.env.NODE_ENV=\\\"development\\\" --define:global=globalThis --define:__DEV__=true --log-level=warning",
     "test:browser": "npm run bundle && npx playwright test",
     "fire": "node fire.js",
     "generate:roster": "node fixtures/generate-roster.js"
@@ -18,6 +18,9 @@
     "@carbon/react": "1.115.0",
     "@carbon/react-native": "9.0.7",
     "@carbon/styles": "1.115.0",
+    "@fontsource/roboto": "5.3.0",
+    "@ibm/plex-mono": "2.5.0",
+    "@ibm/plex-sans": "1.1.0",
     "@material-symbols/svg-400": "0.47.4",
     "@material/web": "2.5.0",
     "@playwright/test": "^1.63.0",

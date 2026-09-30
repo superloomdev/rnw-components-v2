@@ -24,6 +24,7 @@ _test/playwright-report/
 # Browser tier and batch artifacts (generated, never committed)
 _test/harness/manifest.js
 _test/harness/bundle.js
+_test/harness/reference-bundle.js
 
 # Transient: node_modules set aside by scripts/verify.js while it replays a CI job
 **/node_modules.verify-aside/

@@ -23,15 +23,17 @@ export default function Button (ctx) {
 
   // Kind -> palette of color leaves. `rest` null draws no fill; `engaged`
   // replaces the content color while a highlight fill is shown; `border`
-  // draws the outline of an outlined kind; `shadow` lifts the kind
+  // draws the outline of an outlined kind; `shadow` lifts the kind;
+  // `inline` kinds reserve no trailing icon slot and set the icon after
+  // the label
   const KINDS = Object.freeze({
     primary: { rest: 'button_primary', hover: 'button_primary_hover', active: 'button_primary_active', content: 'text_on_color' },
     secondary: { rest: 'button_secondary', hover: 'button_secondary_hover', active: 'button_secondary_active', content: 'text_on_color' },
     tertiary: { rest: null, hover: 'button_tertiary_hover', active: 'button_tertiary_active', content: 'button_tertiary', engaged: 'text_inverse', border: 'button_tertiary' },
-    ghost: { rest: null, hover: 'background_hover', active: 'background_active', content: 'link_primary' },
+    ghost: { rest: null, hover: 'background_hover', active: 'background_active', content: 'link_primary', inline: true },
     danger: { rest: 'button_danger_primary', hover: 'button_danger_hover', active: 'button_danger_active', content: 'text_on_color' },
     danger_tertiary: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', border: 'button_danger_secondary' },
-    danger_ghost: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color' },
+    danger_ghost: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', inline: true },
     tonal: { rest: 'layer_accent_01', hover: 'layer_accent_hover_01', active: 'layer_accent_active_01', content: 'text_primary' },
     elevated: { rest: 'layer_01', hover: 'layer_hover_01', active: 'layer_active_01', content: 'interactive', shadow: 'shadow.level_01' }
   });
@@ -49,8 +51,9 @@ export default function Button (ctx) {
 
   /********************************************************************
   The palette in effect: the kind's own, or the disabled palette, which
-  keeps the kind's shape (filled or not, outlined or not) and drops its
-  shadow.
+  keeps the kind's shape (filled or not, outlined or not, inline or not)
+  and drops its shadow. A disabled filled kind draws its border in the
+  disabled fill.
 
   @param {Object}  kind     - A KINDS entry
   @param {Boolean} disabled - Whether the button is disabled
@@ -73,7 +76,8 @@ export default function Button (ctx) {
       hover: fill,
       active: fill,
       content: filled ? 'text_on_color_disabled' : 'text_disabled',
-      border: Utils.isString(kind.border) ? 'border_disabled' : undefined
+      border: filled ? 'button_disabled' : Utils.isString(kind.border) ? 'border_disabled' : undefined,
+      inline: kind.inline
     };
 
   }
@@ -110,11 +114,19 @@ export default function Button (ctx) {
     // The shadow of a lifted kind, when enabled
     const shadow = Utils.isString(palette.shadow) ? ctx.token(palette.shadow) : null;
 
-    // Render the trailing icon when one is named
+    // The label is centered up to the default height; a taller button keeps
+    // the label where the default height puts it, at the top
+    const labelStyle = ctx.typeStyle('body_compact_01');
+    const borderWidth = ctx.metric('Button', 'borderWidth');
+    const labelTop = (Math.min(height, ctx.metric('Button', 'height')) - labelStyle.lineHeight) / 2 - borderWidth;
+
+    // Render the icon when one is named: at the trailing edge, or after the label for an inline kind
     const iconSize = ctx.metric('Button', 'iconSize');
-    const icon = Utils.isString(props.icon) ? React.createElement(View, {
-      style: { end: ctx.metric('Button', 'iconInset'), position: 'absolute' }
-    }, React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
+    const iconPlace = palette.inline === true
+      ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
+      : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
+    const icon = Utils.isString(props.icon) ? React.createElement(View, { style: iconPlace },
+      React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
 
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
@@ -122,15 +134,16 @@ export default function Button (ctx) {
       testID: props.testID,
       style: [
         {
-          alignItems: 'center',
+          alignItems: 'flex-start',
           alignSelf: 'flex-start',
           borderColor: Utils.isString(palette.border) ? ctx.color(palette.border) : 'transparent',
           borderRadius: radius,
-          borderWidth: ctx.metric('Button', 'borderWidth'),
+          borderWidth: borderWidth,
           flexDirection: 'row',
           height: height,
-          paddingEnd: ctx.metric('Button', 'paddingEnd'),
-          paddingStart: ctx.metric('Button', 'paddingStart')
+          paddingEnd: ctx.metric('Button', palette.inline === true ? 'paddingStart' : 'paddingEnd'),
+          paddingStart: ctx.metric('Button', 'paddingStart'),
+          paddingTop: labelTop
         },
         press.container,
         shadow,
@@ -142,7 +155,7 @@ export default function Button (ctx) {
     }),
     React.createElement(Text, {
       numberOfLines: 1,
-      style: [ctx.typeStyle('body_compact_01'), { color: ctx.color(contentLeaf) }]
+      style: [labelStyle, { color: ctx.color(contentLeaf) }]
     }, props.children),
     icon);
 

@@ -361,11 +361,26 @@ describe('context: fieldPresentation', function () {
     assert.equal(outline.borderBottomWidth, undefined);
   });
 
-  test('the frame border follows disabled, then invalid, then rest', function () {
-    const ctx = probeWith({});
-    assert.equal(ctx.fieldPresentation({}, options).frame.borderColor, t['color.border_strong_01']);
-    assert.equal(ctx.fieldPresentation({ invalid: true }, options).frame.borderColor, t['color.support_error']);
+  test('invalid: an underline frame keeps its border and draws an inner error ring; an outline frame draws an error border', function () {
+    const underline = probeWith({ 'feedback.field': 'underline' });
+    assert.equal(underline.fieldPresentation({}, options).frame.borderColor, t['color.border_strong_01']);
+    assert.equal(underline.fieldPresentation({}, options).frame.outlineWidth, undefined);
+    const ring = underline.fieldPresentation({ invalid: true }, options).frame;
+    assert.equal(ring.borderColor, t['color.border_strong_01']);
+    assert.equal(ring.outlineColor, t['color.support_error']);
+    assert.equal(ring.outlineWidth, t['border.width_02']);
+    assert.equal(ring.outlineOffset, -t['border.width_02']);
+    const outline = probeWith({ 'feedback.field': 'outline' }).fieldPresentation({ invalid: true }, options).frame;
+    assert.equal(outline.borderColor, t['color.support_error']);
+    assert.equal(outline.outlineWidth, undefined);
+  });
+
+  test('disabled: the border is the field\'s disabledBorder leaf, border_disabled by default, none when null; never invalid', function () {
+    const ctx = probeWith({ 'feedback.field': 'outline' });
     assert.equal(ctx.fieldPresentation({ invalid: true, disabled: true }, options).frame.borderColor, t['color.border_disabled']);
+    assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: 'border_strong_01' })).frame.borderColor, t['color.border_strong_01']);
+    assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: null })).frame.borderColor, 'transparent');
+    assert.equal(probeWith({ 'feedback.field': 'underline' }).fieldPresentation({ invalid: true, disabled: true }, options).frame.outlineWidth, undefined);
   });
 
   test('above: the label is in the flow over the frame, in the label type set', function () {
@@ -376,16 +391,19 @@ describe('context: fieldPresentation', function () {
     assert.equal(field.label.fontSize, t['type.label01'].fontSize);
     assert.equal(field.label.marginBottom, t['spacing.spacing_03']);
     assert.equal(field.label.color, t['color.text_secondary']);
+    assert.deepEqual(field.root, {});
   });
 
-  test('floating: the label rests centered in the frame, and rises into the border over the surface when focused or populated', function () {
+  test('floating: the root reserves half the raised label; the label rests centered in the frame and rises onto the border over the surface when focused or populated', function () {
     const ctx = probeWith({ 'anatomy.label': 'floating' });
     const resting = ctx.fieldPresentation({}, options);
+    const reserve = t['type.label01'].lineHeight / 2;
+    assert.deepEqual(resting.root, { paddingTop: reserve });
     assert.equal(resting.raised, false);
     assert.equal(resting.placeholder, false);
     assert.equal(resting.label.position, 'absolute');
     assert.equal(resting.label.fontSize, t['type.body_compact_01'].fontSize);
-    assert.equal(resting.label.top, (40 - t['type.body_compact_01'].lineHeight) / 2);
+    assert.equal(resting.label.top, reserve + (40 - t['type.body_compact_01'].lineHeight) / 2);
     assert.equal(resting.label.left, 16);
     assert.equal(resting.label.backgroundColor, undefined);
     for (const state of [{ focused: true }, { populated: true }]) {
@@ -393,7 +411,8 @@ describe('context: fieldPresentation', function () {
       assert.equal(raised.raised, true);
       assert.equal(raised.placeholder, true);
       assert.equal(raised.label.fontSize, t['type.label01'].fontSize);
-      assert.equal(raised.label.top, -(t['type.label01'].lineHeight / 2));
+      assert.equal(raised.label.top, 0);
+      assert.deepEqual(raised.root, { paddingTop: reserve });
       assert.equal(raised.label.left, 16 - t['spacing.spacing_02']);
       assert.equal(raised.label.paddingHorizontal, t['spacing.spacing_02']);
       assert.equal(raised.label.backgroundColor, t['color.layer_01']);

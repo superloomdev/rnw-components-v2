@@ -316,6 +316,46 @@
       "why": "the trigger must be sized by its widest text, placeholder included"
     },
     {
+      "id": "button-inline-ghost",
+      "file": "component/molecule/button/button.js",
+      "find": "content: 'link_primary', inline: true },",
+      "replace": "content: 'link_primary' },",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / ghost: geometry, fill and label come from the theme",
+      "why": "a ghost button reserves no trailing icon slot"
+    },
+    {
+      "id": "context-field-invalid-ring",
+      "file": "component/context.js",
+      "find": "      if (invalid) {\n        const ring",
+      "replace": "      if (false) {\n        const ring",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "carbon / invalid: frame, label, input and message come from the theme",
+      "why": "an invalid underline field must draw its inner error ring"
+    },
+    {
+      "id": "checkbox-filled-borderless",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "            borderWidth: marked && !invalid ? 0 : ctx.metric('Checkbox', 'borderWidth'),",
+      "replace": "            borderWidth: ctx.metric('Checkbox', 'borderWidth'),",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / checked: box, mark, label and message come from the theme",
+      "why": "a filled box draws no border"
+    },
+    {
+      "id": "context-field-floating-reserve",
+      "file": "component/context.js",
+      "find": "      root: { paddingTop: reserve },",
+      "replace": "      root: {},",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "floating: the root reserves half the raised label",
+      "why": "a floating field must reserve room for its raised label inside its own bounds"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",
@@ -334,6 +374,26 @@
       "test": "perceptual.spec.js",
       "testName": "the pixel pipeline discriminates: self is 0, blank is not",
       "why": "an invisible render must not pass the pixel pipeline"
+    },
+    {
+      "id": "measure-checkbox-label-inset",
+      "file": "component/molecule/checkbox/spec.js",
+      "find": "  labelGap: { tokens: ['spacing.spacing_04', 'spacing.spacing_01'], operation: 'sum' },",
+      "replace": "  labelGap: 'spacing.spacing_04',",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Checkbox: parts match the rendered upstream",
+      "why": "a label 2px off the reference's label position must fail measurement"
+    },
+    {
+      "id": "perceptual-button-label-top",
+      "file": "component/molecule/button/button.js",
+      "find": "    const labelTop = (Math.min(height, ctx.metric('Button', 'height')) - labelStyle.lineHeight) / 2 - borderWidth;",
+      "replace": "    const labelTop = (height - labelStyle.lineHeight) / 2 - borderWidth;",
+      "runner": "pw",
+      "test": "perceptual.spec.js",
+      "testName": "Button: mismatch within diff_budget",
+      "why": "a tall button whose label moves off the reference's position must fail the pixel comparison"
     }
   ]
 }

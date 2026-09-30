@@ -1,0 +1,16 @@
+{
+  "info": [
+    "Expected gaps: a failure a gate reports that is caused by a queued contract request or template finding (__dev__/CONTRACT-REQUESTS.md), not by the component.",
+    "Each entry names the check, the template, the cell and the request. The gate asserts the gap still reproduces; once it does not, the entry is stale and the gate fails until it is removed.",
+    "An entry is added only by the reasoning tier, with the request it waits on; the execution tier never adds one."
+  ],
+  "gaps": [
+    {
+      "check": "perceptual-visible",
+      "template": "default",
+      "cell": "View / inverse",
+      "request": "template finding: default color.background_inverse is #ffffff, the page white",
+      "why": "an inverse surface draws white on white under the default template until its inverse background is corrected"
+    }
+  ]
+}

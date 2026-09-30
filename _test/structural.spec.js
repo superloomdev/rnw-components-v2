@@ -1,7 +1,7 @@
 // Info: Gate layer 1 - structural, per component, per template, in a real
 // browser with the real frameworks. Zero console and page errors; every
-// sample state renders a non-empty cell; no element overflows its cell; no
-// clipped text; no unit string in an inline style; interactive targets are
+// sample state renders a non-empty cell; no painted element overflows its
+// cell; no clipped visible text (a line cut with an ellipsis is declared); no unit string in an inline style; interactive targets are
 // at least 44 points; the accessibility tree is identical across the three
 // templates.
 
@@ -11,8 +11,6 @@ import { TEMPLATE_NAMES, openShowcase, readA11yTrees, readCells } from './harnes
 
 const INTERACTIVE_ROLES = ['button', 'checkbox', 'combobox', 'link', 'menuitem', 'option', 'radio', 'slider', 'switch', 'tab', 'textbox'];
 const UNIT = /:\s*-?[0-9.]+(rem|em|vw|vh)\b/;
-
-const trees = {};
 
 for (const template of TEMPLATE_NAMES) {
 
@@ -25,7 +23,6 @@ for (const template of TEMPLATE_NAMES) {
       const page = await browser.newPage();
       opened = await openShowcase(page, template);
       cells = await readCells(page);
-      trees[template] = await readA11yTrees(page);
       await page.close();
     });
 
@@ -45,7 +42,8 @@ for (const template of TEMPLATE_NAMES) {
         expect(cell.rect.width, id + ' has no width').toBeGreaterThan(0);
         expect(cell.rect.height, id + ' has no height').toBeGreaterThan(0);
         for (const child of cell.children) {
-          if (child.rect.width === 0 && child.rect.height === 0) {
+          // Nothing painted cannot overflow: an empty box, a transparent state layer, a hidden sizer
+          if ((child.rect.width === 0 && child.rect.height === 0) || child.undrawn) {
             continue;
           }
           expect(child.rect.x, id + ' <' + child.tag + '> overflows left').toBeGreaterThanOrEqual(cell.rect.x - 0.5);
@@ -60,7 +58,8 @@ for (const template of TEMPLATE_NAMES) {
       for (const cell of cells) {
         const id = cell.component + ' / ' + cell.state;
         for (const child of cell.children) {
-          if (child.text && child.overflow === 'hidden') {
+          // A line cut with an ellipsis is a declared truncation, not clipping
+          if (child.text && child.overflow === 'hidden' && child.textOverflow !== 'ellipsis' && !child.undrawn) {
             expect(child.scrollWidth, id + ' clips text "' + child.text + '"').toBeLessThanOrEqual(child.clientWidth);
             expect(child.scrollHeight, id + ' clips text "' + child.text + '"').toBeLessThanOrEqual(child.clientHeight);
           }
@@ -87,8 +86,15 @@ for (const template of TEMPLATE_NAMES) {
 
 test.describe('structural: cross-template', function () {
 
-  test('the accessibility tree is identical under every template', function () {
-    const keys = Object.keys(trees[TEMPLATE_NAMES[0]] || {});
+  test('the accessibility tree is identical under every template', async function ({ page }) {
+    // Collected here, not by the per-template blocks: a failure elsewhere
+    // restarts the worker and would empty any tree shared across tests
+    const trees = {};
+    for (const template of TEMPLATE_NAMES) {
+      await openShowcase(page, template);
+      trees[template] = await readA11yTrees(page);
+    }
+    const keys = Object.keys(trees[TEMPLATE_NAMES[0]]);
     expect(keys.length).toBeGreaterThanOrEqual(1);
     for (const template of TEMPLATE_NAMES.slice(1)) {
       expect(Object.keys(trees[template]).sort()).toEqual(keys.slice().sort());

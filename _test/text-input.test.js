@@ -95,7 +95,10 @@ describe('TextInput: every sample state under every template', function () {
         const parts = await renderField(registryFor(template), props);
 
         // Frame geometry and the mode's border
-        const border = disabled ? 'border_disabled' : invalid ? 'support_error' : 'border_strong_01';
+        // Disabled keeps the rest border; invalid draws an inner error ring (underline) or an error border (outline)
+        const outline = t['feedback.field'] === 'outline';
+        const border = invalid && outline ? 'support_error' : 'border_strong_01';
+        assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
         assert.equal(parts.frame.style.paddingLeft, t['spacing.spacing_05'] + 'px');
         assert.equal(parts.frame.style.borderTopLeftRadius, t['shape.radius_00'] + 'px');
@@ -189,13 +192,14 @@ describe('TextInput: state through the DOM', function () {
     const height = t['size.size_medium'];
     const body = t['type.body_compact_01'];
     const small = t['type.label01'];
-    assert.equal(parts.label.style.top, ((height - body.lineHeight) / 2) + 'px');
+    assert.equal(parts.root.style.paddingTop, (small.lineHeight / 2) + 'px');
+    assert.equal(parts.label.style.top, (small.lineHeight / 2 + (height - body.lineHeight) / 2) + 'px');
     assert.equal(parts.label.style.backgroundColor, '');
     assert.equal(parts.input.getAttribute('placeholder'), null);
     await act(async function () {
       parts.input.focus();
     });
-    assert.equal(parts.label.style.top, (-(small.lineHeight / 2)) + 'px');
+    assert.equal(parts.label.style.top, '0px');
     assert.equal(parts.label.style.fontSize, small.fontSize + 'px');
     assert.equal(parts.label.style.backgroundColor, cssValue('backgroundColor', t['color.layer_01']));
     assert.equal(parts.input.getAttribute('placeholder'), 'Jane');
@@ -203,7 +207,7 @@ describe('TextInput: state through the DOM', function () {
     await act(async function () {
       parts.input.blur();
     });
-    assert.equal(parts.label.style.top, (-(small.lineHeight / 2)) + 'px');
+    assert.equal(parts.label.style.top, '0px');
   });
 
   test('the occluding surface falls back to the FIELD_SURFACE config, then to background', async function () {

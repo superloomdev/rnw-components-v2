@@ -2,8 +2,10 @@
 // component whose type sets are named with dashes (`body-compact-02`,
 // `heading-03`); a type leaf maps to its name by replacing underscores with
 // dashes and separating a trailing number (`heading03` -> `heading-03`).
-// The upstream draws the same text, type set and break mode; its style
-// objects are parsed and compared with ours.
+// The upstream draws the same text, type set and break mode; a color leaf
+// maps to the upstream's camel-cased color name (`text_secondary` ->
+// `textSecondary`) and is passed as its style. Its style objects are what
+// the reference page draws, and they are compared with ours.
 
 /********************************************************************
 Map a type leaf to the upstream's type name.
@@ -26,11 +28,17 @@ function toUpstreamType (leaf) {
 export default Object.freeze({
   kind: 'parse-rn',
   mount: function (React, upstream, props) {
+    const color = typeof props.color === 'string' ? upstream.getColor(props.color.replace(/_([a-z0-9])/g, function (match, next) {
+      return next.toUpperCase();
+    })) : undefined;
     return React.createElement(upstream.Text, {
       text: typeof props.text === 'string' ? props.text : props.children,
       type: toUpstreamType(props.type),
-      breakMode: props.breakMode
+      breakMode: props.breakMode,
+      style: Object.assign({}, props.style, color === undefined ? {} : { color: color })
     });
   },
-  parts: Object.freeze({ root: ':scope > *' })
+  parts: Object.freeze({
+    root: Object.freeze({ upstream: ':scope > *', ours: ':scope > *', measure: 'type' })
+  })
 });

@@ -26,5 +26,12 @@ export default Object.freeze({
       helperText: props.helperText
     });
   },
-  parts: Object.freeze({ label: '.cds--label', input: '.cds--text-input', helper: '.cds--form__helper-text' })
+  body: Object.freeze({ width: 320 }),
+  parts: Object.freeze({
+    label: Object.freeze({ upstream: '.cds--label', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
+    frame: Object.freeze({ upstream: '.cds--text-input', ours: 'div:has(> input)', measure: 'box' }),
+    value: Object.freeze({ upstream: '.cds--text-input', ours: 'input', measure: 'type' }),
+    icon: Object.freeze({ upstream: '.cds--text-input__invalid-icon path', ours: 'div:has(> input) svg path', measure: 'box' }),
+    message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
+  })
 });

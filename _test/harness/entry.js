@@ -18,7 +18,7 @@ import materialProfile from 'helper-themer-template-material';
 
 import { createSystem } from 'rnw-components';
 import * as factories from 'rnw-components/all';
-import { rows, samples } from './manifest.js';
+import { references, rows, samples } from './manifest.js';
 
 const TEMPLATES = {
   default: defaultProfile.schemes.light,
@@ -29,6 +29,8 @@ const TEMPLATES = {
 const params = new URLSearchParams(window.location.search);
 const templateName = params.get('template') || 'default';
 const only = params.get('component');
+// Measurement mode lays each cell body out as the reference page does
+const measuring = params.get('measure') === '1';
 
 const Utils = utils({});
 const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
@@ -50,6 +52,26 @@ try {
   status.errors.push('createSystem: ' + error.message);
 }
 
+/********************************************************************
+The cell body style in measurement mode: a component whose reference
+fills its container gets a block body of the reference's width on both
+pages; every other body keeps the showcase's shrink-to-fit layout.
+
+@param {String} name - Component name
+
+@return {Object|undefined} - Inline style
+*********************************************************************/
+function bodyStyle (name) {
+
+  const reference = references[name];
+  if (!measuring || !reference || !reference.body) {
+    return undefined;
+  }
+
+  return { display: 'block', width: reference.body.width + 'px' };
+
+}
+
 function Cell (props) {
 
   const Component = Registry[props.name];
@@ -62,7 +84,7 @@ function Cell (props) {
     'data-template': templateName
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
-  React.createElement('div', { className: 'cell-body', 'data-part': 'body' },
+  React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: bodyStyle(props.name) },
     React.createElement(Component, props.state.props)));
 
 }
@@ -79,7 +101,7 @@ function Showcase () {
     families[family].push(name);
   }
 
-  return React.createElement('div', { id: 'showcase', 'data-template': templateName },
+  return React.createElement('div', { id: 'showcase', className: measuring ? 'measure' : undefined, 'data-template': templateName },
     Object.keys(families).sort().map(function (family) {
       return React.createElement('section', { key: family, className: 'family', 'data-family': family },
         React.createElement('h2', null, family),
@@ -96,10 +118,18 @@ function Showcase () {
 if (Registry) {
   const root = createRoot(document.getElementById('root'));
   root.render(React.createElement(Showcase));
+  // Ready once rendered and every font the rendered text asked for has loaded
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      status.cells = document.querySelectorAll('.cell').length;
-      status.ready = true;
+      document.fonts.ready.then(function () {
+        status.cells = document.querySelectorAll('.cell').length;
+        status.fonts = Array.from(document.fonts).filter(function (face) {
+          return face.status === 'loaded';
+        }).map(function (face) {
+          return face.family.replace(/"/g, '') + ' ' + face.weight;
+        });
+        status.ready = true;
+      });
     });
   });
 } else {

@@ -360,13 +360,20 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   child of the field root); only its style moves it, so the accessibility
   tree never depends on the theme. A floating label rests inside the
   frame and rises into its top border, occluding it with the surface
-  color, when the field is focused or populated.
+  color, when the field is focused or populated. An invalid underline
+  field keeps its border and draws an error ring inside its bounds; an
+  invalid outline field draws its border in the error color. A disabled
+  field draws its border in `disabledBorder`, a color leaf the field
+  chooses, or none when that is null.
 
   @param {Object} state   - { focused, hovered, disabled, invalid, populated }
-  @param {Object} options - { height, paddingInline, radius, surface }: the
-                            field's own metrics and the color leaf it sits on
+  @param {Object} options - { height, paddingInline, radius, surface, disabledBorder }:
+                            the field's own metrics, the color leaf it sits on
+                            and its disabled border leaf (default `border_disabled`)
 
-  @return {Object} - { frame, label, raised, placeholder }
+  @return {Object} - { root, frame, label, raised, placeholder }; `root`
+                     styles the field root (a floating label reserves
+                     half its line above the frame)
   *********************************************************************/
   function fieldPresentation (state, options) {
 
@@ -375,13 +382,15 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const placement = enumValue('anatomy.label');
     const width = token('border.width_01');
     const disabled = state.disabled === true;
-    const borderLeaf = disabled ? 'border_disabled' : state.invalid === true ? 'support_error' : 'border_strong_01';
+    const invalid = !disabled && state.invalid === true;
+    const disabledBorder = options.disabledBorder === undefined ? 'border_disabled' : options.disabledBorder;
+    const borderLeaf = disabled ? disabledBorder : invalid && mode === 'outline' ? 'support_error' : 'border_strong_01';
     const labelColor = color(disabled ? 'text_disabled' : 'text_secondary');
 
     // Frame: shared geometry, then the mode's border and fill
     const frame = {
       alignItems: 'center',
-      borderColor: color(borderLeaf),
+      borderColor: Utils.isNullOrUndefined(borderLeaf) ? 'transparent' : color(borderLeaf),
       borderRadius: options.radius,
       flexDirection: 'row',
       height: options.height,
@@ -392,6 +401,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         backgroundColor: color(!disabled && state.hovered === true ? 'field_hover_01' : 'field_01'),
         borderBottomWidth: width
       });
+      if (invalid) {
+        const ring = token('border.width_02');
+        Object.assign(frame, { outlineColor: color('support_error'), outlineOffset: -ring, outlineStyle: 'solid', outlineWidth: ring });
+      }
     } else {
       Object.assign(frame, { backgroundColor: 'transparent', borderWidth: width });
     }
@@ -399,6 +412,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // Above: the label sits over the frame in the flow
     if (placement === 'above') {
       return {
+        root: {},
         frame: frame,
         label: Object.assign({}, typeStyle('label01'), { color: labelColor, marginBottom: token('spacing.spacing_03') }),
         raised: false,
@@ -406,25 +420,28 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       };
     }
 
-    // Floating: the label is laid over the frame, resting or raised
+    // Floating: the root reserves half the raised label above the frame, so
+    // the label straddles the top border inside the field's own bounds
     const raised = state.focused === true || state.populated === true;
     const inset = token('spacing.spacing_02');
     const small = typeStyle('label01');
     const body = typeStyle('body_compact_01');
+    const reserve = small.lineHeight / 2;
     const label = raised
       ? Object.assign({}, small, {
         backgroundColor: color(options.surface),
         left: options.paddingInline - inset,
         paddingHorizontal: inset,
-        top: -(small.lineHeight / 2)
+        top: 0
       })
       : Object.assign({}, body, {
         left: options.paddingInline,
-        top: (options.height - body.lineHeight) / 2
+        top: reserve + (options.height - body.lineHeight) / 2
       });
 
     // Return the floating presentation; the placeholder shows once raised
     return {
+      root: { paddingTop: reserve },
       frame: frame,
       label: Object.assign(label, { color: labelColor, pointerEvents: 'none', position: 'absolute', zIndex: 1 }),
       raised: raised,

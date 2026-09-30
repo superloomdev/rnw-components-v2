@@ -56,12 +56,12 @@ export default function Checkbox (ctx) {
       color: 'icon_inverse'
     }) : null;
 
-    // Render the message below: the error while invalid, else the helper
-    const message = invalid && Utils.isString(props.invalidText) ? { text: props.invalidText, color: 'text_error' }
-      : Utils.isString(props.helperText) ? { text: props.helperText, color: 'text_helper' } : null;
+    // Render the message below: the error icon and text while invalid, else the helper
+    const message = invalid && Utils.isString(props.invalidText) ? { text: props.invalidText, color: 'text_error', invalid: true }
+      : Utils.isString(props.helperText) ? { text: props.helperText, color: 'text_helper', invalid: false } : null;
 
     // Render the root, the row, the box with its state layer, the label and the message
-    return React.createElement(View, { style: { alignSelf: 'flex-start' } },
+    return React.createElement(View, null,
       React.createElement(Pressable, Object.assign({}, checkbox.rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
         testID: props.testID,
         style: [{ alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight') }, press.container]
@@ -81,9 +81,10 @@ export default function Checkbox (ctx) {
           style: [{
             alignItems: 'center',
             backgroundColor: marked ? ctx.color(fill) : 'transparent',
-            borderColor: ctx.color(marked && !invalid ? fill : edge),
+            borderColor: ctx.color(edge),
             borderRadius: ctx.metric('Checkbox', 'radius'),
-            borderWidth: ctx.metric('Checkbox', 'borderWidth'),
+            // A filled box draws no border; an invalid one keeps its error edge
+            borderWidth: marked && !invalid ? 0 : ctx.metric('Checkbox', 'borderWidth'),
             height: boxSize,
             justifyContent: 'center',
             width: boxSize
@@ -96,9 +97,22 @@ export default function Checkbox (ctx) {
           marginStart: ctx.metric('Checkbox', 'labelGap')
         }]
       }), props.label)),
-      message === null ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('helper_text_01'), { color: ctx.color(message.color), marginTop: ctx.metric('Checkbox', 'messageGap') }]
-      }, message.text)
+      message === null ? null : React.createElement(View, {
+        style: { alignItems: 'flex-start', flexDirection: 'row', marginTop: ctx.metric('Checkbox', 'messageGap') }
+      },
+      message.invalid ? React.createElement(View, {
+        style: {
+          marginEnd: ctx.metric('Checkbox', 'iconInsetEnd'),
+          marginStart: ctx.metric('Checkbox', 'iconInsetStart'),
+          marginTop: ctx.metric('Checkbox', 'iconInsetTop')
+        }
+      }, React.createElement(ctx.Registry.Icon, { name: 'warning_filled', size: ctx.metric('Checkbox', 'iconSize'), color: 'support_error' })) : null,
+      React.createElement(Text, {
+        style: [ctx.typeStyle('helper_text_01'), {
+          color: ctx.color(message.color),
+          marginStart: message.invalid ? ctx.metric('Checkbox', 'messageTextGap') : 0
+        }]
+      }, message.text))
     );
 
   }

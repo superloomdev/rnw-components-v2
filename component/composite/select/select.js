@@ -61,7 +61,8 @@ export default function Select (ctx) {
       height: height,
       paddingInline: paddingInline,
       radius: ctx.metric('Select', 'radius'),
-      surface: surface
+      surface: surface,
+      disabledBorder: null
     });
 
     // The caret is always mounted; the theme's anatomy.caret decides whether it shows
@@ -115,7 +116,7 @@ export default function Select (ctx) {
       }));
 
     // Render the root, the label, the frame with the trigger and the list, and the message
-    return React.createElement(View, Object.assign({}, select.rootProps, { style: { position: 'relative' } }),
+    return React.createElement(View, Object.assign({}, select.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
       labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
       React.createElement(View, { style: [presentation.frame, ctx.focusPresentation(state.focused)] },
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {

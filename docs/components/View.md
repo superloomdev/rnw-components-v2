@@ -59,4 +59,4 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`, `layer_
 | rounded | `{"padding":"spacing_07","background":"layer_accent_01","radius":"radius_08"}` |
 | layer 02 | `{"padding":"spacing_07","background":"layer_02"}` |
 | inverse | `{"padding":"spacing_07","background":"background_inverse"}` |
-| plain | `{"padding":"spacing_07"}` |
+| pill | `{"padding":"spacing_05","background":"layer_accent_01","radius":"radius_max"}` |

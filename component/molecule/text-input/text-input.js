@@ -55,7 +55,8 @@ export default function TextInput (ctx) {
       height: ctx.metric('TextInput', SIZES[props.size] || 'height'),
       paddingInline: paddingInline,
       radius: ctx.metric('TextInput', 'radius'),
-      surface: surface
+      surface: surface,
+      disabledBorder: 'border_strong_01'
     });
 
     // Render the error icon while invalid
@@ -67,7 +68,7 @@ export default function TextInput (ctx) {
       : Utils.isString(props.helperText) ? { text: props.helperText, color: 'text_helper' } : null;
 
     // Render the root, the label, the frame with the input, and the message
-    return React.createElement(View, Object.assign({}, field.rootProps, { style: { position: 'relative' } }),
+    return React.createElement(View, Object.assign({}, field.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
       labelled ? React.createElement(Text, Object.assign({}, field.labelProps, { style: presentation.label }), props.label) : null,
       React.createElement(View, { style: [presentation.frame, ctx.focusPresentation(state.focused)] },
         React.createElement(NativeTextInput, Object.assign({}, field.inputProps, {

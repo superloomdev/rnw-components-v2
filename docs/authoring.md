@@ -63,7 +63,7 @@ Name.spec = SPEC;
 | `ctx.icon('close', 16)` | `{ viewBox, paths }`; the set's own 16px glyph when it has one | the theme lacks the icon |
 | `ctx.focusPresentation(focused)` | style fragment for the theme's `feedback.focus` mode | - |
 | `ctx.pressPresentation(state, palette)` | `{ container, layer, engaged }` for the theme's `feedback.press` mode; `palette` is `{ rest, hover, active, content }` color leaves (`null` fill = none); `engaged` is true while a highlight fill replaces the rest fill | a leaf the theme lacks |
-| `ctx.fieldPresentation(state, options)` | `{ frame, label, raised, placeholder }` for the theme's `feedback.field` frame and `anatomy.label` placement; `options` is `{ height, paddingInline, radius, surface }` | a leaf the theme lacks |
+| `ctx.fieldPresentation(state, options)` | `{ root, frame, label, raised, placeholder }` for the theme's `feedback.field` frame and `anatomy.label` placement; `options` is `{ height, paddingInline, radius, surface, disabledBorder }` (`disabledBorder` a color leaf, `border_disabled` by default, `null` for none) | a leaf the theme lacks |
 
 A component that shows press or a field frame uses the presentation, never its own branch on the enum, and always mounts the parts a presentation may hide (the state layer, the label), so the element tree and the accessibility tree are the same under every template. The tokens a presentation reads are declared in the calling component's `api.tokens`.
 
@@ -104,12 +104,17 @@ A frozen array of `{ label, props }`. It drives the showcase states row, the bro
 ```js
 export default Object.freeze({
   kind: 'render-web',            // from the roster row
-  mount: function (React, upstream, props) { ... },   // returns the upstream element for the same props
-  parts: Object.freeze({ root: '.cds--btn', label: '.cds--btn > span' })
+  mount: function (React, upstream, props) { ... },   // the upstream element for the same props, or null when the state has no counterpart
+  body: Object.freeze({ width: 320 }),                // optional: a component that fills its container is measured in a body this wide
+  parts: Object.freeze({
+    root: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"]', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"] > [dir="auto"]', measure: 'text' }),
+    box: Object.freeze({ upstream: '.cds--checkbox-label', pseudo: '::before', ours: '...', measure: 'box' })
+  })
 });
 ```
 
-The measurement gate renders ours and upstream side by side with the same `sample.js` props and compares the named parts. Stylesheet transcription is not evidence; the rendered upstream is.
+The reference page (`_test/harness/reference-entry.js`) mounts every state through `mount`: `render-web` rows under the upstream stylesheet, `parse-rn` rows through react-native-web so the upstream's published style objects are what is drawn. `upstream` is the upstream module plus `icon(name)`, which resolves a semantic icon name to the upstream's icon component. The measurement gate (`measure.spec.js`) finds each part by its selector on both pages, within the cell body, and compares: for `box` parts the rect relative to the body, border widths, corner radius, fill, border color where a border is drawn, and any drawn outline; for `text` parts the rect of the element's own text nodes, its first font family and its text style; for `type` parts the text style only. An upstream part drawn on a pseudo-element names it in `pseudo`. Numbers agree within half a pixel, colors and families exactly; every part must be drawn upstream in some state. Measure what is painted, not the mechanism: select an icon's `path`, not its `svg` box. The perceptual gate compares the same cell bodies pixel by pixel. Stylesheet transcription is not evidence; the rendered upstream is.
 
 ## Notes (`notes.md`)
 

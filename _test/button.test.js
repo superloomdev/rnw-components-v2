@@ -30,6 +30,8 @@ const KINDS = {
 };
 // How the renderer serializes a transparent fill or border
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+// Kinds that reserve no trailing icon slot: their end padding equals the start padding
+const INLINE = ['ghost', 'danger_ghost'];
 const HEIGHTS = { xs: 'size.size_xsmall', sm: 'size.size_small', md: 'size.size_medium', lg: 'size.size_large', xl: 'size.size_xlarge', '2xl': 'size.size_2xlarge' };
 
 afterEach(cleanup);
@@ -117,7 +119,10 @@ describe('Button: every sample state under every template', function () {
         assert.equal(parts.root.style.height, t[HEIGHTS[props.size || 'lg']] + 'px');
         assert.equal(parts.root.style.borderTopWidth, t['border.width_01'] + 'px');
         assert.equal(parts.root.style.paddingLeft, (t['spacing.spacing_05'] - t['border.width_01']) + 'px');
-        assert.equal(parts.root.style.paddingRight, (t['spacing.spacing_10'] - t['border.width_01']) + 'px');
+        const end = INLINE.includes(props.kind) ? t['spacing.spacing_05'] : t['spacing.spacing_10'];
+        assert.equal(parts.root.style.paddingRight, (end - t['border.width_01']) + 'px');
+        const labelHeight = Math.min(t[HEIGHTS[props.size || 'lg']], t['size.size_large']);
+        assert.equal(parts.root.style.paddingTop, ((labelHeight - set.lineHeight) / 2 - t['border.width_01']) + 'px');
         assert.equal(parts.root.style.borderTopLeftRadius, t['shape.radius_00'] + 'px');
         assert.equal(parts.root.style.backgroundColor, fillOf(t, restFill));
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + content]));
@@ -135,7 +140,7 @@ describe('Button: every sample state under every template', function () {
 
 describe('Button: kinds', function () {
 
-  test('an outlined kind draws its border color; others draw a transparent border of the same width', async function () {
+  test('an outlined kind draws its border color, a disabled filled kind its fill; others draw a transparent border of the same width', async function () {
     const t = buildNative('carbon').tokens;
     const tertiary = await renderButton(registryFor('carbon'), { children: 'T', kind: 'tertiary' });
     assert.equal(tertiary.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_tertiary']));
@@ -143,6 +148,8 @@ describe('Button: kinds', function () {
     assert.equal(disabled.root.style.borderTopColor, cssValue('borderTopColor', t['color.border_disabled']));
     const primary = await renderButton(registryFor('carbon'), { children: 'P' });
     assert.equal(primary.root.style.borderTopColor, TRANSPARENT);
+    const filledDisabled = await renderButton(registryFor('carbon'), { children: 'P', disabled: true });
+    assert.equal(filledDisabled.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_disabled']));
   });
 
   test('elevated lifts with the first shadow level; disabled drops it', async function () {
@@ -160,7 +167,13 @@ describe('Button: kinds', function () {
     assert.equal(svg.getAttribute('width'), String(t['size.icon_01']));
     assert.equal(svg.getAttribute('fill'), t['color.text_on_color']);
     assert.equal(svg.getAttribute('aria-hidden'), 'true');
-    assert.equal(svg.parentElement.style.right, (t['spacing.spacing_05'] - t['border.width_01']) + 'px');
+    assert.equal(svg.parentElement.style.right, t['spacing.spacing_05'] + 'px');
+    const labelTop = (t['size.size_large'] - t['type.body_compact_01'].lineHeight) / 2 - t['border.width_01'];
+    assert.equal(svg.parentElement.style.top, (labelTop + (t['type.body_compact_01'].lineHeight - t['size.icon_01']) / 2) + 'px');
+    const ghost = await renderButton(registryFor('carbon'), { children: 'Add', icon: 'add', kind: 'ghost' });
+    const inline = ghost.root.querySelector('svg').parentElement;
+    assert.equal(inline.style.position, '');
+    assert.equal(inline.style.marginLeft, t['spacing.spacing_03'] + 'px');
   });
 
 });

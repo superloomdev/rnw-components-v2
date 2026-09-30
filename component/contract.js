@@ -24,7 +24,7 @@ const PRESS_TOKENS = [
 
 // Tokens the field presentation reads, for every component that calls it
 const FIELD_TOKENS = [
-  'feedback.field', 'anatomy.label', 'border.width_01', 'spacing.spacing_02', 'spacing.spacing_03',
+  'feedback.field', 'anatomy.label', 'border.width_01', 'border.width_02', 'spacing.spacing_02', 'spacing.spacing_03',
   'type.label01', 'type.body_compact_01', 'font.family.sans',
   'color.border_disabled', 'color.support_error', 'color.border_strong_01',
   'color.field_01', 'color.field_hover_01', 'color.text_disabled', 'color.text_secondary'
@@ -58,7 +58,7 @@ const VIEW_SUPPORTED = [
 
 const BUTTON_REQUIRED = [].concat(PRESS_TOKENS, [
   'size.size_large', 'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
-  'border.width_01', 'spacing.spacing_05', 'spacing.spacing_10', 'size.icon_01', 'shape.radius_00',
+  'border.width_01', 'spacing.spacing_05', 'spacing.spacing_10', 'spacing.spacing_03', 'size.icon_01', 'shape.radius_00',
   'type.body_compact_01', 'font.family.sans', 'shadow.level_01',
   'color.button_primary', 'color.button_primary_hover', 'color.button_primary_active', 'color.text_on_color',
   'color.button_disabled', 'color.text_on_color_disabled', 'color.text_disabled', 'color.border_disabled'
@@ -73,8 +73,8 @@ const BUTTON_SUPPORTED = [
 ];
 
 const CHECKBOX_REQUIRED = [].concat(PRESS_TOKENS, [
-  'size.icon_01', 'border.width_01', 'shape.radius_02', 'spacing.spacing_03', 'size.size_xsmall',
-  'size.size_medium', 'shape.radius_max', 'spacing.spacing_02',
+  'size.icon_01', 'border.width_01', 'shape.radius_02', 'spacing.spacing_03', 'spacing.spacing_04', 'spacing.spacing_01',
+  'spacing.spacing_05', 'size.size_medium', 'shape.radius_max', 'spacing.spacing_02',
   'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
   'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error',
   'color.text_primary', 'color.text_disabled', 'color.text_error', 'color.text_helper'

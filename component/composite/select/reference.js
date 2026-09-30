@@ -30,5 +30,12 @@ export default Object.freeze({
       helperText: props.helperText
     }, [placeholder].concat(options));
   },
-  parts: Object.freeze({ label: '.cds--label', frame: '.cds--select-input', helper: '.cds--form__helper-text' })
+  body: Object.freeze({ width: 320 }),
+  parts: Object.freeze({
+    label: Object.freeze({ upstream: '.cds--label', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
+    frame: Object.freeze({ upstream: '.cds--select-input', ours: 'div:has(> [role="combobox"])', measure: 'box' }),
+    icon: Object.freeze({ upstream: '.cds--select__invalid-icon path', ours: '[role="combobox"] > div:nth-child(2):not(:last-child) svg path', measure: 'box' }),
+    caret: Object.freeze({ upstream: '.cds--select__arrow path', ours: '[role="combobox"] > div:last-child svg path', measure: 'box' }),
+    message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
+  })
 });

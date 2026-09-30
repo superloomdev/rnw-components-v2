@@ -14,6 +14,7 @@ export default Object.freeze({
   paddingStart: { tokens: ['spacing.spacing_05', 'border.width_01'], operation: 'subtract' },
   paddingEnd: { tokens: ['spacing.spacing_10', 'border.width_01'], operation: 'subtract' },
   iconSize: 'size.icon_01',
-  iconInset: { tokens: ['spacing.spacing_05', 'border.width_01'], operation: 'subtract' },
+  iconInset: 'spacing.spacing_05',
+  iconGap: 'spacing.spacing_03',
   radius: 'shape.radius_00'
 });

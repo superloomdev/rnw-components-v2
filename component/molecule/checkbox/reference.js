@@ -24,5 +24,12 @@ export default Object.freeze({
       }
     });
   },
-  parts: Object.freeze({ root: '.cds--checkbox-wrapper', label: '.cds--checkbox-label' })
+  body: Object.freeze({ width: 320 }),
+  parts: Object.freeze({
+    root: Object.freeze({ upstream: '.cds--checkbox-wrapper', ours: ':scope > div', measure: 'box' }),
+    box: Object.freeze({ upstream: '.cds--checkbox-label', pseudo: '::before', ours: '[role="checkbox"] > div > div:nth-child(2)', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--checkbox-label-text', ours: '[role="checkbox"] > [dir="auto"]', measure: 'text' }),
+    message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > div:nth-child(2) > [dir="auto"]', measure: 'text' }),
+    messageIcon: Object.freeze({ upstream: '.cds--checkbox__invalid-icon path', ours: ':scope > div > div:nth-child(2) svg path', measure: 'box' })
+  })
 });

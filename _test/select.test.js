@@ -102,11 +102,14 @@ describe('Select: every sample state under every template', function () {
         const parts = await renderSelect(registryFor(template), props);
 
         // Frame geometry and the mode's border
-        const border = disabled ? 'border_disabled' : invalid ? 'support_error' : 'border_strong_01';
+        // Disabled draws no border; invalid draws an inner error ring (underline) or an error border (outline)
+        const outline = t['feedback.field'] === 'outline';
+        const border = disabled ? null : invalid && outline ? 'support_error' : 'border_strong_01';
+        assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
         assert.equal(parts.frame.style.paddingLeft, t['spacing.spacing_05'] + 'px');
         assert.equal(parts.frame.style.borderBottomWidth, t['border.width_01'] + 'px');
-        assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + border]));
+        assert.equal(parts.frame.style.borderBottomColor, border === null ? TRANSPARENT : cssValue('borderBottomColor', t['color.' + border]));
         assert.equal(parts.frame.style.backgroundColor, t['feedback.field'] === 'underline' ? cssValue('backgroundColor', t['color.field_01']) : TRANSPARENT);
 
         // Trigger text: the selection, else the placeholder, undrawn under a resting floating label
@@ -226,12 +229,14 @@ describe('Select: the list through the DOM', function () {
   test('floating: the label rests in the frame and rises while the list is open', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderSelect(registryFor('material', { 'anatomy.label': 'floating' }), { label: 'Size', items: ITEMS, placeholder: 'Choose' });
-    assert.equal(parts.label.style.top, ((t['size.size_medium'] - t['type.body_compact_01'].lineHeight) / 2) + 'px');
+    const reserve = t['type.label01'].lineHeight / 2;
+    assert.equal(parts.root.style.paddingTop, reserve + 'px');
+    assert.equal(parts.label.style.top, (reserve + (t['size.size_medium'] - t['type.body_compact_01'].lineHeight) / 2) + 'px');
     assert.equal(parts.value.style.opacity, '0');
     await act(async function () {
       parts.trigger.click();
     });
-    assert.equal(parts.label.style.top, (-(t['type.label01'].lineHeight / 2)) + 'px');
+    assert.equal(parts.label.style.top, '0px');
     assert.equal(parts.value.style.opacity, '1');
     assert.equal(parts.value.textContent, 'Choose');
   });
