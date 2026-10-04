@@ -8,6 +8,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { REPO_ROOT, discoverComponents, getRoster } from '../scripts/lib/components.js';
 
@@ -44,6 +45,22 @@ describe('docs: generated pages', function () {
     } finally {
       rmSync(temp, { recursive: true, force: true });
     }
+  });
+
+  test('the catalog carries each sample\'s frame: a width for a component that fills its container, else null', async function () {
+    const { catalog } = await import(pathToFileURL(join(REPO_ROOT, 'catalog.js')).href);
+    const components = await discoverComponents();
+    for (const entry of catalog) {
+      const sample = await import(pathToFileURL(components.find(function (component) {
+        return component.name === entry.name;
+      }).files.sample).href);
+      assert.deepEqual(entry.frame, sample.FRAME || null, entry.name);
+    }
+    assert.deepEqual(catalog.filter(function (entry) {
+      return entry.frame !== null;
+    }).map(function (entry) {
+      return entry.name + ':' + entry.frame.width;
+    }), ['TextInput:320', 'Select:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

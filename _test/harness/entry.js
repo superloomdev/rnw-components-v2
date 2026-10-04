@@ -18,7 +18,7 @@ import materialProfile from 'helper-themer-template-material';
 
 import { createSystem } from 'rnw-components';
 import * as factories from 'rnw-components/all';
-import { references, rows, samples } from './manifest.js';
+import { frames, references, rows, samples } from './manifest.js';
 
 const TEMPLATES = {
   default: defaultProfile.schemes.light,
@@ -55,9 +55,11 @@ try {
 }
 
 /********************************************************************
-The cell body style in measurement mode: a component whose reference
+The cell body style: in measurement mode a component whose reference
 fills its container gets a block body of the reference's width on both
-pages; every other body keeps the showcase's shrink-to-fit layout.
+pages; otherwise a component whose sample names a frame is laid out in
+it, as every host's showcase does; every other body keeps the
+shrink-to-fit layout.
 
 @param {String} name - Component name
 
@@ -66,11 +68,14 @@ pages; every other body keeps the showcase's shrink-to-fit layout.
 function bodyStyle (name) {
 
   const reference = references[name];
-  if (!measuring || !reference || !reference.body) {
-    return undefined;
+  if (measuring && reference && reference.body) {
+    return { display: 'block', width: reference.body.width + 'px' };
+  }
+  if (frames[name]) {
+    return { display: 'block', width: frames[name].width + 'px' };
   }
 
-  return { display: 'block', width: reference.body.width + 'px' };
+  return undefined;
 
 }
 

@@ -63,4 +63,4 @@ Color leaves accepted: `text_primary`, `text_secondary`, `text_placeholder`, `te
 | secondary | `{"text":"Secondary text","color":"text_secondary"}` |
 | error | `{"text":"Error text","color":"text_error"}` |
 | children | `{"children":"Text passed as children"}` |
-| truncated | `{"text":"A long line of text that is cut with an ellipsis at its end when it does not fit","breakMode":"tail","style":{"maxWidth":160}}` |
+| truncated | `{"text":"A long line of text that is cut with an ellipsis at its end when it does not fit","breakMode":"tail","style":{"width":160}}` |

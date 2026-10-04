@@ -223,6 +223,13 @@ describe('TextInput: state through the DOM', function () {
     assert.equal(plain.label.style.backgroundColor, cssValue('backgroundColor', t['color.background']));
   });
 
+  test('the input grows from its own width, never from a zero basis that collapses it in a content-sized container', async function () {
+    const parts = await renderField(registryFor('carbon'), { label: 'L', placeholder: 'P' });
+    assert.equal(parts.input.style.flexBasis, 'auto');
+    assert.equal(parts.input.style.flexGrow, '1');
+    assert.equal(parts.input.style.flexShrink, '1');
+  });
+
   test('the label is the first child of the field root under both placements', async function () {
     for (const placement of ['above', 'floating']) {
       const parts = await renderField(registryFor('default', { 'anatomy.label': placement }), { label: 'L' });

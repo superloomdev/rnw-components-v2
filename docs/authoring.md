@@ -99,6 +99,8 @@ Read the platform only through `ctx.platform`. A row whose platform answer is `b
 
 A frozen array of `{ label, props }`. It drives the showcase states row, the browser gates (structural, measurement, perceptual), the docs page and the contact sheet. Cover: default, every enum value that changes the render, disabled, invalid where applicable, and the extremes (`small` / `large`).
 
+A component that fills the width its container gives it (a field, a select) also exports `FRAME = Object.freeze({ width })`. The catalog carries it as `frame` (null for every other component), and every showcase, walker and browser gate lays that component's states out in a container of that width. Without it, the component's width is whatever each platform does with an unsized container: a browser input has an intrinsic width, a native input has none, so web and native disagree. Inside a component, a part that grows from its content uses `flexGrow: 1, flexShrink: 1, flexBasis: 'auto'`, never `flex: 1`: native layout gives `flex: 1` a zero basis, which collapses the part inside a container that sizes to its content. A sample that truncates sets a fixed `width`, not `maxWidth`: native text measures to its truncated line, the web to the box.
+
 ## Reference (`reference.js`) - rows with `reference.kind != none`
 
 ```js

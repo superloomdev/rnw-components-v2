@@ -16,3 +16,5 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 ## Platform
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.
+
+The select fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, its trigger grows from the hidden sizer (the widest option), the same on every platform, never from zero.

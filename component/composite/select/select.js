@@ -122,8 +122,11 @@ export default function Select (ctx) {
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
           accessibilityLabel: props.accessibilityLabel,
           testID: props.testID,
-          // The focus ring is drawn on the frame, so the trigger itself shows none
-          style: { alignItems: 'center', alignSelf: 'stretch', flex: 1, flexDirection: 'row', outlineStyle: 'none' }
+          // The focus ring is drawn on the frame, so the trigger itself shows none.
+          // The trigger grows from its content (the sizer), not from zero: native
+          // layout gives `flex: 1` a zero basis, which collapses the trigger
+          // inside a container that sizes to its content
+          style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
         }),
         React.createElement(View, { style: { flexGrow: 1 } },
           React.createElement(Text, {

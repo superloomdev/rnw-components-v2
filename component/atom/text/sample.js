@@ -10,5 +10,5 @@ export default Object.freeze([
   Object.freeze({ label: 'secondary', props: Object.freeze({ text: 'Secondary text', color: 'text_secondary' }) }),
   Object.freeze({ label: 'error', props: Object.freeze({ text: 'Error text', color: 'text_error' }) }),
   Object.freeze({ label: 'children', props: Object.freeze({ children: 'Text passed as children' }) }),
-  Object.freeze({ label: 'truncated', props: Object.freeze({ text: 'A long line of text that is cut with an ellipsis at its end when it does not fit', breakMode: 'tail', style: Object.freeze({ maxWidth: 160 }) }) })
+  Object.freeze({ label: 'truncated', props: Object.freeze({ text: 'A long line of text that is cut with an ellipsis at its end when it does not fit', breakMode: 'tail', style: Object.freeze({ width: 160 }) }) })
 ]);

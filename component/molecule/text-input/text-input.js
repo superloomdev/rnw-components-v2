@@ -80,7 +80,12 @@ export default function TextInput (ctx) {
             alignSelf: 'stretch',
             backgroundColor: 'transparent',
             color: ctx.color(state.disabled ? 'text_disabled' : 'text_primary'),
-            flex: 1,
+            // Grow from the input's own width, not from zero: native layout gives
+            // `flex: 1` a zero basis, which collapses the field inside a container
+            // that sizes to its content
+            flexBasis: 'auto',
+            flexGrow: 1,
+            flexShrink: 1,
             minWidth: 0,
             outlineStyle: 'none'
           }]

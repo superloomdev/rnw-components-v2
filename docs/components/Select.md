@@ -21,6 +21,8 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.
 
+The select fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, its trigger grows from the hidden sizer (the widest option), the same on every platform, never from zero.
+
 ## Select
 
 Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, with the caret shown or hidden by anatomy.caret; the second reference's taller, rounded field is deferred until the contract carries per-component geometry.

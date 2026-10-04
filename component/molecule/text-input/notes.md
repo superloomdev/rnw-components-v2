@@ -13,3 +13,5 @@ A single-line field: a label, a frame holding the input (and an error icon while
 ## Platform
 
 Both. The input renders on iOS, Android and web; hover feedback appears only where a pointer exists.
+
+The field fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, the field takes the platform's intrinsic input width: the browser's default input width on the web, the width of its text natively. The input grows from that width rather than from zero, so it never collapses to its padding.

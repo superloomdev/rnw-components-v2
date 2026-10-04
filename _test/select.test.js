@@ -230,6 +230,12 @@ describe('Select: the list through the DOM', function () {
     assert.equal(parts.trigger.style.outlineStyle, 'none');
   });
 
+  test('the trigger grows from its content (the sizer), never from a zero basis that collapses it in a content-sized container', async function () {
+    const parts = await renderSelect(registryFor('carbon'), SAMPLE[0].props);
+    assert.equal(parts.trigger.style.flexBasis, 'auto');
+    assert.equal(parts.trigger.style.flexGrow, '1');
+  });
+
   test('anatomy.caret: shown displays the caret, hidden keeps it mounted and undisplayed', async function () {
     const shown = await renderSelect(registryFor('default', { 'anatomy.caret': 'shown' }), SAMPLE[0].props);
     assert.equal(shown.caret.style.display, 'flex');

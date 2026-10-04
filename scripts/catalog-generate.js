@@ -1,12 +1,13 @@
 // Info: Writes `catalog.js`, the package's `./catalog` export: for every built
-// component, its roster family, tier, platform answer, flags and its
-// `sample.js` states, in roster build order. Hosts read it to render a
+// component, its roster family, tier, platform answer, flags, the frame its
+// samples are laid out in (`sample.js` FRAME, or null) and its `sample.js`
+// states, in roster build order. Hosts read it to render a
 // showcase and a walker without knowing the library's folder layout.
 // Deterministic; `docs.test.js` regenerates it into a temp file and diffs.
 //
 // Usage: node scripts/catalog-generate.js [outFile]   (default: catalog.js)
 
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 
 import { REPO_ROOT, discoverComponents, getRoster } from './lib/components.js';
@@ -39,9 +40,12 @@ export async function renderCatalog () {
     '// component\'s sample.js. Do not edit. Exported as `./catalog`.',
     ''
   ];
+  // A sample that names a FRAME is laid out in a container of that size
+  const framed = {};
   for (const component of components) {
     const path = relative(REPO_ROOT, component.files.sample).split('\\').join('/');
-    lines.push('import ' + component.name + 'Sample from \'./' + path + '\';');
+    framed[component.name] = /^export const FRAME\b/m.test(readFileSync(component.files.sample, 'utf8'));
+    lines.push('import ' + component.name + 'Sample' + (framed[component.name] ? ', { FRAME as ' + component.name + 'Frame }' : '') + ' from \'./' + path + '\';');
   }
   lines.push('');
   lines.push('export const catalog = Object.freeze([');
@@ -50,7 +54,7 @@ export async function renderCatalog () {
     return '  Object.freeze({ name: \'' + component.name + '\', family: \'' + row.family + '\', tier: \'' + row.tier +
       '\', platform: \'' + row.platform.support + '\', flags: Object.freeze([' + row.flags.map(function (flag) {
       return '\'' + flag + '\'';
-    }).join(', ') + ']), sample: ' + component.name + 'Sample })';
+    }).join(', ') + ']), frame: ' + (framed[component.name] ? component.name + 'Frame' : 'null') + ', sample: ' + component.name + 'Sample })';
   }).join(',\n'));
   lines.push(']);');
   lines.push('');

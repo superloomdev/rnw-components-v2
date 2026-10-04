@@ -396,6 +396,36 @@
       "why": "a focused trigger that does not suppress the browser's ring draws two rings on keyboard focus"
     },
     {
+      "id": "text-input-no-zero-basis",
+      "file": "component/molecule/text-input/text-input.js",
+      "find": "            flexBasis: 'auto',\n            flexGrow: 1,\n            flexShrink: 1,\n",
+      "replace": "            flex: 1,\n",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "the input grows from its own width",
+      "why": "native layout gives flex: 1 a zero basis; the field collapses to its padding in a content-sized container (M1 native gate: 32-40pt wide)"
+    },
+    {
+      "id": "select-no-zero-basis",
+      "file": "component/composite/select/select.js",
+      "find": "flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }",
+      "replace": "flex: 1, flexDirection: 'row', outlineStyle: 'none' }",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger grows from its content",
+      "why": "native layout gives flex: 1 a zero basis; the select collapses to its padding in a content-sized container (M1 native gate)"
+    },
+    {
+      "id": "catalog-frame",
+      "file": "component/molecule/text-input/sample.js",
+      "find": "export const FRAME = Object.freeze({ width: 320 });",
+      "replace": "export const FRAME_DISABLED = Object.freeze({ width: 320 });",
+      "runner": "node",
+      "test": "docs.test.js",
+      "testName": "the catalog carries each sample",
+      "why": "a field without its frame is laid out at each platform's intrinsic input width, so web and native disagree"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",
