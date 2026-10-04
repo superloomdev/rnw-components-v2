@@ -15,7 +15,8 @@ import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
-const HEIGHTS = { sm: 'size.size_small', md: 'size.size_medium', lg: 'size.size_large' };
+// The default size is the control role; the other sizes follow the shared size scale
+const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 const ITEMS = SAMPLE[0].props.items;
 
 afterEach(cleanup);
@@ -107,7 +108,8 @@ describe('Select: every sample state under every template', function () {
         const border = disabled ? null : invalid && outline ? 'support_error' : 'border_strong_01';
         assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
-        assert.equal(parts.frame.style.paddingLeft, t['spacing.spacing_05'] + 'px');
+        // An outline frame keeps its borders inside the inline padding
+        assert.equal(parts.frame.style.paddingLeft, (t['spacing.spacing_05'] - (t['feedback.field'] === 'outline' ? t['border.width_01'] : 0)) + 'px');
         assert.equal(parts.frame.style.borderBottomWidth, t['border.width_01'] + 'px');
         assert.equal(parts.frame.style.borderBottomColor, border === null ? TRANSPARENT : cssValue('borderBottomColor', t['color.' + border]));
         assert.equal(parts.frame.style.backgroundColor, t['feedback.field'] === 'underline' ? cssValue('backgroundColor', t['color.field_01']) : TRANSPARENT);
@@ -124,7 +126,7 @@ describe('Select: every sample state under every template', function () {
         // Caret: always mounted, displayed by the theme's choice
         const svg = parts.caret.querySelector('svg');
         assert.equal(parts.caret.style.display, t['anatomy.caret'] === 'shown' ? 'flex' : 'none');
-        assert.equal(svg.getAttribute('width'), String(t['size.icon_01']));
+        assert.equal(svg.getAttribute('width'), String(t['control.field_icon_size']));
         assert.equal(svg.getAttribute('fill'), t['color.' + (disabled ? 'icon_disabled' : 'icon_primary')]);
 
         // Label and message
@@ -167,12 +169,12 @@ describe('Select: the list through the DOM', function () {
     const list = parts.list();
     assert.equal(parts.trigger.getAttribute('aria-expanded'), 'true');
     assert.equal(parts.trigger.getAttribute('aria-controls'), list.id);
-    assert.equal(list.style.top, t['size.size_medium'] + 'px');
+    assert.equal(list.style.top, t['control.field_height'] + 'px');
     assert.equal(list.style.zIndex, String(t['stacking.dropdown']));
     assert.equal(list.style.backgroundColor, cssValue('backgroundColor', t['color.layer_01']));
     const options = list.querySelectorAll('[role="option"]');
     assert.equal(options.length, ITEMS.length);
-    assert.equal(options[0].style.height, t['size.size_medium'] + 'px');
+    assert.equal(options[0].style.height, t['control.option_height'] + 'px');
     await act(async function () {
       options[1].click();
     });
@@ -218,6 +220,16 @@ describe('Select: the list through the DOM', function () {
     })));
   });
 
+  test('focus draws the theme\'s focus presentation on the frame, and the trigger suppresses the browser\'s own ring', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderSelect(registryFor('carbon'), SAMPLE[0].props);
+    await act(async function () {
+      parts.trigger.focus();
+    });
+    assert.equal(parts.frame.style.outlineWidth, t['focus.width'] + 'px');
+    assert.equal(parts.trigger.style.outlineStyle, 'none');
+  });
+
   test('anatomy.caret: shown displays the caret, hidden keeps it mounted and undisplayed', async function () {
     const shown = await renderSelect(registryFor('default', { 'anatomy.caret': 'shown' }), SAMPLE[0].props);
     assert.equal(shown.caret.style.display, 'flex');
@@ -229,9 +241,9 @@ describe('Select: the list through the DOM', function () {
   test('floating: the label rests in the frame and rises while the list is open', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderSelect(registryFor('material', { 'anatomy.label': 'floating' }), { label: 'Size', items: ITEMS, placeholder: 'Choose' });
-    const reserve = t['type.label01'].lineHeight / 2;
+    const reserve = t['type.field_label_raised'].lineHeight / 2;
     assert.equal(parts.root.style.paddingTop, reserve + 'px');
-    assert.equal(parts.label.style.top, (reserve + (t['size.size_medium'] - t['type.body_compact_01'].lineHeight) / 2) + 'px');
+    assert.equal(parts.label.style.top, (reserve + (t['control.field_height'] - t['type.body_compact_01'].lineHeight) / 2) + 'px');
     assert.equal(parts.value.style.opacity, '0');
     await act(async function () {
       parts.trigger.click();

@@ -17,7 +17,10 @@ export default Object.freeze({
   kinds: Object.freeze(['primary', 'secondary', 'tertiary', 'ghost', 'danger', 'danger_tertiary', 'danger_ghost', 'tonal', 'elevated']),
   variants: Object.freeze(['xs', 'sm', 'md', 'lg', 'xl', '2xl']),
   tokens: Object.freeze([
-    'type.body_compact_01', 'font.family.sans',
+    'control.button_height', 'control.button_radius', 'control.button_padding_start', 'control.button_padding_end', 'control.button_icon_size',
+    'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
+    'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
+    'type.button_label', 'font.family.sans',
     'color.button_primary', 'color.button_primary_hover', 'color.button_primary_active', 'color.text_on_color',
     'color.button_disabled', 'color.text_on_color_disabled', 'color.text_disabled', 'color.border_disabled',
     'feedback.press', 'state.hover_opacity', 'state.pressed_opacity', 'state.focus_opacity',
@@ -28,7 +31,7 @@ export default Object.freeze({
     'button_tertiary', 'button_tertiary_hover', 'button_tertiary_active', 'text_inverse',
     'background_hover', 'background_active', 'link_primary',
     'button_danger_primary', 'button_danger_secondary', 'button_danger_hover', 'button_danger_active',
-    'layer_accent_01', 'layer_accent_hover_01', 'layer_accent_active_01', 'text_primary',
-    'layer_01', 'layer_hover_01', 'layer_active_01', 'interactive'
+    'button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal',
+    'button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive'
   ])
 });

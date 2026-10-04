@@ -40,7 +40,7 @@ export async function openShowcase (page, template, component, options) {
     return window.__showcase;
   });
 
-  return { status: status, consoleErrors: consoleErrors, pageErrors: pageErrors };
+  return { status: status, theme: status.theme, consoleErrors: consoleErrors, pageErrors: pageErrors };
 
 }
 
@@ -51,12 +51,13 @@ ready.
 
 @param {Object} page      - Playwright page
 @param {String} component - Component name
+@param {String} set       - 'primary' (default) | 'second': which reference set the page mounts
 
 @return {Promise<Object>} - The page status ({ cells, unmeasured, errors })
 *********************************************************************/
-export async function openReference (page, component) {
+export async function openReference (page, component, set) {
 
-  await page.goto('/reference?component=' + component + '&measure=1');
+  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary'));
   await page.waitForFunction(function () {
     return window.__reference && window.__reference.ready === true;
   }, null, { timeout: 30000 });
@@ -75,34 +76,61 @@ A part is found by its selector for that side within the cell body. A
 radius, fill, border color and any drawn outline; a `text` part reports the rect of its own
 text nodes and the text style of its element; a `type` part reports the
 text style only. An upstream part drawn on a pseudo-element reads that
-pseudo-element's computed box.
+pseudo-element's computed box; an upstream part whose text is styled by
+another element (slotted text) names it in `styleOf`. A selector crosses
+shadow roots with ' >>> '.
 
-@param {Object} page  - Playwright page
-@param {String} name  - Component name
-@param {Object} parts - `reference.parts`
-@param {String} side  - 'ours' | 'upstream'
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {Object} parts  - `reference.parts`
+@param {String} side   - 'ours' | 'upstream'
+@param {String} origin - Optional part name coordinates are measured from
+                         (default: the cell body)
 
 @return {Promise<Object>} - state label -> part name -> measurement | null
 *********************************************************************/
-export async function readParts (page, name, parts, side) {
+export async function readParts (page, name, parts, side, origin) {
 
   return page.evaluate(function (input) {
     const TYPE = ['color', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'];
     const BOX = ['borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'backgroundColor', 'borderBottomColor'];
+    // A selector may cross shadow roots: segments joined by ' >>> ' are
+    // resolved one at a time, each inside the previous match's shadow root
+    const query = function (root, selector) {
+      // Alternatives separated by a comma are tried in order
+      for (const alternative of selector.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+        let current = root;
+        const segments = alternative.split(' >>> ');
+        for (let i = 0; i < segments.length; i++) {
+          if (current === null) {
+            break;
+          }
+          const scope = i === 0 ? current : (current.shadowRoot || current);
+          current = scope.querySelector(segments[i]);
+        }
+        if (current !== null && current !== undefined) {
+          return current;
+        }
+      }
+      return null;
+    };
     const out = {};
     for (const cell of document.querySelectorAll('.cell[data-component="' + input.name + '"]')) {
       const body = cell.querySelector('[data-part="body"]');
-      const origin = body.getBoundingClientRect();
+      const originElement = input.origin ? query(body, input.parts[input.origin][input.side]) : body;
+      const origin = (originElement || body).getBoundingClientRect();
       const state = {};
       for (const partName of Object.keys(input.parts)) {
         const part = input.parts[partName];
-        const element = body.querySelector(part[input.side]);
+        const element = query(body, part[input.side]);
         if (element === null) {
           state[partName] = null;
           continue;
         }
         const pseudo = input.side === 'upstream' && part.pseudo ? part.pseudo : null;
-        const style = getComputedStyle(element, pseudo);
+        // The text style may come from another element (the shadow element that styles slotted text)
+        const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
+        const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
         const rect = element.getBoundingClientRect();
         const measured = {};
         if (part.measure === 'box') {
@@ -134,18 +162,21 @@ export async function readParts (page, name, parts, side) {
           measured.width = box.width;
           measured.height = box.height;
           measured.fontFamily = style.fontFamily.split(',')[0].replace(/["']/g, '').trim();
+          measured.characters = nodes.map(function (node) {
+            return node.textContent;
+          }).join('').trim().length;
         }
         for (const property of part.measure === 'box' ? [] : TYPE) {
           measured[property] = style[property];
         }
-        // A visually hidden part (1px clip) or an undisplayed one draws nothing
-        measured.visible = style.display !== 'none' && (pseudo ? true : rect.width > 1 && rect.height > 1);
+        // A visually hidden part (1px clip), an undisplayed or a transparent one draws nothing
+        measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && (pseudo ? true : rect.width > 1 && rect.height > 1);
         state[partName] = measured;
       }
       out[cell.getAttribute('data-state')] = state;
     }
     return out;
-  }, { name: name, parts: parts, side: side });
+  }, { name: name, parts: parts, side: side, origin: origin || null });
 
 }
 

@@ -4,14 +4,14 @@
 // holds the select's own geometry and its list.
 
 export default Object.freeze({
-  height: 'size.size_medium',
+  height: 'control.field_height',
   heightSmall: 'size.size_small',
   heightLarge: 'size.size_large',
   paddingInline: 'spacing.spacing_05',
-  radius: 'shape.radius_00',
-  iconSize: 'size.icon_01',
+  radius: 'control.field_radius',
+  iconSize: 'control.field_icon_size',
   iconGap: 'spacing.spacing_03',
-  optionHeight: 'size.size_medium',
+  optionHeight: 'control.option_height',
   listLevel: 'stacking.dropdown',
   messageGap: 'spacing.spacing_02'
 });

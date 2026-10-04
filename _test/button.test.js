@@ -25,14 +25,15 @@ const KINDS = {
   danger: ['button_danger_primary', 'button_danger_hover', 'button_danger_active', 'text_on_color', null],
   danger_tertiary: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
   danger_ghost: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
-  tonal: ['layer_accent_01', 'layer_accent_hover_01', 'layer_accent_active_01', 'text_primary', null],
-  elevated: ['layer_01', 'layer_hover_01', 'layer_active_01', 'interactive', null]
+  tonal: ['button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal', null],
+  elevated: ['button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive', null]
 };
 // How the renderer serializes a transparent fill or border
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 // Kinds that reserve no trailing icon slot: their end padding equals the start padding
 const INLINE = ['ghost', 'danger_ghost'];
-const HEIGHTS = { xs: 'size.size_xsmall', sm: 'size.size_small', md: 'size.size_medium', lg: 'size.size_large', xl: 'size.size_xlarge', '2xl': 'size.size_2xlarge' };
+// The default size is the control role; the other sizes follow the shared size scale
+const HEIGHTS = { xs: 'size.size_xsmall', sm: 'size.size_small', md: 'size.size_medium', lg: 'control.button_height', xl: 'size.size_xlarge', '2xl': 'size.size_2xlarge' };
 
 afterEach(cleanup);
 
@@ -115,15 +116,17 @@ describe('Button: every sample state under every template', function () {
         const restFill = props.disabled ? (filled ? 'button_disabled' : null) : props.selected && t['feedback.press'] === 'highlight' ? kind[2] : kind[0];
         const content = props.disabled ? (filled ? 'text_on_color_disabled' : 'text_disabled') : kind[3];
         const parts = await renderButton(registryFor(template), props);
-        const set = t['type.body_compact_01'];
+        const set = t['type.button_label'];
         assert.equal(parts.root.style.height, t[HEIGHTS[props.size || 'lg']] + 'px');
         assert.equal(parts.root.style.borderTopWidth, t['border.width_01'] + 'px');
-        assert.equal(parts.root.style.paddingLeft, (t['spacing.spacing_05'] - t['border.width_01']) + 'px');
-        const end = INLINE.includes(props.kind) ? t['spacing.spacing_05'] : t['spacing.spacing_10'];
+        assert.equal(parts.root.style.paddingLeft, (t['control.button_padding_start'] - t['border.width_01']) + 'px');
+        // A trailing icon widens an end padding that reserves less than inset + icon + gap
+        const slot = t['spacing.spacing_05'] + t['control.button_icon_size'] + t['spacing.spacing_03'];
+        const end = INLINE.includes(props.kind) ? t['control.button_padding_start'] : props.icon ? Math.max(t['control.button_padding_end'], slot) : t['control.button_padding_end'];
         assert.equal(parts.root.style.paddingRight, (end - t['border.width_01']) + 'px');
-        const labelHeight = Math.min(t[HEIGHTS[props.size || 'lg']], t['size.size_large']);
+        const labelHeight = Math.min(t[HEIGHTS[props.size || 'lg']], t['control.button_height']);
         assert.equal(parts.root.style.paddingTop, ((labelHeight - set.lineHeight) / 2 - t['border.width_01']) + 'px');
-        assert.equal(parts.root.style.borderTopLeftRadius, t['shape.radius_00'] + 'px');
+        assert.equal(parts.root.style.borderTopLeftRadius, t['control.button_radius'] + 'px');
         assert.equal(parts.root.style.backgroundColor, fillOf(t, restFill));
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + content]));
         assert.equal(parts.label.style.fontSize, set.fontSize + 'px');
@@ -164,12 +167,12 @@ describe('Button: kinds', function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderButton(registryFor('carbon'), { children: 'Add', icon: 'add' });
     const svg = parts.root.querySelector('svg');
-    assert.equal(svg.getAttribute('width'), String(t['size.icon_01']));
+    assert.equal(svg.getAttribute('width'), String(t['control.button_icon_size']));
     assert.equal(svg.getAttribute('fill'), t['color.text_on_color']);
     assert.equal(svg.getAttribute('aria-hidden'), 'true');
     assert.equal(svg.parentElement.style.right, t['spacing.spacing_05'] + 'px');
-    const labelTop = (t['size.size_large'] - t['type.body_compact_01'].lineHeight) / 2 - t['border.width_01'];
-    assert.equal(svg.parentElement.style.top, (labelTop + (t['type.body_compact_01'].lineHeight - t['size.icon_01']) / 2) + 'px');
+    const labelTop = (t['control.button_height'] - t['type.button_label'].lineHeight) / 2 - t['border.width_01'];
+    assert.equal(svg.parentElement.style.top, (labelTop + (t['type.button_label'].lineHeight - t['control.button_icon_size']) / 2) + 'px');
     const ghost = await renderButton(registryFor('carbon'), { children: 'Add', icon: 'add', kind: 'ghost' });
     const inline = ghost.root.querySelector('svg').parentElement;
     assert.equal(inline.style.position, '');

@@ -17,8 +17,9 @@ export default Object.freeze({
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([
+    'control.checkbox_size', 'control.checkbox_border',
     'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
-    'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error',
+    'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error', 'color.control_checked',
     'color.text_primary', 'color.text_disabled', 'color.text_error', 'color.text_helper',
     'feedback.press', 'state.hover_opacity', 'state.pressed_opacity', 'state.focus_opacity',
     'motion.duration_fast_01', 'motion.easing_standard_productive'

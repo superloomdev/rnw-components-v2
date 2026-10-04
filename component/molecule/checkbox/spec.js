@@ -5,10 +5,10 @@
 // fall between scale tokens, so each is the sum of the two tokens it equals.
 
 export default Object.freeze({
-  boxSize: 'size.icon_01',
-  borderWidth: 'border.width_01',
+  boxSize: 'control.checkbox_size',
+  borderWidth: 'control.checkbox_border',
   radius: 'shape.radius_02',
-  markSize: { tokens: ['size.icon_01', 'border.width_01', 'border.width_01'], operation: 'subtract' },
+  markSize: { tokens: ['control.checkbox_size', 'control.checkbox_border', 'control.checkbox_border'], operation: 'subtract' },
   labelGap: { tokens: ['spacing.spacing_04', 'spacing.spacing_01'], operation: 'sum' },
   minHeight: { tokens: ['spacing.spacing_05', 'spacing.spacing_02'], operation: 'sum' },
   layerSize: 'size.size_medium',

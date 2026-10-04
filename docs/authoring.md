@@ -116,6 +116,23 @@ export default Object.freeze({
 
 The reference page (`_test/harness/reference-entry.js`) mounts every state through `mount`: `render-web` rows under the upstream stylesheet, `parse-rn` rows through react-native-web so the upstream's published style objects are what is drawn. `upstream` is the upstream module plus `icon(name)`, which resolves a semantic icon name to the upstream's icon component. The measurement gate (`measure.spec.js`) finds each part by its selector on both pages, within the cell body, and compares: for `box` parts the rect relative to the body, border widths, corner radius, fill, border color where a border is drawn, and any drawn outline; for `text` parts the rect of the element's own text nodes, its first font family and its text style; for `type` parts the text style only. An upstream part drawn on a pseudo-element names it in `pseudo`. Numbers agree within half a pixel, colors and families exactly; every part must be drawn upstream in some state. Measure what is painted, not the mechanism: select an icon's `path`, not its `svg` box. The perceptual gate compares the same cell bodies pixel by pixel. Stylesheet transcription is not evidence; the rendered upstream is.
 
+A row with a `material_twin` also carries a `second` block, measured the same way against the second reference (the Material web components, themed from the material template through the template's own mapping table) under the material template:
+
+```js
+second: Object.freeze({
+  origin: 'frame',                       // optional: measure coordinates from this part, not the body
+  body: Object.freeze({ width: 320 }),
+  mount: function (React, upstream, props) { ... },   // upstream = { tokens } of the built material theme; null for a state with no counterpart
+  parts: Object.freeze({
+    frame: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container', ours: 'div:has(> input)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
+    label: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .label:not(.hidden)', ours: '...', measure: 'text' }),
+    fill:  Object.freeze({ upstream: 'md-filled-button >>> .background', ours: '[role="button"]', measure: 'box', compare: ['backgroundColor'], grows: 'label', optional: true })
+  })
+})
+```
+
+A selector crosses shadow roots with ` >>> `; alternatives separated by a comma are tried in order. Where the second reference splits one of our boxes across elements, a part names the properties it compares (`compare`), is `optional` (compared only where the upstream draws it), or `grows` with a text part (its width takes that text's tracking slack). `styleOf` names the element that styles slotted text. The reference draws no letter tracking; the gate reports the tracking difference and compares text widths net of it. A disagreement caused by a queued contract request is listed in `_test/fixtures/expected-gaps.json` (`check: measure-second`, component, part, property, optional states, request); the gate asserts each listed gap still reproduces and fails on a stale one, so the list can only shrink as requests land.
+
 ## Notes (`notes.md`)
 
 Vendor-free prose. Required when the row carries a flag that demands an explanation (`deferred_gap`, `no_reference`, `superloom_decision`, `web_only`, `requires_parent`). Say what was decided and why, and what the platform answer means for the row. The docs generator merges it into the family's page.

@@ -47,6 +47,8 @@ window.addEventListener('error', function (event) {
 let Registry;
 try {
   const built = Themer.buildTheme(TEMPLATES[templateName], [], 'native');
+  // The built tokens the page draws with, for a gate that samples pixels against them
+  status.theme = built.tokens;
   Registry = createSystem(Lib, {}, built, 'md', factories);
 } catch (error) {
   status.errors.push('createSystem: ' + error.message);

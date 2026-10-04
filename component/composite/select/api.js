@@ -22,7 +22,8 @@ export default Object.freeze({
   variants: Object.freeze(['sm', 'md', 'lg']),
   tokens: Object.freeze([
     'feedback.field', 'anatomy.label', 'anatomy.caret', 'border.width_01', 'border.width_02', 'spacing.spacing_02', 'spacing.spacing_03',
-    'type.label01', 'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
+    'control.field_height', 'control.field_radius', 'control.field_icon_size', 'control.option_height',
+    'type.label01', 'type.field_label_raised', 'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
     'color.border_disabled', 'color.support_error', 'color.border_strong_01',
     'color.field_01', 'color.field_hover_01', 'color.text_disabled', 'color.text_secondary',
     'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper',

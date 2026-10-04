@@ -371,9 +371,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
                             the field's own metrics, the color leaf it sits on
                             and its disabled border leaf (default `border_disabled`)
 
-  @return {Object} - { root, frame, label, raised, placeholder }; `root`
+  @return {Object} - { root, frame, label, message, raised, placeholder }; `root`
                      styles the field root (a floating label reserves
-                     half its line above the frame)
+                     half its line above the frame); `message` insets the
+                     helper or error text
   *********************************************************************/
   function fieldPresentation (state, options) {
 
@@ -385,7 +386,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const invalid = !disabled && state.invalid === true;
     const disabledBorder = options.disabledBorder === undefined ? 'border_disabled' : options.disabledBorder;
     const borderLeaf = disabled ? disabledBorder : invalid && mode === 'outline' ? 'support_error' : 'border_strong_01';
-    const labelColor = color(disabled ? 'text_disabled' : 'text_secondary');
+    // An outline frame colors its label with the error while invalid; an underline frame keeps it
+    const labelColor = color(disabled ? 'text_disabled' : invalid && mode === 'outline' ? 'text_error' : 'text_secondary');
+    // An outline frame insets its message to the text inside the frame; an underline frame starts it at the edge
+    const message = { marginStart: mode === 'outline' ? options.paddingInline : 0 };
 
     // Frame: shared geometry, then the mode's border and fill
     const frame = {
@@ -406,7 +410,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         Object.assign(frame, { outlineColor: color('support_error'), outlineOffset: -ring, outlineStyle: 'solid', outlineWidth: ring });
       }
     } else {
-      Object.assign(frame, { backgroundColor: 'transparent', borderWidth: width });
+      // The four borders sit inside the inline padding, so the text starts where the padding says
+      Object.assign(frame, { backgroundColor: 'transparent', borderWidth: width, paddingHorizontal: options.paddingInline - width });
     }
 
     // Above: the label sits over the frame in the flow
@@ -414,6 +419,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       return {
         root: {},
         frame: frame,
+        message: message,
         label: Object.assign({}, typeStyle('label01'), { color: labelColor, marginBottom: token('spacing.spacing_03') }),
         raised: false,
         placeholder: true
@@ -424,7 +430,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // the label straddles the top border inside the field's own bounds
     const raised = state.focused === true || state.populated === true;
     const inset = token('spacing.spacing_02');
-    const small = typeStyle('label01');
+    const small = typeStyle('field_label_raised');
     const body = typeStyle('body_compact_01');
     const reserve = small.lineHeight / 2;
     const label = raised
@@ -443,6 +449,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     return {
       root: { paddingTop: reserve },
       frame: frame,
+      message: message,
       label: Object.assign(label, { color: labelColor, pointerEvents: 'none', position: 'absolute', zIndex: 1 }),
       raised: raised,
       placeholder: raised

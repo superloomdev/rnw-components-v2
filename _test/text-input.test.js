@@ -16,7 +16,8 @@ import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
-const HEIGHTS = { sm: 'size.size_small', md: 'size.size_medium', lg: 'size.size_large' };
+// The default size is the control role; the other sizes follow the shared size scale
+const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 
 afterEach(cleanup);
 
@@ -100,8 +101,9 @@ describe('TextInput: every sample state under every template', function () {
         const border = invalid && outline ? 'support_error' : 'border_strong_01';
         assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
-        assert.equal(parts.frame.style.paddingLeft, t['spacing.spacing_05'] + 'px');
-        assert.equal(parts.frame.style.borderTopLeftRadius, t['shape.radius_00'] + 'px');
+        // An outline frame keeps its borders inside the inline padding
+        assert.equal(parts.frame.style.paddingLeft, (t['spacing.spacing_05'] - (t['feedback.field'] === 'outline' ? t['border.width_01'] : 0)) + 'px');
+        assert.equal(parts.frame.style.borderTopLeftRadius, t['control.field_radius'] + 'px');
         assert.equal(parts.frame.style.borderBottomWidth, t['border.width_01'] + 'px');
         assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + border]));
         if (t['feedback.field'] === 'underline') {
@@ -124,10 +126,12 @@ describe('TextInput: every sample state under every template', function () {
         // Label: placement by the theme's enum
         if (props.label) {
           const raised = t['anatomy.label'] === 'floating' && typeof props.value === 'string';
-          const set = t['anatomy.label'] === 'above' || raised ? t['type.label01'] : t['type.body_compact_01'];
+          const set = t['anatomy.label'] === 'above' ? t['type.label01'] : raised ? t['type.field_label_raised'] : t['type.body_compact_01'];
           assert.equal(parts.label.textContent, props.label);
           assert.equal(parts.label.style.fontSize, set.fontSize + 'px');
-          assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'text_disabled' : 'text_secondary')]));
+          // An outline frame colors its label with the error while invalid
+          const labelLeaf = disabled ? 'text_disabled' : invalid && t['feedback.field'] === 'outline' ? 'text_error' : 'text_secondary';
+          assert.equal(parts.label.style.color, cssValue('color', t['color.' + labelLeaf]));
           assert.equal(parts.label.style.position, t['anatomy.label'] === 'floating' ? 'absolute' : '');
           assert.equal(parts.input.getAttribute('aria-labelledby'), parts.label.id);
         } else {
@@ -139,7 +143,7 @@ describe('TextInput: every sample state under every template', function () {
         const svg = parts.frame.querySelector('svg');
         if (invalid) {
           assert.equal(svg.getAttribute('fill'), t['color.support_error']);
-          assert.equal(svg.getAttribute('width'), String(t['size.icon_01']));
+          assert.equal(svg.getAttribute('width'), String(t['control.field_icon_size']));
         } else {
           assert.equal(svg, null);
         }
@@ -189,9 +193,9 @@ describe('TextInput: state through the DOM', function () {
     const t = buildNative('material').tokens;
     const Registry = registryFor('material', { 'anatomy.label': 'floating', 'feedback.field': 'outline' });
     const parts = await renderField(Registry, { label: 'Name', placeholder: 'Jane', surface: 'layer_01' });
-    const height = t['size.size_medium'];
+    const height = t['control.field_height'];
     const body = t['type.body_compact_01'];
-    const small = t['type.label01'];
+    const small = t['type.field_label_raised'];
     assert.equal(parts.root.style.paddingTop, (small.lineHeight / 2) + 'px');
     assert.equal(parts.label.style.top, (small.lineHeight / 2 + (height - body.lineHeight) / 2) + 'px');
     assert.equal(parts.label.style.backgroundColor, '');

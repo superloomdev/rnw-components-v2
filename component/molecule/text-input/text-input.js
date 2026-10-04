@@ -88,7 +88,7 @@ export default function TextInput (ctx) {
         icon
       ),
       message === null ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('helper_text_01'), { color: ctx.color(message.color), marginTop: ctx.metric('TextInput', 'messageGap') }]
+        style: [ctx.typeStyle('helper_text_01'), presentation.message, { color: ctx.color(message.color), marginTop: ctx.metric('TextInput', 'messageGap') }]
       }, message.text)
     );
 

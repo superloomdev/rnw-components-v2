@@ -12,7 +12,7 @@ A single-line field: a label, a frame holding the input (and an error icon while
 - **Label placement.** Under `above` the label sits over the frame in the label type set. Under `floating` the field root reserves half the raised label's line above the frame; the label rests inside the frame in the body type set and rises onto the top border in the label type set when the field is focused or holds a value, occluding the border with the surface color. The surface is the `surface` prop, else the `FIELD_SURFACE` config value, else `background`. Under a floating label the placeholder shows only once the label has risen.
 - **One element tree.** The label is the first child of the field root under both placements; only its style moves it, so the accessibility tree is the same under every template.
 - **Invalid.** An invalid field shows the `warning_filled` icon in `support_error` after the input and the error message below; a disabled field is never invalid.
-- **Geometry follows the primary reference; the second reference's field is deferred.** The second reference draws a taller field with rounded corners and its own raised-label type; the contract does not yet carry per-component geometry, so that field is recorded as a contract request and the primary field is drawn with each template's colors meanwhile.
+- **Geometry is the template's.** The height, corner radius and icon size are `control.field_height`, `control.field_radius` and `control.field_icon_size`, the raised floating label is drawn in `type.field_label_raised`, so each template draws its own field (40 and square in one, 56 with 4px corners in another); the other sizes follow the shared size scale. Measured against both references. Still deferred, as contract requests for the next milestone: the type set of the value and resting label (the second reference draws them larger than compact body text), its outline color mapped onto the strong border, its helper and error text colors, and its disabled colors, drawn there as a translucent state layer.
 
 ### Platform
 
@@ -54,12 +54,12 @@ TextInput draws a label, a single-line field frame and a helper or error message
 
 | Metric | Rule |
 |---|---|
-| `height` | `size.size_medium` |
+| `height` | `control.field_height` |
 | `heightSmall` | `size.size_small` |
 | `heightLarge` | `size.size_large` |
 | `paddingInline` | `spacing.spacing_05` |
-| `radius` | `shape.radius_00` |
-| `iconSize` | `size.icon_01` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
 | `iconGap` | `spacing.spacing_03` |
 | `messageGap` | `spacing.spacing_02` |
 

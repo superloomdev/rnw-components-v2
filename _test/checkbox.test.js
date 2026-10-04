@@ -88,14 +88,14 @@ describe('Checkbox: every sample state under every template', function () {
         const disabled = props.disabled === true;
         const invalid = props.invalid === true && !disabled;
         const marked = props.checked === true || props.indeterminate === true;
-        const fill = disabled ? 'icon_disabled' : 'icon_primary';
+        const fill = disabled ? 'icon_disabled' : 'control_checked';
         const edge = invalid ? 'support_error' : marked ? fill : disabled ? 'icon_disabled' : 'icon_primary';
         const parts = await renderCheckbox(registryFor(template), props);
 
         // Box geometry and colors
-        assert.equal(parts.box.style.width, t['size.icon_01'] + 'px');
-        assert.equal(parts.box.style.height, t['size.icon_01'] + 'px');
-        assert.equal(parts.box.style.borderTopWidth, (marked && !invalid ? 0 : t['border.width_01']) + 'px');
+        assert.equal(parts.box.style.width, t['control.checkbox_size'] + 'px');
+        assert.equal(parts.box.style.height, t['control.checkbox_size'] + 'px');
+        assert.equal(parts.box.style.borderTopWidth, (marked && !invalid ? 0 : t['control.checkbox_border']) + 'px');
         assert.equal(parts.box.style.borderTopLeftRadius, t['shape.radius_02'] + 'px');
         assert.equal(parts.box.style.borderTopColor, cssValue('borderTopColor', t['color.' + edge]));
         assert.equal(parts.box.style.backgroundColor, marked ? cssValue('backgroundColor', t['color.' + fill]) : TRANSPARENT);
@@ -103,7 +103,7 @@ describe('Checkbox: every sample state under every template', function () {
         // Mark: the theme's own glyph at the mark size, or none
         const svg = parts.box.querySelector('svg');
         if (marked) {
-          const size = t['size.icon_01'] - 2 * t['border.width_01'];
+          const size = t['control.checkbox_size'] - 2 * t['control.checkbox_border'];
           const literal = t['icon.' + (props.indeterminate ? 'subtract' : 'checkmark')];
           const glyph = literal.sizes && literal.sizes[String(size)] ? literal.sizes[String(size)] : literal;
           assert.equal(svg.getAttribute('width'), String(size));
@@ -171,7 +171,7 @@ describe('Checkbox: state through the DOM', function () {
   test('ripple: the disc centered on the box rises to the hover and pressed opacities', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderCheckbox(registryFor('material', { 'feedback.press': 'ripple' }), { label: 'L' });
-    const offset = (t['size.icon_01'] - t['size.size_medium']) / 2;
+    const offset = (t['control.checkbox_size'] - t['size.size_medium']) / 2;
     assert.equal(parts.layer.style.width, t['size.size_medium'] + 'px');
     assert.equal(parts.layer.style.left, offset + 'px');
     assert.equal(parts.layer.style.top, offset + 'px');
@@ -190,7 +190,7 @@ describe('Checkbox: state through the DOM', function () {
     assert.equal(parts.root.style.backgroundColor, TRANSPARENT);
   });
 
-  test('focus draws the theme\'s focus presentation on the box', async function () {
+  test('focus draws the theme\'s focus presentation on the box, and the row suppresses the browser\'s own ring', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderCheckbox(registryFor('carbon'), { label: 'L' });
     await act(async function () {
@@ -198,6 +198,7 @@ describe('Checkbox: state through the DOM', function () {
     });
     assert.equal(parts.box.style.outlineWidth, t['focus.width'] + 'px');
     assert.equal(parts.root.style.outlineWidth, '');
+    assert.equal(parts.root.style.outlineStyle, 'none');
   });
 
 });

@@ -356,6 +356,46 @@
       "why": "a floating field must reserve room for its raised label inside its own bounds"
     },
     {
+      "id": "context-field-outline-invalid-label",
+      "file": "component/context.js",
+      "find": "invalid && mode === 'outline' ? 'text_error' : 'text_secondary'",
+      "replace": "'text_secondary'",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "material / invalid: frame, label, input and message come from the theme",
+      "why": "an outline field must color its label with the error while invalid"
+    },
+    {
+      "id": "context-field-outline-padding",
+      "file": "component/context.js",
+      "find": "paddingHorizontal: options.paddingInline - width });",
+      "replace": "paddingHorizontal: options.paddingInline });",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "material / default: frame, label, trigger, caret and message come from the theme",
+      "why": "an outline frame keeps its borders inside the inline padding so the text starts where the padding says"
+    },
+    {
+      "id": "checkbox-row-no-browser-ring",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }",
+      "replace": "minHeight: ctx.metric('Checkbox', 'minHeight') }",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "the row suppresses the browser",
+      "why": "a focused row that does not suppress the browser's ring draws two rings on keyboard focus"
+    },
+    {
+      "id": "select-trigger-no-browser-ring",
+      "file": "component/composite/select/select.js",
+      "find": "flex: 1, flexDirection: 'row', outlineStyle: 'none' }",
+      "replace": "flex: 1, flexDirection: 'row' }",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger suppresses the browser",
+      "why": "a focused trigger that does not suppress the browser's ring draws two rings on keyboard focus"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",
@@ -394,6 +434,36 @@
       "test": "perceptual.spec.js",
       "testName": "Button: mismatch within diff_budget",
       "why": "a tall button whose label moves off the reference's position must fail the pixel comparison"
+    },
+    {
+      "id": "anatomy-notch-occlusion",
+      "file": "component/context.js",
+      "find": "        backgroundColor: color(options.surface),\n",
+      "replace": "",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the raised label opens a notch in the outline",
+      "why": "a raised label that does not occlude the border draws no notch; the pixel sample under the label must see the border"
+    },
+    {
+      "id": "anatomy-ripple-pressed",
+      "file": "component/context.js",
+      "find": "    const strength = pressed ? token('state.pressed_opacity')",
+      "replace": "    const strength = pressed ? 0",
+      "why": "a ripple state layer that stays transparent under press paints nothing; the screenshots before and during the press must be alike",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "a held press paints the state layer over a button"
+    },
+    {
+      "id": "measure-second-button-radius",
+      "file": "component/molecule/button/spec.js",
+      "find": "  radius: 'control.button_radius'",
+      "replace": "  radius: 'shape.radius_00'",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Button: parts match the second reference",
+      "why": "a button drawn with the shared scale's radius under the second template is square where the reference is a pill; the second-reference measurement must fail"
     }
   ]
 }

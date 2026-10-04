@@ -25,7 +25,7 @@ const PRESS_TOKENS = [
 // Tokens the field presentation reads, for every component that calls it
 const FIELD_TOKENS = [
   'feedback.field', 'anatomy.label', 'border.width_01', 'border.width_02', 'spacing.spacing_02', 'spacing.spacing_03',
-  'type.label01', 'type.body_compact_01', 'font.family.sans',
+  'type.label01', 'type.field_label_raised', 'type.body_compact_01', 'font.family.sans',
   'color.border_disabled', 'color.support_error', 'color.border_strong_01',
   'color.field_01', 'color.field_hover_01', 'color.text_disabled', 'color.text_secondary'
 ];
@@ -57,9 +57,10 @@ const VIEW_SUPPORTED = [
 ];
 
 const BUTTON_REQUIRED = [].concat(PRESS_TOKENS, [
-  'size.size_large', 'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
-  'border.width_01', 'spacing.spacing_05', 'spacing.spacing_10', 'spacing.spacing_03', 'size.icon_01', 'shape.radius_00',
-  'type.body_compact_01', 'font.family.sans', 'shadow.level_01',
+  'control.button_height', 'control.button_radius', 'control.button_padding_start', 'control.button_padding_end', 'control.button_icon_size',
+  'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
+  'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
+  'type.button_label', 'font.family.sans', 'shadow.level_01',
   'color.button_primary', 'color.button_primary_hover', 'color.button_primary_active', 'color.text_on_color',
   'color.button_disabled', 'color.text_on_color_disabled', 'color.text_disabled', 'color.border_disabled'
 ]);
@@ -68,26 +69,27 @@ const BUTTON_SUPPORTED = [
   'color.button_tertiary', 'color.button_tertiary_hover', 'color.button_tertiary_active', 'color.text_inverse',
   'color.background_hover', 'color.background_active', 'color.link_primary',
   'color.button_danger_primary', 'color.button_danger_secondary', 'color.button_danger_hover', 'color.button_danger_active',
-  'color.layer_accent_01', 'color.layer_accent_hover_01', 'color.layer_accent_active_01', 'color.text_primary',
-  'color.layer_01', 'color.layer_hover_01', 'color.layer_active_01', 'color.interactive'
+  'color.button_tonal', 'color.button_tonal_hover', 'color.button_tonal_active', 'color.text_on_button_tonal',
+  'color.button_elevated', 'color.button_elevated_hover', 'color.button_elevated_active', 'color.interactive'
 ];
 
 const CHECKBOX_REQUIRED = [].concat(PRESS_TOKENS, [
-  'size.icon_01', 'border.width_01', 'shape.radius_02', 'spacing.spacing_03', 'spacing.spacing_04', 'spacing.spacing_01',
+  'control.checkbox_size', 'control.checkbox_border', 'size.icon_01', 'border.width_01', 'shape.radius_02',
+  'spacing.spacing_03', 'spacing.spacing_04', 'spacing.spacing_01',
   'spacing.spacing_05', 'size.size_medium', 'shape.radius_max', 'spacing.spacing_02',
   'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
-  'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error',
+  'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error', 'color.control_checked',
   'color.text_primary', 'color.text_disabled', 'color.text_error', 'color.text_helper'
 ]);
 
 const TEXT_INPUT_REQUIRED = [].concat(FIELD_TOKENS, [
-  'size.size_medium', 'size.size_small', 'size.size_large', 'spacing.spacing_05', 'shape.radius_00', 'size.icon_01',
+  'control.field_height', 'control.field_radius', 'control.field_icon_size', 'size.size_small', 'size.size_large', 'spacing.spacing_05',
   'type.helper_text_01', 'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper'
 ]);
 
 const SELECT_REQUIRED = [].concat(FIELD_TOKENS, [
-  'anatomy.caret', 'size.size_medium', 'size.size_small', 'size.size_large', 'spacing.spacing_05', 'shape.radius_00',
-  'size.icon_01', 'stacking.dropdown', 'shadow.level_02', 'type.helper_text_01',
+  'anatomy.caret', 'control.field_height', 'control.field_radius', 'control.field_icon_size', 'control.option_height',
+  'size.size_small', 'size.size_large', 'spacing.spacing_05', 'stacking.dropdown', 'shadow.level_02', 'type.helper_text_01',
   'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper',
   'color.icon_primary', 'color.icon_disabled', 'color.layer_01', 'color.layer_hover_01', 'color.layer_selected_01'
 ]);

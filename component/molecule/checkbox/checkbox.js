@@ -43,8 +43,8 @@ export default function Checkbox (ctx) {
     const layerOffset = (boxSize - layerSize) / 2;
 
     // Init the box colors: disabled, then invalid, then rest
-    const edge = state.disabled ? 'icon_disabled' : invalid ? 'support_error' : 'icon_primary';
-    const fill = state.disabled ? 'icon_disabled' : 'icon_primary';
+    const fill = state.disabled ? 'icon_disabled' : 'control_checked';
+    const edge = state.disabled ? 'icon_disabled' : invalid ? 'support_error' : marked ? fill : 'icon_primary';
 
     // Read the theme's press presentation; the checkbox itself has no fill
     const press = ctx.pressPresentation(state, { rest: null, hover: null, active: null, content: 'icon_primary' });
@@ -64,7 +64,8 @@ export default function Checkbox (ctx) {
     return React.createElement(View, null,
       React.createElement(Pressable, Object.assign({}, checkbox.rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
         testID: props.testID,
-        style: [{ alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight') }, press.container]
+        // The focus ring is drawn on the box, so the row itself shows none
+        style: [{ alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }, press.container]
       }),
       React.createElement(View, { style: { height: boxSize, width: boxSize } },
         React.createElement(View, {

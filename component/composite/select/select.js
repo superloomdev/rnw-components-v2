@@ -122,7 +122,8 @@ export default function Select (ctx) {
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
           accessibilityLabel: props.accessibilityLabel,
           testID: props.testID,
-          style: { alignItems: 'center', alignSelf: 'stretch', flex: 1, flexDirection: 'row' }
+          // The focus ring is drawn on the frame, so the trigger itself shows none
+          style: { alignItems: 'center', alignSelf: 'stretch', flex: 1, flexDirection: 'row', outlineStyle: 'none' }
         }),
         React.createElement(View, { style: { flexGrow: 1 } },
           React.createElement(Text, {
@@ -139,7 +140,7 @@ export default function Select (ctx) {
         list
       ),
       message === null ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('helper_text_01'), { color: ctx.color(message.color), marginTop: ctx.metric('Select', 'messageGap') }]
+        style: [ctx.typeStyle('helper_text_01'), presentation.message, { color: ctx.color(message.color), marginTop: ctx.metric('Select', 'messageGap') }]
       }, message.text)
     );
 

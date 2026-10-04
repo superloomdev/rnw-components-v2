@@ -15,7 +15,7 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 - **List.** While open, the options are laid out directly below the frame, spanning its width, on the first layer at the dropdown stacking level with the second shadow level. The selected option fills with `layer_selected_01`, the highlighted one with `layer_hover_01`. The list closes on selection, on Escape and on a second press of the trigger.
 - **Keyboard.** Arrow keys open the list and move the highlight, Enter and Space open it or commit the highlighted option, Escape closes it; all of this is the select behavior's.
 - **Invalid.** An invalid select shows the `warning_filled` icon before the caret and the error message below; a disabled select is never invalid.
-- **Geometry follows the primary reference; the second reference's field is deferred.** The second reference draws a taller field with rounded corners; the contract does not yet carry per-component geometry, so that field is recorded as a contract request and the primary field is drawn with each template's colors meanwhile.
+- **Geometry is the template's.** The height, corner radius and icon size are `control.field_height`, `control.field_radius` and `control.field_icon_size` (and the option row height `control.option_height`), the raised floating label is drawn in `type.field_label_raised`, so each template draws its own field (40 and square in one, 56 with 4px corners in another); the other sizes follow the shared size scale. Measured against both references (the second reference draws its own ten-by-five arrow in place of a glyph, so the caret is compared against the primary reference only). Still deferred, as contract requests for the next milestone: the type set of the value and resting label (the second reference draws them larger than compact body text), its outline color mapped onto the strong border, its helper and error text colors, and its disabled colors, drawn there as a translucent state layer.
 
 ### Platform
 
@@ -56,14 +56,14 @@ Select draws the field frame it shares with TextInput around a trigger that open
 
 | Metric | Rule |
 |---|---|
-| `height` | `size.size_medium` |
+| `height` | `control.field_height` |
 | `heightSmall` | `size.size_small` |
 | `heightLarge` | `size.size_large` |
 | `paddingInline` | `spacing.spacing_05` |
-| `radius` | `shape.radius_00` |
-| `iconSize` | `size.icon_01` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
 | `iconGap` | `spacing.spacing_03` |
-| `optionHeight` | `size.size_medium` |
+| `optionHeight` | `control.option_height` |
 | `listLevel` | `stacking.dropdown` |
 | `messageGap` | `spacing.spacing_02` |
 

@@ -358,6 +358,7 @@ describe('context: fieldPresentation', function () {
     const outline = probeWith({ 'feedback.field': 'outline' }).fieldPresentation({}, options).frame;
     assert.equal(outline.backgroundColor, 'transparent');
     assert.equal(outline.borderWidth, t['border.width_01']);
+    assert.equal(outline.paddingHorizontal, 16 - t['border.width_01']);
     assert.equal(outline.borderBottomWidth, undefined);
   });
 
@@ -397,7 +398,7 @@ describe('context: fieldPresentation', function () {
   test('floating: the root reserves half the raised label; the label rests centered in the frame and rises onto the border over the surface when focused or populated', function () {
     const ctx = probeWith({ 'anatomy.label': 'floating' });
     const resting = ctx.fieldPresentation({}, options);
-    const reserve = t['type.label01'].lineHeight / 2;
+    const reserve = t['type.field_label_raised'].lineHeight / 2;
     assert.deepEqual(resting.root, { paddingTop: reserve });
     assert.equal(resting.raised, false);
     assert.equal(resting.placeholder, false);
@@ -410,7 +411,7 @@ describe('context: fieldPresentation', function () {
       const raised = ctx.fieldPresentation(state, options);
       assert.equal(raised.raised, true);
       assert.equal(raised.placeholder, true);
-      assert.equal(raised.label.fontSize, t['type.label01'].fontSize);
+      assert.equal(raised.label.fontSize, t['type.field_label_raised'].fontSize);
       assert.equal(raised.label.top, 0);
       assert.deepEqual(raised.root, { paddingTop: reserve });
       assert.equal(raised.label.left, 16 - t['spacing.spacing_02']);

@@ -34,8 +34,8 @@ export default function Button (ctx) {
     danger: { rest: 'button_danger_primary', hover: 'button_danger_hover', active: 'button_danger_active', content: 'text_on_color' },
     danger_tertiary: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', border: 'button_danger_secondary' },
     danger_ghost: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', inline: true },
-    tonal: { rest: 'layer_accent_01', hover: 'layer_accent_hover_01', active: 'layer_accent_active_01', content: 'text_primary' },
-    elevated: { rest: 'layer_01', hover: 'layer_hover_01', active: 'layer_active_01', content: 'interactive', shadow: 'shadow.level_01' }
+    tonal: { rest: 'button_tonal', hover: 'button_tonal_hover', active: 'button_tonal_active', content: 'text_on_button_tonal' },
+    elevated: { rest: 'button_elevated', hover: 'button_elevated_hover', active: 'button_elevated_active', content: 'interactive', shadow: 'shadow.level_01' }
   });
 
   // Size -> height metric in the spec sheet
@@ -116,16 +116,22 @@ export default function Button (ctx) {
 
     // The label is centered up to the default height; a taller button keeps
     // the label where the default height puts it, at the top
-    const labelStyle = ctx.typeStyle('body_compact_01');
+    const labelStyle = ctx.typeStyle('button_label');
     const borderWidth = ctx.metric('Button', 'borderWidth');
     const labelTop = (Math.min(height, ctx.metric('Button', 'height')) - labelStyle.lineHeight) / 2 - borderWidth;
 
-    // Render the icon when one is named: at the trailing edge, or after the label for an inline kind
+    // Render the icon when one is named: at the trailing edge, or after the label for an inline kind.
+    // A trailing icon needs its inset, its size and a gap before it; a kind whose end padding
+    // reserves less than that widens to fit (one reference reserves a slot, the other does not)
     const iconSize = ctx.metric('Button', 'iconSize');
+    const hasIcon = Utils.isString(props.icon);
+    const slot = ctx.metric('Button', 'iconInset') + iconSize + ctx.metric('Button', 'iconGap') - borderWidth;
+    const paddingEnd = palette.inline === true ? ctx.metric('Button', 'paddingStart')
+      : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
     const iconPlace = palette.inline === true
       ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
       : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
-    const icon = Utils.isString(props.icon) ? React.createElement(View, { style: iconPlace },
+    const icon = hasIcon ? React.createElement(View, { style: iconPlace },
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
 
     // Render the root, the state layer, the label and the icon
@@ -141,7 +147,7 @@ export default function Button (ctx) {
           borderWidth: borderWidth,
           flexDirection: 'row',
           height: height,
-          paddingEnd: ctx.metric('Button', palette.inline === true ? 'paddingStart' : 'paddingEnd'),
+          paddingEnd: paddingEnd,
           paddingStart: ctx.metric('Button', 'paddingStart'),
           paddingTop: labelTop
         },
