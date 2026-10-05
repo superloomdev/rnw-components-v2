@@ -388,8 +388,8 @@
     {
       "id": "select-trigger-no-browser-ring",
       "file": "component/composite/select/select.js",
-      "find": "flex: 1, flexDirection: 'row', outlineStyle: 'none' }",
-      "replace": "flex: 1, flexDirection: 'row' }",
+      "find": "flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }",
+      "replace": "flexGrow: 1, flexShrink: 1 }",
       "runner": "node",
       "test": "select.test.js",
       "testName": "the trigger suppresses the browser",
