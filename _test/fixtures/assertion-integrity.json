@@ -518,12 +518,12 @@
     {
       "id": "structural-disabled-distinct",
       "file": "component/molecule/button/button.js",
-      "find": "    const fill = filled ? 'button_disabled' : null;\n\n    return {\n      rest: fill,\n      hover: fill,\n      active: fill,\n      content: filled ? 'text_on_color_disabled' : 'text_disabled',",
-      "replace": "    const fill = filled ? kind.rest : null;\n\n    return {\n      rest: fill,\n      hover: fill,\n      active: fill,\n      content: filled ? 'text_on_color' : 'text_disabled',",
+      "find": "    // An enabled button uses its kind's palette\n    if (!disabled) {",
+      "replace": "    // An enabled button uses its kind's palette\n    if (!disabled || disabled) {",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "every enabled control state paints differently from every disabled state of its component",
-      "why": "a disabled filled button painted exactly like its enabled kind must fail the distinctness gate"
+      "why": "a disabled button that paints its enabled kind's palette (fill, border and label) must fail the distinctness gate"
     },
     {
       "id": "gates-census-unlisted-test",
