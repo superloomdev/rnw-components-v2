@@ -15,7 +15,7 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 - **Label position.** The label is centered up to the default height; a taller button keeps it where the default height puts it, near the top, as the primary reference does.
 - **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` pad their end like their start and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
-- **Selected.** A button that toggles passes `selected`; it draws the pressed fill while selected. The primary reference draws selection only on an icon-only button, so the selected state has no measurement counterpart.
+- **Selected.** A button that toggles passes `selected`; while selected it draws the theme's selected surface (`background_selected`) with the primary text color, whatever the kind, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button, with exactly this fill, and the second reference draws a per-kind toggle recipe (a filled kind inverts to its primary, an outlined kind to the inverse surface) that needs selected-state role tokens; those are queued as a contract request, so the selected state has no measurement counterpart yet.
 
 ### Platform
 
@@ -43,7 +43,7 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
 | `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
-| `selected` | `boolean` | no | Draws the pressed fill while true, for a button that toggles. |
+| `selected` | `boolean` | no | Draws the selected surface with the primary text color while true, for a button that toggles. |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -66,7 +66,7 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `iconGap` | `spacing.spacing_03` |
 | `radius` | `control.button_radius` |
 
-Color leaves accepted: `button_secondary`, `button_secondary_hover`, `button_secondary_active`, `button_tertiary`, `button_tertiary_hover`, `button_tertiary_active`, `text_inverse`, `background_hover`, `background_active`, `link_primary`, `button_danger_primary`, `button_danger_secondary`, `button_danger_hover`, `button_danger_active`, `button_tonal`, `button_tonal_hover`, `button_tonal_active`, `text_on_button_tonal`, `button_elevated`, `button_elevated_hover`, `button_elevated_active`, `interactive`.
+Color leaves accepted: `button_secondary`, `button_secondary_hover`, `button_secondary_active`, `button_tertiary`, `button_tertiary_hover`, `button_tertiary_active`, `text_inverse`, `background_hover`, `background_active`, `link_primary`, `button_danger_primary`, `button_danger_secondary`, `button_danger_hover`, `button_danger_active`, `button_tonal`, `button_tonal_hover`, `button_tonal_active`, `text_on_button_tonal`, `button_elevated`, `button_elevated_hover`, `button_elevated_active`, `interactive`, `background_selected`, `text_primary`.
 
 ### States (sample.js)
 

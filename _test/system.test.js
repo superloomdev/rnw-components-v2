@@ -376,12 +376,15 @@ describe('context: fieldPresentation', function () {
     assert.equal(outline.outlineWidth, undefined);
   });
 
-  test('disabled: the border is the field\'s disabledBorder leaf, border_disabled by default, none when null; never invalid', function () {
+  test('disabled: the border is the field\'s disabledBorder leaf, border_disabled by default; null draws none under underline and border_disabled under outline; never invalid', function () {
     const ctx = probeWith({ 'feedback.field': 'outline' });
     assert.equal(ctx.fieldPresentation({ invalid: true, disabled: true }, options).frame.borderColor, t['color.border_disabled']);
     assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: 'border_strong_01' })).frame.borderColor, t['color.border_strong_01']);
-    assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: null })).frame.borderColor, 'transparent');
-    assert.equal(probeWith({ 'feedback.field': 'underline' }).fieldPresentation({ invalid: true, disabled: true }, options).frame.outlineWidth, undefined);
+    // Under outline the border is all that draws the frame, so null still draws the disabled border
+    assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: null })).frame.borderColor, t['color.border_disabled']);
+    const underline = probeWith({ 'feedback.field': 'underline' });
+    assert.equal(underline.fieldPresentation({ disabled: true }, Object.assign({}, options, { disabledBorder: null })).frame.borderColor, 'transparent');
+    assert.equal(underline.fieldPresentation({ invalid: true, disabled: true }, options).frame.outlineWidth, undefined);
   });
 
   test('above: the label is in the flow over the frame, in the label type set', function () {

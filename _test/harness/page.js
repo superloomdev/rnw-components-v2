@@ -305,3 +305,166 @@ export async function readA11yTrees (page) {
   });
 
 }
+
+
+/********************************************************************
+Read every drawn text run of every cell with its contrast against the
+backdrop it is painted on: the text color (with the element's opacity)
+composited over the nearest opaque fill behind it, as WCAG 1.4.3 reads
+it. An input reports its value, or its placeholder through the
+`::placeholder` style. A run inside a hidden or transparent subtree is
+not drawn and is not reported.
+
+@param {Object} page - Playwright page
+
+@return {Promise<Array>} - [{ component, state, kind, text, color, fontSize,
+  fontWeight, ratio, disabled }]; `kind` is text | value | placeholder;
+  `color` is the computed color before compositing, for matching a token
+*********************************************************************/
+export async function readTextContrast (page) {
+
+  return page.evaluate(function () {
+    const parse = function (value) {
+      const match = value.match(/rgba?\(([^)]+)\)/);
+      if (match === null) {
+        return null;
+      }
+      const parts = match[1].split(',').map(parseFloat);
+      return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+    };
+    const over = function (top, bottom) {
+      const a = top.a;
+      return { r: top.r * a + bottom.r * (1 - a), g: top.g * a + bottom.g * (1 - a), b: top.b * a + bottom.b * (1 - a), a: 1 };
+    };
+    const luminance = function (c) {
+      const channel = function (v) {
+        v = v / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      };
+      return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
+    };
+    // The fills behind a node, nearest first, composited onto white (the page)
+    const backdrop = function (node) {
+      const layers = [];
+      for (let current = node; current !== null; current = current.parentElement) {
+        const fill = parse(getComputedStyle(current).backgroundColor);
+        if (fill !== null && fill.a > 0) {
+          layers.push(fill);
+          if (fill.a === 1) {
+            break;
+          }
+        }
+      }
+      let color = { r: 255, g: 255, b: 255, a: 1 };
+      for (let i = layers.length - 1; i >= 0; i--) {
+        color = over(layers[i], color);
+      }
+      return color;
+    };
+    const undrawn = function (node, body) {
+      for (let current = node; current !== null && current !== body; current = current.parentElement) {
+        const style = getComputedStyle(current);
+        if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
+          return true;
+        }
+        if (current.getAttribute('aria-hidden') === 'true' && current.getBoundingClientRect().height === 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+    const rows = [];
+    for (const cell of document.querySelectorAll('.cell')) {
+      const body = cell.querySelector('[data-part="body"]');
+      const disabled = body.querySelector('[aria-disabled="true"], [disabled]') !== null;
+      const runs = [];
+      for (const node of body.querySelectorAll('*')) {
+        if (undrawn(node, body)) {
+          continue;
+        }
+        const own = Array.from(node.childNodes).some(function (child) {
+          return child.nodeType === 3 && child.textContent.trim() !== '';
+        });
+        if (own) {
+          runs.push({ node: node, text: node.textContent.trim(), kind: 'text' });
+        }
+        if (node.tagName === 'INPUT') {
+          if (node.value) {
+            runs.push({ node: node, text: node.value, kind: 'value' });
+          } else if (node.placeholder) {
+            runs.push({ node: node, text: node.placeholder, kind: 'placeholder' });
+          }
+        }
+      }
+      for (const run of runs) {
+        const style = getComputedStyle(run.node, run.kind === 'placeholder' ? '::placeholder' : null);
+        const raw = parse(style.color);
+        const fill = backdrop(run.node);
+        const opacity = parseFloat(getComputedStyle(run.node).opacity);
+        const text = over({ r: raw.r, g: raw.g, b: raw.b, a: raw.a * opacity }, fill);
+        const l1 = luminance(text);
+        const l2 = luminance(fill);
+        rows.push({
+          component: cell.getAttribute('data-component'),
+          state: cell.getAttribute('data-state'),
+          kind: run.kind,
+          text: run.text.slice(0, 40),
+          color: style.color,
+          fontSize: parseFloat(style.fontSize),
+          fontWeight: parseInt(style.fontWeight, 10),
+          ratio: Math.round((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05) * 100) / 100,
+          disabled: disabled
+        });
+      }
+    }
+    return rows;
+  });
+
+}
+
+
+/********************************************************************
+Read the paint of every cell's control: the fill, border color and text
+color of its first interactive element, plus whether the cell is
+disabled. Two cells of one component whose paint is identical cannot be
+told apart; an enabled state must differ from every disabled one.
+
+@param {Object} page - Playwright page
+
+@return {Promise<Array>} - [{ component, state, disabled, paint }] for cells
+  with an interactive element; `paint` is "fill | border | text"
+*********************************************************************/
+export async function readControlPaint (page) {
+
+  return page.evaluate(function () {
+    const ROLES = ['button', 'checkbox', 'combobox', 'link', 'menuitem', 'option', 'radio', 'slider', 'switch', 'tab', 'textbox'];
+    const out = [];
+    for (const cell of document.querySelectorAll('.cell')) {
+      const body = cell.querySelector('[data-part="body"]');
+      const control = Array.from(body.querySelectorAll('*')).find(function (node) {
+        return ROLES.includes(node.getAttribute('role'));
+      });
+      if (control === undefined) {
+        continue;
+      }
+      const style = getComputedStyle(control);
+      // The first drawn text inside the control, or the control's own color
+      const textNode = Array.from(control.querySelectorAll('*')).find(function (node) {
+        return Array.from(node.childNodes).some(function (child) {
+          return child.nodeType === 3 && child.textContent.trim() !== '';
+        });
+      });
+      const text = getComputedStyle(textNode || control).color;
+      // A border in the fill's own color, or transparent, is not seen
+      const border = style.borderTopColor === style.backgroundColor || style.borderTopColor === 'rgba(0, 0, 0, 0)' || parseFloat(style.borderTopWidth) === 0 ? 'none' : style.borderTopColor;
+      out.push({
+        component: cell.getAttribute('data-component'),
+        state: cell.getAttribute('data-state'),
+        disabled: body.querySelector('[aria-disabled="true"], [disabled]') !== null,
+        paint: style.backgroundColor + ' | ' + border + ' | ' + text
+      });
+    }
+    return out;
+  });
+
+}

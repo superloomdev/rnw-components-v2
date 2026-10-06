@@ -494,6 +494,76 @@
       "test": "measure.spec.js",
       "testName": "Button: parts match the second reference",
       "why": "a button drawn with the shared scale's radius under the second template is square where the reference is a pill; the second-reference measurement must fail"
+    },
+    {
+      "id": "structural-contrast",
+      "file": "component/molecule/button/button.js",
+      "find": "    primary: { rest: 'button_primary', hover: 'button_primary_hover', active: 'button_primary_active', content: 'text_on_color' },",
+      "replace": "    primary: { rest: 'button_primary', hover: 'button_primary_hover', active: 'button_primary_active', content: 'button_primary' },",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "a label drawn in its own fill color (1:1) must fail the contrast gate"
+    },
+    {
+      "id": "structural-contrast-exception-stale",
+      "file": "_test/fixtures/contrast-exceptions.json",
+      "find": "      \"token\": \"color.text_placeholder\",",
+      "replace": "      \"token\": \"color.text_primary\",",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "a listed exception whose token no longer draws below the minimum is stale and must fail, so the list can only shrink"
+    },
+    {
+      "id": "structural-disabled-distinct",
+      "file": "component/molecule/button/button.js",
+      "find": "    const fill = filled ? 'button_disabled' : null;\n\n    return {\n      rest: fill,\n      hover: fill,\n      active: fill,\n      content: filled ? 'text_on_color_disabled' : 'text_disabled',",
+      "replace": "    const fill = filled ? kind.rest : null;\n\n    return {\n      rest: fill,\n      hover: fill,\n      active: fill,\n      content: filled ? 'text_on_color' : 'text_disabled',",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every enabled control state paints differently from every disabled state of its component",
+      "why": "a disabled filled button painted exactly like its enabled kind must fail the distinctness gate"
+    },
+    {
+      "id": "gates-census-unlisted-test",
+      "file": "_test/structural.spec.js",
+      "find": "    test('interactive targets are at least 44 points', function () {",
+      "replace": "    test('interactive targets are at least 44 pts', function () {",
+      "runner": "node",
+      "test": "gates.test.js",
+      "testName": "structural.spec.js: every listed title is a declared test, and every declared test is listed",
+      "why": "a gate test whose title is not in the census must fail the census"
+    },
+    {
+      "id": "gates-census-missing-clause",
+      "file": "_test/fixtures/gates.json",
+      "find": "    { \"layer\": 1, \"spec\": \"structural.spec.js\", \"clause\": \"target >= 44\", \"title\": \"interactive targets are at least 44 points\" },\n",
+      "replace": "",
+      "runner": "node",
+      "test": "gates.test.js",
+      "testName": "structural.spec.js: every listed title is a declared test, and every declared test is listed",
+      "why": "a spec that declares a test the census does not list must fail the count"
+    },
+    {
+      "id": "button-selected-surface",
+      "file": "component/molecule/button/button.js",
+      "find": "    return Object.assign({}, palette, { rest: 'background_selected', content: 'text_primary', engaged: undefined });",
+      "replace": "    return Object.assign({}, palette, { rest: 'background_active', content: 'text_primary', engaged: undefined });",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "selected: geometry, fill and label come from the theme",
+      "why": "a selected button that paints the pressed fill instead of the selected surface must fail"
+    },
+    {
+      "id": "context-field-disabled-outline-border",
+      "file": "component/context.js",
+      "find": "    const disabledBorder = options.disabledBorder === undefined || (options.disabledBorder === null && mode === 'outline') ? 'border_disabled' : options.disabledBorder;",
+      "replace": "    const disabledBorder = options.disabledBorder === undefined ? 'border_disabled' : options.disabledBorder;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "disabled: the border is the field's disabledBorder leaf, border_disabled by default; null draws none under underline and border_disabled under outline; never invalid",
+      "why": "a disabled outline field that draws no border erases the control; the frame must keep the disabled border"
     }
   ]
 }

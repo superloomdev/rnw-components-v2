@@ -364,7 +364,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   field keeps its border and draws an error ring inside its bounds; an
   invalid outline field draws its border in the error color. A disabled
   field draws its border in `disabledBorder`, a color leaf the field
-  chooses, or none when that is null.
+  chooses; null draws none under `underline`, where the filled frame keeps
+  the field's shape, and the disabled border under `outline`, where the
+  border is the only thing that draws the frame.
 
   @param {Object} state   - { focused, hovered, disabled, invalid, populated }
   @param {Object} options - { height, paddingInline, radius, surface, disabledBorder }:
@@ -384,7 +386,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const width = token('border.width_01');
     const disabled = state.disabled === true;
     const invalid = !disabled && state.invalid === true;
-    const disabledBorder = options.disabledBorder === undefined ? 'border_disabled' : options.disabledBorder;
+    const disabledBorder = options.disabledBorder === undefined || (options.disabledBorder === null && mode === 'outline') ? 'border_disabled' : options.disabledBorder;
     const borderLeaf = disabled ? disabledBorder : invalid && mode === 'outline' ? 'support_error' : 'border_strong_01';
     // An outline frame colors its label with the error while invalid; an underline frame keeps it
     const labelColor = color(disabled ? 'text_disabled' : invalid && mode === 'outline' ? 'text_error' : 'text_secondary');

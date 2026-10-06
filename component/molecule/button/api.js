@@ -9,7 +9,7 @@ export default Object.freeze({
     size: { type: 'string', required: false, description: 'One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`.' },
     icon: { type: 'string', required: false, description: 'Semantic icon name drawn at the trailing edge; decorative, the label names the button.' },
     disabled: { type: 'boolean', required: false, description: 'Disables press, hover and focus feedback and announces the button as disabled.' },
-    selected: { type: 'boolean', required: false, description: 'Draws the pressed fill while true, for a button that toggles.' },
+    selected: { type: 'boolean', required: false, description: 'Draws the selected surface with the primary text color while true, for a button that toggles.' },
     onPress: { type: 'function', required: false, description: 'Called on activation (press, Enter, Space).' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when the label alone does not say what the button does.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
@@ -32,6 +32,7 @@ export default Object.freeze({
     'background_hover', 'background_active', 'link_primary',
     'button_danger_primary', 'button_danger_secondary', 'button_danger_hover', 'button_danger_active',
     'button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal',
-    'button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive'
+    'button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive',
+    'background_selected', 'text_primary'
   ])
 });

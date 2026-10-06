@@ -105,7 +105,8 @@ describe('Select: every sample state under every template', function () {
         // Frame geometry and the mode's border
         // Disabled draws no border; invalid draws an inner error ring (underline) or an error border (outline)
         const outline = t['feedback.field'] === 'outline';
-        const border = disabled ? null : invalid && outline ? 'support_error' : 'border_strong_01';
+        // A disabled select draws no border under underline (the fill keeps the shape) and the disabled border under outline
+        const border = disabled ? (outline ? 'border_disabled' : null) : invalid && outline ? 'support_error' : 'border_strong_01';
         assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
         // An outline frame keeps its borders inside the inline padding

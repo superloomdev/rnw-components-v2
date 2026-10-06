@@ -113,8 +113,9 @@ describe('Button: every sample state under every template', function () {
         const props = state.props;
         const kind = KINDS[props.kind || 'primary'];
         const filled = kind[0] !== null;
-        const restFill = props.disabled ? (filled ? 'button_disabled' : null) : props.selected && t['feedback.press'] === 'highlight' ? kind[2] : kind[0];
-        const content = props.disabled ? (filled ? 'text_on_color_disabled' : 'text_disabled') : kind[3];
+        // A selected button draws the selected surface with the primary text color under every press mode
+        const restFill = props.disabled ? (filled ? 'button_disabled' : null) : props.selected ? 'background_selected' : kind[0];
+        const content = props.disabled ? (filled ? 'text_on_color_disabled' : 'text_disabled') : props.selected ? 'text_primary' : kind[3];
         const parts = await renderButton(registryFor(template), props);
         const set = t['type.button_label'];
         assert.equal(parts.root.style.height, t[HEIGHTS[props.size || 'lg']] + 'px');

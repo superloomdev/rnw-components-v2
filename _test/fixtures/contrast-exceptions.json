@@ -1,0 +1,14 @@
+{
+  "info": [
+    "Contrast exceptions: text a reference template draws below 4.5:1 because its design system does, measured against the pinned upstream.",
+    "An entry names the template and the color token the text is drawn in; every drawn run in that template whose color equals the token's value is exempt from the ratio, and the gate asserts at least one such run is still below the threshold, so a stale entry fails.",
+    "Disabled text is exempt everywhere without an entry (WCAG 1.4.3 exempts inactive components). An entry is added only by the reasoning tier, with the upstream fact it rests on; the execution tier never adds one."
+  ],
+  "exceptions": [
+    {
+      "template": "carbon",
+      "token": "color.text_placeholder",
+      "reason": "Carbon g10 draws placeholder text in text-placeholder, rgba(22, 22, 22, 0.4) on field-01 #f4f4f4 (2.52:1); the template reproduces the upstream value exactly (B+)."
+    }
+  ]
+}

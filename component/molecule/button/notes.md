@@ -11,7 +11,7 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 - **Label position.** The label is centered up to the default height; a taller button keeps it where the default height puts it, near the top, as the primary reference does.
 - **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` pad their end like their start and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
-- **Selected.** A button that toggles passes `selected`; it draws the pressed fill while selected. The primary reference draws selection only on an icon-only button, so the selected state has no measurement counterpart.
+- **Selected.** A button that toggles passes `selected`; while selected it draws the theme's selected surface (`background_selected`) with the primary text color, whatever the kind, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button, with exactly this fill, and the second reference draws a per-kind toggle recipe (a filled kind inverts to its primary, an outlined kind to the inverse surface) that needs selected-state role tokens; those are queued as a contract request, so the selected state has no measurement counterpart yet.
 
 ## Platform
 

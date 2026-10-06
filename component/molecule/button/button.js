@@ -84,6 +84,22 @@ export default function Button (ctx) {
 
 
   /********************************************************************
+  The palette of a selected button: the selected fill with the primary
+  content color, over the kind's own hover and active fills. One
+  recipe for every kind, from the theme's selected-surface tokens.
+
+  @param {Object} palette - The palette in effect
+
+  @return {Object} - Palette
+  *********************************************************************/
+  function getSelectedPalette (palette) {
+
+    return Object.assign({}, palette, { rest: 'background_selected', content: 'text_primary', engaged: undefined });
+
+  }
+
+
+  /********************************************************************
   Button component.
 
   @param {Object} props - See `api.js`
@@ -98,16 +114,17 @@ export default function Button (ctx) {
 
     // Init the kind, its palette and the size
     const kind = KINDS[props.kind] || KINDS.primary;
-    const palette = getPalette(kind, state.disabled);
+    const resting = getPalette(kind, state.disabled);
+    const palette = state.selected && !state.disabled ? getSelectedPalette(resting) : resting;
     const height = ctx.metric('Button', SIZES[props.size] || 'height');
     const radius = ctx.metric('Button', 'radius');
 
-    // Read the theme's press presentation; a selected button shows its pressed fill
+    // Read the theme's press presentation over the palette in effect
     const press = ctx.pressPresentation({
       disabled: state.disabled,
       focused: state.focused,
       hovered: state.hovered,
-      pressed: state.pressed || state.selected
+      pressed: state.pressed
     }, palette);
     const contentLeaf = press.engaged && Utils.isString(palette.engaged) ? palette.engaged : palette.content;
 
