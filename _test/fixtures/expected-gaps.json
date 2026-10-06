@@ -193,26 +193,6 @@
     {
       "check": "measure-second",
       "component": "TextInput",
-      "part": "message",
-      "property": "color",
-      "request": "M2 request: the second template maps text_error from error",
-      "states": [
-        "invalid"
-      ]
-    },
-    {
-      "check": "measure-second",
-      "component": "TextInput",
-      "part": "label",
-      "property": "color",
-      "request": "M2 request: the second template maps text_error from error",
-      "states": [
-        "invalid"
-      ]
-    },
-    {
-      "check": "measure-second",
-      "component": "TextInput",
       "part": "label",
       "property": "color",
       "request": "M2 request: the second template flattens its disabled state-layer colors (on-surface at 12 / 38 percent over the surface) into button_disabled, text_on_color_disabled, text_disabled, border_disabled, icon_disabled",
@@ -336,26 +316,6 @@
       "request": "M2 request: the second template maps text_helper from on-surface-variant",
       "states": [
         "helper"
-      ]
-    },
-    {
-      "check": "measure-second",
-      "component": "Select",
-      "part": "message",
-      "property": "color",
-      "request": "M2 request: the second template maps text_error from error",
-      "states": [
-        "invalid"
-      ]
-    },
-    {
-      "check": "measure-second",
-      "component": "Select",
-      "part": "label",
-      "property": "color",
-      "request": "M2 request: the second template maps text_error from error",
-      "states": [
-        "invalid"
       ]
     },
     {
