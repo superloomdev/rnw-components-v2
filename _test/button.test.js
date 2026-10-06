@@ -26,7 +26,7 @@ const KINDS = {
   danger_tertiary: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
   danger_ghost: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
   tonal: ['button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal', null],
-  elevated: ['button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive', null]
+  elevated: ['button_elevated', 'button_elevated_hover', 'button_elevated_active', 'link_primary', null]
 };
 // How the renderer serializes a transparent fill or border
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';

@@ -32,7 +32,7 @@ export default Object.freeze({
     'background_hover', 'background_active', 'link_primary',
     'button_danger_primary', 'button_danger_secondary', 'button_danger_hover', 'button_danger_active',
     'button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal',
-    'button_elevated', 'button_elevated_hover', 'button_elevated_active', 'interactive',
+    'button_elevated', 'button_elevated_hover', 'button_elevated_active',
     'background_selected', 'text_primary'
   ])
 });

@@ -35,7 +35,7 @@ export default function Button (ctx) {
     danger_tertiary: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', border: 'button_danger_secondary' },
     danger_ghost: { rest: null, hover: 'button_danger_hover', active: 'button_danger_active', content: 'button_danger_secondary', engaged: 'text_on_color', inline: true },
     tonal: { rest: 'button_tonal', hover: 'button_tonal_hover', active: 'button_tonal_active', content: 'text_on_button_tonal' },
-    elevated: { rest: 'button_elevated', hover: 'button_elevated_hover', active: 'button_elevated_active', content: 'interactive', shadow: 'shadow.level_01' }
+    elevated: { rest: 'button_elevated', hover: 'button_elevated_hover', active: 'button_elevated_active', content: 'link_primary', shadow: 'shadow.level_01' }
   });
 
   // Size -> height metric in the spec sheet

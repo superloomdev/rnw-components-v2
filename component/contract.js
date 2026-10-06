@@ -70,7 +70,7 @@ const BUTTON_SUPPORTED = [
   'color.background_hover', 'color.background_active', 'color.link_primary',
   'color.button_danger_primary', 'color.button_danger_secondary', 'color.button_danger_hover', 'color.button_danger_active',
   'color.button_tonal', 'color.button_tonal_hover', 'color.button_tonal_active', 'color.text_on_button_tonal',
-  'color.button_elevated', 'color.button_elevated_hover', 'color.button_elevated_active', 'color.interactive',
+  'color.button_elevated', 'color.button_elevated_hover', 'color.button_elevated_active',
   'color.background_selected', 'color.text_primary'
 ];
 
