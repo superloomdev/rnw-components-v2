@@ -2,32 +2,26 @@
 //
 // REQUIRED_TOKENS is the union of every token name a component's `spec.js`
 // names plus the tokens the context itself reads; SUPPORTED_TOKENS adds the
-// tokens a component reads optionally. REQUIRED_ICONS is the union of the
-// icon names components draw on their own initiative (a checkbox's mark, a
-// select's caret), not the names a host passes to `Icon`. The purity test
+// tokens a component reads optionally. The controls' lists are their own
+// `api.js` and `spec.js` (the role cells they read). REQUIRED_ICONS is the
+// union of the icon names components draw on their own initiative (a
+// checkbox's mark, the invalid icon, a select's dropdown indicator), not the
+// names a host passes to `Icon`. The purity test
 // asserts these lists against the spec sheets, so a token read that is not
 // declared here fails before it reaches a theme.
 
-// Tokens `component/context.js` reads for every component
+import buttonApi from './molecule/button/api.js';
+import buttonSpec from './molecule/button/spec.js';
+import checkboxApi from './molecule/checkbox/api.js';
+import checkboxSpec from './molecule/checkbox/spec.js';
+import textInputApi from './molecule/text-input/api.js';
+import textInputSpec from './molecule/text-input/spec.js';
+import selectApi from './composite/select/api.js';
+import selectSpec from './composite/select/spec.js';
+
+// Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
-  'color.focus',
-  'feedback.focus',
-  'focus.offset',
-  'focus.width'
-];
-
-// Tokens the press presentation reads, for every component that calls it
-const PRESS_TOKENS = [
-  'feedback.press', 'state.hover_opacity', 'state.pressed_opacity', 'state.focus_opacity',
-  'motion.duration_fast_01', 'motion.easing_standard_productive'
-];
-
-// Tokens the field presentation reads, for every component that calls it
-const FIELD_TOKENS = [
-  'feedback.field', 'anatomy.label', 'border.width_01', 'border.width_02', 'spacing.spacing_02', 'spacing.spacing_03',
-  'type.label01', 'type.field_label_raised', 'type.body_compact_01', 'font.family.sans',
-  'color.border_disabled', 'color.support_error', 'color.border_strong_01',
-  'color.field_01', 'color.field_hover_01', 'color.text_disabled', 'color.text_secondary'
+  'feedback.focus_trigger'
 ];
 
 // Surfaces a field may sit on; its floating label occludes the border with one
@@ -56,44 +50,27 @@ const VIEW_SUPPORTED = [
   'color.border_tile_01', 'color.border_tile_02', 'color.border_tile_03'
 ];
 
-const BUTTON_REQUIRED = [].concat(PRESS_TOKENS, [
-  'control.button_height', 'control.button_radius', 'control.button_padding_start', 'control.button_padding_end', 'control.button_icon_size',
-  'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
-  'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
-  'type.button_label', 'font.family.sans', 'shadow.level_01',
-  'color.button_primary', 'color.button_primary_hover', 'color.button_primary_active', 'color.text_on_color',
-  'color.button_disabled', 'color.text_on_color_disabled', 'color.text_disabled', 'color.border_disabled'
-]);
-const BUTTON_SUPPORTED = [
-  'color.button_secondary', 'color.button_secondary_hover', 'color.button_secondary_active',
-  'color.button_tertiary', 'color.button_tertiary_hover', 'color.button_tertiary_active', 'color.text_inverse',
-  'color.background_hover', 'color.background_active', 'color.link_primary',
-  'color.button_danger_primary', 'color.button_danger_secondary', 'color.button_danger_hover', 'color.button_danger_active',
-  'color.button_tonal', 'color.button_tonal_hover', 'color.button_tonal_active', 'color.text_on_button_tonal',
-  'color.button_elevated', 'color.button_elevated_hover', 'color.button_elevated_active',
-  'color.background_selected', 'color.text_primary'
-];
+/********************************************************************
+Every token a component's spec sheet names.
 
-const CHECKBOX_REQUIRED = [].concat(PRESS_TOKENS, [
-  'control.checkbox_size', 'control.checkbox_border', 'size.icon_01', 'border.width_01', 'shape.radius_02',
-  'spacing.spacing_03', 'spacing.spacing_04', 'spacing.spacing_01',
-  'spacing.spacing_05', 'size.size_medium', 'shape.radius_max', 'spacing.spacing_02',
-  'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
-  'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error', 'color.control_checked',
-  'color.text_primary', 'color.text_disabled', 'color.text_error', 'color.text_helper'
-]);
+@param {Object} spec - A spec sheet (metric -> token or rule)
 
-const TEXT_INPUT_REQUIRED = [].concat(FIELD_TOKENS, [
-  'control.field_height', 'control.field_radius', 'control.field_icon_size', 'size.size_small', 'size.size_large', 'spacing.spacing_05',
-  'type.helper_text_01', 'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper'
-]);
+@return {Array} - Token names
+*********************************************************************/
+function specTokens (spec) {
 
-const SELECT_REQUIRED = [].concat(FIELD_TOKENS, [
-  'anatomy.caret', 'control.field_height', 'control.field_radius', 'control.field_icon_size', 'control.option_height',
-  'size.size_small', 'size.size_large', 'spacing.spacing_05', 'stacking.dropdown', 'shadow.level_02', 'type.helper_text_01',
-  'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper',
-  'color.icon_primary', 'color.icon_disabled', 'color.layer_01', 'color.layer_hover_01', 'color.layer_selected_01'
-]);
+  return Object.keys(spec).flatMap(function (metric) {
+    const entry = spec[metric];
+    return typeof entry === 'string' ? [entry] : Array.isArray(entry.tokens) ? entry.tokens : [];
+  });
+
+}
+
+// The controls read their role cells: each api.js lists them, each spec.js names its geometry
+const BUTTON_REQUIRED = [].concat(buttonApi.tokens, specTokens(buttonSpec));
+const CHECKBOX_REQUIRED = [].concat(checkboxApi.tokens, specTokens(checkboxSpec));
+const TEXT_INPUT_REQUIRED = [].concat(textInputApi.tokens, specTokens(textInputSpec));
+const SELECT_REQUIRED = [].concat(selectApi.tokens, specTokens(selectSpec));
 
 
 /********************************************************************
@@ -113,6 +90,6 @@ function join (...lists) {
 
 export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, SELECT_REQUIRED);
 
-export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, BUTTON_SUPPORTED, FIELD_SURFACES);
+export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES);
 
-export const REQUIRED_ICONS = Object.freeze(['checkmark', 'subtract', 'warning_filled', 'chevron_down']);
+export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator']);

@@ -1,7 +1,8 @@
 // Info: Button molecule. Every sample state renders under all three
-// templates with its size, border, paddings, fill and label read from the
-// built theme; hover, press, focus, selected and disabled drive the theme's
-// feedback.press choice through the DOM; the accessibility answer is a
+// templates with its size, border, paddings, fill, label and elevation read
+// from the kind's role cells in the built theme; hover, press, focus,
+// selected and disabled drive the theme's feedback.press choice and focus
+// ring through the DOM; the accessibility answer is a
 // named button, disabled when disabled.
 
 import { afterEach, describe, test } from 'node:test';
@@ -15,19 +16,6 @@ import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 
-// Expected palette per kind, as the behavior is specified: rest fill,
-// hover fill, active fill, label color, label color on an engaged fill
-const KINDS = {
-  primary: ['button_primary', 'button_primary_hover', 'button_primary_active', 'text_on_color', null],
-  secondary: ['button_secondary', 'button_secondary_hover', 'button_secondary_active', 'text_on_color', null],
-  tertiary: [null, 'button_tertiary_hover', 'button_tertiary_active', 'button_tertiary', 'text_inverse'],
-  ghost: [null, 'background_hover', 'background_active', 'link_primary', null],
-  danger: ['button_danger_primary', 'button_danger_hover', 'button_danger_active', 'text_on_color', null],
-  danger_tertiary: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
-  danger_ghost: [null, 'button_danger_hover', 'button_danger_active', 'button_danger_secondary', 'text_on_color'],
-  tonal: ['button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal', null],
-  elevated: ['button_elevated', 'button_elevated_hover', 'button_elevated_active', 'link_primary', null]
-};
 // How the renderer serializes a transparent fill or border
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 // Kinds that reserve no trailing icon slot: their end padding equals the start padding
@@ -111,25 +99,26 @@ describe('Button: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': geometry, fill and label come from the theme', async function () {
         const t = buildNative(template).tokens;
         const props = state.props;
-        const kind = KINDS[props.kind || 'primary'];
-        const filled = kind[0] !== null;
-        // A selected button draws the selected surface with the primary text color under every press mode
-        const restFill = props.disabled ? (filled ? 'button_disabled' : null) : props.selected ? 'background_selected' : kind[0];
-        const content = props.disabled ? (filled ? 'text_on_color_disabled' : 'text_disabled') : props.selected ? 'text_primary' : kind[3];
+        // The kind's own cells for the state: disabled, then selected, then rest
+        const cell = 'button_' + (props.kind || 'primary');
+        const phase = props.disabled ? '_disabled' : props.selected ? '_selected' : '';
         const parts = await renderButton(registryFor(template), props);
         const set = t['type.button_label'];
         assert.equal(parts.root.style.height, t[HEIGHTS[props.size || 'lg']] + 'px');
         assert.equal(parts.root.style.borderTopWidth, t['border.width_01'] + 'px');
-        assert.equal(parts.root.style.paddingLeft, (t['control.button_padding_start'] - t['border.width_01']) + 'px');
+        const inline = INLINE.includes(props.kind);
+        assert.equal(parts.root.style.paddingLeft, ((inline ? t['control.button_ghost_padding_start'] : t['control.button_padding_start']) - t['border.width_01']) + 'px');
         // A trailing icon widens an end padding that reserves less than inset + icon + gap
         const slot = t['spacing.spacing_05'] + t['control.button_icon_size'] + t['spacing.spacing_03'];
-        const end = INLINE.includes(props.kind) ? t['control.button_padding_start'] : props.icon ? Math.max(t['control.button_padding_end'], slot) : t['control.button_padding_end'];
+        const end = inline ? t['control.button_ghost_padding_end'] : props.icon ? Math.max(t['control.button_padding_end'], slot) : t['control.button_padding_end'];
         assert.equal(parts.root.style.paddingRight, (end - t['border.width_01']) + 'px');
         const labelHeight = Math.min(t[HEIGHTS[props.size || 'lg']], t['control.button_height']);
         assert.equal(parts.root.style.paddingTop, ((labelHeight - set.lineHeight) / 2 - t['border.width_01']) + 'px');
         assert.equal(parts.root.style.borderTopLeftRadius, t['control.button_radius'] + 'px');
-        assert.equal(parts.root.style.backgroundColor, fillOf(t, restFill));
-        assert.equal(parts.label.style.color, cssValue('color', t['color.' + content]));
+        assert.equal(parts.root.style.minWidth, t['control.button_min_width'] + 'px');
+        assert.equal(parts.root.style.backgroundColor, cssValue('backgroundColor', t['color.' + cell + '_container' + phase]));
+        assert.equal(parts.label.style.color, cssValue('color', t['color.' + cell + '_label' + phase]));
+        assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.' + cell + '_border' + (phase === '_selected' ? '' : phase)]));
         assert.equal(parts.label.style.fontSize, set.fontSize + 'px');
         assert.equal(parts.label.style.lineHeight, set.lineHeight + 'px');
         assert.equal(parts.label.textContent, props.children);
@@ -144,24 +133,18 @@ describe('Button: every sample state under every template', function () {
 
 describe('Button: kinds', function () {
 
-  test('an outlined kind draws its border color, a disabled filled kind its fill; others draw a transparent border of the same width', async function () {
-    const t = buildNative('carbon').tokens;
-    const tertiary = await renderButton(registryFor('carbon'), { children: 'T', kind: 'tertiary' });
-    assert.equal(tertiary.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_tertiary']));
-    const disabled = await renderButton(registryFor('carbon'), { children: 'T', kind: 'tertiary', disabled: true });
-    assert.equal(disabled.root.style.borderTopColor, cssValue('borderTopColor', t['color.border_disabled']));
-    const primary = await renderButton(registryFor('carbon'), { children: 'P' });
-    assert.equal(primary.root.style.borderTopColor, TRANSPARENT);
-    const filledDisabled = await renderButton(registryFor('carbon'), { children: 'P', disabled: true });
-    assert.equal(filledDisabled.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_disabled']));
-  });
-
-  test('elevated lifts with the first shadow level; disabled drops it', async function () {
-    const t = buildNative('carbon').tokens;
-    const elevated = await renderButton(registryFor('carbon'), { children: 'E', kind: 'elevated' });
-    assert.equal(elevated.root.style.boxShadow, t['shadow.level_01'].boxShadow);
-    const disabled = await renderButton(registryFor('carbon'), { children: 'E', kind: 'elevated', disabled: true });
-    assert.equal(disabled.root.style.boxShadow, '');
+  test('every kind draws its own border and elevation cells; disabled reads the disabled ones', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const t = buildNative(template).tokens;
+      for (const kind of ['primary', 'tertiary', 'elevated']) {
+        const rest = await renderButton(registryFor(template), { children: 'K', kind: kind });
+        assert.equal(rest.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_' + kind + '_border']), template + ' ' + kind);
+        assert.equal(rest.root.style.boxShadow, t['shadow.button_' + kind].boxShadow, template + ' ' + kind);
+        const disabled = await renderButton(registryFor(template), { children: 'K', kind: kind, disabled: true });
+        assert.equal(disabled.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_' + kind + '_border_disabled']), template + ' ' + kind);
+        assert.equal(disabled.root.style.boxShadow, t['shadow.button_' + kind + '_disabled'].boxShadow, template + ' ' + kind);
+      }
+    }
   });
 
   test('a trailing icon is decorative, sized by the icon metric and drawn in the label color', async function () {
@@ -169,7 +152,7 @@ describe('Button: kinds', function () {
     const parts = await renderButton(registryFor('carbon'), { children: 'Add', icon: 'add' });
     const svg = parts.root.querySelector('svg');
     assert.equal(svg.getAttribute('width'), String(t['control.button_icon_size']));
-    assert.equal(svg.getAttribute('fill'), t['color.text_on_color']);
+    assert.equal(svg.getAttribute('fill'), t['color.button_primary_label']);
     assert.equal(svg.getAttribute('aria-hidden'), 'true');
     assert.equal(svg.parentElement.style.right, t['spacing.spacing_05'] + 'px');
     const labelTop = (t['control.button_height'] - t['type.button_label'].lineHeight) / 2 - t['border.width_01'];
@@ -185,23 +168,23 @@ describe('Button: kinds', function () {
 
 describe('Button: feedback.press through the DOM', function () {
 
-  test('highlight: hover, press and release change the fill; an outlined kind switches its label on the engaged fill', async function () {
+  test('highlight: hover, press and release paint the kind\'s cells; the label follows the same state', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderButton(registryFor('carbon', { 'feedback.press': 'highlight' }), { children: 'T', kind: 'tertiary' });
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, null));
-    assert.equal(parts.label.style.color, cssValue('color', t['color.button_tertiary']));
+    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_tertiary_container'));
+    assert.equal(parts.label.style.color, cssValue('color', t['color.button_tertiary_label']));
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_tertiary_hover'));
-    assert.equal(parts.label.style.color, cssValue('color', t['color.text_inverse']));
+    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_tertiary_container_hover'));
+    assert.equal(parts.label.style.color, cssValue('color', t['color.button_tertiary_label_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_tertiary_active'));
+    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_tertiary_container_active'));
+    assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_tertiary_border_active']));
     await fire(parts.root, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
     await fire(parts.root, new Event('pointerout', { bubbles: true }));
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, null));
-    assert.equal(parts.layer.style.display, 'none');
+    assert.equal(parts.layer.style.opacity, '0');
   });
 
-  test('opacity: the button fades by the state opacities and keeps its fill', async function () {
+  test('opacity: the button fades by the state opacities and keeps its resting cell', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderButton(registryFor('carbon', { 'feedback.press': 'opacity', 'state.hover_opacity': 0.25, 'state.pressed_opacity': 0.5 }), { children: 'P' });
     assert.equal(parts.root.style.opacity, '1');
@@ -209,31 +192,48 @@ describe('Button: feedback.press through the DOM', function () {
     assert.equal(parts.root.style.opacity, '0.75');
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.root.style.opacity, '0.5');
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary'));
-    assert.equal(parts.layer.style.display, 'none');
+    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary_container'));
   });
 
-  test('ripple: the state layer in the label color rises to the hover and pressed opacities over a fixed fill', async function () {
+  test('ripple: the state\'s cell is a layer over the resting cell', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderButton(registryFor('material', { 'feedback.press': 'ripple' }), { children: 'P' });
-    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.text_on_color']));
     assert.equal(parts.layer.style.opacity, '0');
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
-    assert.equal(parts.layer.style.opacity, String(t['state.hover_opacity']));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_hover'));
+    assert.equal(parts.layer.style.opacity, '1');
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(parts.layer.style.opacity, String(t['state.pressed_opacity']));
-    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary'));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_active'));
+    assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary_container'));
   });
 
-  test('focus draws the theme\'s focus presentation', async function () {
+  test('focus draws the button ring from its cells; a keyboard-only theme draws it for keyboard focus, not for a pointer press', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderButton(registryFor('carbon'), { children: 'P' });
     assert.equal(parts.root.style.outlineWidth, '');
     await act(async function () {
       parts.root.focus();
     });
-    assert.equal(parts.root.style.outlineWidth, t['focus.width'] + 'px');
-    assert.equal(parts.root.style.outlineColor, cssValue('outlineColor', t['color.focus']));
+    // Carbon draws its ring inside the edge: the border in the ring colour, then inset shadows
+    assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']));
+    assert.match(parts.root.style.boxShadow, /inset/);
+    assert.equal(parts.root.style.outlineWidth, '');
+    const m = buildNative('material').tokens;
+    const keyboard = await renderButton(registryFor('material'), { children: 'P' });
+    await fire(keyboard.root, new Event('pointerdown', { bubbles: true }));
+    await act(async function () {
+      keyboard.root.focus();
+    });
+    assert.equal(keyboard.root.style.outlineWidth, '', 'no ring after a pointer press');
+    await act(async function () {
+      keyboard.root.blur();
+    });
+    await act(async function () {
+      keyboard.root.focus();
+    });
+    assert.equal(keyboard.root.style.outlineWidth, m['control.button_focus_width'] + 'px');
+    assert.equal(keyboard.root.style.outlineOffset, m['control.button_focus_offset'] + 'px');
+    assert.equal(keyboard.root.style.backgroundColor, fillOf(m, 'button_primary_container_focus'));
   });
 
   test('disabled: no hover or press feedback and no activation; enabled activates once per click', async function () {
@@ -242,7 +242,7 @@ describe('Button: feedback.press through the DOM', function () {
     const disabled = await renderButton(registryFor('carbon', { 'feedback.press': 'highlight' }), { children: 'D', disabled: true, onPress: function () { calls.push('disabled'); } });
     await fire(disabled.root, new Event('pointerover', { bubbles: true }));
     await fire(disabled.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(disabled.root.style.backgroundColor, fillOf(t, 'button_disabled'));
+    assert.equal(disabled.root.style.backgroundColor, fillOf(t, 'button_primary_container_disabled'));
     await act(async function () {
       disabled.root.click();
     });

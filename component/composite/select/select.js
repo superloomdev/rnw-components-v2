@@ -4,7 +4,7 @@
 // list is laid out below the frame at the dropdown stacking level. Composes
 // the `useSelect` behavior for open, selection and keyboard traversal, and
 // draws the theme's `feedback.field` frame, `anatomy.label` placement and
-// `anatomy.caret` choice.
+// `field` role cells, with the theme's own dropdown indicator glyph.
 
 import SPEC from './spec.js';
 
@@ -46,33 +46,31 @@ export default function Select (ctx) {
 
     // Read the geometry and the theme's field presentation
     const height = ctx.metric('Select', SIZES[props.size] || 'height');
-    const paddingInline = ctx.metric('Select', 'paddingInline');
     const iconSize = ctx.metric('Select', 'iconSize');
-    const iconGap = ctx.metric('Select', 'iconGap');
     const surface = Utils.isString(props.surface) ? props.surface
       : Utils.isString(ctx.config.FIELD_SURFACE) ? ctx.config.FIELD_SURFACE : 'background';
     const presentation = ctx.fieldPresentation({
       disabled: state.disabled,
       focused: state.focused || state.open,
-      hovered: false,
+      hovered: state.hovered,
       invalid: invalid,
       populated: selected !== null
     }, {
+      member: 'select',
       height: height,
-      paddingInline: paddingInline,
       radius: ctx.metric('Select', 'radius'),
       surface: surface,
-      disabledBorder: null
+      trailing: true
     });
+    const iconGap = presentation.iconGap;
 
-    // The caret is always mounted; the theme's anatomy.caret decides whether it shows
-    const caret = React.createElement(View, {
-      style: { display: ctx.enum('anatomy.caret') === 'shown' ? 'flex' : 'none', marginStart: iconGap }
-    }, React.createElement(ctx.Registry.Icon, { name: 'chevron_down', size: iconSize, color: state.disabled ? 'icon_disabled' : 'icon_primary' }));
+    // The indicator: the theme's own dropdown glyph, in the field's indicator colour for the state
+    const caret = React.createElement(View, { style: { marginStart: iconGap } },
+      React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }));
 
     // Render the error icon while invalid
     const icon = invalid ? React.createElement(View, { style: { marginStart: iconGap } },
-      React.createElement(ctx.Registry.Icon, { name: 'warning_filled', size: iconSize, color: 'support_error' })) : null;
+      React.createElement(ctx.Registry.Icon, { name: 'invalid', size: iconSize, color: presentation.invalidIcon })) : null;
 
     // Render the option list while open
     const list = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
@@ -91,22 +89,22 @@ export default function Select (ctx) {
           backgroundColor: ctx.color(fill),
           height: ctx.metric('Select', 'optionHeight'),
           justifyContent: 'center',
-          paddingHorizontal: paddingInline
+          paddingHorizontal: ctx.metric('Select', 'optionPadding')
         }
       }), React.createElement(Text, {
         numberOfLines: 1,
-        style: [ctx.typeStyle('body_compact_01'), { color: ctx.color('text_primary') }]
+        style: [presentation.value, { color: ctx.color('text_primary') }]
       }, item.label));
     })) : null;
 
     // Render the message below: the error while invalid, else the helper
-    const message = invalid && Utils.isString(props.invalidText) ? { text: props.invalidText, color: 'text_error' }
-      : Utils.isString(props.helperText) ? { text: props.helperText, color: 'text_helper' } : null;
+    const message = invalid && Utils.isString(props.invalidText) ? props.invalidText
+      : Utils.isString(props.helperText) ? props.helperText : null;
 
     // Size the trigger to its widest text, as a platform select sizes to its
     // widest option, so the frame does not change width with the selection;
     // the sizer takes no height and is hidden from assistive technology
-    const bodyStyle = ctx.typeStyle('body_compact_01');
+    const bodyStyle = presentation.value;
     const placeholder = Utils.isString(props.placeholder) ? props.placeholder : '';
     const sizer = React.createElement(View, { 'aria-hidden': true, style: { height: 0, overflow: 'hidden' } },
       [placeholder].concat(items.map(function (item) {
@@ -118,7 +116,7 @@ export default function Select (ctx) {
     // Render the root, the label, the frame with the trigger and the list, and the message
     return React.createElement(View, Object.assign({}, select.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
       labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-      React.createElement(View, { style: [presentation.frame, ctx.focusPresentation(state.focused)] },
+      React.createElement(View, { style: presentation.frame },
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
           accessibilityLabel: props.accessibilityLabel,
           testID: props.testID,
@@ -132,9 +130,9 @@ export default function Select (ctx) {
           React.createElement(Text, {
             numberOfLines: 1,
             style: [bodyStyle, {
-              color: ctx.color(state.disabled ? 'text_disabled' : selected === null ? 'text_placeholder' : 'text_primary'),
-              // A resting floating label covers the placeholder; it stays in the tree, undrawn
-              opacity: selected === null && labelled && !presentation.placeholder ? 0 : 1
+              color: selected === null ? presentation.placeholderColor : bodyStyle.color,
+              // Under a floating label a select draws no placeholder: it stays in the tree, undrawn
+              opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
             }]
           }, selected === null ? placeholder : selected.label),
           sizer),
@@ -142,9 +140,7 @@ export default function Select (ctx) {
         caret),
         list
       ),
-      message === null ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('helper_text_01'), presentation.message, { color: ctx.color(message.color), marginTop: ctx.metric('Select', 'messageGap') }]
-      }, message.text)
+      message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );
 
   }

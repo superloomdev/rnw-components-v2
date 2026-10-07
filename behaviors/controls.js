@@ -24,7 +24,38 @@ export default function createControlsBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
-  const { useCallback, useEffect, useId, useMemo, useState } = React;
+  const { useCallback, useEffect, useId, useMemo, useRef, useState } = React;
+
+
+  /********************************************************************
+  Whether a control's focus came from the keyboard: a pointer press
+  focuses a control after its pointer goes down, so focus that arrives
+  with no pointer down is keyboard focus. A theme that shows a focus ring
+  on keyboard focus only reads this.
+
+  @return {Object} - { focusVisible, onPointerDown, enter(), leave() }
+  *********************************************************************/
+  function useFocusSource () {
+
+    const pointer = useRef(false);
+    const [focusVisible, setFocusVisible] = useState(false);
+
+    return {
+      focusVisible: focusVisible,
+      onPointerDown: function () {
+        pointer.current = true;
+      },
+      enter: function () {
+        setFocusVisible(!pointer.current);
+        pointer.current = false;
+      },
+      leave: function () {
+        setFocusVisible(false);
+        pointer.current = false;
+      }
+    };
+
+  }
 
 
   // Press timing is BEHAVIOR, so it lives here rather than in a component. React
@@ -156,6 +187,7 @@ export default function createControlsBehaviors (deps) {
     const [pressed, setPressed] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [focused, setFocused] = useState(false);
+    const source = useFocusSource();
 
     const disabled = props.disabled === true;
     const selected = props.selected === true;
@@ -163,12 +195,13 @@ export default function createControlsBehaviors (deps) {
     const state = useMemo(function () {
       return {
         focused: focused,
+        focusVisible: focused && source.focusVisible,
         hovered: hovered,
         pressed: pressed,
         disabled: disabled,
         selected: selected
       };
-    }, [focused, hovered, pressed, disabled, selected]);
+    }, [focused, source.focusVisible, hovered, pressed, disabled, selected]);
 
     const label = Utils.isString(props.children) ? props.children : props.accessibilityLabel;
 
@@ -192,10 +225,13 @@ export default function createControlsBehaviors (deps) {
         onPointerLeave: function () {
           setHovered(false);
         },
+        onPointerDown: source.onPointerDown,
         onFocus: function () {
+          source.enter();
           setFocused(true);
         },
         onBlur: function () {
+          source.leave();
           setFocused(false);
         }
       },
@@ -204,7 +240,7 @@ export default function createControlsBehaviors (deps) {
 
   }
 
-  useButton.stateKeys = ['focused', 'hovered', 'pressed', 'disabled', 'selected'];
+  useButton.stateKeys = ['focused', 'focusVisible', 'hovered', 'pressed', 'disabled', 'selected'];
 
   /********************************************************************
   Checkbox behavior: checked, indeterminate, and the interaction states.
@@ -219,6 +255,7 @@ export default function createControlsBehaviors (deps) {
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);
+    const source = useFocusSource();
 
     const labelId = useId();
     const checked = effective(props.checked, internalChecked);
@@ -238,11 +275,12 @@ export default function createControlsBehaviors (deps) {
         checked: checked === true,
         indeterminate: indeterminate,
         focused: focused,
+        focusVisible: focused && source.focusVisible,
         hovered: hovered,
         pressed: pressed,
         disabled: disabled
       };
-    }, [checked, indeterminate, focused, hovered, pressed, disabled]);
+    }, [checked, indeterminate, focused, source.focusVisible, hovered, pressed, disabled]);
 
     return {
       rootProps: {
@@ -274,10 +312,13 @@ export default function createControlsBehaviors (deps) {
         onPointerLeave: function () {
           setHovered(false);
         },
+        onPointerDown: source.onPointerDown,
         onFocus: function () {
+          source.enter();
           setFocused(true);
         },
         onBlur: function () {
+          source.leave();
           setFocused(false);
         }
       },
@@ -288,7 +329,7 @@ export default function createControlsBehaviors (deps) {
 
   }
 
-  useCheckbox.stateKeys = ['checked', 'indeterminate', 'focused', 'hovered', 'pressed', 'disabled'];
+  useCheckbox.stateKeys = ['checked', 'indeterminate', 'focused', 'focusVisible', 'hovered', 'pressed', 'disabled'];
 
   /********************************************************************
   Select behavior: open and close, selection, keyboard traversal.
@@ -307,6 +348,7 @@ export default function createControlsBehaviors (deps) {
 
     const [open, setOpen] = useState(false);
     const [focused, setFocused] = useState(false);
+    const [hovered, setHovered] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [internalIndex, setInternalIndex] = useState(-1);
 
@@ -383,11 +425,12 @@ export default function createControlsBehaviors (deps) {
       return {
         open: open,
         focused: focused,
+        hovered: hovered,
         disabled: disabled,
         selectedIndex: selectedIndex,
         highlightedIndex: highlightedIndex
       };
-    }, [open, focused, disabled, selectedIndex, highlightedIndex]);
+    }, [open, focused, hovered, disabled, selectedIndex, highlightedIndex]);
 
     return {
       rootProps: {},
@@ -401,6 +444,12 @@ export default function createControlsBehaviors (deps) {
         onKeyDown: onKeyDown,
         onPress: disabled ? undefined : function () {
           setOpen(!open);
+        },
+        onPointerEnter: function () {
+          setHovered(true);
+        },
+        onPointerLeave: function () {
+          setHovered(false);
         },
         onFocus: function () {
           setFocused(true);
@@ -428,7 +477,7 @@ export default function createControlsBehaviors (deps) {
 
   }
 
-  useSelect.stateKeys = ['open', 'focused', 'disabled', 'selectedIndex', 'highlightedIndex'];
+  useSelect.stateKeys = ['open', 'focused', 'hovered', 'disabled', 'selectedIndex', 'highlightedIndex'];
 
 
   return {

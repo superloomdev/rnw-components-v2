@@ -5,6 +5,8 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: '.',
   testMatch: /\.spec\.js$/,
+  // The census reports, it does not gate; it runs on its own config
+  testIgnore: /census\//,
   fullyParallel: false,
   workers: 1,
   retries: 0,

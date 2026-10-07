@@ -5,9 +5,9 @@
 // upstream React Native component through react-native-web, so its style
 // objects are what the page draws. With `?set=second` the page mounts the
 // second reference instead (`reference.second.mount`): the Material web
-// components, themed from the material template through the template's own
-// mapping table, so a color comparison tests the mapping and not two
-// palettes. `&scheme=dark` mounts the dark scheme of each reference: the
+// components, themed with the system colours of the material template's
+// scheme (the scheme its role cells were read from), so a colour comparison
+// tests the cells and not two palettes. `&scheme=dark` mounts the dark scheme of each reference: the
 // primary inside its own darkest zone, the second themed from the material
 // template's dark scheme, on a page painted in that scheme's background.
 // Cells mirror the showcase (`.cell`, `data-component`,
@@ -34,8 +34,6 @@ import utils from 'helper-utils';
 import debug from 'helper-debug';
 import themer from 'helper-themer';
 import materialProfile from 'helper-themer-template-material';
-// The template's own mapping table is not an export of the package; the page reads the file
-import materialMapping from '../node_modules/helper-themer-template-material/data/mapping.js';
 
 import { references, rows, samples } from './manifest.js';
 import ICONS from '../../data/icons.json';
@@ -80,9 +78,9 @@ if (schemeName === 'dark') {
 
 /********************************************************************
 The custom properties that theme the Material web components from the
-material template: for every Material color the mapping table names, the
-template's value of the first key it answers (`--md-sys-color-primary`
-from `color.interactive`, and so on).
+material template: every Material system colour of the scheme
+(`system_colors`), so the reference draws with exactly the scheme the
+template's role cells were read from.
 
 @return {Object} - Style object of custom properties
 *********************************************************************/
@@ -94,12 +92,11 @@ function buildMaterialTheme () {
   const Themer = themer(Lib, {});
   const tokens = Themer.buildTheme(materialProfile.schemes[schemeName], [], 'native').tokens;
   MATERIAL_TOKENS.tokens = tokens;
+  // Every Material system colour of the scheme the template's cells were read from
   const style = {};
-  for (const materialName of Object.keys(materialMapping.color)) {
-    const key = [].concat(materialMapping.color[materialName])[0];
-    if (tokens[key] !== undefined) {
-      style['--md-sys-color-' + materialName.replace(/_/g, '-')] = tokens[key];
-    }
+  const system = materialProfile.schemes[schemeName].system_colors;
+  for (const role of Object.keys(system)) {
+    style['--md-sys-color-' + role] = system[role];
   }
 
   return style;

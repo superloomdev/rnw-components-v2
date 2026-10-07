@@ -97,7 +97,7 @@
         "version": "1.115.0",
         "export": "Button"
       },
-      "description": "Button draws a pressable label with an optional trailing icon in nine kinds and six sizes and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision drawn from existing tokens, and that reference's shorter, fully rounded geometry is deferred until the contract carries per-component geometry.",
+      "description": "Button draws a pressable label with an optional trailing icon in nine kinds and six sizes, each kind's fill, label, border and elevation per state from the theme's button role cells, and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -117,8 +117,7 @@
       "material_twin": "md-button",
       "diff_budget": 2,
       "flags": [
-        "superloom_decision",
-        "deferred_gap"
+        "superloom_decision"
       ],
       "status": "built"
     },
@@ -131,14 +130,12 @@
         "version": "1.115.0",
         "export": "Checkbox"
       },
-      "description": "Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, and shows press feedback as the theme's feedback.press choice; the second reference's larger, thicker-bordered box is deferred until the contract carries per-component geometry.",
+      "description": "Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, its outline, fill, mark, state layer and focus ring per state from the theme's selection role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "press"
@@ -152,8 +149,7 @@
       "material_twin": "md-checkbox",
       "diff_budget": 2,
       "flags": [
-        "deferred_gap"
-      ],
+        ],
       "status": "built"
     },
     {
@@ -165,7 +161,7 @@
         "version": "1.115.0",
         "export": "TextInput"
       },
-      "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field and the label placed by anatomy.label; the second reference's taller, rounded field is deferred until the contract carries per-component geometry.",
+      "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every colour, width, space and type set from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -186,8 +182,7 @@
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [
-        "deferred_gap"
-      ],
+        ],
       "status": "built"
     },
     {
@@ -199,14 +194,13 @@
         "version": "1.115.0",
         "export": "Select"
       },
-      "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, with the caret shown or hidden by anatomy.caret; the second reference's taller, rounded field is deferred until the contract carries per-component geometry.",
+      "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every colour, width, space and type set of the frame comes from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -223,8 +217,7 @@
       "material_twin": "md-outlined-select",
       "diff_budget": 2,
       "flags": [
-        "deferred_gap"
-      ],
+        ],
       "status": "built"
     },
     {
@@ -306,7 +299,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -7972,7 +7964,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8007,7 +7998,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8042,7 +8032,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8077,7 +8066,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8112,7 +8100,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8147,7 +8134,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8182,7 +8168,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8217,7 +8202,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8252,7 +8236,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8287,7 +8270,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8322,7 +8304,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8357,7 +8338,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8392,7 +8372,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8429,7 +8408,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8466,7 +8444,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [

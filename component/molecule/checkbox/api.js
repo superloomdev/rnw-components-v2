@@ -18,11 +18,15 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'control.checkbox_size', 'control.checkbox_border',
-    'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
-    'color.icon_primary', 'color.icon_inverse', 'color.icon_disabled', 'color.support_error', 'color.control_checked',
-    'color.text_primary', 'color.text_disabled', 'color.text_error', 'color.text_helper',
-    'feedback.press', 'state.hover_opacity', 'state.pressed_opacity', 'state.focus_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive'
-  ]),
+    'control.selection_focus_width', 'control.selection_focus_offset', 'feedback.focus_trigger',
+    'type.body_compact_01', 'type.helper_text_01', 'font.family.sans'
+  ].concat([
+    'outline', 'outline_hover', 'outline_active', 'outline_focus', 'outline_disabled', 'outline_invalid',
+    'container', 'container_hover', 'container_active', 'container_focus', 'container_disabled', 'container_invalid',
+    'mark', 'mark_disabled', 'layer_hover', 'layer_active', 'layer_selected_hover', 'layer_selected_active',
+    'label', 'label_disabled', 'helper', 'message_invalid', 'invalid_icon', 'focus_ring'
+  ].map(function (cell) {
+    return 'color.selection_' + cell;
+  }))),
   colors: Object.freeze([])
 });

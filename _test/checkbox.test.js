@@ -1,6 +1,6 @@
 // Info: Checkbox molecule. Every sample state renders under all three
-// templates with its box, mark, label and message read from the built
-// theme; press, Space and focus drive the state through the DOM; the
+// templates with its box, mark, label and message read from the theme's
+// selection role cells; press, Space and focus drive the state through the DOM; the
 // accessibility answer is a labelled checkbox that is checked, mixed,
 // disabled or invalid exactly when it says so.
 
@@ -43,7 +43,7 @@ Render one Checkbox and return its parts.
 @param {Object} Registry - Registry
 @param {Object} props    - Checkbox props
 
-@return {Promise<Object>} - { root, layer, box, label, message, messageIcon }
+@return {Promise<Object>} - { root, box, layer, ring, mark, label, message, messageIcon }
 *********************************************************************/
 async function renderCheckbox (Registry, props) {
 
@@ -53,8 +53,10 @@ async function renderCheckbox (Registry, props) {
 
   return {
     root: root,
-    layer: boxWrap.children[0],
-    box: boxWrap.children[1],
+    box: boxWrap.children[0],
+    layer: boxWrap.children[1],
+    ring: boxWrap.children[2],
+    mark: boxWrap.children[3],
     label: root.children[1],
     message: container.firstElementChild.children[1] ? container.firstElementChild.children[1].lastElementChild : null,
     messageIcon: container.firstElementChild.children[1] ? container.firstElementChild.children[1].querySelector('svg') : null
@@ -88,8 +90,9 @@ describe('Checkbox: every sample state under every template', function () {
         const disabled = props.disabled === true;
         const invalid = props.invalid === true && !disabled;
         const marked = props.checked === true || props.indeterminate === true;
-        const fill = disabled ? 'icon_disabled' : 'control_checked';
-        const edge = invalid ? 'support_error' : marked ? fill : disabled ? 'icon_disabled' : 'icon_primary';
+        const phase = disabled ? '_disabled' : invalid ? '_invalid' : '';
+        const fill = 'selection_container' + phase;
+        const edge = marked ? fill : 'selection_outline' + phase;
         const parts = await renderCheckbox(registryFor(template), props);
 
         // Box geometry and colors
@@ -101,13 +104,13 @@ describe('Checkbox: every sample state under every template', function () {
         assert.equal(parts.box.style.backgroundColor, marked ? cssValue('backgroundColor', t['color.' + fill]) : TRANSPARENT);
 
         // Mark: the theme's own glyph at the mark size, or none
-        const svg = parts.box.querySelector('svg');
+        const svg = parts.mark.querySelector('svg');
         if (marked) {
           const size = t['control.checkbox_size'] - 2 * t['control.checkbox_border'];
-          const literal = t['icon.' + (props.indeterminate ? 'subtract' : 'checkmark')];
+          const literal = t['icon.' + (props.indeterminate ? 'mixed_indicator' : 'checked_indicator')];
           const glyph = literal.sizes && literal.sizes[String(size)] ? literal.sizes[String(size)] : literal;
           assert.equal(svg.getAttribute('width'), String(size));
-          assert.equal(svg.getAttribute('fill'), t['color.icon_inverse']);
+          assert.equal(svg.getAttribute('fill'), t['color.selection_mark' + (disabled ? '_disabled' : '')]);
           assert.equal(svg.querySelector('path').getAttribute('d'), glyph.paths[0].d);
         } else {
           assert.equal(svg, null);
@@ -116,10 +119,12 @@ describe('Checkbox: every sample state under every template', function () {
         // Label and message
         assert.equal(parts.label.textContent, props.label);
         assert.equal(parts.label.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
-        assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'text_disabled' : 'text_primary')]));
-        assert.equal(parts.label.style.marginLeft, (t['spacing.spacing_04'] + t['spacing.spacing_01']) + 'px');
+        assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'selection_label_disabled' : 'selection_label')]));
+        assert.equal(parts.label.style.marginLeft, (t['spacing.spacing_04'] - t['border.width_01']) + 'px');
+        assert.equal(parts.box.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
+        assert.equal(parts.box.parentElement.style.marginTop, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
         assert.equal(parts.root.style.minHeight, (t['spacing.spacing_05'] + t['spacing.spacing_02']) + 'px');
-        const message = invalid ? [props.invalidText, 'text_error'] : props.helperText ? [props.helperText, 'text_helper'] : null;
+        const message = invalid ? [props.invalidText, 'selection_message_invalid'] : props.helperText ? [props.helperText, 'selection_helper'] : null;
         if (message === null) {
           assert.equal(parts.message, null);
         } else {
@@ -127,7 +132,7 @@ describe('Checkbox: every sample state under every template', function () {
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
           assert.equal(parts.message.style.fontSize, t['type.helper_text_01'].fontSize + 'px');
           if (invalid) {
-            assert.equal(parts.messageIcon.getAttribute('fill'), t['color.support_error']);
+            assert.equal(parts.messageIcon.getAttribute('fill'), t['color.selection_invalid_icon']);
             assert.equal(parts.messageIcon.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
             assert.equal(parts.message.style.marginLeft, t['spacing.spacing_03'] + 'px');
           } else {
@@ -168,37 +173,49 @@ describe('Checkbox: state through the DOM', function () {
     assert.deepEqual(calls, [true, false]);
   });
 
-  test('ripple: the disc centered on the box rises to the hover and pressed opacities', async function () {
+  test('the state layer: the disc centred on the box shows the theme\'s layer for the selection and the state', async function () {
     const t = buildNative('material').tokens;
-    const parts = await renderCheckbox(registryFor('material', { 'feedback.press': 'ripple' }), { label: 'L' });
-    const offset = (t['control.checkbox_size'] - t['size.size_medium']) / 2;
-    assert.equal(parts.layer.style.width, t['size.size_medium'] + 'px');
+    const parts = await renderCheckbox(registryFor('material'), { label: 'L' });
+    const offset = (t['control.checkbox_size'] - t['control.selection_layer_size']) / 2;
+    assert.equal(parts.layer.style.width, t['control.selection_layer_size'] + 'px');
     assert.equal(parts.layer.style.left, offset + 'px');
     assert.equal(parts.layer.style.top, offset + 'px');
-    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.icon_primary']));
     assert.equal(parts.layer.style.opacity, '0');
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
-    assert.equal(parts.layer.style.opacity, String(t['state.hover_opacity']));
+    assert.equal(parts.layer.style.opacity, '1');
+    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(parts.layer.style.opacity, String(t['state.pressed_opacity']));
+    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_active']));
+    const checked = await renderCheckbox(registryFor('material'), { label: 'L', checked: true });
+    await fire(checked.root, new Event('pointerover', { bubbles: true }));
+    assert.equal(checked.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_selected_hover']));
   });
 
-  test('highlight: the disc is not drawn and nothing fills on press', async function () {
-    const parts = await renderCheckbox(registryFor('carbon', { 'feedback.press': 'highlight' }), { label: 'L' });
+  test('hover and press read the outline cells for the state', async function () {
+    const t = buildNative('material').tokens;
+    const parts = await renderCheckbox(registryFor('material'), { label: 'L' });
+    await fire(parts.root, new Event('pointerover', { bubbles: true }));
+    assert.equal(parts.box.style.borderTopColor, cssValue('borderTopColor', t['color.selection_outline_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(parts.layer.style.display, 'none');
-    assert.equal(parts.root.style.backgroundColor, TRANSPARENT);
+    assert.equal(parts.box.style.borderTopColor, cssValue('borderTopColor', t['color.selection_outline_active']));
   });
 
-  test('focus draws the theme\'s focus presentation on the box, and the row suppresses the browser\'s own ring', async function () {
-    const t = buildNative('carbon').tokens;
-    const parts = await renderCheckbox(registryFor('carbon'), { label: 'L' });
-    await act(async function () {
-      parts.root.focus();
-    });
-    assert.equal(parts.box.style.outlineWidth, t['focus.width'] + 'px');
-    assert.equal(parts.root.style.outlineWidth, '');
-    assert.equal(parts.root.style.outlineStyle, 'none');
+  test('focus draws the selection ring around the box at the theme\'s offset and corner; the row suppresses the browser\'s own ring', async function () {
+    for (const template of ['carbon', 'material']) {
+      const t = buildNative(template).tokens;
+      const parts = await renderCheckbox(registryFor(template), { label: 'L' });
+      assert.equal(parts.ring.style.outlineWidth, '');
+      await act(async function () {
+        parts.root.focus();
+      });
+      const offset = t['control.selection_focus_offset'];
+      assert.equal(parts.ring.style.outlineWidth, t['control.selection_focus_width'] + 'px', template);
+      assert.equal(parts.ring.style.width, (t['control.checkbox_size'] + 2 * offset) + 'px', template);
+      assert.equal(parts.ring.style.left, -offset + 'px', template);
+      assert.equal(parts.ring.style.borderTopLeftRadius, t['control.selection_focus_radius'] + 'px', template);
+      assert.equal(parts.root.style.outlineWidth, '');
+      assert.equal(parts.root.style.outlineStyle, 'none');
+    }
   });
 
 });

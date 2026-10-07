@@ -1,6 +1,9 @@
 // Info: Button public API, as data. The docs generator and the accessibility
 // tests read this; the component implements exactly this and nothing more.
 
+// Kinds, each drawn from its own role cells in the theme
+const KINDS = Object.freeze(['primary', 'secondary', 'tertiary', 'ghost', 'danger', 'danger_tertiary', 'danger_ghost', 'tonal', 'elevated']);
+
 export default Object.freeze({
   name: 'Button',
   props: Object.freeze({
@@ -9,30 +12,30 @@ export default Object.freeze({
     size: { type: 'string', required: false, description: 'One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`.' },
     icon: { type: 'string', required: false, description: 'Semantic icon name drawn at the trailing edge; decorative, the label names the button.' },
     disabled: { type: 'boolean', required: false, description: 'Disables press, hover and focus feedback and announces the button as disabled.' },
-    selected: { type: 'boolean', required: false, description: 'Draws the selected surface with the primary text color while true, for a button that toggles.' },
+    selected: { type: 'boolean', required: false, description: 'Draws the selected fill and label of the kind while true, for a button that toggles.' },
     onPress: { type: 'function', required: false, description: 'Called on activation (press, Enter, Space).' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when the label alone does not say what the button does.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
-  kinds: Object.freeze(['primary', 'secondary', 'tertiary', 'ghost', 'danger', 'danger_tertiary', 'danger_ghost', 'tonal', 'elevated']),
+  kinds: KINDS,
   variants: Object.freeze(['xs', 'sm', 'md', 'lg', 'xl', '2xl']),
   tokens: Object.freeze([
     'control.button_height', 'control.button_radius', 'control.button_padding_start', 'control.button_padding_end', 'control.button_icon_size',
+    'control.button_ghost_padding_start', 'control.button_ghost_padding_end', 'control.button_min_width',
+    'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width',
     'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
     'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
     'type.button_label', 'font.family.sans',
-    'color.button_primary', 'color.button_primary_hover', 'color.button_primary_active', 'color.text_on_color',
-    'color.button_disabled', 'color.text_on_color_disabled', 'color.text_disabled', 'color.border_disabled',
-    'feedback.press', 'state.hover_opacity', 'state.pressed_opacity', 'state.focus_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive', 'shadow.level_01'
-  ]),
-  colors: Object.freeze([
-    'button_secondary', 'button_secondary_hover', 'button_secondary_active',
-    'button_tertiary', 'button_tertiary_hover', 'button_tertiary_active', 'text_inverse',
-    'background_hover', 'background_active', 'link_primary',
-    'button_danger_primary', 'button_danger_secondary', 'button_danger_hover', 'button_danger_active',
-    'button_tonal', 'button_tonal_hover', 'button_tonal_active', 'text_on_button_tonal',
-    'button_elevated', 'button_elevated_hover', 'button_elevated_active',
-    'background_selected', 'text_primary'
-  ])
+    'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
+    'feedback.press', 'state.hover_opacity', 'state.pressed_opacity',
+    'motion.duration_fast_01', 'motion.easing_standard_productive'
+  ].concat(KINDS.flatMap(function (kind) {
+    // Every kind's role cells: fill and label per state, border per state, elevation per state
+    return ['', '_hover', '_active', '_focus', '_disabled', '_selected'].flatMap(function (state) {
+      return ['color.button_' + kind + '_container' + state, 'color.button_' + kind + '_label' + state];
+    }).concat(['', '_hover', '_active', '_disabled'].flatMap(function (state) {
+      return ['color.button_' + kind + '_border' + state, 'shadow.button_' + kind + state];
+    }));
+  }))),
+  colors: Object.freeze([])
 });

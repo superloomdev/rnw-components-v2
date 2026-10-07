@@ -56,11 +56,14 @@ Every disagreement between our measurements and the upstream's.
 @param {Object} upstream - state -> part -> measurement
 @param {Object} parts    - The part definitions (for `compare` subsets)
 @param {Array}  [extra]  - Properties compared on every part where both sides read them,
-                           beyond its `compare` subset (the census adds paint, ink, shadow)
+                           beyond its `compare` subset (the census adds paint and ink)
+@param {Function} [skip] - (state, part, property, ours, upstream) -> true for a property this
+                           comparison leaves to another reading (the fidelity
+                           gate compares rings and shadows by their pixels)
 
 @return {Array} - One line per disagreement
 *********************************************************************/
-export function findDisagreements (ours, upstream, parts, extra) {
+export function findDisagreements (ours, upstream, parts, extra, skip) {
 
   const lines = [];
   for (const state of Object.keys(upstream)) {
@@ -105,6 +108,9 @@ export function findDisagreements (ours, upstream, parts, extra) {
       for (const property of compared) {
         // A border color is compared only where a border is drawn
         const undrawn = property === 'borderBottomColor' && parseFloat(o.borderBottomWidth) === 0 && parseFloat(u.borderBottomWidth) === 0;
+        if (typeof skip === 'function' && skip(state, part, property, o, u)) {
+          continue;
+        }
         const slack = property === 'width' && tracking > 0 ? tracking : 0;
         if (!undrawn && !agrees(property, o[property], u[property], slack)) {
           lines.push(state + ' / ' + part + ' / ' + property + ': ' + o[property] + ' here, ' + u[property] + ' upstream');

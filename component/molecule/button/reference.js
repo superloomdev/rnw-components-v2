@@ -16,8 +16,9 @@ const SECOND_KINDS = Object.freeze({
   elevated: 'md-elevated-button'
 });
 const SECOND_HOST = 'md-filled-button, md-outlined-button, md-text-button, md-filled-tonal-button, md-elevated-button';
+// The shadow element that styles the slotted label (its colour and its disabled opacity)
 const SECOND_LABEL_STYLE = SECOND_HOST.split(', ').map(function (tag) {
-  return tag + ' >>> .button';
+  return tag + ' >>> .label';
 }).join(', ');
 
 // Kind -> upstream kind; a kind absent here has no upstream counterpart

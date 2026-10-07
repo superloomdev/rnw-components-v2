@@ -43,6 +43,12 @@ for (const row of built) {
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
 const SECOND_TEMPLATE = 'material';
+// The second reference paints some colours as a role at an element opacity, where a template
+// states the same colour as rgba: the CSS of a shadow is the fidelity gate's pixels, and a text
+// colour is compared as its ink (the colour at the opacity it is painted at)
+const AS_PAINTED = function (state, part, property, ours, upstream) {
+  return property === 'boxShadow' || (property === 'color' && ours.ink !== undefined && upstream.ink !== undefined);
+};
 
 
 test.describe('measure: reference coverage', function () {
@@ -150,7 +156,7 @@ test.describe('measure: second reference', function () {
       const reference = await openReference(page, component.name, 'second');
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin);
+      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true });
 
       // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
       const omit = component.reference.second.omit || {};
@@ -167,7 +173,7 @@ test.describe('measure: second reference', function () {
       expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
       const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true });
       expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin);
+      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true });
       const undrawn = Object.keys(parts).filter(function (part) {
         return !Object.keys(upstream).some(function (state) {
           return upstream[state][part] !== null && upstream[state][part].visible === true;
@@ -181,7 +187,8 @@ test.describe('measure: second reference', function () {
       const gaps = GAPS.filter(function (gap) {
         return gap.check === 'measure-second' && gap.component === component.name;
       });
-      const lines = findDisagreements(ours, upstream, parts);
+      // Colours are compared as painted: a box colour at its element's opacity, a text colour as its ink
+      const lines = findDisagreements(ours, upstream, parts, ['ink'], AS_PAINTED);
       const explained = function (line) {
         return gaps.find(function (gap) {
           const inState = !gap.states || gap.states.some(function (state) {

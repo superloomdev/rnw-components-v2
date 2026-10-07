@@ -84,7 +84,7 @@ test.describe('anatomy: floating label notch', function () {
 
     // Expected colors: the surface the label occludes with, and the frame's border
     const surface = opened.theme['color.background'];
-    const border = opened.theme['color.border_strong_01'];
+    const border = opened.theme['color.field_outline'];
     const toRgb = function (hex) {
       return 'rgb(' + parseInt(hex.slice(1, 3), 16) + ', ' + parseInt(hex.slice(3, 5), 16) + ', ' + parseInt(hex.slice(5, 7), 16) + ')';
     };

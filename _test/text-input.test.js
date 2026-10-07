@@ -1,6 +1,6 @@
 // Info: TextInput molecule. Every sample state renders under all three
-// templates with its frame, label, input and message read from the built
-// theme; typing, focus and hover drive the state through the DOM; both
+// templates with its frame, label, input and message read from the theme's
+// field role cells; typing, focus and hover drive the state through the DOM; both
 // field modes and both label placements draw as their names say; the
 // accessibility answer is a labelled textbox, invalid or disabled exactly
 // when it says so.
@@ -15,7 +15,6 @@ import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
-const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 // The default size is the control role; the other sizes follow the shared size scale
 const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 
@@ -95,28 +94,25 @@ describe('TextInput: every sample state under every template', function () {
         const invalid = props.invalid === true && !disabled;
         const parts = await renderField(registryFor(template), props);
 
-        // Frame geometry and the mode's border
-        // Disabled keeps the rest border; invalid draws an inner error ring (underline) or an error border (outline)
+        // Frame geometry and the mode's border, from the field cells for the state
         const outline = t['feedback.field'] === 'outline';
-        const border = invalid && outline ? 'support_error' : 'border_strong_01';
-        assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
+        const phase = disabled ? '_disabled' : invalid ? '_invalid' : '';
+        const width = t['control.field_outline_width'];
+        const ring = t['control.field_invalid_ring_width'];
+        assert.equal(parts.frame.style.outlineWidth, invalid && ring > 0 ? ring + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
         // An outline frame keeps its borders inside the inline padding
-        assert.equal(parts.frame.style.paddingLeft, (t['spacing.spacing_05'] - (t['feedback.field'] === 'outline' ? t['border.width_01'] : 0)) + 'px');
+        assert.equal(parts.frame.style.paddingLeft, (t['control.field_padding_inline'] - (outline ? width : 0)) + 'px');
+        assert.equal(parts.frame.style.paddingRight, ((invalid ? t['control.field_icon_inset'] : t['control.field_padding_inline']) - (outline ? width : 0)) + 'px');
         assert.equal(parts.frame.style.borderTopLeftRadius, t['control.field_radius'] + 'px');
-        assert.equal(parts.frame.style.borderBottomWidth, t['border.width_01'] + 'px');
-        assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + border]));
-        if (t['feedback.field'] === 'underline') {
-          assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_01']));
-          assert.equal(parts.frame.style.borderTopWidth, '');
-        } else {
-          assert.equal(parts.frame.style.backgroundColor, TRANSPARENT);
-          assert.equal(parts.frame.style.borderTopWidth, t['border.width_01'] + 'px');
-        }
+        assert.equal(parts.frame.style.borderBottomWidth, width + 'px');
+        assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.field_outline' + phase]));
+        assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_container' + (disabled ? '_disabled' : '')]));
+        assert.equal(parts.frame.style.borderTopWidth, outline ? width + 'px' : '');
 
         // Input text and value
-        assert.equal(parts.input.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
-        assert.equal(parts.input.style.color, cssValue('color', t['color.' + (disabled ? 'text_disabled' : 'text_primary')]));
+        assert.equal(parts.input.style.fontSize, t['type.field_value'].fontSize + 'px');
+        assert.equal(parts.input.style.color, cssValue('color', t['color.field_value' + (disabled ? '_disabled' : '')]));
         assert.equal(parts.input.value, props.value || '');
 
         // Placeholder: shown unless a floating label is resting over the field
@@ -126,12 +122,10 @@ describe('TextInput: every sample state under every template', function () {
         // Label: placement by the theme's enum
         if (props.label) {
           const raised = t['anatomy.label'] === 'floating' && typeof props.value === 'string';
-          const set = t['anatomy.label'] === 'above' ? t['type.label01'] : raised ? t['type.field_label_raised'] : t['type.body_compact_01'];
+          const set = raised ? t['type.field_label_raised'] : t['type.field_label'];
           assert.equal(parts.label.textContent, props.label);
           assert.equal(parts.label.style.fontSize, set.fontSize + 'px');
-          // An outline frame colors its label with the error while invalid
-          const labelLeaf = disabled ? 'text_disabled' : invalid && t['feedback.field'] === 'outline' ? 'text_error' : 'text_secondary';
-          assert.equal(parts.label.style.color, cssValue('color', t['color.' + labelLeaf]));
+          assert.equal(parts.label.style.color, cssValue('color', t['color.field_label' + phase]));
           assert.equal(parts.label.style.position, t['anatomy.label'] === 'floating' ? 'absolute' : '');
           assert.equal(parts.input.getAttribute('aria-labelledby'), parts.label.id);
         } else {
@@ -142,17 +136,21 @@ describe('TextInput: every sample state under every template', function () {
         // Error icon and message
         const svg = parts.frame.querySelector('svg');
         if (invalid) {
-          assert.equal(svg.getAttribute('fill'), t['color.support_error']);
+          assert.equal(svg.getAttribute('fill'), t['color.field_invalid_icon']);
+          assert.equal(svg.querySelector('path').getAttribute('d'), (t['icon.invalid'].sizes && t['icon.invalid'].sizes[String(t['control.field_icon_size'])] || t['icon.invalid']).paths[0].d);
           assert.equal(svg.getAttribute('width'), String(t['control.field_icon_size']));
         } else {
           assert.equal(svg, null);
         }
-        const message = invalid ? [props.invalidText, 'text_error'] : props.helperText ? [props.helperText, 'text_helper'] : null;
+        const message = invalid ? [props.invalidText, 'field_message_invalid'] : props.helperText ? [props.helperText, 'field_helper' + (disabled ? '_disabled' : '')] : null;
         if (message === null) {
           assert.equal(parts.message, null);
         } else {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
+          assert.equal(parts.message.style.fontSize, t['type.field_helper'].fontSize + 'px');
+          assert.equal(parts.message.style.marginTop, t['control.field_message_gap'] + 'px');
+          assert.equal(parts.message.style.marginLeft, t['control.field_message_inset'] + 'px');
         }
 
         // Accessibility answer
@@ -176,17 +174,24 @@ describe('TextInput: state through the DOM', function () {
     assert.deepEqual(calls, ['abc']);
   });
 
-  test('underline: hover fills the frame with field_hover_01; focus draws the focus presentation', async function () {
-    const t = buildNative('carbon').tokens;
-    const parts = await renderField(registryFor('carbon', { 'feedback.field': 'underline' }), { label: 'L' });
-    await act(async function () {
-      parts.root.dispatchEvent(new Event('pointerover', { bubbles: true }));
-    });
-    assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_hover_01']));
-    await act(async function () {
-      parts.input.focus();
-    });
-    assert.equal(parts.frame.style.outlineWidth, t['focus.width'] + 'px');
+  test('hover reads the text input\'s own container cell and the hover outline; focus draws the field ring and the focus outline', async function () {
+    for (const template of ['carbon', 'material']) {
+      const t = buildNative(template).tokens;
+      const parts = await renderField(registryFor(template), { label: 'L' });
+      await act(async function () {
+        parts.root.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      });
+      assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.text_input_container_hover']), template);
+      assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.field_outline_hover']), template);
+      assert.equal(parts.label.style.color, cssValue('color', t['color.field_label_hover']), template);
+      await act(async function () {
+        parts.input.focus();
+      });
+      assert.equal(parts.frame.style.outlineWidth, t['control.field_focus_width'] > 0 ? t['control.field_focus_width'] + 'px' : '', template);
+      assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.field_outline_focus']), template);
+      assert.equal(parts.frame.style.borderBottomWidth, t['control.field_outline_width_focus'] + 'px', template);
+      assert.equal(parts.label.style.color, cssValue('color', t['color.field_label_focus']), template);
+    }
   });
 
   test('floating: the label rests in the frame, rises over the surface on focus, and stays raised once populated', async function () {
@@ -194,7 +199,7 @@ describe('TextInput: state through the DOM', function () {
     const Registry = registryFor('material', { 'anatomy.label': 'floating', 'feedback.field': 'outline' });
     const parts = await renderField(Registry, { label: 'Name', placeholder: 'Jane', surface: 'layer_01' });
     const height = t['control.field_height'];
-    const body = t['type.body_compact_01'];
+    const body = t['type.field_label'];
     const small = t['type.field_label_raised'];
     assert.equal(parts.root.style.paddingTop, (small.lineHeight / 2) + 'px');
     assert.equal(parts.label.style.top, (small.lineHeight / 2 + (height - body.lineHeight) / 2) + 'px');

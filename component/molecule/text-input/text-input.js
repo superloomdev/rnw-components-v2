@@ -41,8 +41,7 @@ export default function TextInput (ctx) {
     const invalid = state.invalid;
     const labelled = Utils.isString(props.label) && !Utils.isEmptyString(props.label);
 
-    // Read the geometry and the theme's field presentation
-    const paddingInline = ctx.metric('TextInput', 'paddingInline');
+    // Read the theme's field presentation
     const surface = Utils.isString(props.surface) ? props.surface
       : Utils.isString(ctx.config.FIELD_SURFACE) ? ctx.config.FIELD_SURFACE : 'background';
     const presentation = ctx.fieldPresentation({
@@ -52,34 +51,35 @@ export default function TextInput (ctx) {
       invalid: invalid,
       populated: state.populated
     }, {
+      member: 'text_input',
       height: ctx.metric('TextInput', SIZES[props.size] || 'height'),
-      paddingInline: paddingInline,
       radius: ctx.metric('TextInput', 'radius'),
       surface: surface,
-      disabledBorder: 'border_strong_01'
+      trailing: invalid
     });
 
     // Render the error icon while invalid
-    const icon = invalid ? React.createElement(View, { style: { marginStart: ctx.metric('TextInput', 'iconGap') } },
-      React.createElement(ctx.Registry.Icon, { name: 'warning_filled', size: ctx.metric('TextInput', 'iconSize'), color: 'support_error' })) : null;
+    const icon = invalid ? React.createElement(View, { style: { marginStart: presentation.iconGap } },
+      React.createElement(ctx.Registry.Icon, { name: 'invalid', size: ctx.metric('TextInput', 'iconSize'), color: presentation.invalidIcon })) : null;
 
     // Render the message below: the error while invalid, else the helper
-    const message = invalid && Utils.isString(props.invalidText) ? { text: props.invalidText, color: 'text_error' }
-      : Utils.isString(props.helperText) ? { text: props.helperText, color: 'text_helper' } : null;
+    const message = invalid && Utils.isString(props.invalidText) ? props.invalidText
+      : Utils.isString(props.helperText) ? props.helperText : null;
 
     // Render the root, the label, the frame with the input, and the message
     return React.createElement(View, Object.assign({}, field.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
       labelled ? React.createElement(Text, Object.assign({}, field.labelProps, { style: presentation.label }), props.label) : null,
-      React.createElement(View, { style: [presentation.frame, ctx.focusPresentation(state.focused)] },
+      React.createElement(View, { style: presentation.frame },
         React.createElement(NativeTextInput, Object.assign({}, field.inputProps, {
           accessibilityLabel: props.accessibilityLabel,
           placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,
-          placeholderTextColor: ctx.color('text_placeholder'),
+          placeholderTextColor: presentation.placeholderColor,
           testID: props.testID,
-          style: [ctx.typeStyle('body_compact_01'), {
+          style: [presentation.value, {
             alignSelf: 'stretch',
             backgroundColor: 'transparent',
-            color: ctx.color(state.disabled ? 'text_disabled' : 'text_primary'),
+            // While a floating label rests over the empty field the input draws nothing, as the label covers it
+            opacity: labelled && !presentation.placeholder ? 0 : 1,
             // Grow from the input's own width, not from zero: native layout gives
             // `flex: 1` a zero basis, which collapses the field inside a container
             // that sizes to its content
@@ -92,9 +92,7 @@ export default function TextInput (ctx) {
         })),
         icon
       ),
-      message === null ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('helper_text_01'), presentation.message, { color: ctx.color(message.color), marginTop: ctx.metric('TextInput', 'messageGap') }]
-      }, message.text)
+      message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );
 
   }

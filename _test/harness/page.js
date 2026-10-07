@@ -132,7 +132,8 @@ export async function readParts (page, name, parts, side, origin, options) {
         if (node.nodeType === 1) {
           value = value * parseFloat(getComputedStyle(node).opacity);
         }
-        node = node.parentNode || node.host || null;
+        // The rendering ancestor of slotted content is its slot, not its light-DOM parent
+        node = node.assignedSlot || node.parentNode || node.host || null;
       }
       return value;
     };
@@ -170,10 +171,13 @@ export async function readParts (page, name, parts, side, origin, options) {
         const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
         const rect = element.getBoundingClientRect();
+        // A positioned pseudo-element sits at its offset plus its margin inside its host
+        const pseudoX = pseudo ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0) : 0;
+        const pseudoY = pseudo ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0) : 0;
         const measured = {};
         if (part.measure === 'box') {
-          measured.x = rect.x - origin.x + (pseudo ? parseFloat(style.left) : 0);
-          measured.y = rect.y - origin.y + (pseudo ? parseFloat(style.top) : 0);
+          measured.x = rect.x - origin.x + pseudoX;
+          measured.y = rect.y - origin.y + pseudoY;
           measured.width = pseudo ? parseFloat(style.width) : rect.width;
           measured.height = pseudo ? parseFloat(style.height) : rect.height;
           for (const property of BOX) {
@@ -210,17 +214,28 @@ export async function readParts (page, name, parts, side, origin, options) {
         // A visually hidden part (1px clip), an undisplayed or a transparent one draws nothing
         measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && (pseudo ? true : rect.width > 1 && rect.height > 1);
         if (input.extended) {
-          const opacity = opacityOf(element, body);
+          // Text styled by another element is painted at that element's opacity
+          const opacity = opacityOf(styleSource === null ? element : styleSource, body);
+          // A part under a transparent ancestor draws nothing
+          measured.visible = measured.visible && opacity > 0;
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
+            // A box drawn at an opacity paints its colours at that opacity, as an rgba colour does
+            if (opacity < 1) {
+              for (const property of ['backgroundColor', 'borderBottomColor']) {
+                if (measured[property] !== undefined) {
+                  measured[property] = withOpacity(measured[property], opacity);
+                }
+              }
+            }
           }
           // A drawn path inks with its fill, text with its colour
           const ink = element instanceof SVGElement ? getComputedStyle(element).fill : part.measure === 'box' ? null : style.color;
           if (ink !== null) {
             measured.ink = withOpacity(ink, opacity);
           }
-          measured._bodyX = (pseudo ? rect.x + parseFloat(style.left) : rect.x) - bodyRect.x;
-          measured._bodyY = (pseudo ? rect.y + parseFloat(style.top) : rect.y) - bodyRect.y;
+          measured._bodyX = rect.x + pseudoX - bodyRect.x;
+          measured._bodyY = rect.y + pseudoY - bodyRect.y;
         }
         state[partName] = measured;
       }
@@ -248,13 +263,28 @@ pointer down on it. Wait for transitions and state layers to settle.
 *********************************************************************/
 export async function enterInteraction (page, name, state, selector, interaction) {
 
-  const target = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').locator(selector).first();
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  const target = body.locator(selector).first();
   if (await target.count() === 0) {
     return false;
   }
+  // Centre the cell first, where its screenshot is taken, so nothing scrolls out from under the pointer
+  await body.evaluate(function (element) {
+    element.scrollIntoView({ block: 'center', inline: 'center' });
+  });
   if (interaction === 'focus') {
     await page.keyboard.press('Shift');
     await target.focus();
+    // A focused text field shows its frame, not a selection: collapse any selection focusing made
+    await page.evaluate(function () {
+      let active = document.activeElement;
+      while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+        active = active.shadowRoot.activeElement;
+      }
+      if (active && typeof active.setSelectionRange === 'function' && typeof active.value === 'string' && (active.tagName === 'TEXTAREA' || ['text', 'search', 'email', 'tel', 'url', 'password', ''].includes(active.getAttribute('type') || ''))) {
+        active.setSelectionRange(active.value.length, active.value.length);
+      }
+    });
   } else {
     await target.hover();
     if (interaction === 'pressed') {
@@ -316,7 +346,10 @@ export async function shootCell (page, name, state, margin) {
   if (await body.count() === 0) {
     return null;
   }
-  await body.scrollIntoViewIfNeeded();
+  // Centred in the viewport, so the margin on every side is inside the picture
+  await body.evaluate(function (element) {
+    element.scrollIntoView({ block: 'center', inline: 'center' });
+  });
   const box = await body.boundingBox();
 
   return page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });

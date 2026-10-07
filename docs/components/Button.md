@@ -4,18 +4,19 @@
 
 ## Button
 
-A pressable root holding a one-line label and, optionally, a trailing decorative icon. The kind picks a palette of color leaves, the size picks a height, and the theme's `feedback.press` enum decides how hover and press are shown.
+A pressable root holding a one-line label and, optionally, a trailing decorative icon. The kind names the theme's `button` role cells it draws in (fill, label, border and elevation per state), the size picks a height, and the theme's `feedback.press` enum decides how hover and press are shown.
 
-### Decisions (roster flags `superloom_decision`, `deferred_gap`)
+### Decisions (roster flag `superloom_decision`)
 
-- **Press feedback is the theme's choice.** Under `highlight` the fill changes to the kind's hover and active colors, and an outlined or ghost kind switches its label to the color that sits on that fill. Under `opacity` the whole button fades by the theme's state opacities. Under `ripple` a state layer in the label color is laid over the fill at the theme's hover, focus and pressed opacities. The state layer element is always mounted, so the element tree is the same under every template.
-- **Tonal and elevated are Superloom decisions.** The primary reference has no such kinds. `tonal` fills with the accent layer and its hover and active steps; `elevated` fills with the first layer, draws its label in the link color (the interactive hue as it reads on a surface, which a dark scheme tints) and lifts with the first shadow level. Both are drawn from existing tokens until the contract carries their own colors.
-- **Geometry is the template's.** The default height, inline paddings, corner radius, icon size and label type set are the `control.button_*` roles and `type.button_label`, so each template draws its own button (a 48px square-cornered button in one, a 40px pill in another); the other sizes follow the shared size scale. Measured against both references. Still deferred, as contract requests for the next milestone: the outlined kind's border color as a role of its own (the second reference draws it in its outline color while the label is primary), the ghost kind's inline padding and a minimum width, and the second template's disabled fills, which it draws as a translucent state layer where this button reads one flat color.
-- **The border is always drawn.** Every kind carries the same border width, transparent unless the kind is outlined (a disabled filled kind draws it in the disabled fill), so all kinds share one outer size and the paddings are measured inside the border.
+- **Every state is the theme's cell.** Each kind reads its own cells for rest, hover, pressed, focus, disabled and selected: the fill, the label colour, the border (rest, hover, pressed, disabled) and the elevation (`shadow.button_<kind>` per state). A focused button draws its focus cells, which equal rest unless the reference fills on focus. Under `highlight` the container paints the state's fill cell; under `ripple` the state's cell is a layer over the resting container (a reference that draws a state layer states it flattened over the container, or translucent over a transparent one); under `opacity` the resting fill fades by the theme's state opacities. The label follows the same state. The state layer element is always mounted, so the element tree is the same under every template.
+- **Focus ring.** The ring is the theme's button cells: its width, offset (below zero it is drawn inside the edge) and colour, and the page-colour line some systems draw inside it. Under `feedback.focus_trigger: keyboard` it shows on keyboard focus only, so a pointer press draws none.
+- **Tonal and elevated are Superloom decisions.** The primary reference has no such kinds. `tonal` fills with the accent layer and its hover and active steps; `elevated` fills with the first layer, draws its label in the link color (the interactive hue as it reads on a surface, which a dark scheme tints) and lifts with the first shadow level. Each template answers their cells; a reference without such a kind draws them in its own roles.
+- **Geometry is the template's.** The default height, inline paddings, ghost paddings, minimum width, corner radius, icon size and label type set are the `control.button_*` roles and `type.button_label`, so each template draws its own button (a 48px square-cornered button in one, a 40px pill at least 64 wide in another); the other sizes follow the shared size scale. Measured against both references in every sample state, in hover, focus and pressed, in light and dark.
+- **The border is always drawn.** Every kind carries the same border width in its border cell (transparent unless the kind is outlined or the theme says otherwise), so all kinds share one outer size and the paddings are measured inside the border.
 - **Label position.** The label is centered up to the default height; a taller button keeps it where the default height puts it, near the top, as the primary reference does.
-- **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` pad their end like their start and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
+- **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` take the ghost paddings and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
-- **Selected.** A button that toggles passes `selected`; while selected it draws the theme's selected surface (`background_selected`) with the primary text color, whatever the kind, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button, with exactly this fill, and the second reference draws a per-kind toggle recipe (a filled kind inverts to its primary, an outlined kind to the inverse surface) that needs selected-state role tokens; those are queued as a contract request, so the selected state has no measurement counterpart yet.
+- **Selected.** A button that toggles passes `selected`; while selected it draws the kind's selected fill and label cells, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button (its selected surface with the primary text), the second reference's selected action is its segmented button's selected colours; each template answers the cells, and the selected state has no measurement counterpart.
 
 ### Platform
 
@@ -23,7 +24,7 @@ Both. The pressable root, the label and the icon render on iOS, Android and web;
 
 ## Button
 
-Button draws a pressable label with an optional trailing icon in nine kinds and six sizes and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision drawn from existing tokens, and that reference's shorter, fully rounded geometry is deferred until the contract carries per-component geometry.
+Button draws a pressable label with an optional trailing icon in nine kinds and six sizes, each kind's fill, label, border and elevation per state from the theme's button role cells, and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision.
 
 | | |
 |---|---|
@@ -32,7 +33,7 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | Reference | `render-web` (`@carbon/react`) |
 | Enums | `feedback.press` |
 | Behaviors | `press` |
-| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference; `deferred_gap` - a shape one reference system has is deferred; the row records the gap |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
 
 ### Props
 
@@ -43,7 +44,7 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
 | `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
-| `selected` | `boolean` | no | Draws the selected surface with the primary text color while true, for a button that toggles. |
+| `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -61,12 +62,13 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `borderWidth` | `border.width_01` |
 | `paddingStart` | subtract of `control.button_padding_start`, `border.width_01` |
 | `paddingEnd` | subtract of `control.button_padding_end`, `border.width_01` |
+| `ghostPaddingStart` | subtract of `control.button_ghost_padding_start`, `border.width_01` |
+| `ghostPaddingEnd` | subtract of `control.button_ghost_padding_end`, `border.width_01` |
+| `minWidth` | `control.button_min_width` |
 | `iconSize` | `control.button_icon_size` |
 | `iconInset` | `spacing.spacing_05` |
 | `iconGap` | `spacing.spacing_03` |
 | `radius` | `control.button_radius` |
-
-Color leaves accepted: `button_secondary`, `button_secondary_hover`, `button_secondary_active`, `button_tertiary`, `button_tertiary_hover`, `button_tertiary_active`, `text_inverse`, `background_hover`, `background_active`, `link_primary`, `button_danger_primary`, `button_danger_secondary`, `button_danger_hover`, `button_danger_active`, `button_tonal`, `button_tonal_hover`, `button_tonal_active`, `text_on_button_tonal`, `button_elevated`, `button_elevated_hover`, `button_elevated_active`, `background_selected`, `text_primary`.
 
 ### States (sample.js)
 

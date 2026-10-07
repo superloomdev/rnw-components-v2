@@ -1,7 +1,8 @@
 // Info: Select composite. Every sample state renders under all three
-// templates with its frame, label, trigger text, caret and message read
-// from the built theme; press, keyboard and option press drive the list
-// through the DOM; the caret follows anatomy.caret; the accessibility
+// templates with its frame, label, trigger text, indicator and message read
+// from the theme's field role cells; press, keyboard and option press drive
+// the list through the DOM; the indicator is the theme's own dropdown glyph;
+// a floating label draws no placeholder; the accessibility
 // answer is a labelled combobox controlling a listbox of options.
 
 import { afterEach, describe, test } from 'node:test';
@@ -14,7 +15,6 @@ import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
-const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 // The default size is the control role; the other sizes follow the shared size scale
 const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 const ITEMS = SAMPLE[0].props.items;
@@ -102,33 +102,38 @@ describe('Select: every sample state under every template', function () {
         });
         const parts = await renderSelect(registryFor(template), props);
 
-        // Frame geometry and the mode's border
-        // Disabled draws no border; invalid draws an inner error ring (underline) or an error border (outline)
+        // Frame geometry and the mode's border, from the field cells for the state
         const outline = t['feedback.field'] === 'outline';
-        // A disabled select draws no border under underline (the fill keeps the shape) and the disabled border under outline
-        const border = disabled ? (outline ? 'border_disabled' : null) : invalid && outline ? 'support_error' : 'border_strong_01';
-        assert.equal(parts.frame.style.outlineWidth, invalid && !outline ? t['border.width_02'] + 'px' : '');
+        const phase = disabled ? '_disabled' : invalid ? '_invalid' : '';
+        const width = t['control.field_outline_width'];
+        const ring = t['control.field_invalid_ring_width'];
+        assert.equal(parts.frame.style.outlineWidth, invalid && ring > 0 ? ring + 'px' : '');
         assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
-        // An outline frame keeps its borders inside the inline padding
-        assert.equal(parts.frame.style.paddingLeft, (t['spacing.spacing_05'] - (t['feedback.field'] === 'outline' ? t['border.width_01'] : 0)) + 'px');
-        assert.equal(parts.frame.style.borderBottomWidth, t['border.width_01'] + 'px');
-        assert.equal(parts.frame.style.borderBottomColor, border === null ? TRANSPARENT : cssValue('borderBottomColor', t['color.' + border]));
-        assert.equal(parts.frame.style.backgroundColor, t['feedback.field'] === 'underline' ? cssValue('backgroundColor', t['color.field_01']) : TRANSPARENT);
+        // An outline frame keeps its borders inside the inline padding; the indicator takes the icon inset
+        assert.equal(parts.frame.style.paddingLeft, (t['control.field_padding_inline'] - (outline ? width : 0)) + 'px');
+        assert.equal(parts.frame.style.paddingRight, (t['control.field_icon_inset'] - (outline ? width : 0)) + 'px');
+        assert.equal(parts.frame.style.borderBottomWidth, width + 'px');
+        // A disabled select reads its own outline cell
+        assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + (disabled ? 'select_outline_disabled' : 'field_outline' + phase)]));
+        assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_container' + (disabled ? '_disabled' : '')]));
 
-        // Trigger text: the selection, else the placeholder, undrawn under a resting floating label
+        // Trigger text: the selection, else the placeholder, which a floating label never draws
         const placeholderShows = t['anatomy.label'] === 'above' || !props.label;
         const text = selected ? selected.label : props.placeholder || '';
-        const color = disabled ? 'text_disabled' : selected ? 'text_primary' : 'text_placeholder';
+        const color = selected ? 'field_value' + (disabled ? '_disabled' : '') : 'field_placeholder' + (disabled ? '_disabled' : '');
         assert.equal(parts.value.textContent, text);
         assert.equal(parts.value.style.opacity, selected || placeholderShows ? '1' : '0');
         assert.equal(parts.value.style.color, cssValue('color', t['color.' + color]));
-        assert.equal(parts.value.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
+        assert.equal(parts.value.style.fontSize, t['type.field_value'].fontSize + 'px');
 
-        // Caret: always mounted, displayed by the theme's choice
+        // Indicator: the theme's own dropdown glyph in the indicator cell for the state
         const svg = parts.caret.querySelector('svg');
-        assert.equal(parts.caret.style.display, t['anatomy.caret'] === 'shown' ? 'flex' : 'none');
+        const literal = t['icon.dropdown_indicator'];
+        const glyph = literal.sizes && literal.sizes[String(t['control.field_icon_size'])] ? literal.sizes[String(t['control.field_icon_size'])] : literal;
+        assert.equal(svg.querySelector('path').getAttribute('d'), glyph.paths[0].d);
         assert.equal(svg.getAttribute('width'), String(t['control.field_icon_size']));
-        assert.equal(svg.getAttribute('fill'), t['color.' + (disabled ? 'icon_disabled' : 'icon_primary')]);
+        assert.equal(svg.getAttribute('fill'), t['color.field_indicator' + phase]);
+        assert.equal(parts.caret.style.marginLeft, t['control.field_icon_gap'] + 'px');
 
         // Label and message
         if (props.label) {
@@ -138,7 +143,7 @@ describe('Select: every sample state under every template', function () {
           assert.equal(parts.label, null);
           assert.equal(parts.trigger.getAttribute('aria-label'), props.accessibilityLabel);
         }
-        const message = invalid ? [props.invalidText, 'text_error'] : props.helperText ? [props.helperText, 'text_helper'] : null;
+        const message = invalid ? [props.invalidText, 'field_message_invalid'] : props.helperText ? [props.helperText, 'field_helper' + (disabled ? '_disabled' : '')] : null;
         if (message === null) {
           assert.equal(parts.message, null);
         } else {
@@ -227,8 +232,21 @@ describe('Select: the list through the DOM', function () {
     await act(async function () {
       parts.trigger.focus();
     });
-    assert.equal(parts.frame.style.outlineWidth, t['focus.width'] + 'px');
+    assert.equal(parts.frame.style.outlineWidth, t['control.field_focus_width'] + 'px');
+    assert.equal(parts.frame.style.outlineOffset, t['control.field_focus_offset'] + 'px');
     assert.equal(parts.trigger.style.outlineStyle, 'none');
+  });
+
+  test('hover fills the frame with the field family\'s hover cell and reads the hover outline', async function () {
+    for (const template of ['carbon', 'material']) {
+      const t = buildNative(template).tokens;
+      const parts = await renderSelect(registryFor(template), SAMPLE[0].props);
+      await act(async function () {
+        parts.trigger.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      });
+      assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_container_hover']), template);
+      assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.field_outline_hover']), template);
+    }
   });
 
   test('the trigger grows from its content (the sizer), never from a zero basis that collapses it in a content-sized container', async function () {
@@ -237,12 +255,14 @@ describe('Select: the list through the DOM', function () {
     assert.equal(parts.trigger.style.flexGrow, '1');
   });
 
-  test('anatomy.caret: shown displays the caret, hidden keeps it mounted and undisplayed', async function () {
-    const shown = await renderSelect(registryFor('default', { 'anatomy.caret': 'shown' }), SAMPLE[0].props);
-    assert.equal(shown.caret.style.display, 'flex');
-    const hidden = await renderSelect(registryFor('default', { 'anatomy.caret': 'hidden' }), SAMPLE[0].props);
-    assert.equal(hidden.caret.style.display, 'none');
-    assert.notEqual(hidden.caret.querySelector('svg'), null);
+  test('the indicator is the template\'s dropdown glyph: each reference draws its own', async function () {
+    const drawn = {};
+    for (const template of TEMPLATE_NAMES) {
+      const parts = await renderSelect(registryFor(template), SAMPLE[0].props);
+      drawn[template] = parts.caret.querySelector('svg path').getAttribute('d');
+    }
+    assert.equal(drawn.material, 'M7 9.5 12 14.5 17 9.5Z');
+    assert.notEqual(drawn.carbon, drawn.material);
   });
 
   test('floating: the label rests in the frame and rises while the list is open', async function () {
@@ -250,13 +270,14 @@ describe('Select: the list through the DOM', function () {
     const parts = await renderSelect(registryFor('material', { 'anatomy.label': 'floating' }), { label: 'Size', items: ITEMS, placeholder: 'Choose' });
     const reserve = t['type.field_label_raised'].lineHeight / 2;
     assert.equal(parts.root.style.paddingTop, reserve + 'px');
-    assert.equal(parts.label.style.top, (reserve + (t['control.field_height'] - t['type.body_compact_01'].lineHeight) / 2) + 'px');
+    assert.equal(parts.label.style.top, (reserve + (t['control.field_height'] - t['type.field_label'].lineHeight) / 2) + 'px');
     assert.equal(parts.value.style.opacity, '0');
     await act(async function () {
       parts.trigger.click();
     });
     assert.equal(parts.label.style.top, '0px');
-    assert.equal(parts.value.style.opacity, '1');
+    // A select under a floating label draws no placeholder, open or not
+    assert.equal(parts.value.style.opacity, '0');
     assert.equal(parts.value.textContent, 'Choose');
   });
 

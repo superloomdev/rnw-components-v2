@@ -1,6 +1,8 @@
 // Info: Select public API, as data. The docs generator and the accessibility
 // tests read this; the component implements exactly this and nothing more.
 
+import { FIELD_PRESENTATION_TOKENS } from '../../roles.js';
+
 export default Object.freeze({
   name: 'Select',
   props: Object.freeze({
@@ -20,15 +22,10 @@ export default Object.freeze({
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),
-  tokens: Object.freeze([
-    'feedback.field', 'anatomy.label', 'anatomy.caret', 'border.width_01', 'border.width_02', 'spacing.spacing_02', 'spacing.spacing_03',
+  tokens: Object.freeze(FIELD_PRESENTATION_TOKENS.concat([
     'control.field_height', 'control.field_radius', 'control.field_icon_size', 'control.option_height',
-    'type.label01', 'type.field_label_raised', 'type.body_compact_01', 'type.helper_text_01', 'font.family.sans',
-    'color.border_disabled', 'color.support_error', 'color.border_strong_01',
-    'color.field_01', 'color.field_hover_01', 'color.text_disabled', 'color.text_secondary',
-    'color.text_primary', 'color.text_placeholder', 'color.text_error', 'color.text_helper',
-    'color.icon_primary', 'color.icon_disabled', 'color.layer_01', 'color.layer_hover_01', 'color.layer_selected_01',
-    'shadow.level_02'
-  ]),
+    'size.size_small', 'size.size_large', 'stacking.dropdown', 'shadow.level_02',
+    'color.select_outline_disabled', 'color.select_indicator_focus', 'color.text_primary', 'color.layer_01', 'color.layer_hover_01', 'color.layer_selected_01'
+  ])),
   colors: Object.freeze(['background', 'layer_01', 'layer_02', 'layer_03'])
 });

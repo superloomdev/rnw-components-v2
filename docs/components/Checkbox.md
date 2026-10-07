@@ -4,17 +4,17 @@
 
 ## Checkbox
 
-A pressable row: a square box holding the check or mixed mark, then the label, with a helper or error message below. The box and mark colors come from the icon color tokens; the theme's `feedback.press` enum decides how hover and press are shown.
+A pressable row: a square box holding the check or mixed mark, then the label, with a helper or error message below. Every colour, the state layer and the focus ring come from the theme's `selection` role cells.
 
-### Decisions (roster flag `deferred_gap`)
+### Decisions
 
-- **The mark is an icon.** The check and the mixed dash are the `checkmark` and `subtract` icons, drawn in `icon_inverse` on the filled box, so each template draws its own glyph. This composition makes the checkbox a molecule.
-- **Press feedback is the theme's choice.** The box has no fill of its own. Under `ripple` a disc in the box's color, centered on the box and sized by the medium size token, rises to the theme's hover, focus and pressed opacities; under `opacity` the row fades; under `highlight` nothing changes, as in the primary reference. The disc element is always mounted, so the element tree is the same under every template.
-- **Colors by state.** The border is `icon_primary` at rest, `support_error` while invalid and `icon_disabled` while disabled; a checked or mixed box fills with `icon_primary` (`icon_disabled` when disabled) and draws no border unless invalid. Disabled suppresses the invalid state.
-- **Row geometry.** The row is at least the sum of the fifth-step and second-step spacing tokens tall, the box and label centered in it; the label text starts the sum of the fourth-step and first-step spacing tokens after the box. The reference states both in rem steps between scale tokens.
-- **Error message.** While invalid, the message row starts with the `warning_filled` icon in `support_error`, inset by the first-step spacing plus a border width, then the message after the third-step spacing.
-- **Geometry is the template's.** The box size and border width are `control.checkbox_size` and `control.checkbox_border`, the checked fill is `color.control_checked`, so each template draws its own box (16 with a 1px border in one, 18 with a 2px border in another). Measured against both references: the box outline while unchecked and the fill while checked; the second reference has no label, helper or invalid state of its own and draws its mark with rectangles, so those are compared against the primary reference only. Still deferred, as contract requests for the next milestone: the unchecked outline color as a role of its own (the second reference draws it in its secondary icon color), and the second template's disabled colors, drawn there as a translucent state layer.
-- **Focus** is drawn on the box, not the row.
+- **The mark is an icon role.** The check and the mixed dash are the `checked_indicator` and `mixed_indicator` icon roles, drawn in the `selection_mark` cell (`selection_mark_disabled` when disabled) on the filled box, so each template draws its own mark (a glyph from its icon set, or the checkbox's own drawing where its reference draws one). This composition makes the checkbox a molecule.
+- **State layer.** A disc centred on the box, sized by `control.selection_layer_size`, shows the theme's layer cell for the selection and the state (`selection_layer_hover`, `_active`, `selection_layer_selected_hover`, `_active`) while hovered or pressed; a reference that draws no layer states it transparent. The disc element is always mounted, so the element tree is the same under every template.
+- **Colours by state.** An unmarked box draws its border in the outline cell for the state (`selection_outline`, `_hover`, `_active`, `_invalid`, `_disabled`); a checked or mixed box fills with the container cell for the state and draws no border unless invalid. The label, helper, error message and error icon have their own cells. Disabled suppresses the invalid state.
+- **Row geometry.** The row is at least the sum of the fifth-step and second-step spacing tokens tall. The box sits at its top, inset from the start and the top by the first-step spacing plus a border width, as the primary reference places it; the label text starts the fourth-step spacing less a border width after the box, centred in the row. The reference states these in rem steps between scale tokens.
+- **Error message.** While invalid, the message row starts with the `invalid` icon role in `selection_invalid_icon`, inset by the first-step spacing plus a border width, then the message after the third-step spacing.
+- **Geometry is the template's.** The box size and border width are `control.checkbox_size` and `control.checkbox_border`, so each template draws its own box (16 with a 1px border in one, 18 with a 2px border in another). Measured against both references in every sample state, in hover, focus and pressed, in light and dark; the second reference has no label, helper or invalid state of its own and draws its mark with rectangles, so those are compared against the primary reference only.
+- **Focus ring.** The ring is drawn around the box, not the row: an element centred on the box, larger by the theme's `control.selection_focus_offset` on each side, with the theme's corner (`control.selection_focus_radius`) and ring width and colour. A square ring one pixel out in one template, a 44px circle in another. Under `feedback.focus_trigger: keyboard` it shows on keyboard focus only. A checkbox takes focus when a press completes (the primary reference focuses its input on the click), so no ring shows while the pointer is held.
 
 ### Platform
 
@@ -22,16 +22,16 @@ Both. The row, the box and the mark render on iOS, Android and web; hover feedba
 
 ## Checkbox
 
-Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, and shows press feedback as the theme's feedback.press choice; the second reference's larger, thicker-bordered box is deferred until the contract carries per-component geometry.
+Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, its outline, fill, mark, state layer and focus ring per state from the theme's selection role cells.
 
 | | |
 |---|---|
 | Tier | `molecule` |
 | Platform | `both` |
 | Reference | `render-web` (`@carbon/react`) |
-| Enums | `feedback.press` |
+| Enums | none |
 | Behaviors | `controllable-state`, `press` |
-| Flags | `deferred_gap` - a shape one reference system has is deferred; the row records the gap |
+| Flags | none |
 
 ### Props
 
@@ -55,9 +55,12 @@ Checkbox draws a box holding a check or mixed mark icon beside its label, with a
 | `borderWidth` | `control.checkbox_border` |
 | `radius` | `shape.radius_02` |
 | `markSize` | subtract of `control.checkbox_size`, `control.checkbox_border`, `control.checkbox_border` |
-| `labelGap` | sum of `spacing.spacing_04`, `spacing.spacing_01` |
+| `boxInsetStart` | sum of `spacing.spacing_01`, `border.width_01` |
+| `boxInsetTop` | sum of `spacing.spacing_01`, `border.width_01` |
+| `labelGap` | subtract of `spacing.spacing_04`, `border.width_01` |
 | `minHeight` | sum of `spacing.spacing_05`, `spacing.spacing_02` |
-| `layerSize` | `size.size_medium` |
+| `layerSize` | `control.selection_layer_size` |
+| `focusRadius` | `control.selection_focus_radius` |
 | `layerRadius` | `shape.radius_max` |
 | `messageGap` | `spacing.spacing_02` |
 | `iconSize` | `size.icon_01` |

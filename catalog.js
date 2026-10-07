@@ -13,8 +13,8 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
   Object.freeze({ name: 'Text', family: 'Text', tier: 'atom', platform: 'both', flags: Object.freeze([]), frame: null, sample: TextSample }),
   Object.freeze({ name: 'View', family: 'View', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: ViewSample }),
-  Object.freeze({ name: 'Button', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision', 'deferred_gap']), frame: null, sample: ButtonSample }),
-  Object.freeze({ name: 'Checkbox', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze(['deferred_gap']), frame: null, sample: CheckboxSample }),
-  Object.freeze({ name: 'TextInput', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['deferred_gap']), frame: TextInputFrame, sample: TextInputSample }),
-  Object.freeze({ name: 'Select', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['deferred_gap']), frame: SelectFrame, sample: SelectSample })
+  Object.freeze({ name: 'Button', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ButtonSample }),
+  Object.freeze({ name: 'Checkbox', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CheckboxSample }),
+  Object.freeze({ name: 'TextInput', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TextInputFrame, sample: TextInputSample }),
+  Object.freeze({ name: 'Select', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectFrame, sample: SelectSample })
 ]);
