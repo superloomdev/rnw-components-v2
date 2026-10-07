@@ -15,10 +15,10 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import pixelmatch from 'pixelmatch';
-import { PNG } from 'pngjs';
 
 import { openReference, openShowcase } from './harness/page.js';
+import { perceptualRatio, ratio } from './harness/perceptual.js';
+import { PNG } from 'pngjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const roster = JSON.parse(readFileSync(join(HERE, '..', 'data', 'roster.json'), 'utf8'));
@@ -33,102 +33,6 @@ const withoutReference = roster.rows.filter(function (row) {
 // The template whose values the primary reference draws, and the page the pipeline proof uses
 const REFERENCE_TEMPLATE = 'carbon';
 const PROOF_TEMPLATE = 'default';
-
-
-/********************************************************************
-Pad an image to a size with white, from the top-left corner.
-
-@param {Object} png    - Decoded PNG
-@param {Number} width  - Target width
-@param {Number} height - Target height
-
-@return {Object} - Decoded PNG of the target size
-*********************************************************************/
-function pad (png, width, height) {
-
-  const out = new PNG({ width: width, height: height });
-  out.data.fill(255);
-  PNG.bitblt(png, out, 0, 0, png.width, png.height, 0, 0);
-
-  return out;
-
-}
-
-
-/********************************************************************
-Downscale an image by half, averaging each 2x2 block.
-
-@param {Object} png - Decoded PNG
-
-@return {Object} - Decoded PNG at half size
-*********************************************************************/
-function halve (png) {
-
-  const width = Math.max(1, Math.floor(png.width / 2));
-  const height = Math.max(1, Math.floor(png.height / 2));
-  const out = new PNG({ width: width, height: height });
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      for (let channel = 0; channel < 4; channel++) {
-        let sum = 0;
-        for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
-          const sx = Math.min(png.width - 1, x * 2 + dx);
-          const sy = Math.min(png.height - 1, y * 2 + dy);
-          sum += png.data[(sy * png.width + sx) * 4 + channel];
-        }
-        out.data[(y * width + x) * 4 + channel] = Math.round(sum / 4);
-      }
-    }
-  }
-
-  return out;
-
-}
-
-
-/********************************************************************
-Mismatch ratio between two PNG buffers of equal size.
-
-@param {Buffer} a         - PNG
-@param {Buffer} b         - PNG
-@param {Number} threshold - pixelmatch threshold; 0 counts any difference
-
-@return {Number} - Mismatched pixels / total
-*********************************************************************/
-function ratio (a, b, threshold) {
-
-  const pa = PNG.sync.read(a);
-  const pb = PNG.sync.read(b);
-  expect(pa.width).toBe(pb.width);
-  expect(pa.height).toBe(pb.height);
-  const mismatched = pixelmatch(pa.data, pb.data, null, pa.width, pa.height, { threshold: threshold });
-
-  return mismatched / (pa.width * pa.height);
-
-}
-
-
-/********************************************************************
-Perceptual mismatch between two renders of possibly different sizes:
-padded to one size, halved, compared at threshold 0.2.
-
-@param {Buffer} a - PNG
-@param {Buffer} b - PNG
-
-@return {Number} - Mismatched pixels / total
-*********************************************************************/
-function perceptualRatio (a, b) {
-
-  const pa = PNG.sync.read(a);
-  const pb = PNG.sync.read(b);
-  const width = Math.max(pa.width, pb.width);
-  const height = Math.max(pa.height, pb.height);
-  const ha = halve(pad(pa, width, height));
-  const hb = halve(pad(pb, width, height));
-
-  return ratio(PNG.sync.write(ha), PNG.sync.write(hb), 0.2);
-
-}
 
 
 /********************************************************************

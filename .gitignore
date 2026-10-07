@@ -18,6 +18,7 @@ npm-debug.log*
 
 # Verification artifacts (generated at test time, never committed)
 _test/test-results/
+_test/census/test-results/
 _test/playwright-report/
 .verify-stamp
 

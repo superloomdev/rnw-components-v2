@@ -27,6 +27,8 @@ export default Object.freeze({
     });
   },
   body: Object.freeze({ width: 320 }),
+  // The element a person hovers, presses and focuses
+  target: Object.freeze({ upstream: 'input', ours: 'input' }),
   parts: Object.freeze({
     label: Object.freeze({ upstream: '.cds--label', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
     frame: Object.freeze({ upstream: '.cds--text-input', ours: 'div:has(> input)', measure: 'box' }),
@@ -57,12 +59,16 @@ export default Object.freeze({
         style: { width: 320 }
       });
     },
+    target: Object.freeze({ upstream: 'md-outlined-text-field', ours: 'input' }),
     parts: Object.freeze({
       frame: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container', ours: 'div:has(> input)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
       edge: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .outline-start', pseudo: '::before', ours: 'div:has(> input)', measure: 'box', compare: ['borderTopWidth', 'borderBottomColor'] }),
       label: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .label:not(.hidden)', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
       value: Object.freeze({ upstream: 'md-outlined-text-field >>> input', ours: 'input', measure: 'type' }),
       message: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .supporting-text > span', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
+    }),
+    omit: Object.freeze({
+      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot="trailing-icon"]' })
     })
   })
 });

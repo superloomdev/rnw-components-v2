@@ -14,7 +14,9 @@
 // the same way against the second reference (the Material web components,
 // themed from the material template) under the material template; a part
 // may name the properties it compares (`compare`) where the two anatomies
-// split one box across elements.
+// split one box across elements. Every primary part is measured against the
+// second reference too, or listed in `second.omit` with its reason and the
+// upstream selector that must keep drawing nothing.
 
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -22,6 +24,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
+import { findDisagreements } from './harness/compare.js';
 import { openReference, openShowcase, readParts } from './harness/page.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
@@ -40,104 +43,6 @@ for (const row of built) {
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
 const SECOND_TEMPLATE = 'material';
-const TOLERANCE = 0.5;
-
-
-/********************************************************************
-Compare one measured value.
-
-@param {String} property - Style property or geometry key
-@param {*}      ours     - Our value
-@param {*}      upstream - The upstream value
-@param {Number} slack    - Extra tolerance for this comparison (default 0)
-
-@return {Boolean} - True when they agree
-*********************************************************************/
-function agrees (property, ours, upstream, slack) {
-
-  // Letter spacing 'normal' is zero tracking
-  const normal = function (value) {
-    return property === 'letterSpacing' && value === 'normal' ? '0px' : value;
-  };
-  const a = normal(ours);
-  const b = normal(upstream);
-
-  // Numbers and pixel lengths agree within the tolerance
-  const isLength = function (value) {
-    return typeof value === 'number' || /^-?[0-9.]+(px)?$/.test(String(value));
-  };
-  if (isLength(a) && isLength(b)) {
-    return Math.abs(parseFloat(a) - parseFloat(b)) <= TOLERANCE + (slack || 0);
-  }
-
-  // Colors, families and keywords agree exactly
-  return String(a) === String(b);
-
-}
-
-
-/********************************************************************
-Every disagreement between our measurements and the upstream's.
-
-@param {Object} ours     - state -> part -> measurement
-@param {Object} upstream - state -> part -> measurement
-@param {Object} parts    - The part definitions (for `compare` subsets)
-
-@return {Array} - One line per disagreement
-*********************************************************************/
-function findDisagreements (ours, upstream, parts) {
-
-  const lines = [];
-  for (const state of Object.keys(upstream)) {
-    if (ours[state] === undefined) {
-      lines.push(state + ': rendered upstream but not here');
-      continue;
-    }
-    for (const part of Object.keys(upstream[state])) {
-      const u = upstream[state][part];
-      const o = ours[state][part];
-      const uDrawn = u !== null && u.visible === true;
-      const oDrawn = o !== null && o !== undefined && o.visible === true;
-      if (!uDrawn && !oDrawn) {
-        continue;
-      }
-      // An `optional` part is one the upstream draws only in some states on an element of its
-      // own, while ours is always one element: it is compared where the upstream draws it
-      if (!uDrawn && parts[part].optional === true) {
-        continue;
-      }
-      if (uDrawn !== oDrawn) {
-        lines.push(state + ' / ' + part + ': ' + (oDrawn ? 'drawn here, not upstream' : 'drawn upstream, not here'));
-        continue;
-      }
-      const compared = (parts[part].compare || Object.keys(u)).filter(function (property) {
-        return property !== 'visible' && property !== 'characters';
-      });
-      // A text's width is compared net of a tracking difference, which is reported on its own:
-      // a reference that draws no tracking still has to place and size the text where we do.
-      // A box that grows with a text part (`grows`) takes that text's slack
-      const trackingOf = function (textPart) {
-        const ot = ours[state][textPart];
-        const ut = upstream[state][textPart];
-        return ot && ut && ut.characters !== undefined
-          ? Math.abs(parseFloat(ot.letterSpacing === 'normal' ? 0 : ot.letterSpacing) - parseFloat(ut.letterSpacing === 'normal' ? 0 : ut.letterSpacing)) * ut.characters
-          : 0;
-      };
-      const tracking = u.characters !== undefined ? trackingOf(part) : parts[part].grows ? trackingOf(parts[part].grows) : 0;
-      for (const property of compared) {
-        // A border color is compared only where a border is drawn
-        const undrawn = property === 'borderBottomColor' && parseFloat(o.borderBottomWidth) === 0 && parseFloat(u.borderBottomWidth) === 0;
-        const slack = property === 'width' && tracking > 0 ? tracking : 0;
-        if (!undrawn && !agrees(property, o[property], u[property], slack)) {
-          lines.push(state + ' / ' + part + ' / ' + property + ': ' + o[property] + ' here, ' + u[property] + ' upstream');
-        }
-      }
-    }
-  }
-
-  return lines;
-
-}
 
 
 test.describe('measure: reference coverage', function () {
@@ -211,6 +116,34 @@ test.describe('measure: second reference', function () {
     }).sort()).toEqual(twinned.sort());
   });
 
+  // A part left out of the second comparison is a part nothing checks there: each one
+  // carries its reason and the upstream selector that proves the reason still holds
+  test('every primary part is measured against the second reference or omitted with a reason', function () {
+    expect(withSecond.length).toBeGreaterThanOrEqual(1);
+    const problems = [];
+    for (const component of withSecond) {
+      const second = component.reference.second;
+      const omit = second.omit || {};
+      for (const part of Object.keys(component.reference.parts)) {
+        if (second.parts[part] === undefined && omit[part] === undefined) {
+          problems.push(component.name + ' / ' + part + ': neither measured nor omitted');
+        }
+      }
+      for (const part of Object.keys(omit)) {
+        if (second.parts[part] !== undefined) {
+          problems.push(component.name + ' / ' + part + ': both measured and omitted');
+        }
+        if (typeof omit[part].reason !== 'string' || omit[part].reason.length === 0) {
+          problems.push(component.name + ' / ' + part + ': omitted with no reason');
+        }
+        if (typeof omit[part].upstream !== 'string' || omit[part].upstream.length === 0) {
+          problems.push(component.name + ' / ' + part + ': omitted with no upstream selector');
+        }
+      }
+    }
+    expect(problems, 'primary parts the second reference does not account for').toEqual([]);
+  });
+
   for (const component of withSecond) {
     test(component.name + ': parts match the second reference', async function ({ page }) {
       const parts = component.reference.second.parts;
@@ -218,6 +151,20 @@ test.describe('measure: second reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin);
+
+      // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
+      const omit = component.reference.second.omit || {};
+      const probes = {};
+      for (const part of Object.keys(omit)) {
+        probes[part] = { upstream: omit[part].upstream, measure: 'box' };
+      }
+      const probed = await readParts(page, component.name, probes, 'upstream');
+      const drawnOmissions = Object.keys(probes).filter(function (part) {
+        return Object.keys(probed).some(function (state) {
+          return probed[state][part] !== null && probed[state][part].visible === true;
+        });
+      });
+      expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
       const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin);

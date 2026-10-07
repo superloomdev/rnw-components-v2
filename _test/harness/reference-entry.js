@@ -7,7 +7,10 @@
 // second reference instead (`reference.second.mount`): the Material web
 // components, themed from the material template through the template's own
 // mapping table, so a color comparison tests the mapping and not two
-// palettes. Cells mirror the showcase (`.cell`, `data-component`,
+// palettes. `&scheme=dark` mounts the dark scheme of each reference: the
+// primary inside its own darkest zone, the second themed from the material
+// template's dark scheme, on a page painted in that scheme's background.
+// Cells mirror the showcase (`.cell`, `data-component`,
 // `data-state`, `[data-part=body]`) so one reader measures both pages. A
 // state whose `mount` returns null is marked unmeasured.
 // Not product code; the page the measurement gates compare against.
@@ -63,6 +66,16 @@ const UPSTREAM = {
 const params = new URLSearchParams(window.location.search);
 const only = params.get('component');
 const set = params.get('set') === 'second' ? 'second' : 'primary';
+const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
+// The primary's darkest zone, and the mobile upstream's own dark theme
+const PRIMARY_DARK_ZONE = 'cds--g100';
+if (schemeName === 'dark') {
+  UPSTREAM['parse-rn'] = Object.assign({}, UPSTREAM['parse-rn'], {
+    getColor: function (token) {
+      return getColor(token, 'dark');
+    }
+  });
+}
 
 
 /********************************************************************
@@ -79,7 +92,7 @@ function buildMaterialTheme () {
   Lib.Utils = utils(Lib, {});
   Lib.Debug = debug(Lib, {});
   const Themer = themer(Lib, {});
-  const tokens = Themer.buildTheme(materialProfile.schemes.light, [], 'native').tokens;
+  const tokens = Themer.buildTheme(materialProfile.schemes[schemeName], [], 'native').tokens;
   MATERIAL_TOKENS.tokens = tokens;
   const style = {};
   for (const materialName of Object.keys(materialMapping.color)) {
@@ -96,6 +109,9 @@ function buildMaterialTheme () {
 // The second mount receives the material template's built tokens, for the values the reference does not set itself
 const MATERIAL_TOKENS = { tokens: {} };
 const MATERIAL_THEME = set === 'second' ? buildMaterialTheme() : {};
+if (schemeName === 'dark' && set === 'second') {
+  document.body.style.background = MATERIAL_TOKENS.tokens['color.background'];
+}
 
 const status = { ready: false, errors: [], cells: 0, unmeasured: [] };
 window.__reference = status;
@@ -147,7 +163,8 @@ function Reference () {
     return (!only || name === only) && (set === 'primary' || references[name].second !== undefined);
   });
 
-  return React.createElement('div', { id: 'reference', className: 'measure', 'data-set': set, style: MATERIAL_THEME }, names.map(function (name) {
+  const zone = set === 'primary' && schemeName === 'dark' ? PRIMARY_DARK_ZONE : '';
+  return React.createElement('div', { id: 'reference', className: ('measure ' + zone).trim(), 'data-set': set, 'data-scheme': schemeName, style: MATERIAL_THEME }, names.map(function (name) {
     return React.createElement('section', { key: name, className: 'family', 'data-family': rows[name].family },
       React.createElement('h2', null, name),
       React.createElement('div', { className: 'grid' }, (samples[name] || []).map(function (state) {
@@ -176,6 +193,10 @@ requestAnimationFrame(function () {
         }).length;
         quiet = running === 0 ? quiet + 1 : 0;
         if (quiet >= 2) {
+          // A dark primary paints the page in its zone's background
+          if (set === 'primary' && schemeName === 'dark') {
+            document.body.style.background = getComputedStyle(document.getElementById('reference')).backgroundColor;
+          }
           status.cells = document.querySelectorAll('.cell').length;
           status.ready = true;
           return;

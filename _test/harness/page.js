@@ -12,7 +12,8 @@ Open the showcase for a template and wait until it reports ready.
 @param {Object} page       - Playwright page
 @param {String} template   - Template name
 @param {String} [component] - Restrict to one component
-@param {Object} [options]   - { measure }: lay cell bodies out as the reference page does
+@param {Object} [options]   - { measure }: lay cell bodies out as the reference page does;
+                              { scheme }: 'light' (default) or 'dark'
 
 @return {Promise<Object>} - { status, consoleErrors, pageErrors }
 *********************************************************************/
@@ -30,7 +31,7 @@ export async function openShowcase (page, template, component, options) {
   });
 
   const query = '?template=' + template + (component ? '&component=' + component : '') +
-    (options && options.measure ? '&measure=1' : '');
+    (options && options.measure ? '&measure=1' : '') + (options && options.scheme === 'dark' ? '&scheme=dark' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.__showcase && window.__showcase.ready === true;
@@ -52,12 +53,15 @@ ready.
 @param {Object} page      - Playwright page
 @param {String} component - Component name
 @param {String} set       - 'primary' (default) | 'second': which reference set the page mounts
+@param {String} [scheme]  - 'light' (default) | 'dark'
 
 @return {Promise<Object>} - The page status ({ cells, unmeasured, errors })
 *********************************************************************/
-export async function openReference (page, component, set) {
+export async function openReference (page, component, set, scheme) {
 
-  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary'));
+  // The mobile upstream follows the platform's colour scheme, so a dark reference asks for it
+  await page.emulateMedia({ colorScheme: scheme === 'dark' ? 'dark' : 'light' });
+  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : ''));
   await page.waitForFunction(function () {
     return window.__reference && window.__reference.ready === true;
   }, null, { timeout: 30000 });
@@ -86,10 +90,16 @@ shadow roots with ' >>> '.
 @param {String} side   - 'ours' | 'upstream'
 @param {String} origin - Optional part name coordinates are measured from
                          (default: the cell body)
+@param {Object} [options] - { only }: measure the cell of this state label only;
+                         { extended }: also read each box part's shadow, and the
+                         ink of text and drawn paths (their colour with the
+                         opacity of every element above them, shadow hosts
+                         included), plus the part's box relative to the body
+                         (`_bodyX`, `_bodyY`) for pixel sampling
 
 @return {Promise<Object>} - state label -> part name -> measurement | null
 *********************************************************************/
-export async function readParts (page, name, parts, side, origin) {
+export async function readParts (page, name, parts, side, origin, options) {
 
   return page.evaluate(function (input) {
     const TYPE = ['color', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'];
@@ -114,9 +124,37 @@ export async function readParts (page, name, parts, side, origin) {
       }
       return null;
     };
+    // The opacity an element is painted with: its own times every ancestor's, across shadow hosts
+    const opacityOf = function (element, stop) {
+      let value = 1;
+      let node = element;
+      while (node && node !== stop) {
+        if (node.nodeType === 1) {
+          value = value * parseFloat(getComputedStyle(node).opacity);
+        }
+        node = node.parentNode || node.host || null;
+      }
+      return value;
+    };
+    // A colour with an extra opacity folded into its alpha
+    const withOpacity = function (color, opacity) {
+      const match = /rgba?\(([^)]+)\)/.exec(color);
+      if (!match) {
+        return color;
+      }
+      const channels = match[1].split(',').map(function (value) {
+        return parseFloat(value);
+      });
+      const alpha = Math.round((channels.length === 4 ? channels[3] : 1) * opacity * 100) / 100;
+      return alpha >= 1 ? 'rgb(' + channels.slice(0, 3).join(', ') + ')' : 'rgba(' + channels.slice(0, 3).join(', ') + ', ' + alpha + ')';
+    };
     const out = {};
     for (const cell of document.querySelectorAll('.cell[data-component="' + input.name + '"]')) {
+      if (input.only && cell.getAttribute('data-state') !== input.only) {
+        continue;
+      }
       const body = cell.querySelector('[data-part="body"]');
+      const bodyRect = body.getBoundingClientRect();
       const originElement = input.origin ? query(body, input.parts[input.origin][input.side]) : body;
       const origin = (originElement || body).getBoundingClientRect();
       const state = {};
@@ -171,12 +209,117 @@ export async function readParts (page, name, parts, side, origin) {
         }
         // A visually hidden part (1px clip), an undisplayed or a transparent one draws nothing
         measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && (pseudo ? true : rect.width > 1 && rect.height > 1);
+        if (input.extended) {
+          const opacity = opacityOf(element, body);
+          if (part.measure === 'box') {
+            measured.boxShadow = style.boxShadow;
+          }
+          // A drawn path inks with its fill, text with its colour
+          const ink = element instanceof SVGElement ? getComputedStyle(element).fill : part.measure === 'box' ? null : style.color;
+          if (ink !== null) {
+            measured.ink = withOpacity(ink, opacity);
+          }
+          measured._bodyX = (pseudo ? rect.x + parseFloat(style.left) : rect.x) - bodyRect.x;
+          measured._bodyY = (pseudo ? rect.y + parseFloat(style.top) : rect.y) - bodyRect.y;
+        }
         state[partName] = measured;
       }
       out[cell.getAttribute('data-state')] = state;
     }
     return out;
-  }, { name: name, parts: parts, side: side, origin: origin || null });
+  }, { name: name, parts: parts, side: side, origin: origin || null, only: options && options.only ? options.only : null, extended: Boolean(options && options.extended) });
+
+}
+
+
+/********************************************************************
+Put one cell's interactive element in an interaction state, the way a
+person would: `hover` moves the pointer over it, `focus` focuses it from
+the keyboard (so a keyboard-only focus ring shows), `pressed` holds the
+pointer down on it. Wait for transitions and state layers to settle.
+
+@param {Object} page        - Playwright page
+@param {String} name        - Component name
+@param {String} state       - The cell's state label
+@param {String} selector    - The interactive element, relative to the cell body (' >>> ' not used here)
+@param {String} interaction - 'hover' | 'focus' | 'pressed'
+
+@return {Promise<Boolean>} - False when the cell or its element is not on the page
+*********************************************************************/
+export async function enterInteraction (page, name, state, selector, interaction) {
+
+  const target = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').locator(selector).first();
+  if (await target.count() === 0) {
+    return false;
+  }
+  if (interaction === 'focus') {
+    await page.keyboard.press('Shift');
+    await target.focus();
+  } else {
+    await target.hover();
+    if (interaction === 'pressed') {
+      await page.mouse.down();
+    }
+  }
+  await page.waitForTimeout(400);
+
+  return true;
+
+}
+
+
+/********************************************************************
+Leave an interaction state without completing a click: the pointer moves
+off the element before it is released (so nothing toggles or opens),
+focus leaves, and an opened popup is dismissed.
+
+@param {Object} page - Playwright page
+
+@return {Promise<void>}
+*********************************************************************/
+export async function leaveInteraction (page) {
+
+  await page.mouse.move(0, 0);
+  await page.mouse.up();
+  await page.keyboard.press('Escape');
+  await page.evaluate(function () {
+    let active = document.activeElement;
+    while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+      active = active.shadowRoot.activeElement;
+    }
+    if (active && active.blur) {
+      active.blur();
+    }
+    if (document.activeElement && document.activeElement.blur) {
+      document.activeElement.blur();
+    }
+  });
+  await page.waitForTimeout(250);
+
+}
+
+
+/********************************************************************
+Screenshot one cell's body with a margin, so a focus ring drawn outside
+the element is in the picture.
+
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {String} state  - The cell's state label
+@param {Number} margin - Pixels around the body
+
+@return {Promise<Buffer|null>} - PNG, or null when the cell is absent
+*********************************************************************/
+export async function shootCell (page, name, state, margin) {
+
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return null;
+  }
+  await body.scrollIntoViewIfNeeded();
+  const box = await body.boundingBox();
+
+  return page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
 
 }
 

@@ -2,8 +2,10 @@
 // Builds one component system per template with the real frameworks (React,
 // react-native-web, react-native-svg) exactly as a web host would, and
 // renders every component's sample states in a labelled grid. The URL picks
-// the template: /?template=default|carbon|material. Nothing here is product
-// code; it is the page the browser gates measure.
+// the template and its scheme: /?template=default|carbon|material and
+// &scheme=light|dark (each template's own light and dark scheme; a dark page
+// is painted in the scheme's background). Nothing here is product code; it is
+// the page the browser gates measure.
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -20,14 +22,16 @@ import { createSystem } from 'rnw-components';
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
 
+// Template -> scheme name -> scheme
 const TEMPLATES = {
-  default: defaultProfile.schemes.light,
-  carbon: carbonProfile.schemes.white,
-  material: materialProfile.schemes.light
+  default: { light: defaultProfile.schemes.light, dark: defaultProfile.schemes.dark },
+  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 },
+  material: { light: materialProfile.schemes.light, dark: materialProfile.schemes.dark }
 };
 
 const params = new URLSearchParams(window.location.search);
 const templateName = params.get('template') || 'default';
+const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 const only = params.get('component');
 // Measurement mode lays each cell body out as the reference page does
 const measuring = params.get('measure') === '1';
@@ -37,7 +41,7 @@ const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
 const Themer = themer({ Utils: Utils, Debug: Debug });
 const Lib = { React: React, ReactNative: ReactNative, Svg: Svg, Utils: Utils, Debug: Debug, Themer: Themer };
 
-const status = { template: templateName, ready: false, errors: [], cells: 0, components: Object.keys(factories) };
+const status = { template: templateName, scheme: schemeName, ready: false, errors: [], cells: 0, components: Object.keys(factories) };
 window.__showcase = status;
 
 window.addEventListener('error', function (event) {
@@ -46,7 +50,10 @@ window.addEventListener('error', function (event) {
 
 let Registry;
 try {
-  const built = Themer.buildTheme(TEMPLATES[templateName], [], 'native');
+  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native');
+  if (schemeName === 'dark') {
+    document.body.style.background = built.tokens['color.background'];
+  }
   // The built tokens the page draws with, for a gate that samples pixels against them
   status.theme = built.tokens;
   Registry = createSystem(Lib, {}, built, 'md', factories);

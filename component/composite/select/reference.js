@@ -31,6 +31,8 @@ export default Object.freeze({
     }, [placeholder].concat(options));
   },
   body: Object.freeze({ width: 320 }),
+  // The element a person hovers, presses and focuses
+  target: Object.freeze({ upstream: 'select', ours: '[role="combobox"]' }),
   parts: Object.freeze({
     label: Object.freeze({ upstream: '.cds--label', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
     frame: Object.freeze({ upstream: '.cds--select-input', ours: 'div:has(> [role="combobox"])', measure: 'box' }),
@@ -39,8 +41,7 @@ export default Object.freeze({
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
   }),
   // The second reference draws one size and shares its field with the text field (parts are
-  // measured from the frame); it draws its own ten-by-five arrow in place
-  // of a glyph, so the caret is not compared there
+  // measured from the frame); its caret is a drawn ten-by-five arrow, compared as a box
   second: Object.freeze({
     origin: 'frame',
     body: Object.freeze({ width: 320 }),
@@ -63,12 +64,17 @@ export default Object.freeze({
           React.createElement('div', { slot: 'headline' }, item.label));
       }));
     },
+    target: Object.freeze({ upstream: 'md-outlined-select', ours: '[role="combobox"]' }),
     parts: Object.freeze({
       frame: Object.freeze({ upstream: 'md-outlined-select >>> md-outlined-field >>> .container', ours: 'div:has(> [role="combobox"])', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
       edge: Object.freeze({ upstream: 'md-outlined-select >>> md-outlined-field >>> .outline-start', pseudo: '::before', ours: 'div:has(> [role="combobox"])', measure: 'box', compare: ['borderTopWidth', 'borderBottomColor'] }),
       label: Object.freeze({ upstream: 'md-outlined-select >>> md-outlined-field >>> .label:not(.hidden)', ours: ':scope > div > [dir="auto"]:first-child', measure: 'text' }),
       value: Object.freeze({ upstream: 'md-outlined-select >>> #label', ours: '[role="combobox"] > div:first-child > [dir="auto"]', measure: 'text' }),
+      caret: Object.freeze({ upstream: 'md-outlined-select >>> .icon.trailing svg polygon.down', ours: '[role="combobox"] > div:last-child svg path', measure: 'box' }),
       message: Object.freeze({ upstream: 'md-outlined-select >>> md-outlined-field >>> .supporting-text > span', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
+    }),
+    omit: Object.freeze({
+      icon: Object.freeze({ reason: 'the second reference marks an invalid select by the error color alone and draws no error icon unless the page slots one; ours draws the template\'s error icon before the caret', upstream: 'md-outlined-select [slot="leading-icon"], md-outlined-select [slot="trailing-icon"]' })
     })
   })
 });

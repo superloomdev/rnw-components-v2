@@ -47,6 +47,8 @@ export default Object.freeze({
       iconDescription: typeof props.icon === 'string' ? props.children : undefined
     }, props.children);
   },
+  // The element a person hovers, presses and focuses
+  target: Object.freeze({ upstream: 'button.cds--btn', ours: '[role="button"]' }),
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"]', measure: 'box' }),
     label: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"] > [dir="auto"]', measure: 'text' }),
@@ -74,6 +76,7 @@ export default Object.freeze({
             return React.createElement('path', { key: index, d: path.d, fillRule: path.fillRule });
           })));
     },
+    target: Object.freeze({ upstream: SECOND_HOST, ours: '[role="button"]' }),
     parts: Object.freeze({
       root: Object.freeze({ upstream: SECOND_HOST, ours: '[role="button"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'], grows: 'label' }),
       fill: Object.freeze({ upstream: 'md-filled-button >>> .background, md-filled-tonal-button >>> .background, md-elevated-button >>> .background', ours: '[role="button"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'], grows: 'label', optional: true }),
