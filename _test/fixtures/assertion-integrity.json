@@ -508,7 +508,7 @@
     {
       "id": "measure-second-coverage",
       "file": "component/molecule/text-input/reference.js",
-      "find": "      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]' })\n",
+      "find": "      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]', mask: true })\n",
       "replace": "",
       "runner": "pw",
       "test": "measure.spec.js",
@@ -664,6 +664,16 @@
       "test": "fidelity.spec.js",
       "testName": "Button / primary / light: matches the reference in every state",
       "why": "a ring drawn inside the edge that loses its inner band must fail the fidelity gate by its pixels, whatever its CSS"
+    },
+    {
+      "id": "fidelity-mask-anchor",
+      "file": "component/molecule/checkbox/reference.js",
+      "find": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)' }),",
+      "replace": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)', mask: true }),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Checkbox / second / light: matches the reference in every state",
+      "why": "a masked omission whose box contains the anchor part would hide the component from the pixels; the fidelity gate must reject the mask"
     }
   ]
 }

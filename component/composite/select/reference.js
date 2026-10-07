@@ -74,7 +74,7 @@ export default Object.freeze({
       message: Object.freeze({ upstream: 'md-outlined-select >>> md-outlined-field >>> .supporting-text > span', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
     }),
     omit: Object.freeze({
-      icon: Object.freeze({ reason: 'the second reference marks an invalid select by the error color alone and draws no error icon unless the page slots one; ours draws the template\'s error icon before the caret', upstream: 'md-outlined-select [slot="leading-icon"], md-outlined-select [slot="trailing-icon"]' })
+      icon: Object.freeze({ reason: 'the second reference marks an invalid select by the error color alone and draws no error icon unless the page slots one; ours draws the template\'s error icon before the caret', upstream: 'md-outlined-select [slot="leading-icon"], md-outlined-select [slot="trailing-icon"]', mask: true })
     })
   })
 });

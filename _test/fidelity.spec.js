@@ -6,7 +6,9 @@
 // geometry, type, colors with their opacity, sampled paint, and the ring
 // and shadow pixels at the anchor part), and stay within the row's
 // diff_budget perceptually. No expected gap is set aside: a difference is a
-// template, component or harness defect.
+// template, component or harness defect. A masked omission (`second.omit`,
+// proven undrawn upstream by its probe) is left out of the pixels, and a
+// mask that would cover the anchor part fails.
 
 import { expect, test } from '@playwright/test';
 

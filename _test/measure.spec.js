@@ -16,7 +16,9 @@
 // may name the properties it compares (`compare`) where the two anatomies
 // split one box across elements. Every primary part is measured against the
 // second reference too, or listed in `second.omit` with its reason and the
-// upstream selector that must keep drawing nothing.
+// upstream selector that must keep drawing nothing. An omission marked
+// `mask` is a part ours draws by design; the fidelity gate leaves its box
+// out of the pixels too.
 
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -144,6 +146,9 @@ test.describe('measure: second reference', function () {
         }
         if (typeof omit[part].upstream !== 'string' || omit[part].upstream.length === 0) {
           problems.push(component.name + ' / ' + part + ': omitted with no upstream selector');
+        }
+        if (omit[part].mask !== undefined && omit[part].mask !== true) {
+          problems.push(component.name + ' / ' + part + ': mask is true or absent');
         }
       }
     }

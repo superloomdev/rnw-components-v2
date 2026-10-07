@@ -10,8 +10,10 @@
 // outline, another as a border with an inset shadow or a separate element):
 // the paint just inside the anchor part's top edge, the paint to its left
 // out to the widest ring (the side no cell caption sits on), and the paint
-// below its bottom edge, near its trailing end, where a shadow falls. Not
-// product code.
+// below its bottom edge, near its trailing end, where a shadow falls. A part
+// the second reference omits with `mask` (it never draws it, ours does by
+// design) is left out of the pixels as it is out of the parts. Not product
+// code.
 
 import { PNG } from 'pngjs';
 
@@ -182,6 +184,58 @@ function cropTo (shot, part) {
 
 
 /********************************************************************
+Leave the masked omissions out of our screenshot: inside the box of each
+part the reference omits with `mask` (a part its omission probe proves it
+never draws, and ours draws by design), our pixels are replaced by the
+reference's, one pixel wider on each side for the antialiased edge. A mask
+whose box contains the anchor part would hide the component itself, so it
+is reported instead of applied.
+
+@param {Buffer} ours     - Our cell screenshot
+@param {Buffer} upstream - The reference cell screenshot
+@param {Object} state    - Our part name -> measurement
+@param {Array}  masked   - The masked part names
+@param {String} anchor   - The anchor part name
+
+@return {Object} - { shot: PNG, lines: descriptions of rejected masks }
+*********************************************************************/
+function maskOmitted (ours, upstream, state, masked, anchor) {
+
+  const lines = [];
+  const boxes = masked.filter(function (name) {
+    return state[name] && state[name].visible === true && state[name]._bodyX !== undefined;
+  });
+  if (boxes.length === 0) {
+    return { shot: ours, lines: lines };
+  }
+  const target = PNG.sync.read(ours);
+  const source = PNG.sync.read(upstream);
+  const core = anchor ? state[anchor] : null;
+  for (const name of boxes) {
+    const part = state[name];
+
+    // A mask may never cover the part the component is compared around
+    if (core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&
+      part._bodyX + part.width >= core._bodyX + core.width && part._bodyY + part.height >= core._bodyY + core.height) {
+      lines.push('mask ' + name + ' covers the anchor ' + anchor);
+      continue;
+    }
+
+    const x = Math.max(0, Math.floor(MARGIN + part._bodyX) - 1);
+    const y = Math.max(0, Math.floor(MARGIN + part._bodyY) - 1);
+    const width = Math.min(target.width, source.width, Math.ceil(MARGIN + part._bodyX + part.width) + 1) - x;
+    const height = Math.min(target.height, source.height, Math.ceil(MARGIN + part._bodyY + part.height) + 1) - y;
+    if (width > 0 && height > 0) {
+      PNG.bitblt(source, target, x, y, width, height, x, y);
+    }
+  }
+
+  return { shot: PNG.sync.write(target), lines: lines };
+
+}
+
+
+/********************************************************************
 Measure one page: every rest state, then every enabled state in each
 interaction.
 
@@ -189,12 +243,13 @@ interaction.
 @param {Object} component - Discovered component
 @param {Object} reference - The reference block (primary or second)
 @param {String} side      - 'upstream' | 'ours'
+@param {Object} [masks]   - Masked omitted parts, measured on our side only
 
 @return {Promise<Object>} - { states: label -> parts, shots: label -> PNG }
 *********************************************************************/
-async function collect (page, component, reference, side) {
+async function collect (page, component, reference, side, masks) {
 
-  const parts = reference.parts;
+  const parts = side === 'ours' ? Object.assign({}, reference.parts, masks) : reference.parts;
   const origin = reference.origin;
   const rest = await readParts(page, component.name, parts, side, origin, { extended: true });
   const states = {};
@@ -244,10 +299,17 @@ Run one row against one reference under one scheme.
 export async function runFidelity (page, component, set, scheme) {
 
   const reference = set === 'second' ? component.reference.second : component.reference;
+  // The omissions masked out of the pixels, measured by the primary part's selector on our side
+  const omit = set === 'second' ? (reference.omit || {}) : {};
+  const masks = Object.fromEntries(Object.keys(omit).filter(function (name) {
+    return omit[name].mask === true;
+  }).map(function (name) {
+    return [name, component.reference.parts[name]];
+  }));
   const status = await openReference(page, component.name, set, scheme);
   const upstream = await collect(page, component, reference, 'upstream');
   const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme });
-  const ours = await collect(page, component, reference, 'ours');
+  const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];
 
   // Properties: the CSS of a ring or a shadow is left to the pixels, and so are
@@ -274,8 +336,12 @@ export async function runFidelity (page, component, set, scheme) {
       }
     }
     // A reference whose component is one part alone is compared within that part
+    const masked = maskOmitted(ours.shots[key], upstream.shots[key], ours.states[key] || {}, Object.keys(masks), anchor);
+    for (const line of masked.lines) {
+      lines.push(key + ' / ' + line);
+    }
     const crop = reference.origin && ours.states[key] && upstream.states[key] && ours.states[key][reference.origin] && upstream.states[key][reference.origin];
-    const a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
+    const a = crop ? cropTo(masked.shot, ours.states[key][reference.origin]) : masked.shot;
     const b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
     perceptual[key] = Math.round(perceptualRatio(a, b) * 10000) / 100;
     shots[key] = { ours: a, upstream: b };
