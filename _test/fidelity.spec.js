@@ -3,7 +3,7 @@
 // the material template) and under each template's light and dark scheme:
 // every sample state and every enabled state while hovered, keyboard focused
 // and pressed must match the reference part for part (`harness/fidelity.js`:
-// geometry, type, colours with their opacity, sampled paint, and the ring
+// geometry, type, colors with their opacity, sampled paint, and the ring
 // and shadow pixels at the anchor part), and stay within the row's
 // diff_budget perceptually. No expected gap is set aside: a difference is a
 // template, component or harness defect.

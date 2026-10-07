@@ -25,7 +25,7 @@ The select fills the width its container gives it (`sample.js` FRAME: the showca
 
 ## Select
 
-Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every colour, width, space and type set of the frame comes from the theme's field role cells.
+Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every color, width, space and type set of the frame comes from the theme's field role cells.
 
 | | |
 |---|---|

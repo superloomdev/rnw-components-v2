@@ -214,7 +214,7 @@ describe('Button: feedback.press through the DOM', function () {
     await act(async function () {
       parts.root.focus();
     });
-    // Carbon draws its ring inside the edge: the border in the ring colour, then inset shadows
+    // Carbon draws its ring inside the edge: the border in the ring color, then inset shadows
     assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']));
     assert.match(parts.root.style.boxShadow, /inset/);
     assert.equal(parts.root.style.outlineWidth, '');

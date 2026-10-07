@@ -284,7 +284,7 @@ describe('context: focusRing', function () {
     assert.notDeepEqual(any.focusRing('button', { focused: true, focusVisible: false }), {});
   });
 
-  test('a button ring drawn inside the edge is the border in the ring colour, the rest of the ring and the page-colour line inset inside it', function () {
+  test('a button ring drawn inside the edge is the border in the ring color, the rest of the ring and the page-color line inset inside it', function () {
     const t = buildNative('carbon').tokens;
     const ring = buildSystem('carbon', { Probe: Probe }).Probe.ctx.focusRing('button', { focused: true }, 1);
     assert.deepEqual(ring, {

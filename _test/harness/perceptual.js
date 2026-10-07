@@ -7,7 +7,7 @@ import { PNG } from 'pngjs';
 
 
 /********************************************************************
-Pad an image to a size with its own backdrop (the colour of its top-left
+Pad an image to a size with its own backdrop (the color of its top-left
 pixel, the page behind the cell), from the top-left corner. White padding
 would count every padded pixel on a dark page as a difference.
 

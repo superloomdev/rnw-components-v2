@@ -111,7 +111,7 @@ export default function Button (ctx) {
           borderWidth: borderWidth,
           flexDirection: 'row',
           height: height,
-          // The label stays centred inside a minimum width
+          // The label stays centered inside a minimum width
           justifyContent: 'center',
           minWidth: ctx.metric('Button', 'minWidth'),
           // The theme's ring is the only focus indicator

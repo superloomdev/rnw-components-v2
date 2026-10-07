@@ -43,9 +43,9 @@ for (const row of built) {
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
 const SECOND_TEMPLATE = 'material';
-// The second reference paints some colours as a role at an element opacity, where a template
-// states the same colour as rgba: the CSS of a shadow is the fidelity gate's pixels, and a text
-// colour is compared as its ink (the colour at the opacity it is painted at)
+// The second reference paints some colors as a role at an element opacity, where a template
+// states the same color as rgba: the CSS of a shadow is the fidelity gate's pixels, and a text
+// color is compared as its ink (the color at the opacity it is painted at)
 const AS_PAINTED = function (state, part, property, ours, upstream) {
   return property === 'boxShadow' || (property === 'color' && ours.ink !== undefined && upstream.ink !== undefined);
 };
@@ -187,7 +187,7 @@ test.describe('measure: second reference', function () {
       const gaps = GAPS.filter(function (gap) {
         return gap.check === 'measure-second' && gap.component === component.name;
       });
-      // Colours are compared as painted: a box colour at its element's opacity, a text colour as its ink
+      // Colors are compared as painted: a box color at its element's opacity, a text color as its ink
       const lines = findDisagreements(ours, upstream, parts, ['ink'], AS_PAINTED);
       const explained = function (line) {
         return gaps.find(function (gap) {

@@ -173,7 +173,7 @@ describe('Checkbox: state through the DOM', function () {
     assert.deepEqual(calls, [true, false]);
   });
 
-  test('the state layer: the disc centred on the box shows the theme\'s layer for the selection and the state', async function () {
+  test('the state layer: the disc centered on the box shows the theme\'s layer for the selection and the state', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderCheckbox(registryFor('material'), { label: 'L' });
     const offset = (t['control.checkbox_size'] - t['control.selection_layer_size']) / 2;

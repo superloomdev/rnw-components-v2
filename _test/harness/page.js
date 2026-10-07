@@ -59,7 +59,7 @@ ready.
 *********************************************************************/
 export async function openReference (page, component, set, scheme) {
 
-  // The mobile upstream follows the platform's colour scheme, so a dark reference asks for it
+  // The mobile upstream follows the platform's color scheme, so a dark reference asks for it
   await page.emulateMedia({ colorScheme: scheme === 'dark' ? 'dark' : 'light' });
   await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : ''));
   await page.waitForFunction(function () {
@@ -92,7 +92,7 @@ shadow roots with ' >>> '.
                          (default: the cell body)
 @param {Object} [options] - { only }: measure the cell of this state label only;
                          { extended }: also read each box part's shadow, and the
-                         ink of text and drawn paths (their colour with the
+                         ink of text and drawn paths (their color with the
                          opacity of every element above them, shadow hosts
                          included), plus the part's box relative to the body
                          (`_bodyX`, `_bodyY`) for pixel sampling
@@ -137,7 +137,7 @@ export async function readParts (page, name, parts, side, origin, options) {
       }
       return value;
     };
-    // A colour with an extra opacity folded into its alpha
+    // A color with an extra opacity folded into its alpha
     const withOpacity = function (color, opacity) {
       const match = /rgba?\(([^)]+)\)/.exec(color);
       if (!match) {
@@ -220,7 +220,7 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured.visible = measured.visible && opacity > 0;
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
-            // A box drawn at an opacity paints its colours at that opacity, as an rgba colour does
+            // A box drawn at an opacity paints its colors at that opacity, as an rgba color does
             if (opacity < 1) {
               for (const property of ['backgroundColor', 'borderBottomColor']) {
                 if (measured[property] !== undefined) {
@@ -229,7 +229,7 @@ export async function readParts (page, name, parts, side, origin, options) {
               }
             }
           }
-          // A drawn path inks with its fill, text with its colour
+          // A drawn path inks with its fill, text with its color
           const ink = element instanceof SVGElement ? getComputedStyle(element).fill : part.measure === 'box' ? null : style.color;
           if (ink !== null) {
             measured.ink = withOpacity(ink, opacity);
@@ -268,7 +268,7 @@ export async function enterInteraction (page, name, state, selector, interaction
   if (await target.count() === 0) {
     return false;
   }
-  // Centre the cell first, where its screenshot is taken, so nothing scrolls out from under the pointer
+  // Center the cell first, where its screenshot is taken, so nothing scrolls out from under the pointer
   await body.evaluate(function (element) {
     element.scrollIntoView({ block: 'center', inline: 'center' });
   });
@@ -346,7 +346,7 @@ export async function shootCell (page, name, state, margin) {
   if (await body.count() === 0) {
     return null;
   }
-  // Centred in the viewport, so the margin on every side is inside the picture
+  // Centered in the viewport, so the margin on every side is inside the picture
   await body.evaluate(function (element) {
     element.scrollIntoView({ block: 'center', inline: 'center' });
   });

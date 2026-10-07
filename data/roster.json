@@ -161,7 +161,7 @@
         "version": "1.115.0",
         "export": "TextInput"
       },
-      "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every colour, width, space and type set from the theme's field role cells.",
+      "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -194,7 +194,7 @@
         "version": "1.115.0",
         "export": "Select"
       },
-      "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every colour, width, space and type set of the frame comes from the theme's field role cells.",
+      "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every color, width, space and type set of the frame comes from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"

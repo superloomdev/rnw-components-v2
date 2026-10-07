@@ -5,8 +5,8 @@
 // upstream React Native component through react-native-web, so its style
 // objects are what the page draws. With `?set=second` the page mounts the
 // second reference instead (`reference.second.mount`): the Material web
-// components, themed with the system colours of the material template's
-// scheme (the scheme its role cells were read from), so a colour comparison
+// components, themed with the system colors of the material template's
+// scheme (the scheme its role cells were read from), so a color comparison
 // tests the cells and not two palettes. `&scheme=dark` mounts the dark scheme of each reference: the
 // primary inside its own darkest zone, the second themed from the material
 // template's dark scheme, on a page painted in that scheme's background.
@@ -78,7 +78,7 @@ if (schemeName === 'dark') {
 
 /********************************************************************
 The custom properties that theme the Material web components from the
-material template: every Material system colour of the scheme
+material template: every Material system color of the scheme
 (`system_colors`), so the reference draws with exactly the scheme the
 template's role cells were read from.
 
@@ -92,7 +92,7 @@ function buildMaterialTheme () {
   const Themer = themer(Lib, {});
   const tokens = Themer.buildTheme(materialProfile.schemes[schemeName], [], 'native').tokens;
   MATERIAL_TOKENS.tokens = tokens;
-  // Every Material system colour of the scheme the template's cells were read from
+  // Every Material system color of the scheme the template's cells were read from
   const style = {};
   const system = materialProfile.schemes[schemeName].system_colors;
   for (const role of Object.keys(system)) {

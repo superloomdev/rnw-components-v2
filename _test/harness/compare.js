@@ -1,6 +1,6 @@
 // Info: The comparison both the measurement gate and the fidelity census use:
 // one measured value against the upstream's (numbers and pixel lengths
-// within half a pixel, colours, families and keywords exactly), and every
+// within half a pixel, colors, families and keywords exactly), and every
 // disagreement between two measured states. Not product code.
 
 const TOLERANCE = 0.5;
@@ -25,7 +25,7 @@ export function agrees (property, ours, upstream, slack) {
   const a = normal(ours);
   const b = normal(upstream);
 
-  // A sampled paint agrees within three levels per channel (antialiasing and colour rounding)
+  // A sampled paint agrees within three levels per channel (antialiasing and color rounding)
   if (property === 'paint') {
     const channels = function (value) {
       return String(value).match(/[0-9.]+/g).map(Number);

@@ -231,8 +231,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   /********************************************************************
   The focus ring a family draws, from the theme's role grid: its width,
-  offset (negative draws it inside the edge) and colour, and for a button
-  the page-colour line some systems draw inside the ring. A field shows its
+  offset (negative draws it inside the edge) and color, and for a button
+  the page-color line some systems draw inside the ring. A field shows its
   focus on any focus; a button or a selection control shows it on any focus
   or on keyboard focus only, as `feedback.focus_trigger` says. A ring of
   width 0 draws nothing.
@@ -262,7 +262,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     }
 
     // A button ring drawn inside the edge paints the border, then the rest of
-    // its width and the page-colour line as inset shadows inside the border
+    // its width and the page-color line as inset shadows inside the border
     const inner = Math.max(0, width - (border || 0));
     const gap = token('control.button_focus_gap_width');
     const layers = [];
@@ -361,12 +361,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   /********************************************************************
   The field presentation the theme chose: the frame `feedback.field`
   draws (a filled underline or an outline) and the label placement
-  `anatomy.label` draws, every colour, width, space and type set from the
+  `anatomy.label` draws, every color, width, space and type set from the
   theme's `field` role cells for the field's state. The label keeps its
   place in the element tree (the first child of the field root); only its
   style moves it, so the accessibility tree never depends on the theme. A
   floating label rests inside the frame and rises into its top border,
-  occluding it with the surface colour, when the field is focused or
+  occluding it with the surface color, when the field is focused or
   populated. A member whose reference distinguishes it from the family
   reads its own cell (`text_input_container_hover`,
   `select_outline_disabled`).
@@ -374,12 +374,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {Object} state   - { focused, hovered, disabled, invalid, populated }
   @param {Object} options - { member, height, radius, surface, trailing }: the
                             member ('text_input' | 'select'), the field's own
-                            height and radius, the colour leaf it sits on and
+                            height and radius, the color leaf it sits on and
                             whether a trailing icon sits in the frame
 
   @return {Object} - { root, frame, label, message, raised, placeholder,
                      value, placeholderColor, indicator, invalidIcon, iconGap };
-                     `message` styles the helper or error text with its colour
+                     `message` styles the helper or error text with its color
                      for the state (`messageInvalid` while invalid)
   *********************************************************************/
   function fieldPresentation (state, options) {
@@ -402,7 +402,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       return base + (focused ? '_focus' : hovered ? '_hover' : '');
     };
 
-    // Frame colours and widths for the state
+    // Frame colors and widths for the state
     const outline = disabled && member === 'select' ? 'select_outline_disabled' : cell('field_outline');
     const container = disabled ? 'field_container_disabled'
       : hovered ? (member === 'text_input' ? 'text_input_container_hover' : 'field_container_hover') : 'field_container';
@@ -433,7 +433,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       Object.assign(frame, { outlineColor: color('field_ring_invalid'), outlineOffset: -invalidRing, outlineStyle: 'solid', outlineWidth: invalidRing });
     }
 
-    // Text colours and the message for the state
+    // Text colors and the message for the state
     const labelColor = color(cell('field_label'));
     const message = Object.assign({}, typeStyle('field_helper'), {
       color: color(disabled ? 'field_helper_disabled' : invalid ? 'field_message_invalid' : 'field_helper'),

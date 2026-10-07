@@ -2,7 +2,7 @@
 // an Icon) and the label, plus a helper or error message below; composes
 // the `useCheckbox` behavior for checked, mixed, press, hover, focus and
 // disabled, and draws the theme's `selection` role cells: the box outline
-// or fill and the mark per state, a state layer disc centred on the box,
+// or fill and the mark per state, a state layer disc centered on the box,
 // and a focus ring drawn around the box at the theme's offset and corner.
 
 import SPEC from './spec.js';

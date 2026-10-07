@@ -4,7 +4,7 @@
 // state a field is in; a member reads its own cell where its reference
 // distinguishes it from the family.
 
-// Every `field` family colour cell, by part and state
+// Every `field` family color cell, by part and state
 const FIELD_COLORS = Object.freeze([
   'field_container', 'field_container_hover', 'field_container_disabled',
   'field_outline', 'field_outline_hover', 'field_outline_focus', 'field_outline_disabled',

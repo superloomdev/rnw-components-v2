@@ -642,8 +642,8 @@
       "replace": "    if (false) {\n      layers.push(",
       "runner": "node",
       "test": "system.test.js",
-      "testName": "a button ring drawn inside the edge is the border in the ring colour",
-      "why": "a button ring drawn inside the edge must keep its page-colour line"
+      "testName": "a button ring drawn inside the edge is the border in the ring color",
+      "why": "a button ring drawn inside the edge must keep its page-color line"
     },
     {
       "id": "fidelity-state-cells",

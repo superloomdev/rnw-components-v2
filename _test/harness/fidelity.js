@@ -2,7 +2,7 @@
 // one built row against one of its references, under one scheme: every
 // sample state, and every enabled state again while hovered, keyboard
 // focused and pressed, is measured on both pages with the extended reading
-// (ink of text and paths with every opacity above them, box colours at their
+// (ink of text and paths with every opacity above them, box colors at their
 // element opacity, the paint sampled from the pixels of each box part),
 // compared with the gate's own comparison, and screenshotted for a
 // perceptual ratio. A focus ring and an elevation are compared by their
@@ -45,8 +45,8 @@ const RING_BORDER = Object.freeze(['borderTopWidth', 'borderRightWidth', 'border
 
 /********************************************************************
 Sample the paint of every box part from a cell screenshot: the pixel a
-little inside the part's top edge, at its horizontal centre (below any
-border, above any centred text).
+little inside the part's top edge, at its horizontal center (below any
+border, above any centered text).
 
 @param {Object} state - part name -> measurement
 @param {Buffer} shot  - The cell screenshot (body plus MARGIN)
@@ -75,9 +75,9 @@ function samplePaint (state, shot) {
 
 
 /********************************************************************
-The paint around the anchor: inside its top edge at its centre, left of
-its leading edge at its vertical centre, and below its bottom edge four
-pixels before its trailing end, one colour per pixel.
+The paint around the anchor: inside its top edge at its center, left of
+its leading edge at its vertical center, and below its bottom edge four
+pixels before its trailing end, one color per pixel.
 
 @param {Object} part - The anchor part's measurement
 @param {Buffer} shot - The cell screenshot
@@ -94,15 +94,15 @@ function profileOf (part, shot) {
     const pixel = image.at(x, y);
     return pixel === null ? null : [pixel.r, pixel.g, pixel.b];
   };
-  const centreX = MARGIN + part._bodyX + part.width / 2;
-  const centreY = MARGIN + part._bodyY + part.height / 2;
+  const centerX = MARGIN + part._bodyX + part.width / 2;
+  const centerY = MARGIN + part._bodyY + part.height / 2;
 
   return {
     inside: INSIDE.map(function (offset) {
-      return sample(centreX, MARGIN + part._bodyY + offset);
+      return sample(centerX, MARGIN + part._bodyY + offset);
     }),
     left: LEFT.map(function (offset) {
-      return part._bodyX - offset < -OUTSIDE ? null : sample(MARGIN + part._bodyX - offset, centreY);
+      return part._bodyX - offset < -OUTSIDE ? null : sample(MARGIN + part._bodyX - offset, centerY);
     }),
     below: BELOW.map(function (offset) {
       return sample(MARGIN + part._bodyX + part.width - 4, MARGIN + part._bodyY + part.height - 1 + offset);
@@ -115,7 +115,7 @@ function profileOf (part, shot) {
 /********************************************************************
 Compare two profiles pixel by pixel, eight levels per channel
 (antialiased ring and shadow edges); a pixel agrees with its counterpart
-or one of its two neighbours, so a part drawn half a pixel apart (within
+or one of its two neighbors, so a part drawn half a pixel apart (within
 the geometry tolerance) is not a difference.
 
 @param {Object} ours     - Our profile
@@ -252,7 +252,7 @@ export async function runFidelity (page, component, set, scheme) {
 
   // Properties: the CSS of a ring or a shadow is left to the pixels, and so are
   // the anchor's borders while a ring may be drawn with them
-  // and a text colour where both sides read its ink (the colour with the opacity it is painted at)
+  // and a text color where both sides read its ink (the color with the opacity it is painted at)
   const ringParts = RING_PARTS[component.name] || [];
   const skip = function (state, part, property, o, u) {
     return PIXEL_PROPERTIES.includes(property) ||

@@ -64,7 +64,7 @@ export default function Select (ctx) {
     });
     const iconGap = presentation.iconGap;
 
-    // The indicator: the theme's own dropdown glyph, in the field's indicator colour for the state
+    // The indicator: the theme's own dropdown glyph, in the field's indicator color for the state
     const caret = React.createElement(View, { style: { marginStart: iconGap } },
       React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }));
 
