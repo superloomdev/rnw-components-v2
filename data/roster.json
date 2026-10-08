@@ -224,7 +224,7 @@
     {
       "name": "IconButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -524,7 +524,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToastNotification",
-      "material_twin": "md-snackbar",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -581,7 +581,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tooltip",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
