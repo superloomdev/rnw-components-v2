@@ -12,7 +12,15 @@ export default defineConfig({
   retries: 0,
   forbidOnly: true,
   reporter: [['list'], ['json', { outputFile: 'test-results/browser.json' }]],
-  use: { baseURL: 'http://localhost:5299', viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' },
+  // Text is rasterized the same on every OS: grayscale antialiasing (Linux
+  // Chromium otherwise draws colored subpixel fringes) and no hinting (macOS
+  // never hints), so a pixel gate compares components, not font rasterizers
+  use: {
+    baseURL: 'http://localhost:5299',
+    viewport: { width: 1280, height: 720 },
+    reducedMotion: 'reduce',
+    launchOptions: { args: ['--disable-lcd-text', '--font-render-hinting=none'] }
+  },
   webServer: {
     command: 'node harness/serve.js',
     url: 'http://localhost:5299',
