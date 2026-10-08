@@ -112,7 +112,9 @@ describe('Button: every sample state under every template', function () {
         const slot = t['spacing.spacing_05'] + t['control.button_icon_size'] + t['spacing.spacing_03'];
         const end = inline ? t['control.button_ghost_padding_end'] : props.icon ? Math.max(t['control.button_padding_end'], slot) : t['control.button_padding_end'];
         assert.equal(parts.root.style.paddingRight, (end - t['border.width_01']) + 'px');
-        const labelHeight = Math.min(t[HEIGHTS[props.size || 'lg']], t['control.button_height']);
+        // A taller button sets its label where the theme's anatomy.button_label says
+        const height = t[HEIGHTS[props.size || 'lg']];
+        const labelHeight = t['anatomy.button_label'] === 'top' ? Math.min(height, t['control.button_height']) : height;
         assert.equal(parts.root.style.paddingTop, ((labelHeight - set.lineHeight) / 2 - t['border.width_01']) + 'px');
         assert.equal(parts.root.style.borderTopLeftRadius, t['control.button_radius'] + 'px');
         assert.equal(parts.root.style.minWidth, t['control.button_min_width'] + 'px');
@@ -161,6 +163,25 @@ describe('Button: kinds', function () {
     const inline = ghost.root.querySelector('svg').parentElement;
     assert.equal(inline.style.position, '');
     assert.equal(inline.style.marginLeft, t['spacing.spacing_03'] + 'px');
+  });
+
+  test('anatomy.button_label: a taller button keeps its label at the default height\'s place under top and centers it under center; the icon follows', async function () {
+    const t = buildNative('default').tokens;
+    const set = t['type.button_label'];
+    const border = t['border.width_01'];
+    const props = { children: 'Tall', icon: 'add', size: '2xl' };
+    const top = await renderButton(registryFor('default', { 'anatomy.button_label': 'top' }), props);
+    const center = await renderButton(registryFor('default', { 'anatomy.button_label': 'center' }), props);
+    const topAt = (t['control.button_height'] - set.lineHeight) / 2 - border;
+    const centerAt = (t['size.size_2xlarge'] - set.lineHeight) / 2 - border;
+    assert.notEqual(topAt, centerAt);
+    assert.equal(top.root.style.paddingTop, topAt + 'px');
+    assert.equal(center.root.style.paddingTop, centerAt + 'px');
+    assert.equal(center.root.querySelector('svg').parentElement.style.top, (centerAt + (set.lineHeight - t['control.button_icon_size']) / 2) + 'px');
+    // At the default height both values draw the same place
+    const restTop = await renderButton(registryFor('default', { 'anatomy.button_label': 'top' }), { children: 'Rest' });
+    const restCenter = await renderButton(registryFor('default', { 'anatomy.button_label': 'center' }), { children: 'Rest' });
+    assert.equal(restTop.root.style.paddingTop, restCenter.root.style.paddingTop);
   });
 
 });

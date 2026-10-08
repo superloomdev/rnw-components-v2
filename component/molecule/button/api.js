@@ -27,7 +27,7 @@ export default Object.freeze({
     'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
     'type.button_label', 'font.family.sans',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
-    'feedback.press', 'state.hover_opacity', 'state.pressed_opacity',
+    'feedback.press', 'anatomy.button_label', 'state.hover_opacity', 'state.pressed_opacity',
     'motion.duration_fast_01', 'motion.easing_standard_productive'
   ].concat(KINDS.flatMap(function (kind) {
     // Every kind's role cells: fill and label per state, border per state, elevation per state

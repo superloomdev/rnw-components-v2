@@ -103,6 +103,7 @@
         "fallback": "none"
       },
       "enums": [
+        "anatomy.button_label",
         "feedback.press"
       ],
       "behaviors": [

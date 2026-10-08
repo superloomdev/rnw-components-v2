@@ -468,8 +468,8 @@
     {
       "id": "perceptual-button-label-top",
       "file": "component/molecule/button/button.js",
-      "find": "    const labelTop = (Math.min(height, ctx.metric('Button', 'height')) - labelStyle.lineHeight) / 2 - borderWidth;",
-      "replace": "    const labelTop = (height - labelStyle.lineHeight) / 2 - borderWidth;",
+      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "replace": "    const labelBox = height;",
       "runner": "pw",
       "test": "perceptual.spec.js",
       "testName": "Button: mismatch within diff_budget",
@@ -644,6 +644,16 @@
       "test": "system.test.js",
       "testName": "a button ring drawn inside the edge is the border in the ring color",
       "why": "a button ring drawn inside the edge must keep its page-color line"
+    },
+    {
+      "id": "button-label-anatomy",
+      "file": "component/molecule/button/button.js",
+      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "replace": "    const labelBox = Math.min(height, ctx.metric('Button', 'height'));",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "anatomy.button_label: a taller button keeps its label at the default height's place under top and centers it under center; the icon follows",
+      "why": "a tall button's label position is the template's anatomy choice, never the component's"
     },
     {
       "id": "fidelity-state-cells",

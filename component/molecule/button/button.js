@@ -78,10 +78,12 @@ export default function Button (ctx) {
       ring.boxShadow = ring.boxShadow + ', ' + shadow.boxShadow;
     }
 
-    // The label is centered up to the default height; a taller button keeps
-    // the label where the default height puts it, at the top
+    // The label is centered in the default height; in a taller button the
+    // theme's `anatomy.button_label` keeps it where the default height puts
+    // it (`top`) or centers it in the button's own height (`center`)
     const labelStyle = ctx.typeStyle('button_label');
-    const labelTop = (Math.min(height, ctx.metric('Button', 'height')) - labelStyle.lineHeight) / 2 - borderWidth;
+    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;
+    const labelTop = (labelBox - labelStyle.lineHeight) / 2 - borderWidth;
 
     // Render the icon when one is named: at the trailing edge, or after the label for an inline kind.
     // A trailing icon needs its inset, its size and a gap before it; a kind whose end padding

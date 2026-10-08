@@ -1,6 +1,7 @@
 // Info: Enum coverage. For every built component whose roster row lists enum
 // tokens, each value the contract lists for that token produces a different
-// render of the component's first sample state; a value that changes nothing
+// render of the component's sample states (an enum may govern only some of
+// them, such as a tall size); a value that changes nothing in any state
 // means the component ignores the theme's choice. The set of components
 // under test is computed from the roster and all.js, never typed here.
 
@@ -66,7 +67,9 @@ describe('enum render: every listed enum value changes the render', function () 
         const renders = {};
         for (const value of values) {
           const Registry = systemWith(token, value);
-          const container = await render(React.createElement(Registry[component.name], component.sample[0].props));
+          const container = await render(React.createElement(React.Fragment, null, component.sample.map(function (state, index) {
+            return React.createElement(Registry[component.name], Object.assign({ key: index }, state.props));
+          })));
           // Generated ids differ on every render; only the render the enum drives may differ
           renders[value] = container.innerHTML.replace(/(id|aria-labelledby|aria-describedby|aria-controls)="[^"]*"/g, '$1="*"');
         }
