@@ -1,0 +1,26 @@
+{
+  "info": [
+    "Gates census: every clause of the browser gate layers 1-3 (structural, measurement, perceptual, anatomy) as the title of the test that enforces it.",
+    "gates.test.js asserts that each listed title is a test() in its spec, and that each spec declares exactly as many tests as it has rows here, so a clause cannot stay unbuilt and a test cannot go unlisted.",
+    "A dynamic title is listed by the literal part the spec concatenates. A row is added by the reasoning tier when a clause is added to the gate definition."
+  ],
+  "gates": [
+    { "layer": 1, "spec": "structural.spec.js", "clause": "zero console and page errors", "title": "the showcase renders every component with zero errors" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "no overlapping siblings, no overflow", "title": "every cell has rendered content within its bounds" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "no clipped text, no unit strings", "title": "no clipped text and no unit string in an inline style" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "target >= 44", "title": "interactive targets are at least 44 points" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "contrast >= 4.5 for text (3.0 large; disabled exempt; listed exceptions reproduce)", "title": "every drawn text run meets the contrast minimum against its backdrop" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "every enabled variant renders distinguishably from its disabled state", "title": "every enabled control state paints differently from every disabled state of its component" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "accessibility tree identical across the three templates", "title": "the accessibility tree is identical under every template" },
+    { "layer": 2, "spec": "measure.spec.js", "clause": "every built row is classified", "title": "every built row is classified and the showcase exposes it" },
+    { "layer": 2, "spec": "measure.spec.js", "clause": "parts match the rendered primary reference", "title": ": parts match the rendered upstream" },
+    { "layer": 2, "spec": "measure.spec.js", "clause": "every row with a second twin carries a second block", "title": "every row with a second twin carries a second reference block" },
+    { "layer": 2, "spec": "measure.spec.js", "clause": "every primary part measured against the second reference or omitted with a reason", "title": "every primary part is measured against the second reference or omitted with a reason" },
+    { "layer": 2, "spec": "measure.spec.js", "clause": "parts match the rendered second reference; an omitted part still draws nothing there", "title": ": parts match the second reference" },
+    { "layer": 2, "spec": "fidelity.spec.js", "clause": "every sample state, and every enabled state while hovered, keyboard focused and pressed, matches each reference under the light and the dark scheme: geometry, type, colors at the opacity they are painted at, sampled paint, and the ring and shadow pixels at the anchor part; within the row's diff_budget, a masked omission left out of the pixels and never covering the anchor part; no expected gap", "title": ": matches the reference in every state" },
+    { "layer": 3, "spec": "perceptual.spec.js", "clause": "the pixel pipeline discriminates", "title": "the pixel pipeline discriminates: self is 0, blank is not" },
+    { "layer": 3, "spec": "perceptual.spec.js", "clause": "mismatch within the row's diff_budget", "title": ": mismatch within diff_budget " },
+    { "layer": 1, "spec": "anatomy.spec.js", "clause": "floating label notch pixel-sampled", "title": "the raised label opens a notch in the outline: surface color under the label, border color beside it" },
+    { "layer": 1, "spec": "anatomy.spec.js", "clause": "ripple state layer changes after press", "title": "a held press paints the state layer over a button and releasing it clears it" }
+  ]
+}

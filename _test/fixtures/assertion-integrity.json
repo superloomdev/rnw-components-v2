@@ -28,8 +28,8 @@
     {
       "id": "behaviors-state-keys",
       "file": "behaviors/controls.js",
-      "find": "useButton.stateKeys = ['focused', 'hovered', 'pressed', 'disabled', 'selected'];",
-      "replace": "useButton.stateKeys = ['focused', 'pressed', 'disabled', 'selected'];",
+      "find": "useButton.stateKeys = ['focused', 'focusVisible', 'hovered', 'pressed', 'disabled', 'selected'];",
+      "replace": "useButton.stateKeys = ['focused', 'focusVisible', 'pressed', 'disabled', 'selected'];",
       "runner": "node",
       "test": "behaviors.test.js",
       "testName": "useButton",
@@ -116,6 +116,326 @@
       "why": "a hand-edited or stale host catalog must fail the docs gate"
     },
     {
+      "id": "context-press-focus-layer",
+      "file": "component/context.js",
+      "find": "            : state.focused === true ? '_focus' : '';",
+      "replace": "            : '';",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "the phase follows the state",
+      "why": "a focused control must read its focus cells"
+    },
+    {
+      "id": "context-press-opacity-fade",
+      "file": "component/context.js",
+      "find": "opacity: 1 - fade",
+      "replace": "opacity: 1",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "opacity: the resting cell fades by the theme",
+      "why": "the opacity press mode must fade the control by the theme's state opacity"
+    },
+    {
+      "id": "context-field-floating-populated",
+      "file": "component/context.js",
+      "find": "    const raised = focused || state.populated === true;",
+      "replace": "    const raised = focused;",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "floating: the label rests in the frame, rises over the surface on focus, and stays raised once populated",
+      "why": "a floating label must stay raised while the field holds a value"
+    },
+    {
+      "id": "context-field-underline-hover",
+      "file": "component/context.js",
+      "find": "      : hovered ? (member === 'text_input' ? 'text_input_container_hover' : 'field_container_hover') : 'field_container';",
+      "replace": "      : 'field_container';",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "hover fills the frame with the field family",
+      "why": "a hovered field must read its hover container cell"
+    },
+    {
+      "id": "enum-render-field-mode",
+      "file": "component/context.js",
+      "find": "    if (mode === 'underline') {\n      Object.assign(frame, {",
+      "replace": "    if (true) {\n      Object.assign(frame, {",
+      "runner": "node",
+      "test": "enum-render.test.js",
+      "testName": "TextInput / feedback.field",
+      "why": "a field that draws one frame for both feedback.field values must fail enum coverage"
+    },
+    {
+      "id": "text-default-type",
+      "file": "component/atom/text/text.js",
+      "find": ": 'body_compact_02');",
+      "replace": ": 'body_compact_01');",
+      "runner": "node",
+      "test": "text.test.js",
+      "testName": "default / default: type set and color come from the theme",
+      "why": "Text's default type set must be the declared default"
+    },
+    {
+      "id": "text-break-mode",
+      "file": "component/atom/text/text.js",
+      "find": "    const cut = Utils.inArray(CUT_MODES, props.breakMode);",
+      "replace": "    const cut = false;",
+      "runner": "node",
+      "test": "text.test.js",
+      "testName": "tail cuts one line with an ellipsis",
+      "why": "a cut break mode must render one line with an ellipsis"
+    },
+    {
+      "id": "view-background-leaf",
+      "file": "component/atom/view/view.js",
+      "find": "      style.backgroundColor = ctx.color(props.background);",
+      "replace": "      style.backgroundColor = ctx.color('layer_01');",
+      "runner": "node",
+      "test": "view.test.js",
+      "testName": "carbon / layer 02: draws exactly the named leaves",
+      "why": "View must draw the fill leaf the caller names"
+    },
+    {
+      "id": "button-kind-palette",
+      "file": "component/molecule/button/button.js",
+      "find": "    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');",
+      "replace": "    const press = ctx.pressPresentation(state, 'button_primary_container');",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / secondary: geometry, fill and label come from the theme",
+      "why": "each kind must fill with its own cells"
+    },
+    {
+      "id": "button-engaged-content",
+      "file": "component/molecule/button/button.js",
+      "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
+      "replace": "    const contentLeaf = 'button_' + kind + '_label';",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "highlight: hover, press and release paint the kind",
+      "why": "a label must follow the state its fill is in"
+    },
+    {
+      "id": "button-size-height",
+      "file": "component/molecule/button/button.js",
+      "find": "    sm: 'heightSmall',",
+      "replace": "    sm: 'height',",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / small: geometry, fill and label come from the theme",
+      "why": "each size must draw its own height token"
+    },
+    {
+      "id": "checkbox-space-toggles",
+      "file": "behaviors/controls.js",
+      "find": "          if (disabled || event.key !== ' ') {",
+      "replace": "          if (true) {",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "press and Space toggle an uncontrolled checkbox",
+      "why": "Space must toggle a checkbox on the web, where the press responder does not"
+    },
+    {
+      "id": "checkbox-disabled-announced",
+      "file": "behaviors/controls.js",
+      "find": "        'aria-checked': indeterminate ? 'mixed' : checked === true,\n        'aria-disabled': disabled ? true : undefined,\n        disabled: disabled,",
+      "replace": "        'aria-checked': indeterminate ? 'mixed' : checked === true,\n        'aria-disabled': disabled ? true : undefined,",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / disabled: box, mark, label and message come from the theme",
+      "why": "a disabled checkbox must be announced as disabled"
+    },
+    {
+      "id": "checkbox-mixed-glyph",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "      name: state.indeterminate ? 'mixed_indicator' : 'checked_indicator',",
+      "replace": "      name: 'checked_indicator',",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / indeterminate: box, mark, label and message come from the theme",
+      "why": "a mixed checkbox must draw the mixed indicator"
+    },
+    {
+      "id": "text-input-unlabelled-placeholder",
+      "file": "component/molecule/text-input/text-input.js",
+      "find": "          placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,",
+      "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "material / unlabelled: frame, label, input and message come from the theme",
+      "why": "an unlabelled field must show its placeholder under every label placement"
+    },
+    {
+      "id": "select-caret-enum",
+      "file": "component/composite/select/select.js",
+      "find": "{ name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }",
+      "replace": "{ name: 'chevron_down', size: iconSize, color: presentation.indicator }",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the indicator is the template",
+      "why": "a select must draw the template's own dropdown indicator, not a fixed glyph"
+    },
+    {
+      "id": "select-caret-shape",
+      "file": "component/composite/select/select.js",
+      "find": "opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1",
+      "replace": "opacity: selected === null && labelled && !presentation.placeholder ? 0 : 1",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "floating: the label rests in the frame and rises while the list is open",
+      "why": "a select under a floating label must draw no placeholder, open or not"
+    },
+    {
+      "id": "select-placeholder-in-tree",
+      "file": "component/composite/select/select.js",
+      "find": "}, selected === null ? placeholder : selected.label),",
+      "replace": "}, selected === null ? '' : selected.label),",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "carbon / default: frame, label, trigger, caret and message come from the theme",
+      "why": "the trigger must hold the placeholder while nothing is selected"
+    },
+    {
+      "id": "select-list-level",
+      "file": "component/composite/select/select.js",
+      "find": "        zIndex: ctx.metric('Select', 'listLevel')",
+      "replace": "        zIndex: 1",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "a press opens the listbox below the frame",
+      "why": "the option list must sit at the dropdown stacking level"
+    },
+    {
+      "id": "a11y-identity-select-placeholder",
+      "file": "component/composite/select/select.js",
+      "find": "}, selected === null ? placeholder : selected.label),",
+      "replace": "}, selected === null ? (presentation.placeholder ? placeholder : '') : selected.label),",
+      "runner": "node",
+      "test": "a11y-identity.test.js",
+      "testName": "Select / default",
+      "why": "a trigger whose text depends on the label placement must fail accessibility identity across templates"
+    },
+    {
+      "id": "select-sizer",
+      "file": "component/composite/select/select.js",
+      "find": "[placeholder].concat(items.map(",
+      "replace": "[].concat(items.map(",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger is sized by a hidden sizer",
+      "why": "the trigger must be sized by its widest text, placeholder included"
+    },
+    {
+      "id": "button-inline-ghost",
+      "file": "component/molecule/button/button.js",
+      "find": "  const INLINE = Object.freeze(['ghost', 'danger_ghost']);",
+      "replace": "  const INLINE = Object.freeze(['danger_ghost']);",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / ghost: geometry, fill and label come from the theme",
+      "why": "a ghost button reserves no trailing icon slot and takes the ghost paddings"
+    },
+    {
+      "id": "context-field-invalid-ring",
+      "file": "component/context.js",
+      "find": "    } else if (invalid && invalidRing > 0) {",
+      "replace": "    } else if (false) {",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "carbon / invalid: frame, label, input and message come from the theme",
+      "why": "an invalid field whose theme states a ring width must draw its error ring"
+    },
+    {
+      "id": "checkbox-filled-borderless",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "          borderWidth: marked && !invalid ? 0 : ctx.metric('Checkbox', 'borderWidth'),",
+      "replace": "          borderWidth: ctx.metric('Checkbox', 'borderWidth'),",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "carbon / checked: box, mark, label and message come from the theme",
+      "why": "a filled box draws no border"
+    },
+    {
+      "id": "context-field-floating-reserve",
+      "file": "component/context.js",
+      "find": "      root: { paddingTop: reserve },",
+      "replace": "      root: {},",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "floating: the root reserves half the raised label",
+      "why": "a floating field must reserve room for its raised label inside its own bounds"
+    },
+    {
+      "id": "context-field-outline-invalid-label",
+      "file": "component/context.js",
+      "find": "    const labelColor = color(cell('field_label'));",
+      "replace": "    const labelColor = color('field_label');",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "material / invalid: frame, label, input and message come from the theme",
+      "why": "a field label must read its cell for the state"
+    },
+    {
+      "id": "context-field-outline-padding",
+      "file": "component/context.js",
+      "find": "      Object.assign(frame, { borderWidth: width, paddingEnd: paddingEnd - width, paddingStart: paddingInline - width });",
+      "replace": "      Object.assign(frame, { borderWidth: width, paddingEnd: paddingEnd, paddingStart: paddingInline });",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "material / default: frame, label, trigger, caret and message come from the theme",
+      "why": "an outline frame keeps its borders inside the inline padding so the text starts where the padding says"
+    },
+    {
+      "id": "checkbox-row-no-browser-ring",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }",
+      "replace": "minHeight: ctx.metric('Checkbox', 'minHeight') }",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "the row suppresses the browser",
+      "why": "a focused row that does not suppress the browser's ring draws two rings on keyboard focus"
+    },
+    {
+      "id": "select-trigger-no-browser-ring",
+      "file": "component/composite/select/select.js",
+      "find": "flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }",
+      "replace": "flexGrow: 1, flexShrink: 1 }",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger suppresses the browser",
+      "why": "a focused trigger that does not suppress the browser's ring draws two rings on keyboard focus"
+    },
+    {
+      "id": "text-input-no-zero-basis",
+      "file": "component/molecule/text-input/text-input.js",
+      "find": "            flexBasis: 'auto',\n            flexGrow: 1,\n            flexShrink: 1,\n",
+      "replace": "            flex: 1,\n",
+      "runner": "node",
+      "test": "text-input.test.js",
+      "testName": "the input grows from its own width",
+      "why": "native layout gives flex: 1 a zero basis; the field collapses to its padding in a content-sized container (M1 native gate: 32-40pt wide)"
+    },
+    {
+      "id": "select-no-zero-basis",
+      "file": "component/composite/select/select.js",
+      "find": "flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }",
+      "replace": "flex: 1, flexDirection: 'row', outlineStyle: 'none' }",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "the trigger grows from its content",
+      "why": "native layout gives flex: 1 a zero basis; the select collapses to its padding in a content-sized container (M1 native gate)"
+    },
+    {
+      "id": "catalog-frame",
+      "file": "component/molecule/text-input/sample.js",
+      "find": "export const FRAME = Object.freeze({ width: 320 });",
+      "replace": "export const FRAME_DISABLED = Object.freeze({ width: 320 });",
+      "runner": "node",
+      "test": "docs.test.js",
+      "testName": "the catalog carries each sample",
+      "why": "a field without its frame is laid out at each platform's intrinsic input width, so web and native disagree"
+    },
+    {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
       "find": "    const glyph = ctx.icon(props.name, size);",
@@ -134,6 +454,236 @@
       "test": "perceptual.spec.js",
       "testName": "the pixel pipeline discriminates: self is 0, blank is not",
       "why": "an invisible render must not pass the pixel pipeline"
+    },
+    {
+      "id": "measure-checkbox-label-inset",
+      "file": "component/molecule/checkbox/spec.js",
+      "find": "  labelGap: { tokens: ['spacing.spacing_04', 'border.width_01'], operation: 'subtract' },",
+      "replace": "  labelGap: 'spacing.spacing_04',",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Checkbox: parts match the rendered upstream",
+      "why": "a label 2px off the reference's label position must fail measurement"
+    },
+    {
+      "id": "perceptual-button-label-top",
+      "file": "component/molecule/button/button.js",
+      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "replace": "    const labelBox = height;",
+      "runner": "pw",
+      "test": "perceptual.spec.js",
+      "testName": "Button: mismatch within diff_budget",
+      "why": "a tall button whose label moves off the reference's position must fail the pixel comparison"
+    },
+    {
+      "id": "anatomy-notch-occlusion",
+      "file": "component/context.js",
+      "find": "        backgroundColor: color(options.surface),\n",
+      "replace": "",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the raised label opens a notch in the outline",
+      "why": "a raised label that does not occlude the border draws no notch; the pixel sample under the label must see the border"
+    },
+    {
+      "id": "anatomy-ripple-pressed",
+      "file": "component/context.js",
+      "find": "      layer: Object.assign({ backgroundColor: fill, opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "      layer: Object.assign({ backgroundColor: fill, opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "a held press paints the state layer over a button",
+      "why": "a ripple state layer that stays transparent under press paints nothing; the screenshots before and during the press must be alike"
+    },
+    {
+      "id": "measure-second-button-radius",
+      "file": "component/molecule/button/spec.js",
+      "find": "  radius: 'control.button_radius'",
+      "replace": "  radius: 'shape.radius_00'",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Button: parts match the second reference",
+      "why": "a button drawn with the shared scale's radius under the second template is square where the reference is a pill; the second-reference measurement must fail"
+    },
+    {
+      "id": "measure-second-coverage",
+      "file": "component/molecule/text-input/reference.js",
+      "find": "      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]', mask: true })\n",
+      "replace": "",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "every primary part is measured against the second reference or omitted with a reason",
+      "why": "a primary part neither measured against the second reference nor omitted with a reason must fail the coverage rule"
+    },
+    {
+      "id": "measure-second-omission-stale",
+      "file": "component/molecule/text-input/reference.js",
+      "find": "upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]'",
+      "replace": "upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container'",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "TextInput: parts match the second reference",
+      "why": "an omitted part that the second reference does draw makes the omission stale and must fail"
+    },
+    {
+      "id": "measure-second-select-caret",
+      "file": "component/composite/select/select.js",
+      "find": "    const caret = React.createElement(View, { style: { marginStart: iconGap } },",
+      "replace": "    const caret = React.createElement(View, { style: { display: 'none', marginStart: iconGap } },",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Select: parts match the second reference",
+      "why": "a select that draws no indicator where the second reference draws its arrow must fail the second-reference measurement"
+    },
+    {
+      "id": "structural-contrast",
+      "file": "component/molecule/button/button.js",
+      "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
+      "replace": "    const contentLeaf = 'button_' + kind + '_container' + press.phase;",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "a label drawn in its own fill color (1:1) must fail the contrast gate"
+    },
+    {
+      "id": "structural-contrast-exception-stale",
+      "file": "_test/fixtures/contrast-exceptions.json",
+      "find": "      \"token\": \"color.text_placeholder\",",
+      "replace": "      \"token\": \"color.text_primary\",",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "a listed exception whose token no longer draws below the minimum is stale and must fail, so the list can only shrink"
+    },
+    {
+      "id": "structural-disabled-distinct",
+      "file": "component/context.js",
+      "find": "    const phase = !live ? '_disabled'",
+      "replace": "    const phase = !live ? ''",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every enabled control state paints differently from every disabled state of its component",
+      "why": "a disabled button that paints its enabled cells (fill, border and label) must fail the distinctness gate"
+    },
+    {
+      "id": "gates-census-unlisted-test",
+      "file": "_test/structural.spec.js",
+      "find": "    test('interactive targets are at least 44 points', function () {",
+      "replace": "    test('interactive targets are at least 44 pts', function () {",
+      "runner": "node",
+      "test": "gates.test.js",
+      "testName": "structural.spec.js: every listed title is a declared test, and every declared test is listed",
+      "why": "a gate test whose title is not in the census must fail the census"
+    },
+    {
+      "id": "gates-census-missing-clause",
+      "file": "_test/fixtures/gates.json",
+      "find": "    { \"layer\": 1, \"spec\": \"structural.spec.js\", \"clause\": \"target >= 44\", \"title\": \"interactive targets are at least 44 points\" },\n",
+      "replace": "",
+      "runner": "node",
+      "test": "gates.test.js",
+      "testName": "structural.spec.js: every listed title is a declared test, and every declared test is listed",
+      "why": "a spec that declares a test the census does not list must fail the count"
+    },
+    {
+      "id": "button-selected-surface",
+      "file": "component/context.js",
+      "find": "          : state.selected === true ? '_selected'",
+      "replace": "          : state.selected === true ? '_active'",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "selected: geometry, fill and label come from the theme",
+      "why": "a selected button that paints the pressed fill instead of its selected cell must fail"
+    },
+    {
+      "id": "context-field-disabled-outline-border",
+      "file": "component/context.js",
+      "find": "    const outline = disabled && member === 'select' ? 'select_outline_disabled' : cell('field_outline');",
+      "replace": "    const outline = cell('field_outline');",
+      "runner": "node",
+      "test": "select.test.js",
+      "testName": "default / disabled: frame, label, trigger, caret and message come from the theme",
+      "why": "a disabled select must read its own outline cell"
+    },
+    {
+      "id": "focus-trigger-keyboard",
+      "file": "component/context.js",
+      "find": "    const shows = state.focused === true && (!keyboardOnly || state.focusVisible === true);",
+      "replace": "    const shows = state.focused === true;",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "focus draws the button ring from its cells",
+      "why": "a keyboard-only theme must not draw a button ring after a pointer press"
+    },
+    {
+      "id": "checkbox-state-layer",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "    const layerLeaf = 'selection_layer_' + (marked ? 'selected_' : '') + (state.pressed ? 'active' : 'hover');",
+      "replace": "    const layerLeaf = 'selection_layer_hover';",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "the state layer",
+      "why": "a checkbox state layer must read its cell for the selection and the state"
+    },
+    {
+      "id": "checkbox-focus-ring",
+      "file": "component/molecule/checkbox/checkbox.js",
+      "find": "      width: boxSize + 2 * ringOffset\n",
+      "replace": "      width: boxSize\n",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "focus draws the selection ring around the box",
+      "why": "the selection ring must sit at the theme's offset around the box"
+    },
+    {
+      "id": "button-ring-gap",
+      "file": "component/context.js",
+      "find": "    if (gap > 0) {\n      layers.push(",
+      "replace": "    if (false) {\n      layers.push(",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a button ring drawn inside the edge is the border in the ring color",
+      "why": "a button ring drawn inside the edge must keep its page-color line"
+    },
+    {
+      "id": "button-label-anatomy",
+      "file": "component/molecule/button/button.js",
+      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "replace": "    const labelBox = Math.min(height, ctx.metric('Button', 'height'));",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "anatomy.button_label: a taller button keeps its label at the default height's place under top and centers it under center; the icon follows",
+      "why": "a tall button's label position is the template's anatomy choice, never the component's"
+    },
+    {
+      "id": "fidelity-state-cells",
+      "file": "component/context.js",
+      "find": "      layer: Object.assign({ backgroundColor: fill, opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + rest), opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Button / second / light: matches the reference in every state",
+      "why": "a button whose hovered and pressed state layer paints its resting fill must fail the fidelity gate in the interaction states"
+    },
+    {
+      "id": "fidelity-ring-pixels",
+      "file": "component/context.js",
+      "find": "    const inner = Math.max(0, width - (border || 0));",
+      "replace": "    const inner = 0;",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Button / primary / light: matches the reference in every state",
+      "why": "a ring drawn inside the edge that loses its inner band must fail the fidelity gate by its pixels, whatever its CSS"
+    },
+    {
+      "id": "fidelity-mask-anchor",
+      "file": "component/molecule/checkbox/reference.js",
+      "find": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)' }),",
+      "replace": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)', mask: true }),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Checkbox / second / light: matches the reference in every state",
+      "why": "a masked omission whose box contains the anchor part would hide the component from the pixels; the fidelity gate must reject the mask"
     }
   ]
 }

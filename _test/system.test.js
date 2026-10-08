@@ -68,23 +68,24 @@ describe('createSystem: validation', function () {
   test('a missing required token throws one TypeError naming all missing tokens', function () {
     const built = buildNative('default');
     const tokens = Object.assign({}, built.tokens);
-    delete tokens['color.focus'];
-    delete tokens['focus.width'];
+    delete tokens['feedback.focus_trigger'];
+    delete tokens['color.field_outline'];
     assert.throws(function () {
       buildSystem('default', {}, { built: Object.assign({}, built, { tokens: tokens }) });
     }, function (error) {
       assert.ok(error instanceof TypeError);
-      assert.match(error.message, /missing required tokens: color\.focus, focus\.width/);
+      assert.match(error.message, /missing required tokens: .*feedback\.focus_trigger/);
+      assert.match(error.message, /color\.field_outline/);
       return true;
     });
   });
 
   test('a required token whose value resolved to nothing is rejected, naming it', function () {
     const built = buildNative('default');
-    const tokens = Object.assign({}, built.tokens, { 'color.focus': undefined });
+    const tokens = Object.assign({}, built.tokens, { 'feedback.focus_trigger': undefined });
     assert.throws(function () {
       buildSystem('default', {}, { built: Object.assign({}, built, { tokens: tokens }) });
-    }, /resolves required tokens to no value: color\.focus/);
+    }, /resolves required tokens to no value: feedback\.focus_trigger/);
   });
 
   test('a theme built for the web projection is rejected', function () {
@@ -250,25 +251,216 @@ describe('context: metric through the spec sheet', function () {
 });
 
 
-describe('context: focusPresentation', function () {
+describe('context: focusRing', function () {
 
-  test('unfocused is empty; focused follows the template\'s feedback.focus enum', function () {
+  test('a family draws its ring from its own cells; none while unfocused or at width 0', function () {
     for (const name of TEMPLATE_NAMES) {
       const ctx = buildSystem(name, { Probe: Probe }).Probe.ctx;
       const t = buildNative(name).tokens;
-      assert.deepEqual(ctx.focusPresentation(false), {});
-      const style = ctx.focusPresentation(true);
-      const mode = t['feedback.focus'];
-      if (mode === 'outline') {
-        assert.equal(style.outlineWidth, t['focus.width']);
-        assert.equal(style.outlineColor, t['color.focus']);
-      } else if (mode === 'inset') {
-        assert.match(style.boxShadow, /^inset 0 0 0 /);
-      } else {
-        assert.equal(mode, 'underline');
-        assert.equal(style.borderBottomWidth, t['focus.width']);
+      for (const family of ['button', 'selection', 'field']) {
+        assert.deepEqual(ctx.focusRing(family, { focused: false, focusVisible: false }), {});
+        const ring = ctx.focusRing(family, { focused: true, focusVisible: true }, 1);
+        if (t['control.' + family + '_focus_width'] === 0) {
+          assert.deepEqual(ring, {}, name + ' ' + family);
+          continue;
+        }
+        if (family === 'button' && t['control.button_focus_offset'] < 0) {
+          assert.equal(ring.borderColor, t['color.button_focus_ring'], name + ' ' + family);
+          continue;
+        }
+        assert.equal(ring.outlineWidth, t['control.' + family + '_focus_width'], name + ' ' + family);
+        assert.equal(ring.outlineOffset, t['control.' + family + '_focus_offset'], name + ' ' + family);
+        assert.equal(ring.outlineColor, t['color.' + family + '_focus_ring'], name + ' ' + family);
       }
     }
   });
 
+  test('feedback.focus_trigger: keyboard draws a button ring on keyboard focus only; a field ring shows on any focus', function () {
+    const keyboard = probeWith({ 'feedback.focus_trigger': 'keyboard' });
+    assert.deepEqual(keyboard.focusRing('button', { focused: true, focusVisible: false }), {});
+    assert.notDeepEqual(keyboard.focusRing('button', { focused: true, focusVisible: true }), {});
+    assert.notDeepEqual(keyboard.focusRing('field', { focused: true, focusVisible: false }), {});
+    const any = probeWith({ 'feedback.focus_trigger': 'any' });
+    assert.notDeepEqual(any.focusRing('button', { focused: true, focusVisible: false }), {});
+  });
+
+  test('a button ring drawn inside the edge is the border in the ring color, the rest of the ring and the page-color line inset inside it', function () {
+    const t = buildNative('carbon').tokens;
+    const ring = buildSystem('carbon', { Probe: Probe }).Probe.ctx.focusRing('button', { focused: true }, 1);
+    assert.deepEqual(ring, {
+      borderColor: t['color.button_focus_ring'],
+      boxShadow: 'inset 0 0 0 1px ' + t['color.button_focus_ring'] + ', inset 0 0 0 2px ' + t['color.button_focus_gap']
+    });
+  });
+
 });
+
+
+/********************************************************************
+Build a default-template probe context whose tokens carry overrides.
+
+@param {Object} overrides - Token name -> value
+
+@return {Object} - The probe's context
+*********************************************************************/
+function probeWith (overrides) {
+
+  const built = buildNative('default');
+  const tokens = Object.assign({}, built.tokens, overrides);
+
+  return buildSystem('default', { Probe: Probe }, { built: Object.assign({}, built, { tokens: tokens }) }).Probe.ctx;
+
+}
+
+
+describe('context: pressPresentation', function () {
+
+  const prefix = 'button_primary_container';
+  const t = buildNative('default').tokens;
+  const easing = 'cubic-bezier(' + t['motion.easing_standard_productive'].join(', ') + ')';
+
+  test('the phase follows the state: disabled, pressed, hovered, selected, focused, rest', function () {
+    const ctx = probeWith({});
+    assert.equal(ctx.pressPresentation({}, prefix).phase, '');
+    assert.equal(ctx.pressPresentation({ focused: true }, prefix).phase, '_focus');
+    assert.equal(ctx.pressPresentation({ focused: true, selected: true }, prefix).phase, '_selected');
+    assert.equal(ctx.pressPresentation({ hovered: true, selected: true }, prefix).phase, '_hover');
+    assert.equal(ctx.pressPresentation({ hovered: true, pressed: true }, prefix).phase, '_active');
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).phase, '_disabled');
+  });
+
+  test('highlight: the container paints the state\'s cell; the layer is not drawn', function () {
+    const ctx = probeWith({ 'feedback.press': 'highlight' });
+    assert.deepEqual(ctx.pressPresentation({}, prefix), {
+      container: { backgroundColor: t['color.button_primary_container'], transitionDuration: t['motion.duration_fast_01'] + 'ms', transitionProperty: 'background-color', transitionTimingFunction: easing },
+      layer: { opacity: 0, pointerEvents: 'none' },
+      phase: ''
+    });
+    assert.equal(ctx.pressPresentation({ hovered: true }, prefix).container.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(ctx.pressPresentation({ pressed: true }, prefix).container.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).container.backgroundColor, t['color.button_primary_container_disabled']);
+  });
+
+  test('opacity: the resting cell fades by the theme\'s state opacity; the layer is not drawn', function () {
+    const ctx = probeWith({ 'feedback.press': 'opacity', 'state.pressed_opacity': 0.25, 'state.hover_opacity': 0.125 });
+    assert.equal(ctx.pressPresentation({}, prefix).container.opacity, 1);
+    assert.equal(ctx.pressPresentation({ hovered: true }, prefix).container.opacity, 0.875);
+    assert.equal(ctx.pressPresentation({ pressed: true }, prefix).container.opacity, 0.75);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).container.opacity, 1);
+    assert.equal(ctx.pressPresentation({ pressed: true }, prefix).container.backgroundColor, t['color.button_primary_container']);
+    assert.equal(ctx.pressPresentation({ pressed: true }, prefix).layer.opacity, 0);
+  });
+
+  test('ripple: the state\'s cell is a layer over the resting container', function () {
+    const ctx = probeWith({ 'feedback.press': 'ripple' });
+    const rest = ctx.pressPresentation({}, prefix);
+    assert.deepEqual(rest.container, { backgroundColor: t['color.button_primary_container'] });
+    assert.equal(rest.layer.opacity, 0);
+    const hovered = ctx.pressPresentation({ hovered: true }, prefix);
+    assert.equal(hovered.layer.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(hovered.layer.opacity, 1);
+    assert.equal(ctx.pressPresentation({ pressed: true }, prefix).layer.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).container.backgroundColor, t['color.button_primary_container_disabled']);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).layer.opacity, 0);
+  });
+
+});
+
+
+describe('context: fieldPresentation', function () {
+
+  const options = { member: 'text_input', height: 40, radius: 4, surface: 'layer_01' };
+  const t = buildNative('default').tokens;
+  const pad = t['control.field_padding_inline'];
+
+  test('underline draws a filled frame with a bottom border; outline draws four borders inside the padding', function () {
+    const underline = probeWith({ 'feedback.field': 'underline' }).fieldPresentation({}, options).frame;
+    assert.equal(underline.backgroundColor, t['color.field_container']);
+    assert.equal(underline.borderBottomWidth, t['control.field_outline_width']);
+    assert.equal(underline.borderWidth, undefined);
+    assert.equal(underline.paddingStart, pad);
+    assert.equal(underline.height, 40);
+    assert.equal(underline.borderRadius, 4);
+    const outline = probeWith({ 'feedback.field': 'outline' }).fieldPresentation({}, options).frame;
+    assert.equal(outline.borderWidth, t['control.field_outline_width']);
+    assert.equal(outline.paddingStart, pad - t['control.field_outline_width']);
+    assert.equal(outline.borderBottomWidth, undefined);
+  });
+
+  test('every state reads its own cell: container, outline, label, text and message', function () {
+    const ctx = probeWith({ 'color.field_outline_hover': '#010101', 'color.field_outline_focus': '#020202', 'color.field_label_focus': '#030303', 'control.field_outline_width_focus': 2 });
+    assert.equal(ctx.fieldPresentation({ hovered: true }, options).frame.borderColor, '#010101');
+    assert.equal(ctx.fieldPresentation({ hovered: true }, options).frame.backgroundColor, t['color.text_input_container_hover']);
+    assert.equal(ctx.fieldPresentation({ hovered: true }, Object.assign({}, options, { member: 'select' })).frame.backgroundColor, t['color.field_container_hover']);
+    assert.equal(ctx.fieldPresentation({ focused: true }, options).frame.borderColor, '#020202');
+    assert.equal(ctx.fieldPresentation({ focused: true }, options).frame.borderBottomWidth, 2);
+    assert.equal(ctx.fieldPresentation({ focused: true }, options).label.color, '#030303');
+    const disabled = ctx.fieldPresentation({ disabled: true, invalid: true }, options);
+    assert.equal(disabled.frame.borderColor, t['color.field_outline_disabled']);
+    assert.equal(disabled.label.color, t['color.field_label_disabled']);
+    assert.equal(disabled.value.color, t['color.field_value_disabled']);
+    assert.equal(disabled.message.color, t['color.field_helper_disabled']);
+    assert.equal(ctx.fieldPresentation({ disabled: true }, Object.assign({}, options, { member: 'select' })).frame.borderColor, t['color.select_outline_disabled']);
+    assert.equal(ctx.fieldPresentation({}, options).message.color, t['color.field_helper']);
+    assert.equal(ctx.fieldPresentation({}, options).value.fontSize, t['type.field_value'].fontSize);
+    assert.equal(ctx.fieldPresentation({}, options).placeholderColor, t['color.field_placeholder']);
+  });
+
+  test('invalid: the outline, label and message read the invalid cells; a ring width above zero draws the invalid ring', function () {
+    const ctx = probeWith({ 'color.field_outline_invalid_hover': '#040404' });
+    const invalid = ctx.fieldPresentation({ invalid: true }, options);
+    assert.equal(invalid.frame.borderColor, t['color.field_outline_invalid']);
+    assert.equal(invalid.label.color, t['color.field_label_invalid']);
+    assert.equal(invalid.message.color, t['color.field_message_invalid']);
+    assert.equal(invalid.frame.outlineColor, t['color.field_ring_invalid']);
+    assert.equal(invalid.frame.outlineWidth, t['control.field_invalid_ring_width']);
+    assert.equal(invalid.frame.outlineOffset, -t['control.field_invalid_ring_width']);
+    assert.equal(ctx.fieldPresentation({ invalid: true, hovered: true }, options).frame.borderColor, '#040404');
+    const noRing = probeWith({ 'control.field_invalid_ring_width': 0 }).fieldPresentation({ invalid: true }, options).frame;
+    assert.equal(noRing.outlineWidth, undefined);
+  });
+
+  test('focus draws the field ring from its cells; a trailing icon takes the icon inset', function () {
+    const focused = probeWith({}).fieldPresentation({ focused: true }, options).frame;
+    assert.equal(focused.outlineWidth, t['control.field_focus_width']);
+    assert.equal(focused.outlineOffset, t['control.field_focus_offset']);
+    assert.equal(probeWith({ 'feedback.field': 'underline' }).fieldPresentation({}, Object.assign({}, options, { trailing: true })).frame.paddingEnd, t['control.field_icon_inset']);
+  });
+
+  test('above: the label is in the flow over the frame, in the field label type set', function () {
+    const field = probeWith({ 'anatomy.label': 'above' }).fieldPresentation({}, options);
+    assert.equal(field.raised, false);
+    assert.equal(field.placeholder, true);
+    assert.equal(field.label.position, undefined);
+    assert.equal(field.label.fontSize, t['type.field_label'].fontSize);
+    assert.equal(field.label.marginBottom, t['spacing.spacing_03']);
+    assert.equal(field.label.color, t['color.field_label']);
+    assert.deepEqual(field.root, {});
+  });
+
+  test('floating: the root reserves half the raised label; the label rests centered in the frame and rises onto the border over the surface when focused or populated', function () {
+    const ctx = probeWith({ 'anatomy.label': 'floating' });
+    const resting = ctx.fieldPresentation({}, options);
+    const reserve = t['type.field_label_raised'].lineHeight / 2;
+    assert.deepEqual(resting.root, { paddingTop: reserve });
+    assert.equal(resting.raised, false);
+    assert.equal(resting.placeholder, false);
+    assert.equal(resting.label.position, 'absolute');
+    assert.equal(resting.label.fontSize, t['type.field_label'].fontSize);
+    assert.equal(resting.label.top, reserve + (40 - t['type.field_label'].lineHeight) / 2);
+    assert.equal(resting.label.left, pad);
+    assert.equal(resting.label.backgroundColor, undefined);
+    for (const state of [{ focused: true }, { populated: true }]) {
+      const raised = ctx.fieldPresentation(state, options);
+      assert.equal(raised.raised, true);
+      assert.equal(raised.placeholder, true);
+      assert.equal(raised.label.fontSize, t['type.field_label_raised'].fontSize);
+      assert.equal(raised.label.top, 0);
+      assert.equal(raised.label.left, pad - t['spacing.spacing_02']);
+      assert.equal(raised.label.paddingHorizontal, t['spacing.spacing_02']);
+      assert.equal(raised.label.backgroundColor, t['color.layer_01']);
+    }
+  });
+
+});
+

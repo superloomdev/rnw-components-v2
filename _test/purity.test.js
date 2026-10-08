@@ -22,7 +22,7 @@ import { REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-component
 import { REPO_ROOT, discoverComponents, listShippedFiles, getRoster } from '../scripts/lib/components.js';
 import { Lib } from './harness/system.js';
 
-const CONTEXT_TOKENS = ['color.focus', 'feedback.focus', 'focus.offset', 'focus.width'];
+const CONTEXT_TOKENS = ['feedback.focus_trigger'];
 
 const FORBIDDEN = [
   { name: 'color literal', pattern: /#[0-9a-fA-F]{3,8}([^0-9a-zA-Z]|$)|rgba?\(|hsla?\(/ },

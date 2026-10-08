@@ -2,8 +2,10 @@
 // Builds one component system per template with the real frameworks (React,
 // react-native-web, react-native-svg) exactly as a web host would, and
 // renders every component's sample states in a labelled grid. The URL picks
-// the template: /?template=default|carbon|material. Nothing here is product
-// code; it is the page the browser gates measure.
+// the template and its scheme: /?template=default|carbon|material and
+// &scheme=light|dark (each template's own light and dark scheme; a dark page
+// is painted in the scheme's background). Nothing here is product code; it is
+// the page the browser gates measure.
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -18,24 +20,28 @@ import materialProfile from 'helper-themer-template-material';
 
 import { createSystem } from 'rnw-components';
 import * as factories from 'rnw-components/all';
-import { rows, samples } from './manifest.js';
+import { frames, references, rows, samples } from './manifest.js';
 
+// Template -> scheme name -> scheme
 const TEMPLATES = {
-  default: defaultProfile.schemes.light,
-  carbon: carbonProfile.schemes.white,
-  material: materialProfile.schemes.light
+  default: { light: defaultProfile.schemes.light, dark: defaultProfile.schemes.dark },
+  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 },
+  material: { light: materialProfile.schemes.light, dark: materialProfile.schemes.dark }
 };
 
 const params = new URLSearchParams(window.location.search);
 const templateName = params.get('template') || 'default';
+const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 const only = params.get('component');
+// Measurement mode lays each cell body out as the reference page does
+const measuring = params.get('measure') === '1';
 
 const Utils = utils({});
 const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
 const Themer = themer({ Utils: Utils, Debug: Debug });
 const Lib = { React: React, ReactNative: ReactNative, Svg: Svg, Utils: Utils, Debug: Debug, Themer: Themer };
 
-const status = { template: templateName, ready: false, errors: [], cells: 0, components: Object.keys(factories) };
+const status = { template: templateName, scheme: schemeName, ready: false, errors: [], cells: 0, components: Object.keys(factories) };
 window.__showcase = status;
 
 window.addEventListener('error', function (event) {
@@ -44,10 +50,40 @@ window.addEventListener('error', function (event) {
 
 let Registry;
 try {
-  const built = Themer.buildTheme(TEMPLATES[templateName], [], 'native');
+  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native');
+  if (schemeName === 'dark') {
+    document.body.style.background = built.tokens['color.background'];
+  }
+  // The built tokens the page draws with, for a gate that samples pixels against them
+  status.theme = built.tokens;
   Registry = createSystem(Lib, {}, built, 'md', factories);
 } catch (error) {
   status.errors.push('createSystem: ' + error.message);
+}
+
+/********************************************************************
+The cell body style: in measurement mode a component whose reference
+fills its container gets a block body of the reference's width on both
+pages; otherwise a component whose sample names a frame is laid out in
+it, as every host's showcase does; every other body keeps the
+shrink-to-fit layout.
+
+@param {String} name - Component name
+
+@return {Object|undefined} - Inline style
+*********************************************************************/
+function bodyStyle (name) {
+
+  const reference = references[name];
+  if (measuring && reference && reference.body) {
+    return { display: 'block', width: reference.body.width + 'px' };
+  }
+  if (frames[name]) {
+    return { display: 'block', width: frames[name].width + 'px' };
+  }
+
+  return undefined;
+
 }
 
 function Cell (props) {
@@ -62,7 +98,7 @@ function Cell (props) {
     'data-template': templateName
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
-  React.createElement('div', { className: 'cell-body', 'data-part': 'body' },
+  React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: bodyStyle(props.name) },
     React.createElement(Component, props.state.props)));
 
 }
@@ -79,7 +115,7 @@ function Showcase () {
     families[family].push(name);
   }
 
-  return React.createElement('div', { id: 'showcase', 'data-template': templateName },
+  return React.createElement('div', { id: 'showcase', className: measuring ? 'measure' : undefined, 'data-template': templateName },
     Object.keys(families).sort().map(function (family) {
       return React.createElement('section', { key: family, className: 'family', 'data-family': family },
         React.createElement('h2', null, family),
@@ -96,10 +132,18 @@ function Showcase () {
 if (Registry) {
   const root = createRoot(document.getElementById('root'));
   root.render(React.createElement(Showcase));
+  // Ready once rendered and every font the rendered text asked for has loaded
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      status.cells = document.querySelectorAll('.cell').length;
-      status.ready = true;
+      document.fonts.ready.then(function () {
+        status.cells = document.querySelectorAll('.cell').length;
+        status.fonts = Array.from(document.fonts).filter(function (face) {
+          return face.status === 'loaded';
+        }).map(function (face) {
+          return face.family.replace(/"/g, '') + ' ' + face.weight;
+        });
+        status.ready = true;
+      });
     });
   });
 } else {

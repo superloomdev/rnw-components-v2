@@ -1,6 +1,7 @@
-// Info: Contact sheet for the layer-4 review: one PNG per family with the
-// family's cells under the three templates stacked, written to
-// test-results/sheet/<Family>.png, plus an index of what was captured.
+// Info: Contact sheet for the layer-4 review: one PNG per family and scheme
+// with the family's cells under the three templates stacked, written to
+// test-results/sheet/<Family>.png (light) and <Family>.dark.png (each
+// template's dark scheme), plus an index of what was captured.
 // Screenshots are evidence for a reviewer; this spec asserts only that
 // every family and template produced one.
 
@@ -47,36 +48,38 @@ function stack (buffers) {
 }
 
 
-test('contact sheet: one stacked PNG per family across the three templates', async function ({ browser }) {
+test('contact sheet: one stacked PNG per family and scheme across the three templates', async function ({ browser }) {
 
   mkdirSync(OUT, { recursive: true });
-  const captured = {};
-
-  for (const template of TEMPLATE_NAMES) {
-    const page = await browser.newPage();
-    const opened = await openShowcase(page, template);
-    expect(opened.status.errors).toEqual([]);
-    const families = page.locator('section.family');
-    const count = await families.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-    for (let i = 0; i < count; i++) {
-      const family = await families.nth(i).getAttribute('data-family');
-      captured[family] = captured[family] || {};
-      captured[family][template] = await families.nth(i).screenshot({ scale: 'css' });
-    }
-    await page.close();
-  }
-
   const index = [];
-  for (const family of Object.keys(captured).sort()) {
-    const templates = Object.keys(captured[family]);
-    expect(templates.sort()).toEqual(TEMPLATE_NAMES.slice().sort());
-    writeFileSync(join(OUT, family + '.png'), stack(TEMPLATE_NAMES.map(function (template) {
-      return captured[family][template];
-    })));
-    index.push({ family: family, file: family + '.png', templates: TEMPLATE_NAMES });
+
+  for (const scheme of ['light', 'dark']) {
+    const captured = {};
+    for (const template of TEMPLATE_NAMES) {
+      const page = await browser.newPage();
+      const opened = await openShowcase(page, template, undefined, { scheme: scheme });
+      expect(opened.status.errors).toEqual([]);
+      const families = page.locator('section.family');
+      const count = await families.count();
+      expect(count).toBeGreaterThanOrEqual(1);
+      for (let i = 0; i < count; i++) {
+        const family = await families.nth(i).getAttribute('data-family');
+        captured[family] = captured[family] || {};
+        captured[family][template] = await families.nth(i).screenshot({ scale: 'css' });
+      }
+      await page.close();
+    }
+    for (const family of Object.keys(captured).sort()) {
+      const templates = Object.keys(captured[family]);
+      expect(templates.sort()).toEqual(TEMPLATE_NAMES.slice().sort());
+      const file = family + (scheme === 'dark' ? '.dark' : '') + '.png';
+      writeFileSync(join(OUT, file), stack(TEMPLATE_NAMES.map(function (template) {
+        return captured[family][template];
+      })));
+      index.push({ family: family, scheme: scheme, file: file, templates: TEMPLATE_NAMES });
+    }
   }
   writeFileSync(join(OUT, 'index.json'), JSON.stringify(index, null, 2) + '\n');
-  expect(index.length).toBeGreaterThanOrEqual(1);
+  expect(index.length).toBeGreaterThanOrEqual(2);
 
 });

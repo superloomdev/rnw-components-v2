@@ -62,6 +62,10 @@ Name.spec = SPEC;
 | `ctx.enum('anatomy.label')` | the theme's choice, checked against the contract's list | not an enum, value outside the list |
 | `ctx.icon('close', 16)` | `{ viewBox, paths }`; the set's own 16px glyph when it has one | the theme lacks the icon |
 | `ctx.focusPresentation(focused)` | style fragment for the theme's `feedback.focus` mode | - |
+| `ctx.pressPresentation(state, palette)` | `{ container, layer, engaged }` for the theme's `feedback.press` mode; `palette` is `{ rest, hover, active, content }` color leaves (`null` fill = none); `engaged` is true while a highlight fill replaces the rest fill | a leaf the theme lacks |
+| `ctx.fieldPresentation(state, options)` | `{ root, frame, label, raised, placeholder }` for the theme's `feedback.field` frame and `anatomy.label` placement; `options` is `{ height, paddingInline, radius, surface, disabledBorder }` (`disabledBorder` a color leaf, `border_disabled` by default, `null` for none) | a leaf the theme lacks |
+
+A component that shows press or a field frame uses the presentation, never its own branch on the enum, and always mounts the parts a presentation may hide (the state layer, the label), so the element tree and the accessibility tree are the same under every template. The tokens a presentation reads are declared in the calling component's `api.tokens`.
 
 Also on `ctx`: `React`, `ReactNative`, `Svg`, `Utils`, `Debug`, `Registry`, `behaviors`, `breakpoint`, `platform` (`{ os, isNative, split }`), `config`.
 
@@ -95,17 +99,41 @@ Read the platform only through `ctx.platform`. A row whose platform answer is `b
 
 A frozen array of `{ label, props }`. It drives the showcase states row, the browser gates (structural, measurement, perceptual), the docs page and the contact sheet. Cover: default, every enum value that changes the render, disabled, invalid where applicable, and the extremes (`small` / `large`).
 
+A component that fills the width its container gives it (a field, a select) also exports `FRAME = Object.freeze({ width })`. The catalog carries it as `frame` (null for every other component), and every showcase, walker and browser gate lays that component's states out in a container of that width. Without it, the component's width is whatever each platform does with an unsized container: a browser input has an intrinsic width, a native input has none, so web and native disagree. Inside a component, a part that grows from its content uses `flexGrow: 1, flexShrink: 1, flexBasis: 'auto'`, never `flex: 1`: native layout gives `flex: 1` a zero basis, which collapses the part inside a container that sizes to its content. A sample that truncates sets a fixed `width`, not `maxWidth`: native text measures to its truncated line, the web to the box.
+
 ## Reference (`reference.js`) - rows with `reference.kind != none`
 
 ```js
 export default Object.freeze({
   kind: 'render-web',            // from the roster row
-  mount: function (React, upstream, props) { ... },   // returns the upstream element for the same props
-  parts: Object.freeze({ root: '.cds--btn', label: '.cds--btn > span' })
+  mount: function (React, upstream, props) { ... },   // the upstream element for the same props, or null when the state has no counterpart
+  body: Object.freeze({ width: 320 }),                // optional: a component that fills its container is measured in a body this wide
+  parts: Object.freeze({
+    root: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"]', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--btn', ours: '[role="button"] > [dir="auto"]', measure: 'text' }),
+    box: Object.freeze({ upstream: '.cds--checkbox-label', pseudo: '::before', ours: '...', measure: 'box' })
+  })
 });
 ```
 
-The measurement gate renders ours and upstream side by side with the same `sample.js` props and compares the named parts. Stylesheet transcription is not evidence; the rendered upstream is.
+The reference page (`_test/harness/reference-entry.js`) mounts every state through `mount`: `render-web` rows under the upstream stylesheet, `parse-rn` rows through react-native-web so the upstream's published style objects are what is drawn. `upstream` is the upstream module plus `icon(name)`, which resolves a semantic icon name to the upstream's icon component. The measurement gate (`measure.spec.js`) finds each part by its selector on both pages, within the cell body, and compares: for `box` parts the rect relative to the body, border widths, corner radius, fill, border color where a border is drawn, and any drawn outline; for `text` parts the rect of the element's own text nodes, its first font family and its text style; for `type` parts the text style only. An upstream part drawn on a pseudo-element names it in `pseudo`. Numbers agree within half a pixel, colors and families exactly; every part must be drawn upstream in some state. Measure what is painted, not the mechanism: select an icon's `path`, not its `svg` box. The perceptual gate compares the same cell bodies pixel by pixel. Stylesheet transcription is not evidence; the rendered upstream is.
+
+A row with a `material_twin` also carries a `second` block, measured the same way against the second reference (the Material web components, themed from the material template through the template's own mapping table) under the material template:
+
+```js
+second: Object.freeze({
+  origin: 'frame',                       // optional: measure coordinates from this part, not the body
+  body: Object.freeze({ width: 320 }),
+  mount: function (React, upstream, props) { ... },   // upstream = { tokens } of the built material theme; null for a state with no counterpart
+  parts: Object.freeze({
+    frame: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container', ours: 'div:has(> input)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
+    label: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .label:not(.hidden)', ours: '...', measure: 'text' }),
+    fill:  Object.freeze({ upstream: 'md-filled-button >>> .background', ours: '[role="button"]', measure: 'box', compare: ['backgroundColor'], grows: 'label', optional: true })
+  })
+})
+```
+
+A selector crosses shadow roots with ` >>> `; alternatives separated by a comma are tried in order. Where the second reference splits one of our boxes across elements, a part names the properties it compares (`compare`), is `optional` (compared only where the upstream draws it), or `grows` with a text part (its width takes that text's tracking slack). `styleOf` names the element that styles slotted text. The reference draws no letter tracking; the gate reports the tracking difference and compares text widths net of it. A disagreement caused by a queued contract request is listed in `_test/fixtures/expected-gaps.json` (`check: measure-second`, component, part, property, optional states, request); the gate asserts each listed gap still reproduces and fails on a stale one, so the list can only shrink as requests land.
 
 ## Notes (`notes.md`)
 

@@ -40,7 +40,7 @@
         "version": "9.0.7",
         "export": "Text"
       },
-      "description": "Text is a component in the Text family.",
+      "description": "Text draws one run of text in the type set and color token a caller names, and cuts a single line with an ellipsis when asked.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -56,7 +56,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "View",
@@ -67,7 +67,7 @@
         "version": "1.0.0",
         "export": "View"
       },
-      "description": "View is a component in the View family; it has no upstream visual reference; its anatomy is a Superloom decision.",
+      "description": "View is the layout box that draws only the fill, border, radius, padding and gap token leaves a caller names; it has no upstream visual reference because neither reference system publishes a plain box, and its anatomy is a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -86,23 +86,24 @@
         "no_reference",
         "superloom_decision"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Button",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "Button"
       },
-      "description": "Button is the shared button component and adds the tonal and elevated kinds from its Material reference.",
+      "description": "Button draws a pressable label with an optional trailing icon in nine kinds and six sizes, each kind's fill, label, border and elevation per state from the theme's button role cells, and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
+        "anatomy.button_label",
         "feedback.press"
       ],
       "behaviors": [
@@ -116,8 +117,10 @@
       "carbon_twin": "Button",
       "material_twin": "md-button",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Checkbox",
@@ -128,14 +131,12 @@
         "version": "1.115.0",
         "export": "Checkbox"
       },
-      "description": "Checkbox is a component in the Checkbox family.",
+      "description": "Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, its outline, fill, mark, state layer and focus ring per state from the theme's selection role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "press"
@@ -148,8 +149,9 @@
       "carbon_twin": "Checkbox",
       "material_twin": "md-checkbox",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        ],
+      "status": "built"
     },
     {
       "name": "TextInput",
@@ -160,7 +162,7 @@
         "version": "1.115.0",
         "export": "TextInput"
       },
-      "description": "TextInput is a component in the TextInput family.",
+      "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -180,8 +182,9 @@
       "carbon_twin": "TextInput",
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        ],
+      "status": "built"
     },
     {
       "name": "Select",
@@ -192,14 +195,13 @@
         "version": "1.115.0",
         "export": "Select"
       },
-      "description": "Select is a component in the Select family.",
+      "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every color, width, space and type set of the frame comes from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -215,8 +217,9 @@
       "carbon_twin": "Select",
       "material_twin": "md-outlined-select",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        ],
+      "status": "built"
     },
     {
       "name": "IconButton",
@@ -297,7 +300,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -7963,7 +7965,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -7998,7 +7999,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8033,7 +8033,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8068,7 +8067,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8103,7 +8101,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8138,7 +8135,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8173,7 +8169,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8208,7 +8203,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8243,7 +8237,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8278,7 +8271,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8313,7 +8305,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8348,7 +8339,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8383,7 +8373,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8420,7 +8409,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
@@ -8457,7 +8445,6 @@
       },
       "enums": [
         "anatomy.label",
-        "anatomy.caret",
         "feedback.field"
       ],
       "behaviors": [
