@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/tooltip/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -144,6 +144,29 @@ describe('Tooltip: popover behavior', function () {
     });
     assert.deepEqual(seen, [false]);
     assert.notEqual(root.querySelector('[role="tooltip"]'), null);
+  });
+
+});
+
+
+describe('Tooltip: native', function () {
+
+  test('the popover is block-relative, takes the room the bubble may take, and shifts the bubble', async function () {
+    const androidLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' } })
+    });
+    const Registry = buildSystem('carbon', factories, { lib: androidLib });
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
+
+    // The positioning box is absolute in the containing block at the room the
+    // bubble may take; the shift is percents of the bubble, so it lives there
+    assert.notEqual(parts.popover, null);
+    assert.equal(parts.popover.style.position, 'absolute');
+    assert.equal(parts.popover.style.alignItems, 'flex-start');
+    assert.equal(parts.popover.style.width, t['control.tooltip_max_width'] + 'px');
+    assert.equal(parts.popover.style.transform, '');
+    assert.notEqual(parts.bubble.style.transform.indexOf('translateX'), -1);
   });
 
 });

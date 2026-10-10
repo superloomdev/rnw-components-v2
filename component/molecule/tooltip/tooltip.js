@@ -168,6 +168,14 @@ export default function Tooltip (ctx) {
     const placement = anchored.actualPlacement || 'top';
     const position = anchored.position || { top: 0, left: 0 };
     const shift = anchored.shift || { x: 0, y: 0 };
+    const anchorOrigin = anchored.anchor || { x: 0, y: 0 };
+    // A fixed popover carries viewport coordinates and the shift on one box.
+    // An absolute one is measured and positioned inside its containing block
+    // - here the anchor's own wrapper - so on native the coordinates become
+    // block-relative, the shift moves onto the bubble (percents are of the
+    // element they translate), and the box is sized to the room the bubble
+    // may take; otherwise the wrapper's own width would crush the label to a
+    // column of single glyphs
     const popover = React.createElement(View, {
       nativeID: tooltipId,
       // `role` carries the ARIA name on every platform; `accessibilityRole`
@@ -175,10 +183,12 @@ export default function Tooltip (ctx) {
       role: 'tooltip',
       pointerEvents: 'none',
       style: [{
-        left: position.left,
+        alignItems: ctx.platform.isNative ? 'flex-start' : undefined,
+        left: ctx.platform.isNative ? position.left - anchorOrigin.x : position.left,
         position: ctx.platform.isNative ? 'absolute' : 'fixed',
-        top: position.top,
-        transform: [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }],
+        top: ctx.platform.isNative ? position.top - anchorOrigin.y : position.top,
+        transform: ctx.platform.isNative ? undefined : [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }],
+        width: ctx.platform.isNative ? ctx.metric('Tooltip', 'maxWidth') : undefined,
         zIndex: ctx.metric('Tooltip', 'level')
       }]
     },
@@ -189,11 +199,17 @@ export default function Tooltip (ctx) {
         borderRadius: ctx.metric('Tooltip', 'radius'),
         maxWidth: ctx.metric('Tooltip', 'maxWidth'),
         paddingHorizontal: ctx.metric('Tooltip', 'paddingInline'),
-        paddingVertical: paddingBlock
+        paddingVertical: paddingBlock,
+        transform: ctx.platform.isNative ? [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }] : undefined
       }]
     },
+    // Android pads a text line beyond its declared line height unless told
+    // not to; the bubble's box is the token height only when it is told
     React.createElement(Text, {
-      style: [ctx.typeStyle(compact ? 'tooltip_compact_label' : 'tooltip_label'), { color: ctx.color('tooltip_label') }]
+      style: [ctx.typeStyle(compact ? 'tooltip_compact_label' : 'tooltip_label'), {
+        color: ctx.color('tooltip_label'),
+        includeFontPadding: ctx.platform.isNative ? false : undefined
+      }]
     }, props.label),
     caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'), height: caretHeight, placement: placement, width: caretWidth })));
 
@@ -233,7 +249,10 @@ export default function Tooltip (ctx) {
     React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, testID: props.testID },
       // A bare string anchor gets a tab stop: a tooltip opens on focus, so a
       // keyboard has to reach it; an element child brings its own
-      Utils.isString(props.children) ? React.createElement(Text, { focusable: true }, props.children) : props.children),
+      Utils.isString(props.children) ? React.createElement(Text, {
+        focusable: true,
+        style: { includeFontPadding: ctx.platform.isNative ? false : undefined }
+      }, props.children) : props.children),
     overlay.hosted ? null : shown === true ? popover : null);
 
   }

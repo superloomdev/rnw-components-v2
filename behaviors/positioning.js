@@ -158,7 +158,7 @@ export default function createPositioningBehaviors (deps) {
           position: computed.position,
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
-          anchor: { width: rect.width, height: rect.height }
+          anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
         });
         return;
       }
@@ -185,7 +185,7 @@ export default function createPositioningBehaviors (deps) {
             position: computed.position,
             actualPlacement: computed.actualPlacement,
             shift: computed.shift,
-            anchor: { width: rect.width, height: rect.height }
+            anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
           });
         });
       }
