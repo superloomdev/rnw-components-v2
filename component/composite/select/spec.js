@@ -10,7 +10,11 @@ export default Object.freeze({
   heightLarge: 'size.size_large',
   radius: 'control.field_radius',
   iconSize: 'control.field_icon_size',
-  optionPadding: 'control.field_padding_inline',
-  optionHeight: 'control.option_height',
-  listLevel: 'stacking.dropdown'
+  itemHeight: 'control.list_item_height',
+  itemPaddingInline: 'control.list_item_padding_inline',
+  itemDividerWidth: 'control.list_item_divider_width',
+  listPaddingBlock: 'control.list_padding_block',
+  listRadius: 'control.list_radius',
+  listLevel: 'stacking.dropdown',
+  listMaxRows: { constant: 5.5 }
 });

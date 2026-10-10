@@ -167,6 +167,9 @@ export async function readParts (page, name, parts, side, origin, options) {
           continue;
         }
         const pseudo = input.side === 'upstream' && part.pseudo ? part.pseudo : null;
+        // A part drawn as one of its element's edges (a border line rather
+        // than a child box) measures as the strip that edge paints
+        const strip = input.side === 'upstream' && part.strip ? part.strip : null;
         // The text style may come from another element (the shadow element that styles slotted text)
         const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
@@ -174,18 +177,42 @@ export async function readParts (page, name, parts, side, origin, options) {
         // A positioned pseudo-element sits at its offset plus its margin inside its host
         const pseudoX = pseudo ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0) : 0;
         const pseudoY = pseudo ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0) : 0;
+        const stripTop = strip === null ? 0
+          : strip === 'borderTop' ? rect.top : rect.bottom - parseFloat(style[strip + 'Width']);
         const measured = {};
         if (part.measure === 'box') {
           measured.x = rect.x - origin.x + pseudoX;
-          measured.y = rect.y - origin.y + pseudoY;
+          measured.y = (strip === null ? rect.y + pseudoY : stripTop) - origin.y;
           measured.width = pseudo ? parseFloat(style.width) : rect.width;
-          measured.height = pseudo ? parseFloat(style.height) : rect.height;
+          measured.height = strip === null ? (pseudo ? parseFloat(style.height) : rect.height) : parseFloat(style[strip + 'Width']);
           for (const property of BOX) {
             measured[property] = style[property];
+          }
+          // The strip reads its edge's color as its own fill
+          if (strip !== null) {
+            measured.backgroundColor = style[strip + 'Color'];
           }
           // A drawn outline (a ring) as one value; none when not drawn or transparent
           const ring = style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0 && style.outlineColor !== 'rgba(0, 0, 0, 0)';
           measured.outline = ring ? style.outlineWidth + ' ' + style.outlineColor + ' offset ' + style.outlineOffset : 'none';
+          // An upstream ring may move between elements by state (the field on
+          // focus, the host on invalid): `outlineOf` lists the candidates and
+          // reads the first whose ring is drawn
+          if (input.side === 'upstream' && Array.isArray(part.outlineOf)) {
+            measured.outline = 'none';
+            for (const candidate of part.outlineOf) {
+              const candidateElement = query(body, candidate);
+              if (candidateElement === null) {
+                continue;
+              }
+              const candidateStyle = getComputedStyle(candidateElement);
+              const drawn = candidateStyle.outlineStyle !== 'none' && parseFloat(candidateStyle.outlineWidth) > 0 && candidateStyle.outlineColor !== 'rgba(0, 0, 0, 0)';
+              if (drawn) {
+                measured.outline = candidateStyle.outlineWidth + ' ' + candidateStyle.outlineColor + ' offset ' + candidateStyle.outlineOffset;
+                break;
+              }
+            }
+          }
         }
         if (part.measure === 'text') {
           const nodes = Array.from(element.childNodes).filter(function (node) {
@@ -198,7 +225,22 @@ export async function readParts (page, name, parts, side, origin, options) {
           const range = document.createRange();
           range.setStartBefore(nodes[0]);
           range.setEndAfter(nodes[nodes.length - 1]);
+          // RNW draws text with white-space: pre-wrap, which drops the kerning and
+          // ligature shaping upstream's normal wrapping keeps. A run carrying no
+          // significant whitespace wraps identically either way, so its width is
+          // read under normal wrapping; one that does is measured as drawn, where
+          // the wrap mode is a real rendering difference
+          const collapsible = nodes.every(function (node) {
+            return !/[\n\t]|^ | $|  /.test(node.textContent);
+          });
+          const wrapped = collapsible && style.whiteSpace.indexOf('pre') === 0;
+          if (wrapped) {
+            element.style.whiteSpace = 'normal';
+          }
           const box = range.getBoundingClientRect();
+          if (wrapped) {
+            element.style.whiteSpace = '';
+          }
           measured.x = box.x - origin.x;
           measured.y = box.y - origin.y;
           measured.width = box.width;
@@ -211,11 +253,18 @@ export async function readParts (page, name, parts, side, origin, options) {
         for (const property of part.measure === 'box' ? [] : TYPE) {
           measured[property] = style[property];
         }
-        // A visually hidden part (1px clip), an undisplayed or a transparent one draws nothing
-        measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && (pseudo ? true : rect.width > 1 && rect.height > 1);
+        // A visually hidden part (a 1px clip in both dimensions), an undisplayed or a
+        // transparent one draws nothing; a hairline a pixel tall but a layout wide draws,
+        // and an edge strip draws only where its edge is painted
+        const drawn = strip !== null
+          ? parseFloat(style[strip + 'Width']) > 0 && style[strip + 'Color'] !== 'rgba(0, 0, 0, 0)'
+          : pseudo !== null || rect.width > 1 || rect.height > 1;
+        measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && drawn;
         if (input.extended) {
-          // Text styled by another element is painted at that element's opacity
-          const opacity = opacityOf(styleSource === null ? element : styleSource, body);
+          // Text styled by another element is painted at that element's opacity,
+          // and a pseudo is painted at its own: it is not an element, so the
+          // ancestor walk cannot see it
+          const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo ? parseFloat(style.opacity) : 1);
           // A part under a transparent ancestor draws nothing
           measured.visible = measured.visible && opacity > 0;
           if (part.measure === 'box') {
@@ -235,7 +284,7 @@ export async function readParts (page, name, parts, side, origin, options) {
             measured.ink = withOpacity(ink, opacity);
           }
           measured._bodyX = rect.x + pseudoX - bodyRect.x;
-          measured._bodyY = rect.y + pseudoY - bodyRect.y;
+          measured._bodyY = (strip === null ? rect.y + pseudoY : stripTop) - bodyRect.y;
         }
         state[partName] = measured;
       }
@@ -257,7 +306,7 @@ pointer down on it. Wait for transitions and state layers to settle.
 @param {String} name        - Component name
 @param {String} state       - The cell's state label
 @param {String} selector    - The interactive element, relative to the cell body (' >>> ' not used here)
-@param {String} interaction - 'hover' | 'focus' | 'pressed'
+@param {String} interaction - 'hover' | 'focus' | 'pressed' | 'open'
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
 *********************************************************************/
@@ -272,7 +321,10 @@ export async function enterInteraction (page, name, state, selector, interaction
   await body.evaluate(function (element) {
     element.scrollIntoView({ block: 'center', inline: 'center' });
   });
-  if (interaction === 'focus') {
+  if (interaction === 'open') {
+    // A full click opens the popup and releases the press before the read
+    await target.click();
+  } else if (interaction === 'focus') {
     await page.keyboard.press('Shift');
     await target.focus();
     // A focused text field shows its frame, not a selection: collapse any selection focusing made
@@ -330,8 +382,74 @@ export async function leaveInteraction (page) {
 
 
 /********************************************************************
+Hide every fixed layer that does not belong to a cell's body, then hand
+back a restore callback. A layer belongs when its composed ancestor walk
+(through shadow hosts) reaches the body; another cell's fixed layer - a
+viewport-sized scrim, a floating surface - would otherwise bleed over
+this cell's picture and make a dimmed or covered shot part of the
+comparison. Hiding uses `visibility` so no geometry moves.
+
+@param {Object} body - Playwright locator for the cell's body element
+
+@return {Promise<void>} - Nothing; call the paired restore after shooting
+*********************************************************************/
+async function hideOutsideLayers (body) {
+
+  await body.evaluate(function (element) {
+    const composedParent = function (node) {
+      if (node.assignedSlot !== null && node.assignedSlot !== undefined) {
+        return node.assignedSlot;
+      }
+      if (node.parentNode !== null && node.parentNode.nodeType !== 9) {
+        return node.parentNode;
+      }
+      const root = node.getRootNode();
+      return root !== null && root.host !== undefined ? root.host : null;
+    };
+    const hidden = [];
+    document.querySelectorAll('*').forEach(function (candidate) {
+      if (window.getComputedStyle(candidate).position !== 'fixed') {
+        return;
+      }
+      let node = candidate;
+      while (node !== null && node !== element) {
+        node = composedParent(node);
+      }
+      if (node !== element) {
+        hidden.push(candidate);
+        candidate.style.visibility = 'hidden';
+      }
+    });
+    element.__hiddenLayers = hidden;
+  });
+
+}
+
+
+/********************************************************************
+Restore the layers `hideOutsideLayers` hid for a cell's body.
+
+@param {Object} body - Playwright locator for the cell's body element
+
+@return {Promise<void>} - Nothing
+*********************************************************************/
+async function restoreLayers (body) {
+
+  await body.evaluate(function (element) {
+    const hidden = element.__hiddenLayers || [];
+    hidden.forEach(function (node) {
+      node.style.visibility = '';
+    });
+    delete element.__hiddenLayers;
+  });
+
+}
+
+
+/********************************************************************
 Screenshot one cell's body with a margin, so a focus ring drawn outside
-the element is in the picture.
+the element is in the picture. Layers that belong to other cells are
+hidden first, so a shot carries this cell's own painting only.
 
 @param {Object} page   - Playwright page
 @param {String} name   - Component name
@@ -351,8 +469,79 @@ export async function shootCell (page, name, state, margin) {
     element.scrollIntoView({ block: 'center', inline: 'center' });
   });
   const box = await body.boundingBox();
+  await hideOutsideLayers(body);
+  let shot;
+  try {
+    shot = await page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
+  } finally {
+    await restoreLayers(body);
+  }
 
-  return page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
+  return shot;
+
+}
+
+
+/********************************************************************
+Screenshot one part's element with a margin. A part painted outside its
+cell body - a fixed layer, a top-layered upstream dialog - is still in
+its own picture, so a reference whose `origin` names it compares pixels
+that the cell shot cannot hold.
+
+@param {Object} page     - Playwright page
+@param {String} name     - Component name
+@param {String} state    - The cell's state label
+@param {String} selector - The part's element (' >>> ' crosses shadow roots)
+@param {Number} margin   - Pixels around the element
+
+@return {Promise<Buffer|null>} - PNG, or null when the cell or its part is absent
+*********************************************************************/
+export async function shootPart (page, name, state, selector, margin) {
+
+  const handle = await page.evaluateHandle(function (input) {
+    const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.state + '"] [data-part="body"]');
+    if (body === null) {
+      return null;
+    }
+    for (const alternative of input.selector.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+      let current = body;
+      const segments = alternative.split(' >>> ');
+      for (let i = 0; i < segments.length; i++) {
+        if (current === null) {
+          break;
+        }
+        const scope = i === 0 ? current : (current.shadowRoot || current);
+        current = scope.querySelector(segments[i]);
+      }
+      if (current !== null && current !== undefined) {
+        return current;
+      }
+    }
+    return null;
+  }, { name: name, state: state, selector: selector });
+  const element = handle.asElement();
+  if (element === null) {
+    await handle.dispose();
+    return null;
+  }
+  await element.evaluate(function (node) {
+    node.scrollIntoView({ block: 'center', inline: 'center' });
+  });
+  const box = await element.boundingBox();
+  await handle.dispose();
+  if (box === null) {
+    return null;
+  }
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  await hideOutsideLayers(body);
+  let shot;
+  try {
+    shot = await page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
+  } finally {
+    await restoreLayers(body);
+  }
+
+  return shot;
 
 }
 
@@ -372,14 +561,62 @@ export async function readCells (page) {
       const body = cell.querySelector('[data-part="body"]');
       const rect = body.getBoundingClientRect();
       // An element draws nothing when it or an ancestor in the cell is fully
-      // transparent or hidden, or sits in a zero-height aria-hidden sizer
+      // transparent or hidden, or sits in a zero-height aria-hidden sizer;
+      // a leaf that paints no pixels of its own - no fill, image, border,
+      // shadow or ring, and no text - draws nothing either (a transparent
+      // hit layer)
       const isUndrawn = function (node) {
         for (let current = node; current !== null && current !== body; current = current.parentElement) {
           const style = getComputedStyle(current);
-          if (style.opacity === '0' || style.visibility === 'hidden') {
+          if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
             return true;
           }
           if (current.getAttribute('aria-hidden') === 'true' && current.getBoundingClientRect().height === 0) {
+            return true;
+          }
+        }
+        if (!(node instanceof SVGElement) && node.children.length === 0 && (node.textContent || '').trim() === '') {
+          const style = getComputedStyle(node);
+          if (style.backgroundColor === 'rgba(0, 0, 0, 0)' && style.backgroundImage === 'none' &&
+              style.borderTopWidth === '0px' && style.boxShadow === 'none' && style.outlineStyle === 'none') {
+            return true;
+          }
+        }
+        return false;
+      };
+      // The painted part of a node: its box cut down by every ancestor
+      // inside the cell whose overflow hides the run-out (a swept bar, a
+      // line box taller than its tag)
+      const paintedRect = function (node) {
+        let r = node.getBoundingClientRect();
+        for (let current = node.parentElement; current !== null && current !== body.parentElement; current = current.parentElement) {
+          const overflow = getComputedStyle(current).overflow;
+          if (overflow !== 'visible') {
+            const bounds = current.getBoundingClientRect();
+            const x = Math.max(r.x, bounds.x);
+            const y = Math.max(r.y, bounds.y);
+            const right = Math.min(r.x + r.width, bounds.x + bounds.width);
+            const bottom = Math.min(r.y + r.height, bounds.y + bounds.height);
+            r = { x: x, y: y, width: Math.max(0, right - x), height: Math.max(0, bottom - y) };
+          }
+        }
+        return r;
+      };
+      // The fixed layer an element belongs to, if any: the nearest
+      // ancestor-or-self positioned fixed. A layer whose containing block
+      // is a transformed ancestor inside the cell is bounded by the cell,
+      // not the viewport
+      const overlayOf = function (node) {
+        for (let current = node; current !== null && current !== body.parentElement; current = current.parentElement) {
+          if (getComputedStyle(current).position === 'fixed') {
+            return current;
+          }
+        }
+        return null;
+      };
+      const hasStage = function (overlay) {
+        for (let current = overlay.parentElement; current !== null && current !== body.parentElement; current = current.parentElement) {
+          if (getComputedStyle(current).transform !== 'none') {
             return true;
           }
         }
@@ -388,11 +625,18 @@ export async function readCells (page) {
       const children = Array.from(body.querySelectorAll('*')).map(function (node) {
         const r = node.getBoundingClientRect();
         const style = getComputedStyle(node);
+        const overlay = overlayOf(node);
+        const overlayRect = overlay === null ? null : overlay.getBoundingClientRect();
         return {
           undrawn: isUndrawn(node),
           tag: node.tagName.toLowerCase(),
           role: node.getAttribute('role'),
+          position: style.position,
+          overlay: overlay !== null,
+          contained: overlay !== null && hasStage(overlay),
+          layerCovers: overlay !== null && overlayRect.width >= window.innerWidth && overlayRect.height >= window.innerHeight,
           rect: { x: r.x, y: r.y, width: r.width, height: r.height },
+          painted: paintedRect(node),
           text: node.children.length === 0 ? (node.textContent || '').trim() : '',
           overflow: style.overflow,
           textOverflow: style.textOverflow,
@@ -410,6 +654,7 @@ export async function readCells (page) {
         family: cell.getAttribute('data-family'),
         state: cell.getAttribute('data-state'),
         rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        viewport: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight },
         children: children
       };
     });

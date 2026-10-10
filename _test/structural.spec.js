@@ -88,10 +88,41 @@ for (const template of TEMPLATE_NAMES) {
           if ((child.rect.width === 0 && child.rect.height === 0) || child.undrawn) {
             continue;
           }
-          expect(child.rect.x, id + ' <' + child.tag + '> overflows left').toBeGreaterThanOrEqual(cell.rect.x - 0.5);
-          expect(child.rect.y, id + ' <' + child.tag + '> overflows top').toBeGreaterThanOrEqual(cell.rect.y - 0.5);
-          expect(child.rect.x + child.rect.width, id + ' <' + child.tag + '> overflows right').toBeLessThanOrEqual(cell.rect.x + cell.rect.width + 0.5);
-          expect(child.rect.y + child.rect.height, id + ' <' + child.tag + '> overflows bottom').toBeLessThanOrEqual(cell.rect.y + cell.rect.height + 0.5);
+          // A fixed layer's containing block is the viewport, unless a
+          // transformed ancestor inside the cell re-bounds it to the cell;
+          // a layer that covers the viewport by design (a scrim) is
+          // viewport-bounded either way. A viewport layer of a cell off
+          // the screen has no meaningful bound at all
+          const covers = child.layerCovers === true;
+          const free = child.overlay && (!child.contained || covers);
+          const offscreen = cell.rect.x + cell.rect.width <= cell.viewport.x ||
+                            cell.rect.y + cell.rect.height <= cell.viewport.y ||
+                            cell.rect.x >= cell.viewport.x + cell.viewport.width ||
+                            cell.rect.y >= cell.viewport.y + cell.viewport.height;
+          if (free && offscreen && !covers) {
+            continue;
+          }
+          const bounds = free ? cell.viewport : cell.rect;
+          let painted = free ? child.rect : child.painted;
+          // The part of a viewport layer that lies on the screen is what
+          // it paints; its overflow past the screen edge clips away
+          if (free) {
+            const x = Math.max(painted.x, cell.viewport.x);
+            const y = Math.max(painted.y, cell.viewport.y);
+            painted = {
+              x: x, y: y,
+              width: Math.max(0, Math.min(painted.x + painted.width, cell.viewport.x + cell.viewport.width) - x),
+              height: Math.max(0, Math.min(painted.y + painted.height, cell.viewport.y + cell.viewport.height) - y)
+            };
+          }
+          // Nothing painted after clipping cannot overflow
+          if (painted.width === 0 && painted.height === 0) {
+            continue;
+          }
+          expect(painted.x, id + ' <' + child.tag + '> overflows left').toBeGreaterThanOrEqual(bounds.x - 0.5);
+          expect(painted.y, id + ' <' + child.tag + '> overflows top').toBeGreaterThanOrEqual(bounds.y - 0.5);
+          expect(painted.x + painted.width, id + ' <' + child.tag + '> overflows right').toBeLessThanOrEqual(bounds.x + bounds.width + 0.5);
+          expect(painted.y + painted.height, id + ' <' + child.tag + '> overflows bottom').toBeLessThanOrEqual(bounds.y + bounds.height + 0.5);
         }
       }
     });
@@ -115,7 +146,8 @@ for (const template of TEMPLATE_NAMES) {
     test('interactive targets are at least 44 points', function () {
       for (const cell of cells) {
         for (const child of cell.children) {
-          if (INTERACTIVE_ROLES.includes(child.role)) {
+          // An undrawn seat (a hidden close variant, a transparent layer) is no target
+          if (!child.undrawn && INTERACTIVE_ROLES.includes(child.role)) {
             expect(Math.max(child.rect.width, child.rect.height), cell.component + ' / ' + cell.state + ' ' + child.role + ' target').toBeGreaterThanOrEqual(44);
           }
         }

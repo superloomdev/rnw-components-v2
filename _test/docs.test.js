@@ -60,7 +60,8 @@ describe('docs: generated pages', function () {
       return entry.frame !== null;
     }).map(function (entry) {
       return entry.name + ':' + entry.frame.width;
-    }), ['TextInput:320', 'Select:320']);
+    }), ['TextInput:320', 'Select:320', 'TextArea:320',
+      'Dropdown:320', 'Tabs:400', 'Menu:400', 'Modal:640', 'ProgressBar:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

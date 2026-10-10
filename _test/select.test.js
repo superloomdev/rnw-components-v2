@@ -117,10 +117,11 @@ describe('Select: every sample state under every template', function () {
         assert.equal(parts.frame.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + (disabled ? 'select_outline_disabled' : 'field_outline' + phase)]));
         assert.equal(parts.frame.style.backgroundColor, cssValue('backgroundColor', t['color.field_container' + (disabled ? '_disabled' : '')]));
 
-        // Trigger text: the selection, else the placeholder, which a floating label never draws
+        // Trigger text: the selection, else the placeholder in the field's
+        // own ink, which a floating label never draws
         const placeholderShows = t['anatomy.label'] === 'above' || !props.label;
         const text = selected ? selected.label : props.placeholder || '';
-        const color = selected ? 'field_value' + (disabled ? '_disabled' : '') : 'field_placeholder' + (disabled ? '_disabled' : '');
+        const color = 'field_value' + (disabled ? '_disabled' : '');
         assert.equal(parts.value.textContent, text);
         assert.equal(parts.value.style.opacity, selected || placeholderShows ? '1' : '0');
         assert.equal(parts.value.style.color, cssValue('color', t['color.' + color]));
@@ -177,10 +178,10 @@ describe('Select: the list through the DOM', function () {
     assert.equal(parts.trigger.getAttribute('aria-controls'), list.id);
     assert.equal(list.style.top, t['control.field_height'] + 'px');
     assert.equal(list.style.zIndex, String(t['stacking.dropdown']));
-    assert.equal(list.style.backgroundColor, cssValue('backgroundColor', t['color.layer_01']));
+    assert.equal(list.style.backgroundColor, cssValue('backgroundColor', t['color.list_container']));
     const options = list.querySelectorAll('[role="option"]');
     assert.equal(options.length, ITEMS.length);
-    assert.equal(options[0].style.height, t['control.option_height'] + 'px');
+    assert.equal(options[0].style.height, t['control.list_item_height'] + 'px');
     await act(async function () {
       options[1].click();
     });
@@ -195,13 +196,16 @@ describe('Select: the list through the DOM', function () {
     await press(parts.trigger, 'ArrowDown');
     await press(parts.trigger, 'ArrowDown');
     const options = parts.list().querySelectorAll('[role="option"]');
-    assert.equal(options[1].style.backgroundColor, cssValue('backgroundColor', t['color.layer_hover_01']));
-    assert.equal(options[0].style.backgroundColor, cssValue('backgroundColor', t['color.layer_01']));
+    // The keyboard's highlight draws the field's focus ring, not the hover fill
+    assert.equal(options[1].style.backgroundColor, '');
+    assert.equal(options[1].style.outlineColor, cssValue('outlineColor', t['color.field_focus_ring']));
+    assert.equal(options[0].style.backgroundColor, '');
     await press(parts.trigger, 'Enter');
     assert.equal(parts.value.textContent, 'Medium');
     await press(parts.trigger, 'ArrowDown');
     assert.equal(parts.list().querySelectorAll('[role="option"]')[1].getAttribute('aria-selected'), 'true');
-    assert.equal(parts.list().querySelectorAll('[role="option"]')[1].style.backgroundColor, cssValue('backgroundColor', t['color.layer_selected_01']));
+    // The selection is still highlighted from the arrow keys, so it draws the selected fill
+    assert.equal(parts.list().querySelectorAll('[role="option"]')[1].style.backgroundColor, cssValue('backgroundColor', t['color.list_item_container_selected']));
     await press(parts.trigger, 'Escape');
     assert.equal(parts.list(), null);
   });

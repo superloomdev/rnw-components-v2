@@ -241,10 +241,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {Object}  state   - { focused, focusVisible }
   @param {Number}  [border] - The control's own border width (a button's
                               inner line sits inside it)
+  @param {Object}  [options] - { gap }: `gap === false` draws no page-color
+                              separating line inside the ring
 
   @return {Object} - Style fragment, empty when no ring shows
   *********************************************************************/
-  function focusRing (family, state, border) {
+  function focusRing (family, state, border, options) {
 
     // The ring shows on focus; outside the field family only on keyboard focus when the theme says so
     const keyboardOnly = family !== 'field' && enumValue('feedback.focus_trigger') === 'keyboard';
@@ -262,9 +264,11 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     }
 
     // A button ring drawn inside the edge paints the border, then the rest of
-    // its width and the page-color line as inset shadows inside the border
+    // its width and the page-color line as inset shadows inside the border.
+    // `options.gap === false` draws no separating line - the reference omits
+    // it on a face that draws neither fill nor border
     const inner = Math.max(0, width - (border || 0));
-    const gap = token('control.button_focus_gap_width');
+    const gap = options !== undefined && options.gap === false ? 0 : token('control.' + family + '_focus_gap_width');
     const layers = [];
     if (inner > 0) {
       layers.push('inset 0 0 0 ' + inner + 'px ' + ringColor);
@@ -318,14 +322,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   *********************************************************************/
   function pressPresentation (state, prefix) {
 
-    // Init the theme's choice and the state in effect
+    // Init the theme's choice and the state in effect. `phase` names the
+    // dominant identity state - a selected control keeps its selected cells
+    // through hover and press, as the references' `*-selected` paint wins -
+    // while `interaction` follows the live pointer or focus for the layer
     const mode = enumValue('feedback.press');
     const live = state.disabled !== true;
-    const phase = !live ? '_disabled'
+    const interaction = !live ? '_disabled'
       : state.pressed === true ? '_active'
         : state.hovered === true ? '_hover'
-          : state.selected === true ? '_selected'
-            : state.focused === true ? '_focus' : '';
+          : state.focused === true ? '_focus' : '';
+    const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;
     const rest = state.selected === true && live ? '_selected' : !live ? '_disabled' : '';
     const fill = color(prefix + phase);
 
@@ -340,7 +347,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     // Opacity: the resting fill, faded by the theme's state opacity
     if (mode === 'opacity') {
-      const fade = phase === '_active' ? token('state.pressed_opacity') : phase === '_hover' ? token('state.hover_opacity') : 0;
+      const fade = interaction === '_active' ? token('state.pressed_opacity') : interaction === '_hover' ? token('state.hover_opacity') : 0;
       return {
         container: Object.assign({ backgroundColor: color(prefix + rest), opacity: 1 - fade }, transition('opacity')),
         layer: { opacity: 0, pointerEvents: 'none' },
@@ -348,12 +355,97 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       };
     }
 
-    // Ripple: the state's fill drawn as a layer over the resting container
+    // Ripple: the interaction's fill drawn as a layer over the resting
+    // container - a selected control keeps its resting fill under the layer
     return {
       container: { backgroundColor: color(prefix + rest) },
-      layer: Object.assign({ backgroundColor: fill, opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),
+      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
       phase: phase
     };
+
+  }
+
+
+  /********************************************************************
+  The list presentation the theme chose: the container and item cells of an
+  option or menu list. The container carries the list's fill, corner, block
+  padding and shadow; an item is a height, a fill for its state (`hover`,
+  `active`, `selected`, `selected` + `hover`, none for a disabled item) and
+  an inner option block that draws the divider between items inside the
+  item's inline padding, leaving the mark's room at its end where the theme
+  marks the selected item (`anatomy.list_selected_mark`).
+
+  @param {Object} options - { itemHeight, paddingInline, dividerWidth,
+                            paddingBlock, radius, level, markRoom, mark }:
+                            `mark` reads the theme's `anatomy.list_selected_mark`;
+                            absent or false draws no mark and reads no enum
+
+  @return {Object} - { mark, container, item, option, label, markStyle }
+  *********************************************************************/
+  function listPresentation (options) {
+
+    const mark = options.mark === true ? enumValue('anatomy.list_selected_mark') : 'hidden';
+    // The pointer's hover and the keyboard's highlight are distinct states:
+    // a highlighted row draws the field's focus ring, no fill of its own; a
+    // highlighted selected row keeps its selected fill, where a hovered one
+    // draws the selected-hover fill
+    const fill = function (state) {
+      if (state.disabled === true) {
+        return null;
+      }
+      if (state.pressed === true) {
+        return 'list_item_container_active';
+      }
+      if (state.selected === true) {
+        return state.hovered === true ? 'list_item_container_selected_hover' : 'list_item_container_selected';
+      }
+      return state.hovered === true ? 'list_item_container_hover' : null;
+    };
+    const labelLeaf = function (state) {
+      return state.disabled === true ? 'list_item_label_disabled'
+        : state.selected === true ? 'list_item_label_selected'
+          : state.hovered === true ? 'list_item_label_hover' : 'list_item_label';
+    };
+
+    return Object.freeze({
+      // 'shown' draws the selected item's mark; 'hidden' mounts the seat undrawn
+      mark: mark,
+      container: Object.assign({
+        backgroundColor: color('list_container'),
+        borderRadius: options.radius,
+        paddingBottom: options.paddingBlock,
+        paddingTop: options.paddingBlock,
+        zIndex: options.level
+      }, token('shadow.list')),
+      item: function (state) {
+        const leaf = fill(state);
+        // The keyboard's highlight carries the control's focus ring: while
+        // the list is open the field's ring moves onto the highlighted row
+        const ring = state.highlighted === true ? focusRing('field', { focused: true }) : {};
+        return Object.assign({ height: options.itemHeight, justifyContent: 'stretch' }, leaf === null ? {} : { backgroundColor: color(leaf) }, ring);
+      },
+      // The item's inner block carries the divider line at its top: the
+      // caller decides it draws (the reference hides it on the first item and
+      // around the highlighted or selected row); the bottom edge is declared
+      // transparent, as the reference's option block is
+      option: function (divider) {
+        return {
+          borderBottomColor: 'transparent',
+          borderBottomWidth: options.dividerWidth,
+          borderTopColor: divider === true ? color('list_item_divider') : 'transparent',
+          borderTopWidth: options.dividerWidth,
+          justifyContent: 'center',
+          marginHorizontal: options.paddingInline,
+          paddingEnd: mark === 'shown' ? options.markRoom : 0,
+          flex: 1
+        };
+      },
+      labelLeaf: labelLeaf,
+      label: function (state) {
+        return Object.assign({}, typeStyle('list_item'), { color: color(labelLeaf(state)) });
+      },
+      markStyle: { end: options.paddingInline, position: 'absolute' }
+    });
 
   }
 
@@ -371,7 +463,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   reads its own cell (`text_input_container_hover`,
   `select_outline_disabled`).
 
-  @param {Object} state   - { focused, hovered, disabled, invalid, populated }
+  @param {Object} state   - { focused, hovered, disabled, invalid, populated,
+                            highlighted }: `highlighted` marks that the open
+                            list carries the highlight, moving the field's
+                            ring onto the highlighted option
   @param {Object} options - { member, height, radius, surface, trailing }: the
                             member ('text_input' | 'select'), the field's own
                             height and radius, the color leaf it sits on and
@@ -384,13 +479,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   *********************************************************************/
   function fieldPresentation (state, options) {
 
-    // Init the theme's choices and the state in effect
+    // Init the theme's choices and the state in effect. An open outline field
+    // draws its active (focus) presentation whether or not it is focused; an
+    // open underline field keeps its resting fill under the pointer, its list
+    // open over it
     const mode = enumValue('feedback.field');
     const placement = enumValue('anatomy.label');
     const disabled = state.disabled === true;
     const invalid = !disabled && state.invalid === true;
-    const focused = !disabled && state.focused === true;
-    const hovered = !disabled && state.hovered === true;
+    const open = state.open === true;
+    const focused = !disabled && (state.focused === true || (open && mode === 'outline'));
+    const hovered = !disabled && state.hovered === true && !(open && mode === 'underline');
     const member = options.member;
     const cell = function (base, stateful) {
       if (disabled) {
@@ -403,9 +502,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     };
 
     // Frame colors and widths for the state
-    const outline = disabled && member === 'select' ? 'select_outline_disabled' : cell('field_outline');
+    const outline = disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');
     const container = disabled ? 'field_container_disabled'
-      : hovered ? (member === 'text_input' ? 'text_input_container_hover' : 'field_container_hover') : 'field_container';
+      : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
     const width = token(focused ? 'control.field_outline_width_focus' : 'control.field_outline_width');
     const paddingInline = token('control.field_padding_inline');
     const paddingEnd = options.trailing === true ? token('control.field_icon_inset') : paddingInline;
@@ -417,7 +516,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       borderColor: color(outline),
       borderRadius: options.radius,
       flexDirection: 'row',
-      height: options.height
+      height: options.height,
+      position: 'relative'
     };
     if (mode === 'underline') {
       Object.assign(frame, { borderBottomWidth: width, paddingEnd: paddingEnd, paddingStart: paddingInline });
@@ -425,7 +525,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       // The borders sit inside the inline padding, so the text starts where the padding says
       Object.assign(frame, { borderWidth: width, paddingEnd: paddingEnd - width, paddingStart: paddingInline - width });
     }
-    const ring = focusRing('field', { focused: focused });
+    // The ring moves onto the highlighted option while the open list carries
+    // the highlight; the field itself draws none then
+    const ring = focusRing('field', { focused: focused && !(open && state.highlighted === true) });
     const invalidRing = token('control.field_invalid_ring_width');
     if (!Utils.isEmptyObject(ring)) {
       Object.assign(frame, ring);
@@ -441,13 +543,16 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       marginTop: token('control.field_message_gap')
     });
     const shared = {
-      value: Object.assign({}, typeStyle('field_value'), { color: color(disabled ? 'field_value_disabled' : 'field_value') }),
+      value: Object.assign({}, typeStyle(member === 'text_area' ? 'text_area_value' : 'field_value'), { color: color(disabled ? 'field_value_disabled' : 'field_value') }),
       placeholderColor: color(disabled ? 'field_placeholder_disabled' : 'field_placeholder'),
       // A focused select's indicator reads its member cell, where the reference distinguishes it
       indicator: member === 'select' && focused && !invalid ? 'select_indicator_focus' : cell('field_indicator'),
       invalidIcon: 'field_invalid_icon' + (focused ? '_focus' : hovered ? '_hover' : ''),
       iconGap: token('control.field_icon_gap'),
-      message: message
+      message: message,
+      // The side borders' current thickness; an absolutely-anchored list
+      // spans border to border by pulling itself out that far
+      borderSide: mode === 'outline' ? width : 0
     };
 
     // Above: the label sits over the frame in the flow
@@ -462,8 +567,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     }
 
     // Floating: the root reserves half the raised label above the frame, so
-    // the label straddles the top border inside the field's own bounds
-    const raised = focused || state.populated === true;
+    // the label straddles the top border inside the field's own bounds; an
+    // open field raises its label whether or not it is focused
+    const raised = focused || state.populated === true || open;
     const inset = token('spacing.spacing_02');
     const small = typeStyle('field_label_raised');
     const resting = typeStyle('field_label');
@@ -516,6 +622,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     enum: enumValue,
     fieldPresentation: fieldPresentation,
     focusRing: focusRing,
+    listPresentation: listPresentation,
     icon: icon,
     metric: metric,
     pressPresentation: pressPresentation,

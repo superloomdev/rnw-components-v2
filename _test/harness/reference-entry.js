@@ -26,10 +26,25 @@ import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/elevated-button.js';
 import '@material/web/button/outlined-button.js';
 import '@material/web/button/text-button.js';
+import '@material/web/iconbutton/icon-button.js';
+import '@material/web/iconbutton/filled-icon-button.js';
+import '@material/web/iconbutton/filled-tonal-icon-button.js';
+import '@material/web/iconbutton/outlined-icon-button.js';
+import '@material/web/tabs/tabs.js';
+import '@material/web/tabs/primary-tab.js';
+import '@material/web/tabs/secondary-tab.js';
 import '@material/web/checkbox/checkbox.js';
+import '@material/web/chips/assist-chip.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
+import '@material/web/progress/linear-progress.js';
+import '@material/web/radio/radio.js';
+import '@material/web/switch/switch.js';
+import '@material/web/menu/menu.js';
+import '@material/web/menu/menu-item.js';
+import '@material/web/divider/divider.js';
+import '@material/web/dialog/dialog.js';
 import utils from 'helper-utils';
 import debug from 'helper-debug';
 import themer from 'helper-themer';
@@ -106,7 +121,8 @@ function buildMaterialTheme () {
 // The second mount receives the material template's built tokens, for the values the reference does not set itself
 const MATERIAL_TOKENS = { tokens: {} };
 const MATERIAL_THEME = set === 'second' ? buildMaterialTheme() : {};
-if (schemeName === 'dark' && set === 'second') {
+if (set === 'second') {
+  // The page paints the material scheme's background behind every cell, as the showcase does
   document.body.style.background = MATERIAL_TOKENS.tokens['color.background'];
 }
 
@@ -135,7 +151,18 @@ function Cell (props) {
     status.unmeasured.push(props.name + '/' + props.state.label);
     return null;
   }
-  const body = reference.body ? { display: 'block', width: reference.body.width + 'px' } : undefined;
+  // A reference body may also stage a fixed layer: `stage` makes it the
+  // layer's containing block so the surface paints inside the cell
+  const body = reference.body ? (function () {
+    const style = { display: 'block', width: reference.body.width + 'px' };
+    if (typeof reference.body.height === 'number') {
+      style.height = reference.body.height + 'px';
+    }
+    if (reference.body.stage === true) {
+      style.transform = 'translateZ(0)';
+    }
+    return style;
+  })() : undefined;
 
   return React.createElement('div', {
     className: 'cell',
@@ -164,7 +191,9 @@ function Reference () {
   return React.createElement('div', { id: 'reference', className: ('measure ' + zone).trim(), 'data-set': set, 'data-scheme': schemeName, style: MATERIAL_THEME }, names.map(function (name) {
     return React.createElement('section', { key: name, className: 'family', 'data-family': rows[name].family },
       React.createElement('h2', null, name),
-      React.createElement('div', { className: 'grid' }, (samples[name] || []).map(function (state) {
+      React.createElement('div', { className: 'grid' }, (samples[name] || []).filter(function (state) {
+        return state.cell !== false;
+      }).map(function (state) {
         return React.createElement(Cell, { key: state.label, name: name, state: state });
       })));
   }));
@@ -185,11 +214,22 @@ requestAnimationFrame(function () {
     }).then(function () {
       let quiet = 0;
       const check = function () {
+        // An animation that iterates forever never stops running on its own:
+        // it is paused at its first frame below instead of waited out
         const running = document.getAnimations().filter(function (animation) {
-          return animation.playState === 'running';
+          return animation.playState === 'running' && animation.effect.getComputedTiming().iterations !== Infinity;
         }).length;
         quiet = running === 0 ? quiet + 1 : 0;
         if (quiet >= 2) {
+          // An indeterminate animation pauses at its first frame, so the
+          // measured and screenshotted frame is the same every time; the
+          // subtree walk reaches animations inside shadow roots too
+          document.documentElement.getAnimations({ subtree: true }).forEach(function (animation) {
+            if (animation.effect.getComputedTiming().iterations === Infinity) {
+              animation.currentTime = 0;
+              animation.pause();
+            }
+          });
           // A dark primary paints the page in its zone's background
           if (set === 'primary' && schemeName === 'dark') {
             document.body.style.background = getComputedStyle(document.getElementById('reference')).backgroundColor;

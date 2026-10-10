@@ -118,8 +118,8 @@
     {
       "id": "context-press-focus-layer",
       "file": "component/context.js",
-      "find": "            : state.focused === true ? '_focus' : '';",
-      "replace": "            : '';",
+      "find": "          : state.focused === true ? '_focus' : '';",
+      "replace": "          : '';",
       "runner": "node",
       "test": "system.test.js",
       "testName": "the phase follows the state",
@@ -138,8 +138,8 @@
     {
       "id": "context-field-floating-populated",
       "file": "component/context.js",
-      "find": "    const raised = focused || state.populated === true;",
-      "replace": "    const raised = focused;",
+      "find": "    const raised = focused || state.populated === true || open;",
+      "replace": "    const raised = focused || open;",
       "runner": "node",
       "test": "text-input.test.js",
       "testName": "floating: the label rests in the frame, rises over the surface on focus, and stays raised once populated",
@@ -148,12 +148,12 @@
     {
       "id": "context-field-underline-hover",
       "file": "component/context.js",
-      "find": "      : hovered ? (member === 'text_input' ? 'text_input_container_hover' : 'field_container_hover') : 'field_container';",
+      "find": "      : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';",
       "replace": "      : 'field_container';",
       "runner": "node",
       "test": "select.test.js",
       "testName": "hover fills the frame with the field family",
-      "why": "a hovered field must read its hover container cell"
+      "why": "a hovered field must read its member hover container cell"
     },
     {
       "id": "enum-render-field-mode",
@@ -298,8 +298,8 @@
     {
       "id": "select-list-level",
       "file": "component/composite/select/select.js",
-      "find": "        zIndex: ctx.metric('Select', 'listLevel')",
-      "replace": "        zIndex: 1",
+      "find": "      level: ctx.metric('Select', 'listLevel')",
+      "replace": "      level: 1",
       "runner": "node",
       "test": "select.test.js",
       "testName": "a press opens the listbox below the frame",
@@ -488,8 +488,8 @@
     {
       "id": "anatomy-ripple-pressed",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: fill, opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: fill, opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "anatomy.spec.js",
       "testName": "a held press paints the state layer over a button",
@@ -528,8 +528,8 @@
     {
       "id": "measure-second-select-caret",
       "file": "component/composite/select/select.js",
-      "find": "    const caret = React.createElement(View, { style: { marginStart: iconGap } },",
-      "replace": "    const caret = React.createElement(View, { style: { display: 'none', marginStart: iconGap } },",
+      "find": "    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },",
+      "replace": "    const caret = React.createElement(View, { style: { display: 'none', marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },",
       "runner": "pw",
       "test": "measure.spec.js",
       "testName": "Select: parts match the second reference",
@@ -588,8 +588,8 @@
     {
       "id": "button-selected-surface",
       "file": "component/context.js",
-      "find": "          : state.selected === true ? '_selected'",
-      "replace": "          : state.selected === true ? '_active'",
+      "find": "    const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;",
+      "replace": "    const phase = !live ? '_disabled' : state.selected === true ? '_active' : interaction;",
       "runner": "node",
       "test": "button.test.js",
       "testName": "selected: geometry, fill and label come from the theme",
@@ -598,12 +598,12 @@
     {
       "id": "context-field-disabled-outline-border",
       "file": "component/context.js",
-      "find": "    const outline = disabled && member === 'select' ? 'select_outline_disabled' : cell('field_outline');",
+      "find": "    const outline = disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
       "replace": "    const outline = cell('field_outline');",
       "runner": "node",
       "test": "select.test.js",
       "testName": "default / disabled: frame, label, trigger, caret and message come from the theme",
-      "why": "a disabled select must read its own outline cell"
+      "why": "a disabled select or text area must read its own outline cell"
     },
     {
       "id": "focus-trigger-keyboard",
@@ -658,8 +658,8 @@
     {
       "id": "fidelity-state-cells",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: fill, opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + rest), opacity: phase === rest ? 0 : 1, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "fidelity.spec.js",
       "testName": "Button / second / light: matches the reference in every state",

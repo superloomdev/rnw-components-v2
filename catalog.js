@@ -8,6 +8,18 @@ import ButtonSample from './component/molecule/button/sample.js';
 import CheckboxSample from './component/molecule/checkbox/sample.js';
 import TextInputSample, { FRAME as TextInputFrame } from './component/molecule/text-input/sample.js';
 import SelectSample, { FRAME as SelectFrame } from './component/composite/select/sample.js';
+import IconButtonSample from './component/molecule/button/sample.icon-button.js';
+import TextAreaSample, { FRAME as TextAreaFrame } from './component/molecule/text-input/sample.text-area.js';
+import DropdownSample, { FRAME as DropdownFrame } from './component/composite/select/sample.dropdown.js';
+import RadioButtonSample from './component/molecule/radio-button/sample.js';
+import ToggleSample from './component/molecule/switch/sample.js';
+import TagSample from './component/molecule/tag/sample.js';
+import TabsSample, { FRAME as TabsFrame } from './component/composite/tabs/sample.js';
+import MenuSample, { FRAME as MenuFrame } from './component/composite/menu/sample.js';
+import ModalSample, { FRAME as ModalFrame } from './component/composite/modal/sample.js';
+import ToastNotificationSample from './component/molecule/notification/sample.toast-notification.js';
+import ProgressBarSample, { FRAME as ProgressBarFrame } from './component/molecule/progress/sample.js';
+import TooltipSample from './component/molecule/tooltip/sample.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -16,5 +28,17 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Button', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ButtonSample }),
   Object.freeze({ name: 'Checkbox', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CheckboxSample }),
   Object.freeze({ name: 'TextInput', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TextInputFrame, sample: TextInputSample }),
-  Object.freeze({ name: 'Select', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectFrame, sample: SelectSample })
+  Object.freeze({ name: 'Select', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectFrame, sample: SelectSample }),
+  Object.freeze({ name: 'IconButton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: IconButtonSample }),
+  Object.freeze({ name: 'TextArea', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TextAreaFrame, sample: TextAreaSample }),
+  Object.freeze({ name: 'Dropdown', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: DropdownFrame, sample: DropdownSample }),
+  Object.freeze({ name: 'RadioButton', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: RadioButtonSample }),
+  Object.freeze({ name: 'Toggle', family: 'Switch', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ToggleSample }),
+  Object.freeze({ name: 'Tag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSample }),
+  Object.freeze({ name: 'Tabs', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: TabsFrame, sample: TabsSample }),
+  Object.freeze({ name: 'Menu', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: MenuFrame, sample: MenuSample }),
+  Object.freeze({ name: 'Modal', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ModalFrame, sample: ModalSample }),
+  Object.freeze({ name: 'ToastNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ToastNotificationSample }),
+  Object.freeze({ name: 'ProgressBar', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: ProgressBarFrame, sample: ProgressBarSample }),
+  Object.freeze({ name: 'Tooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: TooltipSample })
 ]);

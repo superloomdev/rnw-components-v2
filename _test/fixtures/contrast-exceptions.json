@@ -6,9 +6,24 @@
   ],
   "exceptions": [
     {
+      "template": "default",
+      "token": "color.tag_label_disabled",
+      "reason": "The disabled tag's label is text-disabled (#8d8d8d on tag-container #e0e0e0, 3.02:1); a disabled component's label is WCAG-exempt, but upstream draws no aria-disabled marker on the non-interactive tag, so the gate's automatic exemption cannot see it."
+    },
+    {
       "template": "carbon",
       "token": "color.text_placeholder",
       "reason": "Carbon g10 draws placeholder text in text-placeholder, rgba(22, 22, 22, 0.4) on field-01 #f4f4f4 (2.52:1); the template reproduces the upstream value exactly (B+)."
+    },
+    {
+      "template": "carbon",
+      "token": "color.tag_label_disabled",
+      "reason": "Carbon g10 draws the disabled tag's label in text-disabled, rgba(22, 22, 22, 0.25) on layer-01 #f4f4f4 (1.72:1); the template reproduces the upstream value exactly (B+, probed on the reference page)."
+    },
+    {
+      "template": "material",
+      "token": "color.tag_label_disabled",
+      "reason": "Material 3 draws the disabled chip's label in on-surface at 38% opacity, rgba(29, 27, 32, 0.38) on a transparent container (2.34:1 against the page); the template reproduces the upstream value exactly."
     }
   ]
 }

@@ -86,9 +86,22 @@ export default function createPositioningBehaviors (deps) {
       top += alignmentAxisOffset;
     }
 
+    // The position names the point on the anchor's edge the popover anchors
+    // to; `shift` is the popover's own translation (in percents of itself) so
+    // the right edge lands there: a top popover sits its bottom edge at the
+    // point, a left one its right edge, and the cross axis centers unless an
+    // alignment names an edge
+    const shiftX = base === 'left' ? -100
+      : (base === 'top' || base === 'bottom') ? (alignment === 'start' ? 0 : alignment === 'end' ? -100 : -50)
+        : 0;
+    const shiftY = base === 'top' ? -100
+      : (base === 'left' || base === 'right') ? (alignment === 'start' ? 0 : alignment === 'end' ? -100 : -50)
+        : 0;
+
     return {
       position: { top: top, left: left },
-      actualPlacement: actualPlacement
+      actualPlacement: actualPlacement,
+      shift: { x: shiftX, y: shiftY }
     };
 
   }
@@ -122,7 +135,9 @@ export default function createPositioningBehaviors (deps) {
     const alignmentAxisOffset = options.alignmentAxisOffset === undefined ? 0 : options.alignmentAxisOffset;
     const [state, setState] = React.useState({
       position: null,
-      actualPlacement: placement
+      actualPlacement: placement,
+      shift: null,
+      anchor: null
     });
 
     const measure = React.useCallback(function () {
@@ -141,7 +156,9 @@ export default function createPositioningBehaviors (deps) {
         const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset);
         setState({
           position: computed.position,
-          actualPlacement: computed.actualPlacement
+          actualPlacement: computed.actualPlacement,
+          shift: computed.shift,
+          anchor: { width: rect.width, height: rect.height }
         });
         return;
       }
@@ -166,18 +183,66 @@ export default function createPositioningBehaviors (deps) {
           const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset);
           setState({
             position: computed.position,
-            actualPlacement: computed.actualPlacement
+            actualPlacement: computed.actualPlacement,
+            shift: computed.shift,
+            anchor: { width: rect.width, height: rect.height }
           });
         });
       }
 
     }, [options.anchor, options.source, placement, offset, flip, alignmentAxisOffset]);
 
+    // A fixed surface does not scroll with its anchor: while tracking, every
+    // scroll (any ancestor, so capture) or viewport resize re-measures it
+    React.useEffect(function () {
+      if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
+          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+        return undefined;
+      }
+      window.addEventListener('scroll', measure, true);
+      window.addEventListener('resize', measure);
+      return function () {
+        window.removeEventListener('scroll', measure, true);
+        window.removeEventListener('resize', measure);
+      };
+    }, [options.track, measure]);
+
     return {
       position: state.position,
       actualPlacement: state.actualPlacement,
+      shift: state.shift,
+      anchor: state.anchor,
       measure: measure
     };
+
+  }
+
+  /********************************************************************
+  The viewport's live size. A fixed layer sized to the screen reads it
+  here: a component never touches `window` itself, and on a platform with
+  no window the answer is the zero box.
+  *********************************************************************/
+  function useViewportSize () {
+
+    const [size, setSize] = React.useState(function () {
+      return defaultSource().viewport;
+    });
+
+    React.useEffect(function () {
+      if (platform.os !== 'web' || typeof window === 'undefined' ||
+          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+        return undefined;
+      }
+      const onResize = function () {
+        setSize(defaultSource().viewport);
+      };
+      window.addEventListener('resize', onResize);
+      return function () {
+        window.removeEventListener('resize', onResize);
+      };
+    }, []);
+
+    return size;
 
   }
 
@@ -290,7 +355,8 @@ export default function createPositioningBehaviors (deps) {
   return {
     getAnchoredPosition: getAnchoredPosition,
     useAnchoredPosition: useAnchoredPosition,
-    usePopoverDismiss: usePopoverDismiss
+    usePopoverDismiss: usePopoverDismiss,
+    useViewportSize: useViewportSize
   };
 
 }

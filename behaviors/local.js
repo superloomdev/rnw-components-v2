@@ -181,9 +181,11 @@ export default function createLocalBehaviors (deps) {
   function useInteractionState (options) {
 
     const [focused, setFocused] = React.useState(false);
+    const [focusVisible, setFocusVisible] = React.useState(false);
     const [hovered, setHovered] = React.useState(false);
     const [pressed, setPressed] = React.useState(false);
     const disabled = options.disabled === true;
+    const pointerRef = React.useRef(false);
 
     const liveRef = React.useRef(null);
     liveRef.current = {
@@ -202,8 +204,10 @@ export default function createLocalBehaviors (deps) {
     React.useEffect(function () {
       if (disabled) {
         setFocused(false);
+        setFocusVisible(false);
         setHovered(false);
         setPressed(false);
+        pointerRef.current = false;
       }
     }, [disabled]);
 
@@ -260,6 +264,8 @@ export default function createLocalBehaviors (deps) {
       if (live.disabled) {
         return;
       }
+      setFocusVisible(!pointerRef.current);
+      pointerRef.current = false;
       setFocused(true);
       if (typeof live.onFocus === 'function') {
         live.onFocus(event);
@@ -269,6 +275,8 @@ export default function createLocalBehaviors (deps) {
     const onBlur = React.useCallback(function (event) {
       const live = liveRef.current;
       setFocused(false);
+      setFocusVisible(false);
+      pointerRef.current = false;
       if (typeof live.onBlur === 'function') {
         live.onBlur(event);
       }
@@ -283,10 +291,14 @@ export default function createLocalBehaviors (deps) {
         onHoverIn: onHoverIn,
         onHoverOut: onHoverOut,
         onFocus: onFocus,
-        onBlur: onBlur
+        onBlur: onBlur,
+        onPointerDown: function () {
+          pointerRef.current = true;
+        }
       },
       state: {
         focused: focused,
+        focusVisible: focusVisible,
         hovered: hovered,
         pressed: pressed,
         disabled: disabled
@@ -295,7 +307,7 @@ export default function createLocalBehaviors (deps) {
 
   }
 
-  useInteractionState.stateKeys = ['focused', 'hovered', 'pressed', 'disabled'];
+  useInteractionState.stateKeys = ['focused', 'focusVisible', 'hovered', 'pressed', 'disabled'];
 
 
   /********************************************************************

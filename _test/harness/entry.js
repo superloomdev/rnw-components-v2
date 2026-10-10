@@ -51,8 +51,13 @@ window.addEventListener('error', function (event) {
 let Registry;
 try {
   const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native');
+  // The page paints the scheme's background behind every cell, as the
+  // reference page does for a system whose surface is not white
+  document.body.style.background = built.tokens['color.background'];
   if (schemeName === 'dark') {
-    document.body.style.background = built.tokens['color.background'];
+    // The page declares its scheme so platform chrome (focus rings, scrollbars)
+    // resolves the same dark user-agent colors the upstream's does
+    document.documentElement.style.colorScheme = 'dark';
   }
   // The built tokens the page draws with, for a gate that samples pixels against them
   status.theme = built.tokens;
@@ -66,20 +71,35 @@ The cell body style: in measurement mode a component whose reference
 fills its container gets a block body of the reference's width on both
 pages; otherwise a component whose sample names a frame is laid out in
 it, as every host's showcase does; every other body keeps the
-shrink-to-fit layout.
+shrink-to-fit layout. A frame with `stage` also makes the body the
+containing block of a fixed layer, so an overlay component paints its
+layer inside the cell it was mounted in.
 
-@param {String} name - Component name
+@param {Object} frame - { width, height?, stage? }
 
-@return {Object|undefined} - Inline style
+@return {Object} - Inline style
 *********************************************************************/
+function frameStyle (frame) {
+
+  const style = { display: 'block', width: frame.width + 'px' };
+  if (typeof frame.height === 'number') {
+    style.height = frame.height + 'px';
+  }
+  if (frame.stage === true) {
+    style.transform = 'translateZ(0)';
+  }
+  return style;
+
+}
+
 function bodyStyle (name) {
 
   const reference = references[name];
   if (measuring && reference && reference.body) {
-    return { display: 'block', width: reference.body.width + 'px' };
+    return frameStyle(reference.body);
   }
   if (frames[name]) {
-    return { display: 'block', width: frames[name].width + 'px' };
+    return frameStyle(frames[name]);
   }
 
   return undefined;
@@ -121,7 +141,9 @@ function Showcase () {
         React.createElement('h2', null, family),
         React.createElement('div', { className: 'grid' },
           families[family].flatMap(function (name) {
-            return (samples[name] || []).map(function (state) {
+            return (samples[name] || []).filter(function (state) {
+              return state.cell !== false;
+            }).map(function (state) {
               return React.createElement(Cell, { key: name + '/' + state.label, name: name, state: state });
             });
           })));
@@ -141,6 +163,14 @@ if (Registry) {
           return face.status === 'loaded';
         }).map(function (face) {
           return face.family.replace(/"/g, '') + ' ' + face.weight;
+        });
+        // An indeterminate animation pauses at its first frame, so the
+        // measured and screenshotted frame is the same every time
+        document.documentElement.getAnimations({ subtree: true }).forEach(function (animation) {
+          if (animation.effect.getComputedTiming().iterations === Infinity) {
+            animation.currentTime = 0;
+            animation.pause();
+          }
         });
         status.ready = true;
       });

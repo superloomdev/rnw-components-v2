@@ -125,7 +125,8 @@ export default function createControlsBehaviors (deps) {
         hovered: hovered,
         disabled: disabled,
         invalid: invalid,
-        populated: Utils.isString(value) && !Utils.isEmptyString(value)
+        populated: Utils.isString(value) && !Utils.isEmptyString(value),
+        value: value
       };
     }, [focused, hovered, disabled, invalid, value]);
 
@@ -170,7 +171,7 @@ export default function createControlsBehaviors (deps) {
 
   }
 
-  useTextField.stateKeys = ['focused', 'hovered', 'disabled', 'invalid', 'populated'];
+  useTextField.stateKeys = ['focused', 'hovered', 'disabled', 'invalid', 'populated', 'value'];
 
   /********************************************************************
   Button behavior: press, hover, focus, selected, disabled.
@@ -346,7 +347,7 @@ export default function createControlsBehaviors (deps) {
 
     const items = Array.isArray(props.items) ? props.items : [];
 
-    const [open, setOpen] = useState(false);
+    const [openState, setOpenState] = useState(false);
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -355,6 +356,7 @@ export default function createControlsBehaviors (deps) {
     const labelId = useId();
     const listId = useId();
     const disabled = props.disabled === true;
+    const open = props.open === undefined ? openState : props.open === true;
 
     const selectedIndex = props.value === undefined
       ? internalIndex
@@ -362,28 +364,79 @@ export default function createControlsBehaviors (deps) {
         return item.value === props.value;
       });
 
+    // Open and close report the next state through onOpenChange, whether the
+    // caller holds `open` or the control keeps it
+    const setOpen = useCallback(function (next) {
+      setOpenState(next);
+      if (typeof props.onOpenChange === 'function') {
+        props.onOpenChange(next);
+      }
+    }, [props.onOpenChange]);
+
+    // Opening lands the highlight on the selection; a keyboard open falls to
+    // the first enabled option while a pointer open highlights nothing
+    const openList = useCallback(function (firstOnEmpty) {
+      setOpen(true);
+      setHighlightedIndex(function (current) {
+        if (current >= 0) {
+          return current;
+        }
+        if (selectedIndex >= 0) {
+          return selectedIndex;
+        }
+        if (firstOnEmpty !== true) {
+          return -1;
+        }
+        for (let index = 0; index < items.length; index = index + 1) {
+          const item = items[index];
+          if (item && item.disabled !== true) {
+            return index;
+          }
+        }
+
+        return -1;
+      });
+    }, [setOpen, selectedIndex, items]);
+
     const commit = useCallback(function (index) {
+      const item = items[index];
+      if (!item || item.disabled === true) {
+        return;
+      }
       setInternalIndex(index);
       setOpen(false);
-      if (props.onChange && items[index]) {
-        props.onChange(items[index].value);
+      if (props.onChange) {
+        props.onChange(item.value);
       }
-    }, [items, props.onChange]);
+    }, [items, props.onChange, setOpen]);
+
+    // An open list carries the highlight on the selection when the pointer
+    // has not moved it, matching the reference's opened state; a mounted
+    // `open` lands there without an `openList` call to set it
+    const highlighted = highlightedIndex >= 0 ? highlightedIndex
+      : open && selectedIndex >= 0 ? selectedIndex : -1;
 
     const move = useCallback(function (delta) {
       setHighlightedIndex(function (current) {
         if (Utils.isEmptyArray(items)) {
           return -1;
         }
-        const next = current + delta;
-        if (next < 0) {
-          return items.length - 1;
-        }
-        if (next >= items.length) {
-          return 0;
+        let next = current >= 0 ? current : highlighted;
+        for (let steps = 0; steps < items.length; steps = steps + 1) {
+          next = next + delta;
+          if (next < 0) {
+            next = items.length - 1;
+          }
+          if (next >= items.length) {
+            next = 0;
+          }
+          const item = items[next];
+          if (!item || item.disabled !== true) {
+            return next;
+          }
         }
 
-        return next;
+        return current;
       });
     }, [items]);
 
@@ -393,13 +446,21 @@ export default function createControlsBehaviors (deps) {
         return;
       }
       if (key === 'ArrowDown') {
-        setOpen(true);
+        if (!open) {
+          openList(true);
+
+          return;
+        }
         move(1);
 
         return;
       }
       if (key === 'ArrowUp') {
-        setOpen(true);
+        if (!open) {
+          openList(true);
+
+          return;
+        }
         move(-1);
 
         return;
@@ -411,15 +472,15 @@ export default function createControlsBehaviors (deps) {
       }
       if (key === 'Enter' || key === ' ') {
         if (!open) {
-          setOpen(true);
+          openList(true);
 
           return;
         }
-        if (highlightedIndex >= 0) {
-          commit(highlightedIndex);
+        if (highlighted >= 0) {
+          commit(highlighted);
         }
       }
-    }, [disabled, open, highlightedIndex, move, commit]);
+    }, [disabled, open, highlighted, move, commit, openList, setOpen]);
 
     const state = useMemo(function () {
       return {
@@ -428,9 +489,9 @@ export default function createControlsBehaviors (deps) {
         hovered: hovered,
         disabled: disabled,
         selectedIndex: selectedIndex,
-        highlightedIndex: highlightedIndex
+        highlightedIndex: highlighted
       };
-    }, [open, focused, hovered, disabled, selectedIndex, highlightedIndex]);
+    }, [open, focused, hovered, disabled, selectedIndex, highlighted]);
 
     return {
       rootProps: {},
@@ -443,7 +504,12 @@ export default function createControlsBehaviors (deps) {
         disabled: disabled,
         onKeyDown: onKeyDown,
         onPress: disabled ? undefined : function () {
-          setOpen(!open);
+          if (open) {
+            setOpen(false);
+
+            return;
+          }
+          openList();
         },
         onPointerEnter: function () {
           setHovered(true);
@@ -461,13 +527,15 @@ export default function createControlsBehaviors (deps) {
       listProps: { nativeID: listId, accessibilityRole: 'listbox' },
       labelProps: { nativeID: labelId },
       getOptionProps: function (index) {
+        const itemDisabled = items[index] !== undefined && items[index].disabled === true;
         return {
           accessibilityRole: 'option',
           'aria-selected': index === selectedIndex,
-          onPress: function () {
+          disabled: itemDisabled ? true : undefined,
+          onPress: itemDisabled ? undefined : function () {
             commit(index);
           },
-          onPointerEnter: function () {
+          onPointerEnter: itemDisabled ? undefined : function () {
             setHighlightedIndex(index);
           }
         };

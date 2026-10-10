@@ -12,16 +12,92 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 - **Placeholder.** While nothing is selected the trigger holds the placeholder. Under a floating label it is never drawn, open or not, as the second reference's select draws none; it stays in the element tree, so assistive technology hears the same trigger under every template.
 - **Width.** The trigger is as wide as its widest text (the placeholder or any option), as a platform select is, so the frame keeps one width whatever is selected. A hidden sizer holding those texts sets it; it takes no height and is hidden from assistive technology.
 - **Indicator.** The trailing indicator is the theme's `dropdown_indicator` icon role in the field's indicator cell for the state: the primary reference's chevron in one template, the second reference's own ten-by-five drop-down drawing in another. Which glyph a part shows is template data, so the select names the role and never a shape. The frame's trailing padding is the theme's `control.field_icon_inset`, the gap before the indicator `control.field_icon_gap`.
-- **List.** While open, the options are laid out directly below the frame, spanning its width, on the first layer at the dropdown stacking level with the second shadow level, each option in the field value type set. The selected option fills with `layer_selected_01`, the highlighted one with `layer_hover_01`. The list closes on selection, on Escape and on a second press of the trigger.
+- **List.** While open, the options are laid out directly below the frame, spanning its width, on the theme's `list_container` fill at the `dropdown` stacking level with the `list` shadow and `control.list_radius`, each option at `control.list_item_height` in the `list_item` type set with the `list_item` label and container cells for its state. The selected option fills with `list_item_container_selected`, the highlighted one with `list_item_container_hover`, a pressed one with `list_item_container_active`. The list closes on selection, on Escape and on a second press of the trigger.
 - **Keyboard.** Arrow keys open the list and move the highlight, Enter and Space open it or commit the highlighted option, Escape closes it; all of this is the select behavior's.
 - **Invalid.** An invalid select shows the `invalid` icon role in the field's invalid icon cell before the indicator and the error message below; a disabled select is never invalid.
-- **Geometry is the template's.** The height, corner radius and icon size are `control.field_height`, `control.field_radius` and `control.field_icon_size` (and the option row height `control.option_height`); the frame, label and text are the `field` role cells, so each template draws its own field. Measured against both references in every sample state, in hover, focus and pressed, in light and dark.
+- **Geometry is the template's.** The height, corner radius and icon size are `control.field_height`, `control.field_radius` and `control.field_icon_size` (and the option row height `control.list_item_height`); the frame, label and text are the `field` role cells, so each template draws its own field. Measured against both references in every sample state, in hover, focus and pressed, in light and dark.
+
+### Dropdown
+
+The select family's other member: the same field frame, trigger, label and message, but the open list reads the theme's `list` role cells in full - its container, item heights, dividers inside the inline padding, label colors by state, block padding, radius and shadow - and marks the selected item with the `selected_indicator` icon where `anatomy.list_selected_mark` says so (shown under the primary reference's template, hidden under the second's). The mark's seat mounts on every item under every template and only its drawing changes, so the accessibility tree is the same everywhere. The indicator turns 180 degrees while open. `open` is controllable like `value`, reporting through `onOpenChange`.
 
 ### Platform
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.
 
 The select fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, its trigger grows from the hidden sizer (the widest option), the same on every platform, never from zero.
+
+## Dropdown
+
+Dropdown draws the select family's field frame around a trigger that opens an option list drawn on the theme's list role cells, turning its indicator while open and marking the selected item as anatomy.list_selected_mark says; every color, width, space and type set of the frame comes from the theme's field role cells.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `anatomy.list_selected_mark`, `feedback.field` |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | Options, each `{ value, label, disabled? }`; `value` is unique. A disabled option is announced and cannot be chosen. |
+| `label` | `string` | no | Visible label; it names the dropdown. Without it, pass `accessibilityLabel`. |
+| `placeholder` | `string` | no | Text shown while nothing is selected. |
+| `value` | `string` | no | Controlled selected value. Absent: the dropdown keeps its own selection, starting empty. |
+| `onChange` | `function` | no | Called with the selected option's value. |
+| `open` | `boolean` | no | Controlled open state of the list. Absent: the dropdown opens and closes itself. |
+| `onOpenChange` | `function` | no | Called with the next open state whenever the list opens or closes. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `disabled` | `boolean` | no | Disables opening, draws the disabled colors and announces the dropdown as disabled. |
+| `invalid` | `boolean` | no | Draws the error border and icon, shows `invalidText` and announces the dropdown as invalid. |
+| `invalidText` | `string` | no | Message shown below while `invalid`. |
+| `helperText` | `string` | no | Message shown below while not `invalid`. |
+| `surface` | `string` | no | Color leaf of the surface the dropdown sits on; a floating label occludes the border with it. Default: config `FIELD_SURFACE`, else `background`. |
+| `accessibilityLabel` | `string` | no | Accessible name when there is no visible label. |
+| `testID` | `string` | no | Test identifier forwarded to the trigger. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `iconZone` | `size.size_xsmall` |
+| `iconInset` | `spacing.spacing_04` |
+| `iconGapEnd` | `spacing.spacing_02` |
+| `labelInset` | `spacing.spacing_01` |
+| `restingEdge` | `control.field_outline_width` |
+| `itemPaddingInline` | `control.list_item_padding_inline` |
+| `itemDividerWidth` | `control.list_item_divider_width` |
+| `itemMarkRoom` | `spacing.spacing_06` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
+| `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
+| `markSize` | `control.field_icon_size` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}]}` |
+| selected | `{"label":"Size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"value":"medium"}` |
+| helper | `{"label":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"helperText":"Helper text"}` |
+| invalid | `{"label":"Size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"invalid":true,"invalidText":"Choose a size"}` |
+| disabled | `{"label":"Size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"value":"small","disabled":true}` |
+| small | `{"label":"Size","placeholder":"Small","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"sm"}` |
+| large | `{"label":"Size","placeholder":"Large","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"lg"}` |
+| unlabelled | `{"accessibilityLabel":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}]}` |
+| open | `{"label":"Size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"value":"medium","open":true}` |
 
 ## Select
 
@@ -45,6 +121,8 @@ Select draws the field frame it shares with TextInput around a trigger that open
 | `placeholder` | `string` | no | Text shown while nothing is selected. |
 | `value` | `string` | no | Controlled selected value. Absent: the select keeps its own selection, starting empty. |
 | `onChange` | `function` | no | Called with the selected option's value. |
+| `open` | `boolean` | no | Controlled open state of the list. Absent: the select opens and closes itself. |
+| `onOpenChange` | `function` | no | Called with the next open state whenever the list opens or closes. |
 | `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
 | `disabled` | `boolean` | no | Disables opening, draws the disabled colors and announces the select as disabled. |
 | `invalid` | `boolean` | no | Draws the error border and icon, shows `invalidText` and announces the select as invalid. |
@@ -63,9 +141,13 @@ Select draws the field frame it shares with TextInput around a trigger that open
 | `heightLarge` | `size.size_large` |
 | `radius` | `control.field_radius` |
 | `iconSize` | `control.field_icon_size` |
-| `optionPadding` | `control.field_padding_inline` |
-| `optionHeight` | `control.option_height` |
+| `itemHeight` | `control.list_item_height` |
+| `itemPaddingInline` | `control.list_item_padding_inline` |
+| `itemDividerWidth` | `control.list_item_divider_width` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
 | `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
 
 Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 

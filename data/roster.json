@@ -250,7 +250,7 @@
       "material_twin": "md-icon-button",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TextArea",
@@ -261,13 +261,14 @@
         "version": "1.115.0",
         "export": "TextArea"
       },
-      "description": "TextArea is a component in the TextInput family.",
+      "description": "TextArea draws a label, a multi-line field frame of `rows` value lines and a helper or error message, with an optional character counter placed by anatomy.field_counter; the frame is drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells plus the text_area member cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
+        "anatomy.field_counter",
         "feedback.field"
       ],
       "behaviors": [
@@ -282,7 +283,7 @@
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Dropdown",
@@ -293,13 +294,14 @@
         "version": "1.115.0",
         "export": "Dropdown"
       },
-      "description": "Dropdown is a component in the Select family.",
+      "description": "Dropdown draws the select family's field frame around a trigger that opens an option list drawn on the theme's list role cells, turning its indicator while open and marking the selected item as anatomy.list_selected_mark says; every color, width, space and type set of the frame comes from the theme's field role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
+        "anatomy.list_selected_mark",
         "feedback.field"
       ],
       "behaviors": [
@@ -316,7 +318,7 @@
       "material_twin": "md-outlined-select",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "RadioButton",
@@ -327,7 +329,7 @@
         "version": "1.115.0",
         "export": "RadioButton"
       },
-      "description": "RadioButton is a component in the RadioButton family.",
+      "description": "RadioButton draws a labeled radio: a ring the theme sizes with control.radio_* member cells beside the selection family's outline, fill, layer and focus cells, with a dot drawn when checked; grouped radios share one selection with roving tab index.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -346,7 +348,7 @@
       "material_twin": "md-radio",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Toggle",
@@ -357,13 +359,14 @@
         "version": "1.115.0",
         "export": "Toggle"
       },
-      "description": "Toggle is a component in the Switch family.",
+      "description": "Toggle draws a labeled switch: a track and a sliding handle whose size follows anatomy.switch_handle, an optional checked mark and state text as anatomy.switch_state_text says, and every track, handle, outline, layer and focus color from the theme's switch role cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.switch_handle",
+        "anatomy.switch_state_text",
         "feedback.press"
       ],
       "behaviors": [
@@ -379,18 +382,18 @@
       "material_twin": "md-switch",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tag",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "Tag"
       },
-      "description": "Tag is a component in the Tag family.",
+      "description": "Tag draws a non-interactive pill holding an optional leading icon and one line of text, its container, label, icon and outline from the theme's tag role cells; a type prop picks one of the theme's ten hue cells; it is a molecule because it composes Icon.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -403,10 +406,10 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tag",
-      "material_twin": "md-chip",
+      "material_twin": "md-assist-chip",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tabs",
@@ -417,7 +420,7 @@
         "version": "1.115.0",
         "export": "Tabs"
       },
-      "description": "Tabs is a component in the Tabs family.",
+      "description": "Tabs draws a row of tab labels on a track with roving focus; the selected tab draws the theme's indicator as its own bottom edge and the contained variant seats each label by the theme's tab_contained_* cells.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -436,7 +439,7 @@
       "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Menu",
@@ -447,7 +450,7 @@
         "version": "1.115.0",
         "export": "Menu"
       },
-      "description": "Menu is a component in the Menu family.",
+      "description": "Menu is a list of menu items and separators that opens at a point, roves focus over the arrows and closes on Escape, Tab, outside press or choice.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -466,7 +469,7 @@
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Modal",
@@ -477,7 +480,7 @@
         "version": "1.115.0",
         "export": "Modal"
       },
-      "description": "Modal is a component in the Modal family.",
+      "description": "Modal is a dialog on a scrim layer: a header, a body, an actions row and a close button, with Escape, focus trapping and outside-press dismissal.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -498,7 +501,7 @@
       "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToastNotification",
@@ -509,7 +512,7 @@
         "version": "1.115.0",
         "export": "ToastNotification"
       },
-      "description": "ToastNotification is a component in the Notification family.",
+      "description": "ToastNotification is a status band: a marker and status icon, a title, a subtitle, an optional caption and action, and a close button.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -527,23 +530,25 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ProgressBar",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "ProgressBar"
       },
-      "description": "ProgressBar is a component in the Progress family.",
+      "description": "ProgressBar draws a labeled track with a determinate or indeterminate indicator and a helper or status line, the indeterminate motion chosen by anatomy.progress_indeterminate and every color, height and radius from the theme's progress role cells; it is a molecule because it composes Icon for its status marks.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
+      "enums": [
+        "anatomy.progress_indeterminate"
+      ],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -554,7 +559,7 @@
       "material_twin": "md-linear-progress",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tooltip",

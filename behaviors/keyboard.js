@@ -42,14 +42,21 @@ export default function createKeyboardBehaviors (deps) {
         return undefined;
       }
 
-      const resolvedSource = Utils.isNullOrUndefined(source)
-        ? (typeof document === 'undefined' ? undefined : document)
-        : source;
+      const explicit = !Utils.isNullOrUndefined(source);
+      const resolvedSource = explicit
+        ? source
+        : (typeof document === 'undefined' ? undefined : document);
       if (Utils.isNullOrUndefined(resolvedSource)) {
         return undefined;
       }
       if (typeof resolvedSource.addEventListener !== 'function' ||
           typeof resolvedSource.removeEventListener !== 'function') {
+        // A caller-supplied source that cannot take listeners is a
+        // programmer error; a document without listener APIs is a host
+        // that cannot dispatch Escape, so there is nothing to listen for.
+        if (!explicit) {
+          return undefined;
+        }
         throw new TypeError('useEscapeKey: source must provide addEventListener and removeEventListener');
       }
 

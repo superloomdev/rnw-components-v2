@@ -20,6 +20,80 @@ Both. The input renders on iOS, Android and web; hover feedback appears only whe
 
 The field fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, the field takes the platform's intrinsic input width: the browser's default input width on the web, the width of its text natively. The input grows from that width rather than from zero, so it never collapses to its padding.
 
+## TextArea
+
+A multi-line field, the same family frame grown to `rows` value lines: a label row, a frame holding a `textarea` (and an error icon anchored at its top end while invalid), and a message row below. It composes `useTextField` like its sibling and reads the field presentation as member `text_area`, so its hover fill is `text_area_container_hover`, its disabled outline `text_area_outline_disabled` and its value type `text_area_value`.
+
+### Decisions
+
+- **Height.** The frame carries no fixed height: `rows` (default 4) sizes the textarea and `minHeight` holds the field height as a floor. The frame's block padding is the room one `field_value` line takes centered in that floor - `(field_height - lineHeight) / 2`, which lands both references' own numbers (11 against 40/18, 16 against 56/24).
+- **Counter.** `maxCount` shows a `count/maxCount` counter and caps the input length. `anatomy.field_counter` picks the seat: `label` puts it beside the label (in the label type and color), `message` puts it at the supporting row's end (in the helper type and color). Both seats mount whenever a counter exists and only the theme's is displayed, so the element tree never depends on the template.
+- **Icon.** The invalid icon sits absolute at the frame's top end (`spacing.spacing_04` down, the icon inset in), the way the primary reference anchors it.
+- **One element tree.** The label row and the message row keep their places under every template; placement moves styles, not elements.
+- **Resize.** The primary reference lets the field resize vertically; the web textarea keeps the platform default here and the difference is left to the screenshots.
+
+### Platform
+
+Both. The input renders on iOS, Android and web; hover feedback appears only where a pointer exists.
+
+## TextArea
+
+TextArea draws a label, a multi-line field frame of `rows` value lines and a helper or error message, with an optional character counter placed by anatomy.field_counter; the frame is drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells plus the text_area member cells.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `anatomy.field_counter`, `feedback.field` |
+| Behaviors | `controllable-state` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | Visible label; it names the field. Without it, pass `accessibilityLabel`. |
+| `placeholder` | `string` | no | Hint shown in the empty field. Under a floating label it shows once the label has risen. |
+| `value` | `string` | no | Controlled value. Absent: the field keeps its own value, starting empty. |
+| `onChangeText` | `function` | no | Called with the next text on every change. |
+| `rows` | `number` | no | Value lines the field shows without scrolling. Default 4. |
+| `maxCount` | `number` | no | Character limit; shows the counter where `anatomy.field_counter` puts it and caps the input length. |
+| `disabled` | `boolean` | no | Makes the field read-only, draws the disabled colors and announces it as disabled. |
+| `invalid` | `boolean` | no | Draws the error border and icon, shows `invalidText` and announces the field as invalid. |
+| `invalidText` | `string` | no | Message shown below while `invalid`. |
+| `helperText` | `string` | no | Message shown below while not `invalid`. |
+| `surface` | `string` | no | Color leaf of the surface the field sits on; a floating label occludes the border with it. Default: config `FIELD_SURFACE`, else `background`. |
+| `accessibilityLabel` | `string` | no | Accessible name when there is no visible label. |
+| `onFocus` | `function` | no | Called when the input gains focus. |
+| `onBlur` | `function` | no | Called when the input loses focus. |
+| `testID` | `string` | no | Test identifier forwarded to the input. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `minHeight` | `control.field_height` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `iconInsetEnd` | `control.field_icon_inset` |
+| `iconInsetTop` | `spacing.spacing_04` |
+| `messageInset` | `control.field_message_inset` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Label","placeholder":"Placeholder"}` |
+| filled | `{"label":"Label","value":"Filled value"}` |
+| helper | `{"label":"Label","placeholder":"Placeholder","helperText":"Helper text"}` |
+| invalid | `{"label":"Label","value":"Wrong value","invalid":true,"invalidText":"Enter a valid value"}` |
+| disabled | `{"label":"Label","value":"Disabled value","disabled":true}` |
+| counter | `{"label":"Label","value":"I am","maxCount":100}` |
+| unlabelled | `{"accessibilityLabel":"Notes","placeholder":"Notes"}` |
+
 ## TextInput
 
 TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells.

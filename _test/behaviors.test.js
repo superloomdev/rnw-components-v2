@@ -46,7 +46,7 @@ const EXPECTED_NAMES = [
   'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
   'usePopoverDismiss', 'usePressKeys', 'useReducedMotion', 'useResponsiveStack',
   'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useTabsState', 'useTextField',
-  'useTimePickerDraft', 'useTimedFlag'
+  'useTimePickerDraft', 'useTimedFlag', 'useViewportSize'
 ];
 
 // Hooks that own no state and therefore return no `state`. Each is named with
@@ -64,7 +64,8 @@ const STATELESS_HOOKS = {
   usePopoverDismiss: 'object',
   usePressKeys: 'object',
   useRovingTabIndex: 'object',
-  useSectionLevel: 'number'
+  useSectionLevel: 'number',
+  useViewportSize: 'object'
 };
 
 // Minimal props per state-owning hook so the probe renders without throwing.
@@ -229,7 +230,8 @@ describe('behaviors: stateless hooks return the declared kind', function () {
     usePopoverDismiss: [{}],
     usePressKeys: [{}],
     useRovingTabIndex: [{ count: 2 }],
-    useSectionLevel: []
+    useSectionLevel: [],
+    useViewportSize: []
   };
 
   for (const name of Object.keys(STATELESS_HOOKS)) {

@@ -92,7 +92,11 @@ export function findDisagreements (ours, upstream, parts, extra, skip) {
         return u[property] !== undefined && o[property] !== undefined && !(parts[part].compare || []).includes(property);
       });
       const compared = (parts[part].compare ? parts[part].compare.concat(added) : Object.keys(u)).filter(function (property) {
-        return property !== 'visible' && property !== 'characters' && property.charAt(0) !== '_';
+        // An extra property is compared only where both sides read it; a part
+        // whose kind differs (a painted box against an inked path) reads
+        // different extras, and a one-sided extra is not a disagreement
+        const oneSidedExtra = (extra || []).includes(property) && (u[property] === undefined || o[property] === undefined);
+        return property !== 'visible' && property !== 'characters' && property.charAt(0) !== '_' && !oneSidedExtra && !(parts[part].except || []).includes(property);
       });
       // A text's width is compared net of a tracking difference, which is reported on its own:
       // a reference that draws no tracking still has to place and size the text where we do.
@@ -108,10 +112,30 @@ export function findDisagreements (ours, upstream, parts, extra, skip) {
       for (const property of compared) {
         // A border color is compared only where a border is drawn
         const undrawn = property === 'borderBottomColor' && parseFloat(o.borderBottomWidth) === 0 && parseFloat(u.borderBottomWidth) === 0;
+        const slack = property === 'width' && tracking > 0 ? tracking : 0;
+        // A corner radius is compared by the arc it draws: a cap at half the
+        // box is the same circle as a '50%' rule, whichever side writes it
+        if (/Radius$/.test(property)) {
+          const arc = function (value, box) {
+            const percent = /^(-?[0-9.]+)%$/.exec(String(value));
+            if (percent) {
+              return parseFloat(percent[1]) * Math.min(parseFloat(box.width), parseFloat(box.height)) / 100;
+            }
+            const px = parseFloat(value);
+            return isNaN(px) ? NaN : Math.min(px, Math.min(parseFloat(box.width), parseFloat(box.height)) / 2);
+          };
+          const oArc = arc(o[property], o);
+          const uArc = arc(u[property], u);
+          if (!isNaN(oArc) && !isNaN(uArc)) {
+            if (Math.abs(oArc - uArc) > TOLERANCE + (slack || 0)) {
+              lines.push(state + ' / ' + part + ' / ' + property + ': ' + o[property] + ' here, ' + u[property] + ' upstream');
+            }
+            continue;
+          }
+        }
         if (typeof skip === 'function' && skip(state, part, property, o, u)) {
           continue;
         }
-        const slack = property === 'width' && tracking > 0 ? tracking : 0;
         if (!undrawn && !agrees(property, o[property], u[property], slack)) {
           lines.push(state + ' / ' + part + ' / ' + property + ': ' + o[property] + ' here, ' + u[property] + ' upstream');
         }

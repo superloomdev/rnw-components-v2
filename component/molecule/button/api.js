@@ -13,6 +13,7 @@ export default Object.freeze({
     icon: { type: 'string', required: false, description: 'Semantic icon name drawn at the trailing edge; decorative, the label names the button.' },
     disabled: { type: 'boolean', required: false, description: 'Disables press, hover and focus feedback and announces the button as disabled.' },
     selected: { type: 'boolean', required: false, description: 'Draws the selected fill and label of the kind while true, for a button that toggles.' },
+    fill: { type: 'boolean', required: false, description: 'Stretches the button to fill its seat instead of sizing to its height cell (the dialog\'s stretched actions).' },
     onPress: { type: 'function', required: false, description: 'Called on activation (press, Enter, Space).' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when the label alone does not say what the button does.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }

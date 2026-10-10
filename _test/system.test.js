@@ -319,12 +319,12 @@ describe('context: pressPresentation', function () {
   const t = buildNative('default').tokens;
   const easing = 'cubic-bezier(' + t['motion.easing_standard_productive'].join(', ') + ')';
 
-  test('the phase follows the state: disabled, pressed, hovered, selected, focused, rest', function () {
+  test('the phase follows the state: disabled, selected, pressed, hovered, focused, rest', function () {
     const ctx = probeWith({});
     assert.equal(ctx.pressPresentation({}, prefix).phase, '');
     assert.equal(ctx.pressPresentation({ focused: true }, prefix).phase, '_focus');
     assert.equal(ctx.pressPresentation({ focused: true, selected: true }, prefix).phase, '_selected');
-    assert.equal(ctx.pressPresentation({ hovered: true, selected: true }, prefix).phase, '_hover');
+    assert.equal(ctx.pressPresentation({ hovered: true, selected: true }, prefix).phase, '_selected');
     assert.equal(ctx.pressPresentation({ hovered: true, pressed: true }, prefix).phase, '_active');
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).phase, '_disabled');
   });

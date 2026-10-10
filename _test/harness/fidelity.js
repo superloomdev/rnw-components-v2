@@ -18,7 +18,7 @@
 import { PNG } from 'pngjs';
 
 import { findDisagreements } from './compare.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, shootCell } from './page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, shootCell, shootPart } from './page.js';
 import { perceptualRatio } from './perceptual.js';
 import { decode } from './pixels.js';
 
@@ -36,8 +36,8 @@ const INSIDE = Object.freeze([1, 2, 3]);
 const BELOW = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]);
 // The part a focus ring is drawn around and a shadow falls from, per component,
 // and the parts whose borders may draw a ring (their border CSS is left to the pixels while focused)
-const ANCHOR = Object.freeze({ Button: 'root', Checkbox: 'box', TextInput: 'frame', Select: 'frame' });
-const RING_PARTS = Object.freeze({ Button: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], Select: ['frame', 'edge'] });
+const ANCHOR = Object.freeze({ Button: 'root', IconButton: 'root', Checkbox: 'box', TextInput: 'frame', TextArea: 'frame', Select: 'frame' });
+const RING_PARTS = Object.freeze({ Button: ['root'], IconButton: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], TextArea: ['frame', 'edge'], Select: ['frame', 'edge'] });
 // How far outside the cell body a pixel is compared (the cell chrome lies beyond)
 const OUTSIDE = 12;
 // Properties the pixels answer instead of the CSS that draws them
@@ -107,7 +107,9 @@ function profileOf (part, shot) {
       return part._bodyX - offset < -OUTSIDE ? null : sample(MARGIN + part._bodyX - offset, centerY);
     }),
     below: BELOW.map(function (offset) {
-      return sample(MARGIN + part._bodyX + part.width - 4, MARGIN + part._bodyY + part.height - 1 + offset);
+      // The first row strictly below the box; a fractional box would otherwise
+      // let the band read the part's own bottom edge as "below"
+      return sample(MARGIN + part._bodyX + part.width - 4, MARGIN + part._bodyY + Math.ceil(part.height) - 1 + offset);
     })
   };
 
@@ -191,15 +193,18 @@ reference's, one pixel wider on each side for the antialiased edge. A mask
 whose box contains the anchor part would hide the component itself, so it
 is reported instead of applied.
 
-@param {Buffer} ours     - Our cell screenshot
-@param {Buffer} upstream - The reference cell screenshot
+@param {Buffer} ours     - Our screenshot (the cell's, or the origin element's)
+@param {Buffer} upstream - The reference screenshot of the same kind
 @param {Object} state    - Our part name -> measurement
 @param {Array}  masked   - The masked part names
 @param {String} anchor   - The anchor part name
+@param {Object} [origin] - Our origin part's measurement: the shots are framed
+                           on it, so body coordinates shift by its box
+@param {Number} [margin] - The margin the shots carry around their frame
 
 @return {Object} - { shot: PNG, lines: descriptions of rejected masks }
 *********************************************************************/
-function maskOmitted (ours, upstream, state, masked, anchor) {
+function maskOmitted (ours, upstream, state, masked, anchor, origin, margin) {
 
   const lines = [];
   const boxes = masked.filter(function (name) {
@@ -211,6 +216,9 @@ function maskOmitted (ours, upstream, state, masked, anchor) {
   const target = PNG.sync.read(ours);
   const source = PNG.sync.read(upstream);
   const core = anchor ? state[anchor] : null;
+  const dx = origin && origin._bodyX !== undefined ? -origin._bodyX : 0;
+  const dy = origin && origin._bodyY !== undefined ? -origin._bodyY : 0;
+  const edge = margin === undefined ? MARGIN : margin;
   for (const name of boxes) {
     const part = state[name];
 
@@ -221,10 +229,10 @@ function maskOmitted (ours, upstream, state, masked, anchor) {
       continue;
     }
 
-    const x = Math.max(0, Math.floor(MARGIN + part._bodyX) - 1);
-    const y = Math.max(0, Math.floor(MARGIN + part._bodyY) - 1);
-    const width = Math.min(target.width, source.width, Math.ceil(MARGIN + part._bodyX + part.width) + 1) - x;
-    const height = Math.min(target.height, source.height, Math.ceil(MARGIN + part._bodyY + part.height) + 1) - y;
+    const x = Math.max(0, Math.floor(edge + dx + part._bodyX) - 1);
+    const y = Math.max(0, Math.floor(edge + dy + part._bodyY) - 1);
+    const width = Math.min(target.width, source.width, Math.ceil(edge + dx + part._bodyX + part.width) + 1) - x;
+    const height = Math.min(target.height, source.height, Math.ceil(edge + dy + part._bodyY + part.height) + 1) - y;
     if (width > 0 && height > 0) {
       PNG.bitblt(source, target, x, y, width, height, x, y);
     }
@@ -251,23 +259,36 @@ async function collect (page, component, reference, side, masks) {
 
   const parts = side === 'ours' ? Object.assign({}, reference.parts, masks) : reference.parts;
   const origin = reference.origin;
+  const originSelector = origin && parts[origin] ? parts[origin][side] : null;
   const rest = await readParts(page, component.name, parts, side, origin, { extended: true });
   const states = {};
   const shots = {};
+  const originShots = {};
+  const shoot = async function (label, key) {
+    shots[key] = await shootCell(page, component.name, label, MARGIN);
+    samplePaint(states[key], shots[key]);
+    if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
+      // No margin: the part's own pixels are compared, without the backdrop
+      // that differs under it (a fixed layer's, a top-layered element's)
+      originShots[key] = await shootPart(page, component.name, label, originSelector, 0);
+    }
+  };
   for (const label of Object.keys(rest)) {
     states[label] = rest[label];
-    shots[label] = await shootCell(page, component.name, label, MARGIN);
-    samplePaint(states[label], shots[label]);
+    await shoot(label, label);
   }
   const target = reference.target;
   if (!target) {
-    return { states: states, shots: shots };
+    return { states: states, shots: shots, originShots: originShots };
   }
   const enabled = component.sample.filter(function (entry) {
     return !(entry.props && entry.props.disabled === true) && rest[entry.label] !== undefined;
   });
+  // A reference may declare its own interaction list (an `open` pass clicks
+  // the target and measures the opened popup)
+  const interactions = Array.isArray(reference.interactions) ? reference.interactions : INTERACTIONS;
   for (const entry of enabled) {
-    for (const interaction of INTERACTIONS) {
+    for (const interaction of interactions) {
       const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
       if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
         continue;
@@ -275,13 +296,12 @@ async function collect (page, component, reference, side, masks) {
       const key = entry.label + ' @' + interaction;
       const read = await readParts(page, component.name, parts, side, origin, { extended: true, only: entry.label });
       states[key] = read[entry.label];
-      shots[key] = await shootCell(page, component.name, entry.label, MARGIN);
-      samplePaint(states[key], shots[key]);
+      await shoot(entry.label, key);
       await leaveInteraction(page);
     }
   }
 
-  return { states: states, shots: shots };
+  return { states: states, shots: shots, originShots: originShots };
 
 }
 
@@ -341,8 +361,35 @@ export async function runFidelity (page, component, set, scheme) {
       lines.push(key + ' / ' + line);
     }
     const crop = reference.origin && ours.states[key] && upstream.states[key] && ours.states[key][reference.origin] && upstream.states[key][reference.origin];
-    const a = crop ? cropTo(masked.shot, ours.states[key][reference.origin]) : masked.shot;
-    const b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+    // A part painted outside its cell - a fixed layer or a top-layered
+    // upstream element - is out of the cell shot's reach; each side's own
+    // element shot compares its pixels instead
+    const escapes = function (shot, part) {
+      if (!shot || !part || part._bodyX === undefined) {
+        return false;
+      }
+      const image = shot instanceof PNG ? shot : PNG.sync.read(shot);
+      return part._bodyX < -MARGIN || part._bodyY < -MARGIN ||
+        MARGIN + part._bodyX + part.width > image.width || MARGIN + part._bodyY + part.height > image.height;
+    };
+    let a;
+    let b;
+    // A reference may ask for the origin's own shot outright (`originPixels`):
+    // its cell region cannot hold the component's pixels by construction
+    const elementCompare = reference.originPixels === true ||
+      escapes(upstream.shots[key], upstream.states[key] && upstream.states[key][reference.origin]) ||
+      escapes(masked.shot, ours.states[key] && ours.states[key][reference.origin]);
+    if (crop && elementCompare && ours.originShots[key] && upstream.originShots[key]) {
+      const maskedOurs = maskOmitted(ours.originShots[key], upstream.originShots[key], ours.states[key] || {}, Object.keys(masks), anchor, ours.states[key][reference.origin], 0);
+      for (const line of maskedOurs.lines) {
+        lines.push(key + ' / ' + line);
+      }
+      a = maskedOurs.shot;
+      b = upstream.originShots[key];
+    } else {
+      a = crop ? cropTo(masked.shot, ours.states[key][reference.origin]) : masked.shot;
+      b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+    }
     perceptual[key] = Math.round(perceptualRatio(a, b) * 10000) / 100;
     shots[key] = { ours: a, upstream: b };
   }

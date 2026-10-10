@@ -16,8 +16,32 @@ import checkboxApi from './molecule/checkbox/api.js';
 import checkboxSpec from './molecule/checkbox/spec.js';
 import textInputApi from './molecule/text-input/api.js';
 import textInputSpec from './molecule/text-input/spec.js';
+import textAreaApi from './molecule/text-input/api.text-area.js';
+import textAreaSpec from './molecule/text-input/spec.text-area.js';
 import selectApi from './composite/select/api.js';
 import selectSpec from './composite/select/spec.js';
+import dropdownApi from './composite/select/api.dropdown.js';
+import dropdownSpec from './composite/select/spec.dropdown.js';
+import tagApi from './molecule/tag/api.js';
+import tagSpec from './molecule/tag/spec.js';
+import progressBarApi from './molecule/progress/api.js';
+import progressBarSpec from './molecule/progress/spec.js';
+import radioButtonApi from './molecule/radio-button/api.js';
+import radioButtonSpec from './molecule/radio-button/spec.js';
+import toggleApi from './molecule/switch/api.js';
+import toggleSpec from './molecule/switch/spec.js';
+import tooltipApi from './molecule/tooltip/api.js';
+import tooltipSpec from './molecule/tooltip/spec.js';
+import iconButtonApi from './molecule/button/api.icon-button.js';
+import iconButtonSpec from './molecule/button/spec.icon-button.js';
+import tabsApi from './composite/tabs/api.js';
+import tabsSpec from './composite/tabs/spec.js';
+import menuApi from './composite/menu/api.js';
+import menuSpec from './composite/menu/spec.js';
+import modalApi from './composite/modal/api.js';
+import modalSpec from './composite/modal/spec.js';
+import toastNotificationApi from './molecule/notification/api.toast-notification.js';
+import toastNotificationSpec from './molecule/notification/spec.toast-notification.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
@@ -70,7 +94,24 @@ function specTokens (spec) {
 const BUTTON_REQUIRED = [].concat(buttonApi.tokens, specTokens(buttonSpec));
 const CHECKBOX_REQUIRED = [].concat(checkboxApi.tokens, specTokens(checkboxSpec));
 const TEXT_INPUT_REQUIRED = [].concat(textInputApi.tokens, specTokens(textInputSpec));
+const TEXT_AREA_REQUIRED = [].concat(textAreaApi.tokens, specTokens(textAreaSpec));
 const SELECT_REQUIRED = [].concat(selectApi.tokens, specTokens(selectSpec));
+const DROPDOWN_REQUIRED = [].concat(dropdownApi.tokens, specTokens(dropdownSpec));
+const TAG_REQUIRED = [].concat(tagApi.tokens, specTokens(tagSpec));
+const PROGRESS_BAR_REQUIRED = [].concat(progressBarApi.tokens, specTokens(progressBarSpec));
+const RADIO_BUTTON_REQUIRED = [].concat(radioButtonApi.tokens, specTokens(radioButtonSpec));
+const TOGGLE_REQUIRED = [].concat(toggleApi.tokens, specTokens(toggleSpec));
+const TOOLTIP_REQUIRED = [].concat(tooltipApi.tokens, specTokens(tooltipSpec));
+const ICON_BUTTON_REQUIRED = [].concat(iconButtonApi.tokens, specTokens(iconButtonSpec));
+const TABS_REQUIRED = [].concat(tabsApi.tokens, specTokens(tabsSpec));
+const MENU_REQUIRED = [].concat(menuApi.tokens, specTokens(menuSpec));
+const MODAL_REQUIRED = [].concat(modalApi.tokens, specTokens(modalSpec));
+const TOAST_NOTIFICATION_REQUIRED = [].concat(toastNotificationApi.tokens, specTokens(toastNotificationSpec));
+
+// The hue cells a Tag `type` reads on demand
+const TAG_SUPPORTED = tagApi.colors.map(function (leaf) {
+  return 'color.' + leaf;
+});
 
 
 /********************************************************************
@@ -88,8 +129,8 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, SELECT_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED);
 
-export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES);
+export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 
-export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator']);
+export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled']);

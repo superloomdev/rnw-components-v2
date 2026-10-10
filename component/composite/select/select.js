@@ -63,9 +63,17 @@ export default function Select (ctx) {
       trailing: true
     });
     const iconGap = presentation.iconGap;
+    const list = ctx.listPresentation({
+      itemHeight: ctx.metric('Select', 'itemHeight'),
+      paddingInline: ctx.metric('Select', 'itemPaddingInline'),
+      dividerWidth: ctx.metric('Select', 'itemDividerWidth'),
+      paddingBlock: ctx.metric('Select', 'listPaddingBlock'),
+      radius: ctx.metric('Select', 'listRadius'),
+      level: ctx.metric('Select', 'listLevel')
+    });
 
     // The indicator: the theme's own dropdown glyph, in the field's indicator color for the state
-    const caret = React.createElement(View, { style: { marginStart: iconGap } },
+    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },
       React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }));
 
     // Render the error icon while invalid
@@ -73,28 +81,38 @@ export default function Select (ctx) {
       React.createElement(ctx.Registry.Icon, { name: 'invalid', size: iconSize, color: presentation.invalidIcon })) : null;
 
     // Render the option list while open
-    const list = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
+    const openList = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
       style: [{
-        backgroundColor: ctx.color('layer_01'),
         left: 0,
         position: 'absolute',
         right: 0,
-        top: height,
-        zIndex: ctx.metric('Select', 'listLevel')
-      }, ctx.token('shadow.level_02')]
+        top: height
+      }, list.container, {
+        maxHeight: ctx.metric('Select', 'itemHeight') * ctx.metric('Select', 'listMaxRows') + ctx.metric('Select', 'listPaddingBlock') * 2,
+        overflowY: 'auto'
+      }]
     }), items.map(function (item, index) {
-      const fill = index === state.selectedIndex ? 'layer_selected_01' : index === state.highlightedIndex ? 'layer_hover_01' : 'layer_01';
+      const itemDisabled = item.disabled === true;
+      const selectedItem = index === state.selectedIndex;
+      const itemState = function (interaction) {
+        return {
+          disabled: itemDisabled,
+          highlighted: index === state.highlightedIndex,
+          hovered: interaction.hovered === true,
+          pressed: interaction.pressed === true,
+          selected: selectedItem
+        };
+      };
       return React.createElement(Pressable, Object.assign({ key: item.value }, select.getOptionProps(index), {
-        style: {
-          backgroundColor: ctx.color(fill),
-          height: ctx.metric('Select', 'optionHeight'),
-          justifyContent: 'center',
-          paddingHorizontal: ctx.metric('Select', 'optionPadding')
+        style: function (interaction) {
+          return list.item(itemState(interaction));
         }
-      }), React.createElement(Text, {
-        numberOfLines: 1,
-        style: [presentation.value, { color: ctx.color('text_primary') }]
-      }, item.label));
+      }),
+      React.createElement(View, { style: list.option(index !== 0) },
+        React.createElement(Text, {
+          numberOfLines: 1,
+          style: list.label(itemState({}))
+        }, item.label)));
     })) : null;
 
     // Render the message below: the error while invalid, else the helper
@@ -129,16 +147,16 @@ export default function Select (ctx) {
         React.createElement(View, { style: { flexGrow: 1 } },
           React.createElement(Text, {
             numberOfLines: 1,
+            // A list box's placeholder is its label, drawn in the field's own
+            // ink; under a floating label it stays in the tree, undrawn
             style: [bodyStyle, {
-              color: selected === null ? presentation.placeholderColor : bodyStyle.color,
-              // Under a floating label a select draws no placeholder: it stays in the tree, undrawn
               opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
             }]
           }, selected === null ? placeholder : selected.label),
           sizer),
         icon,
         caret),
-        list
+        openList
       ),
       message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );

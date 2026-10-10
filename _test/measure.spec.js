@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
-import { openReference, openShowcase, readParts } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts } from './harness/page.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
@@ -51,6 +51,63 @@ const SECOND_TEMPLATE = 'material';
 const AS_PAINTED = function (state, part, property, ours, upstream) {
   return property === 'boxShadow' || (property === 'color' && ours.ink !== undefined && upstream.ink !== undefined);
 };
+
+
+/********************************************************************
+The parts drawn anywhere in the measured states, exercising the
+interactions the reference declares until each has drawn once - a
+selector gated behind one (the open list) is not a dead selector, and the
+first open cell covers the parts the rest read left hidden.
+
+@param {Object} page      - Playwright page
+@param {Object} component - Discovered component
+@param {Object} reference - The reference block (primary or second)
+@param {String} side      - 'upstream' | 'ours'
+@param {Boolean} extended - Read ink, shadows and body-relative boxes too
+@param {Object} states    - The resting read: state label -> part -> measurement
+
+@return {Promise<Set>} - The names of the parts drawn in some state
+*********************************************************************/
+async function drawnParts (page, component, reference, side, extended, states) {
+
+  const parts = reference.parts;
+  const drawn = new Set();
+  const collect = function (map) {
+    for (const state of Object.keys(map)) {
+      for (const part of Object.keys(map[state] || {})) {
+        if (map[state][part] !== null && map[state][part] !== undefined && map[state][part].visible === true) {
+          drawn.add(part);
+        }
+      }
+    }
+  };
+  collect(states);
+
+  const target = reference.target;
+  const interactions = Array.isArray(reference.interactions) ? reference.interactions : [];
+  if (!target || interactions.length === 0) {
+    return drawn;
+  }
+  const enabled = component.sample.filter(function (entry) {
+    return !(entry.props && entry.props.disabled === true) && states[entry.label] !== undefined;
+  });
+  for (const entry of enabled) {
+    for (const interaction of interactions) {
+      if (drawn.size === Object.keys(parts).length) {
+        return drawn;
+      }
+      const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
+      if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
+        continue;
+      }
+      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label }));
+      await leaveInteraction(page);
+    }
+  }
+
+  return drawn;
+
+}
 
 
 test.describe('measure: reference coverage', function () {
@@ -85,6 +142,7 @@ test.describe('measure: primary reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, name, parts, 'upstream');
+      const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
 
       // Ours under the template that shares the reference's values
       const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true });
@@ -93,9 +151,7 @@ test.describe('measure: primary reference', function () {
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
-        return !Object.keys(upstream).some(function (state) {
-          return upstream[state][part] !== null && upstream[state][part].visible === true;
-        });
+        return !upstreamDrawn.has(part);
       });
       expect(undrawn, name + ': parts the upstream never draws (a selector matches nothing)').toEqual([]);
 
@@ -162,6 +218,7 @@ test.describe('measure: second reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true });
+      const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
 
       // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
       const omit = component.reference.second.omit || {};
@@ -180,9 +237,7 @@ test.describe('measure: second reference', function () {
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true });
       const undrawn = Object.keys(parts).filter(function (part) {
-        return !Object.keys(upstream).some(function (state) {
-          return upstream[state][part] !== null && upstream[state][part].visible === true;
-        });
+        return !upstreamDrawn.has(part);
       });
       expect(undrawn, component.name + ': parts the second reference never draws').toEqual([]);
       test.info().annotations.push({ type: 'measure', description: component.name + ' (second): ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });

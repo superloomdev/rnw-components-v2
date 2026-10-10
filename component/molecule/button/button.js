@@ -105,7 +105,24 @@ export default function Button (ctx) {
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : button.rootProps.accessibilityLabel,
       testID: props.testID,
       style: [
-        {
+        props.fill === true ? {
+          alignItems: 'flex-start',
+          alignSelf: 'stretch',
+          borderColor: ctx.color(borderLeaf),
+          borderRadius: radius,
+          borderWidth: borderWidth,
+          flexBasis: 0,
+          flexDirection: 'row',
+          flexGrow: 1,
+          // The label stays centered inside a minimum width
+          justifyContent: 'center',
+          minWidth: ctx.metric('Button', 'minWidth'),
+          // The theme's ring is the only focus indicator
+          outlineStyle: 'none',
+          paddingEnd: paddingEnd,
+          paddingStart: paddingStart,
+          paddingTop: labelTop
+        } : {
           alignItems: 'flex-start',
           alignSelf: 'flex-start',
           borderColor: ctx.color(borderLeaf),
