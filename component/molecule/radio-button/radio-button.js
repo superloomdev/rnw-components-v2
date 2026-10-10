@@ -142,7 +142,13 @@ export default function RadioButton (ctx) {
       style: [ctx.typeStyle('body_compact_01'), {
         alignSelf: 'flex-start',
         color: ctx.color(state.disabled ? 'selection_label_disabled' : 'selection_label'),
-        flex: 1
+        // The label grows from its own width, not from zero: native layout
+        // gives `flex: 1` a zero basis, which collapses it inside a row that
+        // sizes to its content
+        flexBasis: 'auto',
+        flexGrow: 1,
+        flexShrink: 1,
+        minWidth: 0
       }]
     }, props.label));
 

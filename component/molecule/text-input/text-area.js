@@ -94,6 +94,11 @@ export default function TextArea (ctx) {
     const icon = invalid ? React.createElement(View, { style: { end: ctx.metric('TextArea', 'iconInsetEnd'), position: 'absolute', top: ctx.metric('TextArea', 'iconInsetTop') } },
       React.createElement(ctx.Registry.Icon, { name: 'invalid', size: ctx.metric('TextArea', 'iconSize'), color: presentation.invalidIcon })) : null;
 
+    // `rows` sizes the field on web only: a native multiline input reads no
+    // rows attribute, so the value's own line height supplies the room there
+    const rows = Utils.isNumber(props.rows) ? props.rows : 4;
+    const rowsHeight = ctx.platform.isNative ? rows * ctx.typeStyle('text_area_value').lineHeight : undefined;
+
     // Render the message below: the error while invalid, else the helper
     const message = invalid && Utils.isString(props.invalidText) ? props.invalidText
       : Utils.isString(props.helperText) ? props.helperText : null;
@@ -113,7 +118,7 @@ export default function TextArea (ctx) {
           multiline: true,
           placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,
           placeholderTextColor: presentation.placeholderColor,
-          rows: Utils.isNumber(props.rows) ? props.rows : 4,
+          rows: rows,
           testID: props.testID,
           style: [presentation.value, {
             alignSelf: 'stretch',
@@ -122,6 +127,7 @@ export default function TextArea (ctx) {
             flexBasis: 'auto',
             flexGrow: 1,
             flexShrink: 1,
+            minHeight: rowsHeight,
             minWidth: 0,
             outlineStyle: 'none'
           }]
