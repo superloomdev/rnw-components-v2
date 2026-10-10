@@ -524,12 +524,15 @@ export default function createControlsBehaviors (deps) {
           setFocused(false);
         }
       },
-      listProps: { nativeID: listId, accessibilityRole: 'listbox' },
+      // `role`, not `accessibilityRole`: the TalkBack enum backs the latter
+      // and throws on ARIA names it lacks (option, listbox), which a Release
+      // build never survives
+      listProps: { nativeID: listId, role: 'listbox' },
       labelProps: { nativeID: labelId },
       getOptionProps: function (index) {
         const itemDisabled = items[index] !== undefined && items[index].disabled === true;
         return {
-          accessibilityRole: 'option',
+          role: 'option',
           'aria-selected': index === selectedIndex,
           disabled: itemDisabled ? true : undefined,
           onPress: itemDisabled ? undefined : function () {

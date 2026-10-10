@@ -215,8 +215,10 @@ export default function createFocusBehaviors (deps) {
 
 
     // A non-trapping popover is still a dialog; it is simply not modal.
+    // `role` carries the ARIA name on every platform; `accessibilityRole`
+    // would throw on Android, whose TalkBack enum has no dialog value
     const accessibilityProps = {
-      accessibilityRole: 'dialog',
+      role: 'dialog',
       'aria-modal': trap ? true : undefined,
       focusable: true
     };

@@ -170,7 +170,9 @@ export default function Tooltip (ctx) {
     const shift = anchored.shift || { x: 0, y: 0 };
     const popover = React.createElement(View, {
       nativeID: tooltipId,
-      accessibilityRole: 'tooltip',
+      // `role` carries the ARIA name on every platform; `accessibilityRole`
+      // would throw on Android, whose TalkBack enum has no tooltip value
+      role: 'tooltip',
       pointerEvents: 'none',
       style: [{
         left: position.left,
