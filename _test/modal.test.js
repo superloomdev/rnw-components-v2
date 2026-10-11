@@ -93,7 +93,9 @@ describe('Modal: every sample state under every template', function () {
           assert.equal(dialog.style.minHeight, t['control.dialog_min_height'] + 'px');
           assert.equal(dialog.style.width, '');
         } else {
-          assert.equal(dialog.style.width, { xs: '32%', sm: '42%', md: '60%', lg: '84%' }[props.size || 'md']);
+          // Unhosted, so the layer space is the jsdom window - 1024 wide,
+          // which lands in the md breakpoint tier
+          assert.equal(dialog.style.width, { xs: '48%', sm: '60%', md: '84%', lg: '96%' }[props.size || 'md']);
         }
 
         // The header: label when given, heading always, close seat gated by the anatomy
@@ -147,6 +149,131 @@ describe('Modal: every sample state under every template', function () {
         assert.equal(buttons.length, actions.length);
       });
     }
+  }
+
+});
+
+
+/********************************************************************
+Build a registry and capture its context so a test can publish a host
+space through the system's own OverlayContext.
+
+@param {String} template - Template name
+
+@return {Object} - { Registry, ctx }
+*********************************************************************/
+function systemFor (template) {
+
+  let captured = null;
+  const probe = function (ctx) {
+    captured = ctx;
+    return function () {
+      return null;
+    };
+  };
+  const Registry = buildSystem(template, Object.assign({}, factories, { ContextProbe: probe }));
+
+  return { Registry: Registry, ctx: captured };
+
+}
+
+
+/********************************************************************
+A staged host: publishes `hosted` with a fixed size through the system's
+OverlayContext and paints every registered layer inline, the way
+OverlayHost's layer root does.
+
+@param {Object} props - { ctx, size, children }
+*********************************************************************/
+function StagedHost (props) {
+
+  const nextIdRef = React.useRef(0);
+  const [layers, setLayers] = React.useState([]);
+  const register = React.useCallback(function (layer) {
+    const id = nextIdRef.current;
+    nextIdRef.current += 1;
+    setLayers(function (current) {
+      return current.concat(Object.assign({}, layer, { id: id }));
+    });
+    return id;
+  }, []);
+  const unregister = React.useCallback(function (id) {
+    setLayers(function (current) {
+      return current.filter(function (layer) {
+        return layer.id !== id;
+      });
+    });
+  }, []);
+  const value = React.useMemo(function () {
+    return {
+      hosted: true,
+      layers: layers,
+      origin: { x: 0, y: 0 },
+      size: props.size,
+      register: register,
+      unregister: unregister
+    };
+  }, [layers, register, unregister, props.size]);
+
+  return React.createElement(props.ctx.behaviors.OverlayContext.Provider, { value: value },
+    props.children,
+    layers.map(function (layer) {
+      return React.createElement('div', { key: layer.id }, layer.render());
+    }));
+
+}
+
+
+describe('Modal: the dialog width follows the layer space tier', function () {
+
+  for (const row of [
+    { width: 320, expected: '100%', justifyContent: 'flex-start' },
+    { width: 800, expected: '84%', justifyContent: 'center' },
+    { width: 1280, expected: '60%', justifyContent: 'center' },
+    { width: 1400, expected: '48%', justifyContent: 'center' }
+  ]) {
+    test('carbon size md in a ' + row.width + '-wide host draws ' + row.expected, async function () {
+      const system = systemFor('carbon');
+      const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: row.width, height: 400 } },
+        React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
+      const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
+      assert.notEqual(dialog, null);
+      assert.equal(dialog.style.width, row.expected);
+      const scrim = container.querySelector('[data-testid="modal-scrim"]');
+      assert.equal(scrim.style.justifyContent, row.justifyContent);
+    });
+  }
+
+  test('carbon size md below the md breakpoint spans the space with no margin', async function () {
+    const system = systemFor('carbon');
+    const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 320, height: 400 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
+    const dialog = container.querySelector('[role="dialog"]');
+    assert.equal(dialog.style.marginLeft, '0px');
+    assert.equal(dialog.style.marginRight, '0px');
+  });
+
+  test('carbon size xs in an 800-wide host draws 48%', async function () {
+    const system = systemFor('carbon');
+    const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 800, height: 400 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'xs', children: 'B' })));
+    const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.equal(dialog.style.width, '48%');
+  });
+
+  for (const width of [320, 800, 1280, 1400]) {
+    test('a bounded template keeps its own widths in a ' + width + '-wide host', async function () {
+      const system = systemFor('material');
+      const t = buildNative('material').tokens;
+      const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: width, height: 400 } },
+        React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
+      const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
+      assert.equal(dialog.style.width, '');
+      assert.equal(dialog.style.minWidth, t['control.dialog_min_width'] + 'px');
+      assert.equal(dialog.style.maxWidth, t['control.dialog_max_width'] + 'px');
+      const scrim = container.querySelector('[data-testid="modal-scrim"]');
+      assert.equal(scrim.style.justifyContent, 'center');
+    });
   }
 
 });

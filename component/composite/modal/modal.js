@@ -7,15 +7,22 @@
 // right with the gap and padding cells. Escape and focus trap come from
 // the focus-trap behavior; outside press closes unless
 // `preventCloseOnClickOutside`. Where the cells give no width bounds the
-// width is the size's percentage of the viewport (the reference's own
-// rule); where they do, the dialog sizes to its content inside them.
+// width is the size's percentage of the space the layer covers (the host's
+// when hosted, else the viewport) at the theme's `breakpoint.*` tier - the
+// reference's own responsive rule; below `md` the dialog spans the space
+// and sits at the top. Where the cells give bounds, the dialog sizes to
+// its content inside them.
 
 import SPEC from './spec.js';
 
 
-// The width steps: the reference's per-size percentages of the viewport at
-// its 66rem media tier, the tier a 1280px viewport is in
-const WIDTHS = Object.freeze({ xs: 32, sm: 42, md: 60, lg: 84 });
+// The width steps: the reference's per-size percentages of the space the
+// layer covers, one table per `breakpoint.*` tier of that space's width
+const WIDTHS = Object.freeze({
+  md: Object.freeze({ xs: 48, sm: 60, md: 84, lg: 96 }),
+  lg: Object.freeze({ xs: 32, sm: 42, md: 60, lg: 84 }),
+  xlg: Object.freeze({ xs: 24, sm: 36, md: 48, lg: 72 })
+});
 
 
 /********************************************************************
@@ -30,7 +37,7 @@ export default function Modal (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useA11yId, useFocusTrap, useOverlay, useViewportLayer } = ctx.behaviors;
+  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useViewportLayer } = ctx.behaviors;
 
 
   /********************************************************************
@@ -83,9 +90,19 @@ export default function Modal (ctx) {
     });
 
     // The width: the size's percentage where the cells give no bounds,
-    // else content-sized inside the bounds
+    // else content-sized inside the bounds. The percentage is read at the
+    // tier the space's own width falls in; below `breakpoint.md` the
+    // dialog spans the space, and an unknown width reads the `lg` table,
+    // matching a desktop viewport
     const bounded = metrics.minWidth > 0 || metrics.maxWidth > 0;
     const size = Utils.inArray(['xs', 'sm', 'md', 'lg'], props.size) ? props.size : 'md';
+    const space = useLayerSpace();
+    const tier = space.width <= 0 ? 'lg'
+      : space.width < ctx.token('breakpoint.md') ? 'full'
+        : space.width < ctx.token('breakpoint.lg') ? 'md'
+          : space.width < ctx.token('breakpoint.xlg') ? 'lg'
+            : 'xlg';
+    const width = (tier === 'full' ? 100 : WIDTHS[tier][size]) + '%';
     const actions = Utils.isArray(props.actions) && props.passive !== true ? props.actions : [];
 
     // The body's bottom padding falls to the header gap where a trailing
@@ -108,13 +125,13 @@ export default function Modal (ctx) {
         borderColor: ctx.color('dialog_border'),
         borderRadius: metrics.radius,
         borderWidth: metrics.borderWidth,
-        margin: metrics.paddingInline,
+        margin: !bounded && tier === 'full' ? 0 : metrics.paddingInline,
         maxWidth: bounded ? metrics.maxWidth : undefined,
         minHeight: metrics.minHeight > 0 ? metrics.minHeight : undefined,
         minWidth: bounded ? metrics.minWidth : undefined,
         outlineStyle: 'none',
         position: 'relative',
-        width: bounded ? undefined : WIDTHS[size] + '%'
+        width: bounded ? undefined : width
       }, ctx.metric('Modal', 'level')]
     },
     React.createElement(View, {
@@ -186,7 +203,8 @@ export default function Modal (ctx) {
     // container in it: hosted it mounts `absolute` inset 0 inside the
     // host's bounds on every platform (a staged cell, the app root);
     // unhosted it mounts `fixed` and sized to the viewport on the web and
-    // `absolute` inset 0 on a native platform
+    // `absolute` inset 0 on a native platform. Below the `md` tier the
+    // dialog spans the space and sits at the top
     const layerStyle = useViewportLayer();
     const scrim = React.createElement(Pressable, {
       testID: 'modal-scrim',
@@ -198,7 +216,7 @@ export default function Modal (ctx) {
       style: [layerStyle, {
         alignItems: 'center',
         backgroundColor: ctx.color('dialog_scrim'),
-        justifyContent: 'center',
+        justifyContent: !bounded && tier === 'full' ? 'flex-start' : 'center',
         zIndex: ctx.metric('Modal', 'stacking')
       }]
     }, container);

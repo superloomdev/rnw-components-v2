@@ -11,10 +11,14 @@ theme.
 ## Decisions
 
 - **Width.** `control.dialog_min_width` / `max_width` decide: both zero
-  means the reference's percentage-width rule (`xs` 24, `sm` 32, `md` 48,
-  `lg` 84 of the viewport); any bound means the dialog sizes to content
-  inside the bounds. The percentages are the reference's own rule and stay
-  component constants.
+  means the reference's responsive percentage rule, read against the width
+  of the space the layer covers (the overlay host's when hosted, else the
+  viewport) and the theme's `breakpoint.*` tiers. Below `breakpoint.md`
+  every size spans the full width with no margin and sits at the top; from
+  `md` the sizes take `xs` 48, `sm` 60, `md` 84, `lg` 96 percent; from `lg`
+  32, 42, 60, 84; from `xlg` 24, 36, 48, 72. Any bound means the dialog
+  sizes to content inside the bounds. The percentages are the reference's
+  own rule and stay component constants; the tiers are the theme's.
 - **Actions.** `anatomy.dialog_actions` `stretched` rows the buttons edge
   to edge at `dialog_actions_height` (each `Button` gets `fill`), last is
   `primary` and the rest `secondary`. `trailing` rows them right with

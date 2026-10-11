@@ -223,6 +223,10 @@ export default function Menu (ctx) {
     // carries an icon
     const surface = React.createElement(View, {
       ref: menuRef,
+      // Laying the surface out is what measures it: inside a host the
+      // surface mounts a commit after open, when the open effect's call
+      // would still find no node
+      onLayout: positioned.measure,
       accessibilityLabel: props.accessibilityLabel,
       onBlur: function (event) {
         dismiss.rootProps.onBlur(event);

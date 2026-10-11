@@ -83,8 +83,8 @@ export default function Toggle (ctx) {
 
     // The state layer is the disc over the handle zone and reads its own
     // cells; only the `ripple` press presentation draws it. It stays in the
-    // tree the way the second reference keeps its ripple element: hidden,
-    // not undisplayed
+    // tree the way the second reference keeps its ripple element: unpainted
+    // at rest, not undisplayed
     const layerLeaf = 'switch_layer_' + (selected ? 'selected_' : '') + (state.pressed ? 'active' : 'hover');
     const layerLive = ctx.enum('feedback.press') === 'ripple' && !state.disabled && (state.pressed || state.hovered);
 
@@ -155,7 +155,11 @@ export default function Toggle (ctx) {
           width: trackWidth
         }, ring]
       },
-      // The state layer lies over the handle zone and under the handle
+      // The state layer lies over the handle zone and under the handle. It
+      // stays mounted and sized at rest - the second reference's ripple
+      // element does the same - but paints nothing until live: a `hidden`
+      // style is web-only, so the rest fill is transparent, which every
+      // platform reads
       React.createElement(View, {
         style: [{
           borderRadius: ctx.metric('Toggle', 'layerRadius'),
@@ -165,7 +169,7 @@ export default function Toggle (ctx) {
           position: 'absolute',
           top: layerOffset,
           width: layerSize
-        }, { backgroundColor: ctx.color(layerLeaf), display: state.disabled ? 'none' : 'flex', visibility: layerLive ? 'visible' : 'hidden' }]
+        }, { backgroundColor: layerLive ? ctx.color(layerLeaf) : 'transparent', display: state.disabled ? 'none' : 'flex' }]
       }),
       React.createElement(View, {
         style: [{
@@ -188,7 +192,7 @@ export default function Toggle (ctx) {
           left: markX,
           position: 'absolute',
           top: (trackHeight - markSize) / 2 - inset,
-          visibility: selected ? 'visible' : 'hidden'
+          opacity: selected ? 1 : 0
         }
       }) : null),
       // The on/off text element is always in the tree so the accessibility

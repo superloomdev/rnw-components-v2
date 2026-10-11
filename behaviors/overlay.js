@@ -39,6 +39,7 @@ export default function createOverlayBehaviors (deps) {
     hosted: false,
     layers: [],
     origin: { x: 0, y: 0 },
+    size: { width: 0, height: 0 },
     register: function () {
       return null;
     },
@@ -48,17 +49,19 @@ export default function createOverlayBehaviors (deps) {
 
   /********************************************************************
   Host-side hook: owns the layer stack and the context value a provider
-  publishes. `origin` is the layer root's window position, measured by the
-  provider's onLayout: a layer computes viewport coordinates, so inside the
-  host they must be shifted back by the host's own origin.
+  publishes. `origin` is the layer root's window position and `size` its
+  laid-out box, both measured by the provider's onLayout: a layer computes
+  viewport coordinates, so inside the host they must be shifted back by the
+  host's own origin and bounded by the host's own space.
 
-  @return {Object} - { contextValue, layers, setOrigin }
+  @return {Object} - { contextValue, layers, setOrigin, setSize }
   *********************************************************************/
   function useOverlayHost () {
 
     const nextIdRef = React.useRef(0);
     const [layers, setLayers] = React.useState([]);
     const [origin, setOrigin] = React.useState({ x: 0, y: 0 });
+    const [size, setSize] = React.useState({ width: 0, height: 0 });
 
     const register = React.useCallback(function (layer) {
       const id = nextIdRef.current;
@@ -83,15 +86,17 @@ export default function createOverlayBehaviors (deps) {
         hosted: true,
         layers: layers,
         origin: origin,
+        size: size,
         register: register,
         unregister: unregister
       };
-    }, [layers, origin, register, unregister]);
+    }, [layers, origin, size, register, unregister]);
 
     return {
       contextValue: contextValue,
       layers: layers,
-      setOrigin: setOrigin
+      setOrigin: setOrigin,
+      setSize: setSize
     };
 
   }

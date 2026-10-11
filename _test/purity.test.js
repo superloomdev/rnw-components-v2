@@ -43,6 +43,7 @@ const FORBIDDEN = [
   } },
   { name: 'banned accessibility prop', pattern: /accessibilityState|accessibilityValue|accessibilityHint|accessibilityViewIsModal|importantForAccessibility/ },
   { name: 'banned mechanism', pattern: /createPortal|LayoutAnimation|useWindowDimensions|__DEV__/ },
+  { name: 'web-only visibility style', pattern: /\bvisibility\s*:/ },
   { name: 'JSX', pattern: /^\s*<[A-Z][A-Za-z.]*[\s>/]/ },
   { name: 'raw emptiness or membership check', pattern: /\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1/ }
 ];

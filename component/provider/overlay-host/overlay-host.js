@@ -46,7 +46,13 @@ export default function OverlayHost (ctx) {
       // beside the View layer root crashes a native render
       Utils.isString(props.children) ? React.createElement(ctx.Registry.Text, {}, props.children) : props.children,
       React.createElement(View, {
-        onLayout: function () {
+        onLayout: function (event) {
+          const layout = event && event.nativeEvent ? event.nativeEvent.layout : undefined;
+          if (layout !== undefined && layout !== null) {
+            // The layer root's laid-out box is the space a hosted layer
+            // covers and is positioned against
+            host.setSize({ width: layout.width, height: layout.height });
+          }
           const node = layerRootRef.current;
           if (node !== null && typeof node.measureInWindow === 'function') {
             // The layer root's window position is the origin a native

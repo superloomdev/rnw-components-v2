@@ -696,6 +696,16 @@
       "why": "a component reading the platform answer directly must fail the purity scan; behaviors own it"
     },
     {
+      "id": "purity-visibility-style",
+      "file": "component/molecule/switch/toggle.js",
+      "find": "          opacity: selected ? 1 : 0",
+      "replace": "          visibility: selected ? 'visible' : 'hidden'",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "no forbidden construct in any shipped file",
+      "why": "a web-only visibility style in shipped source must fail the purity scan"
+    },
+    {
       "id": "structural-target-size",
       "file": "component/molecule/button/icon-button.js",
       "find": "  const TARGET = 44;",

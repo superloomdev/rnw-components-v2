@@ -259,13 +259,14 @@ export async function readParts (page, name, parts, side, origin, options) {
         for (const property of part.measure === 'box' ? [] : TYPE) {
           measured[property] = style[property];
         }
-        // A visually hidden part (a 1px clip in both dimensions), an undisplayed or a
-        // transparent one draws nothing; a hairline a pixel tall but a layout wide draws,
-        // and an edge strip draws only where its edge is painted
+        // A visually hidden part (a 1px clip in both dimensions), an undisplayed,
+        // transparent or visibility-hidden one draws nothing; a hairline a pixel
+        // tall but a layout wide draws, and an edge strip draws only where its
+        // edge is painted
         const drawn = strip !== null
           ? parseFloat(style[strip + 'Width']) > 0 && style[strip + 'Color'] !== 'rgba(0, 0, 0, 0)'
           : pseudo !== null || rect.width > 1 || rect.height > 1;
-        measured.visible = style.display !== 'none' && parseFloat(style.opacity) > 0 && drawn;
+        measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && parseFloat(style.opacity) > 0 && drawn;
         if (input.extended) {
           // Text styled by another element is painted at that element's opacity,
           // and a pseudo is painted at its own: it is not an element, so the

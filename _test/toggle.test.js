@@ -153,7 +153,7 @@ describe('Toggle: every sample state under every template', function () {
         assert.equal(parts.layer.style.width, t['control.selection_layer_size'] + 'px');
         assert.equal(parts.layer.style.left, zoneX + layerOffset + 'px');
         assert.equal(parts.layer.style.top, layerOffset + 'px');
-        assert.equal(parts.layer.style.visibility, 'hidden');
+        assert.equal(parts.layer.style.backgroundColor, 'rgba(0, 0, 0, 0)');
 
         // The mark renders under `sm`, shown only once checked
         const markSize = t['size.icon_01'] - t['spacing.spacing_02'] - t['spacing.spacing_01'] - t['spacing.spacing_01'] * 2;
@@ -162,7 +162,7 @@ describe('Toggle: every sample state under every template', function () {
           assert.equal(parts.mark.getAttribute('width'), String(markSize));
           assert.equal(parts.mark.getAttribute('height'), String(markSize));
           assert.equal(parts.mark.style.left, (trackWidth - trackHeight + (trackHeight - markSize) / 2 - inset) + 'px');
-          assert.equal(parts.mark.style.visibility, selected ? 'visible' : 'hidden');
+          assert.equal(parts.mark.style.opacity, selected ? '1' : '0');
         }
 
         // The label and the on/off text where the theme shows it
@@ -236,7 +236,6 @@ describe('Toggle: state through the DOM', function () {
     const t = buildNative('material').tokens;
     const parts = await renderToggle(registryFor('material'), { label: 'L' });
     await fire(parts.root, new Event('mouseenter', { bubbles: false }));
-    assert.equal(parts.layer.style.visibility, 'visible');
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.switch_layer_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.switch_layer_active']));
@@ -246,8 +245,20 @@ describe('Toggle: state through the DOM', function () {
     // Under `highlight` the track paints the state fill and the layer stays hidden
     const carbon = await renderToggle(registryFor('carbon'), { label: 'L' });
     await fire(carbon.root, new Event('mouseenter', { bubbles: false }));
-    assert.equal(carbon.layer.style.visibility, 'hidden');
+    assert.equal(carbon.layer.style.backgroundColor, 'rgba(0, 0, 0, 0)');
     assert.equal(carbon.track.style.backgroundColor, cssValue('backgroundColor', buildNative('carbon').tokens['color.switch_track_hover']));
+  });
+
+  // `visibility` is web-only and a native platform ignores it: the mark
+  // rests invisible through opacity and the resting layer paints a
+  // transparent fill, which every platform reads as nothing
+  test('the resting layer paints nothing and the small mark rests at opacity 0 until checked', async function () {
+    const off = await renderToggle(registryFor('material'), { label: 'L', size: 'sm' });
+    assert.equal(off.layer.style.backgroundColor, 'rgba(0, 0, 0, 0)');
+    assert.notEqual(off.mark, null);
+    assert.equal(off.mark.style.opacity, '0');
+    const on = await renderToggle(registryFor('material'), { label: 'L', size: 'sm', checked: true });
+    assert.equal(on.mark.style.opacity, '1');
   });
 
   test('a grows switch reads the pressed and selected handle sizes; a fixed one reads the base', async function () {

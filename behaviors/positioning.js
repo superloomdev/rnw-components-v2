@@ -6,16 +6,17 @@
 /********************************************************************
 Build the positioning behaviors for one component system.
 
-@param {Object} deps - { Utils, React, platform, OverlayContext? }
+@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
         `OverlayContext` is the overlay family's context, wired by
         createBehaviors; a context-free call gets an empty one
 
-@return {Object} - { getAnchoredPosition, useAnchoredPosition, usePopoverDismiss, useViewportLayer, useViewportSize }
+@return {Object} - { getAnchoredPosition, useAnchoredPosition, useLayerSpace, usePopoverDismiss, useViewportLayer, useViewportSize }
 *********************************************************************/
 export default function createPositioningBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
+  const ReactNative = deps.ReactNative;
   const platform = deps.platform;
   // The overlay host's context carries `origin`, the layer root's window
   // position; a native layer computes window coordinates and must shift
@@ -112,14 +113,30 @@ export default function createPositioningBehaviors (deps) {
 
   }
 
+  // The space an unhosted layer positions against: the live window on the
+  // web, `Dimensions.get('window')` on a native platform (there is no
+  // `window` there, so an unguarded read would answer a zero box and make
+  // every placement flip)
+  function currentViewport () {
+
+    if (platform.isNative) {
+      const size = ReactNative.Dimensions !== undefined && typeof ReactNative.Dimensions.get === 'function'
+        ? ReactNative.Dimensions.get('window')
+        : { width: 0, height: 0 };
+      return { width: size.width, height: size.height };
+    }
+    return {
+      width: typeof window === 'undefined' ? 0 : window.innerWidth,
+      height: typeof window === 'undefined' ? 0 : window.innerHeight
+    };
+
+  }
+
   function defaultSource () {
 
     return {
       platform: platform.os,
-      viewport: {
-        width: typeof window === 'undefined' ? 0 : window.innerWidth,
-        height: typeof window === 'undefined' ? 0 : window.innerHeight
-      }
+      viewport: currentViewport()
     };
 
   }
@@ -146,6 +163,12 @@ export default function createPositioningBehaviors (deps) {
       anchor: null
     });
 
+    // The overlay context at call time, not render time: `measure` is
+    // memoized, and the host's origin and size may arrive after mount
+    const overlay = React.useContext(OverlayContext);
+    const overlayRef = React.useRef(overlay);
+    overlayRef.current = overlay;
+
     const measure = React.useCallback(function () {
 
       const anchor = resolveAnchor(options.anchor);
@@ -171,20 +194,31 @@ export default function createPositioningBehaviors (deps) {
 
       if (typeof anchor.measureInWindow === 'function') {
         anchor.measureInWindow(function (x, y, width, height) {
+          // Inside a host on a native platform the host's space is the
+          // coordinate space: the window rect shifts back by the host's
+          // origin and the placement is bounded by the host's own size
+          const current = overlayRef.current;
+          const hosted = current !== null && current.hosted === true;
+          const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
           const rect = {
-            left: x,
-            top: y,
+            left: x - origin.x,
+            top: y - origin.y,
             width: width,
             height: height,
-            right: x + width,
-            bottom: y + height
+            right: x - origin.x + width,
+            bottom: y - origin.y + height
           };
-          let measuredViewport = { width: 0, height: 0 };
+          let measuredViewport;
           if (typeof source.getViewport === 'function') {
             const deviceViewport = source.getViewport();
             if (deviceViewport && deviceViewport.success) {
               measuredViewport = { width: deviceViewport.width, height: deviceViewport.height };
             }
+          }
+          if (measuredViewport === undefined) {
+            measuredViewport = hosted && current.size !== undefined
+              ? { width: current.size.width, height: current.size.height }
+              : currentViewport();
           }
           const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset);
           setState({
@@ -214,17 +248,14 @@ export default function createPositioningBehaviors (deps) {
     }, [options.track, measure]);
 
     // The style the measured layer mounts with: `fixed` at viewport
-    // coordinates on the web, `absolute` inside the overlay host on a native
-    // platform, shifted back by the host's own window origin (zero without
-    // a host). Before the first measure the layer sits at the frame origin
-    const overlay = React.useContext(OverlayContext);
-    const origin = overlay !== null && overlay.origin !== undefined ? overlay.origin : { x: 0, y: 0 };
-    const shiftX = platform.isNative ? origin.x : 0;
-    const shiftY = platform.isNative ? origin.y : 0;
+    // coordinates on the web, `absolute` on a native platform. Hosted on a
+    // native platform the position was already converted into the host's
+    // space at measure time, so the style mounts it directly. Before the
+    // first measure the layer sits at the frame origin
     const layerStyle = {
-      left: state.position === null ? 0 : state.position.left - shiftX,
+      left: state.position === null ? 0 : state.position.left,
       position: platform.isNative ? 'absolute' : 'fixed',
-      top: state.position === null ? 0 : state.position.top - shiftY
+      top: state.position === null ? 0 : state.position.top
     };
 
     return {
@@ -272,13 +303,26 @@ export default function createPositioningBehaviors (deps) {
     });
 
     React.useEffect(function () {
+      const onResize = function () {
+        setSize(defaultSource().viewport);
+      };
+      // The window on a native platform is Dimensions'; the web stays on
+      // the resize listener
+      if (platform.isNative) {
+        if (ReactNative.Dimensions === undefined || typeof ReactNative.Dimensions.addEventListener !== 'function') {
+          return undefined;
+        }
+        const subscription = ReactNative.Dimensions.addEventListener('change', onResize);
+        return function () {
+          if (subscription !== null && subscription !== undefined && typeof subscription.remove === 'function') {
+            subscription.remove();
+          }
+        };
+      }
       if (platform.os !== 'web' || typeof window === 'undefined' ||
           typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
         return undefined;
       }
-      const onResize = function () {
-        setSize(defaultSource().viewport);
-      };
       window.addEventListener('resize', onResize);
       return function () {
         window.removeEventListener('resize', onResize);
@@ -286,6 +330,21 @@ export default function createPositioningBehaviors (deps) {
     }, []);
 
     return size;
+
+  }
+
+  /********************************************************************
+  The space a layer lives in: the host's laid-out box when one is mounted
+  and has reported one, else the viewport.
+
+  @return {Object} - { width, height }
+  *********************************************************************/
+  function useLayerSpace () {
+
+    const overlay = React.useContext(OverlayContext);
+    const viewport = useViewportSize();
+    const size = overlay !== null && overlay.hosted === true ? overlay.size : undefined;
+    return size !== undefined && size !== null && size.width > 0 && size.height > 0 ? size : viewport;
 
   }
 
@@ -398,6 +457,7 @@ export default function createPositioningBehaviors (deps) {
   return {
     getAnchoredPosition: getAnchoredPosition,
     useAnchoredPosition: useAnchoredPosition,
+    useLayerSpace: useLayerSpace,
     usePopoverDismiss: usePopoverDismiss,
     useViewportLayer: useViewportLayer,
     useViewportSize: useViewportSize

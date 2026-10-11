@@ -45,7 +45,7 @@ const EXPECTED_NAMES = [
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
-  'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
+  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
   'usePopoverDismiss', 'usePressKeys', 'useReducedMotion', 'useResponsiveStack',
   'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useTabsState', 'useTextField',
   'useTimePickerDraft', 'useTimedFlag', 'useViewportLayer', 'useViewportSize'
@@ -60,6 +60,7 @@ const STATELESS_HOOKS = {
   useEscapeKey: 'undefined',
   useFocusTrap: 'object',
   useHeadingLevel: 'number',
+  useLayerSpace: 'object',
   useMenuPosition: 'object',
   useOverlay: 'object',
   useOverlayHost: 'object',
@@ -413,6 +414,139 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.deepEqual(await renderHook(native.useViewportLayer), {
       bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
     });
+  });
+
+  // A native platform has no `window`: the space the layer positions
+  // against is `Dimensions.get('window')`, or the host's own box when the
+  // layer is mounted inside a host
+  const withDimensions = Object.assign({}, ReactNative, {
+    Dimensions: {
+      addEventListener: function () {
+        return { remove: function () {} };
+      },
+      get: function () {
+        return { width: 400, height: 800 };
+      }
+    }
+  });
+  const nativeDims = createBehaviors({
+    React: React, ReactNative: withDimensions, Utils: Utils, Debug: Debug,
+    platform: createPlatform({ Platform: { OS: 'android' } }, Utils)
+  });
+
+  test('useAnchoredPosition: an unhosted native layer measures against the Dimensions window', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 200, 20, 10);
+      }
+    };
+    let result;
+    function Probe () {
+      result = nativeDims.useAnchoredPosition({ anchor: anchor, placement: 'bottom' });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // Room below the anchor in the 400x800 window keeps the placement and
+    // the layer sits below the anchor's bottom edge
+    assert.equal(result.actualPlacement, 'bottom');
+    assert.equal(result.layerStyle.position, 'absolute');
+    assert.equal(result.layerStyle.top, 218);
+    assert.equal(result.layerStyle.left, 110);
+  });
+
+  test('useAnchoredPosition: a hosted native layer measures in the host space', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 640, 20, 10);
+      }
+    };
+    let result;
+    function Probe () {
+      result = nativeDims.useAnchoredPosition({ anchor: anchor, placement: 'bottom' });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(nativeDims.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+        React.createElement(Probe)));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // The host-space anchor bottom is 600: `bottom` plus the offset
+    // overflows the 300x600 host, so the placement flips to `top`
+    assert.equal(result.actualPlacement, 'top');
+    assert.equal(result.layerStyle.top, 582);
+    assert.equal(result.layerStyle.left, 100);
+  });
+
+  test('useMenuPosition: a hosted native menu clamps into the host', async function () {
+    const menu = {
+      measureInWindow: function (callback) {
+        callback(0, 0, 160, 50);
+      }
+    };
+    let positioned;
+    function Probe () {
+      positioned = nativeDims.useMenuPosition({ x: 240, y: 30, menuRef: { current: menu } });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(nativeDims.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+        React.createElement(Probe)));
+    });
+    await act(async function () {
+      positioned.measure();
+    });
+    // 240 + 160 overflows the 300-wide host, so the menu's right edge
+    // pins at the anchor's: left 80
+    assert.equal(positioned.layerStyle.position, 'absolute');
+    assert.equal(positioned.layerStyle.left, 80);
+    assert.equal(positioned.layerStyle.top, 30);
+  });
+
+  test('useLayerSpace: the host size when hosted, the Dimensions window when not', async function () {
+    let unhosted;
+    function Plain () {
+      unhosted = nativeDims.useLayerSpace();
+      return null;
+    }
+    let hosted;
+    function InsideHost () {
+      hosted = nativeDims.useLayerSpace();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(React.Fragment, null,
+        React.createElement(Plain),
+        React.createElement(nativeDims.OverlayContext.Provider,
+          { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+          React.createElement(InsideHost))));
+    });
+    assert.deepEqual(hosted, { width: 300, height: 600 });
+    assert.deepEqual(unhosted, { width: 400, height: 800 });
   });
 
   test('useOverlay warns once per component name when open and unhosted on a native platform', async function () {
