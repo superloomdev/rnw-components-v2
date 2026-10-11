@@ -369,6 +369,46 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.equal(layer.height, window.innerHeight);
   });
 
+  test('useViewportLayer: inside a host the web layer covers the host, not the viewport', async function () {
+    let layer;
+    function Probe () {
+      layer = behaviors.useViewportLayer();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(layer, {
+      bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
+    });
+  });
+
+  test('useMenuPosition: inside a host the web layer mounts absolute at the same point', async function () {
+    let positioned;
+    function Probe () {
+      positioned = behaviors.useMenuPosition({ x: 20, y: 30 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.equal(positioned.layerStyle.position, 'absolute');
+    assert.equal(positioned.layerStyle.left, 20);
+    assert.equal(positioned.layerStyle.top, 30);
+  });
+
   test('useViewportLayer: absolute inset 0 inside the host on a native platform', async function () {
     assert.deepEqual(await renderHook(native.useViewportLayer), {
       bottom: 0, left: 0, position: 'absolute', right: 0, top: 0

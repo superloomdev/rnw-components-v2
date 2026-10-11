@@ -239,17 +239,22 @@ export default function createPositioningBehaviors (deps) {
   }
 
   /********************************************************************
-  The layer a viewport-covering surface mounts with: on the web `fixed` at
-  the origin, sized to the live viewport; on a native platform `absolute`
-  inset 0 inside the overlay host's bounds.
+  The layer a viewport-covering surface mounts with. Inside a host the
+  layer covers the host's space instead: `absolute` inset 0 on every
+  platform, because a hosted layer is meant to live in the host's bounds
+  (a staged cell, the app root), not the window's. Unhosted keeps the old
+  answer: `fixed` sized to the live viewport on the web, `absolute` inset
+  0 on a native platform.
 
   @return {Object} - The layer style
   *********************************************************************/
   function useViewportLayer () {
 
     const viewport = useViewportSize();
+    const overlay = React.useContext(OverlayContext);
+    const hosted = overlay !== null && overlay.hosted === true;
 
-    return platform.isNative
+    return hosted || platform.isNative
       ? { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }
       : { height: viewport.height, left: 0, position: 'fixed', top: 0, width: viewport.width };
 

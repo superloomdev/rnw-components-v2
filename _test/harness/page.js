@@ -13,7 +13,10 @@ Open the showcase for a template and wait until it reports ready.
 @param {String} template   - Template name
 @param {String} [component] - Restrict to one component
 @param {Object} [options]   - { measure }: lay cell bodies out as the reference page does;
-                              { scheme }: 'light' (default) or 'dark'
+                              { scheme }: 'light' (default) or 'dark';
+                              { hosted }: false renders a staged cell without its
+                              overlay host, the way a measurement page compares
+                              against a viewport-relative upstream
 
 @return {Promise<Object>} - { status, consoleErrors, pageErrors }
 *********************************************************************/
@@ -31,7 +34,8 @@ export async function openShowcase (page, template, component, options) {
   });
 
   const query = '?template=' + template + (component ? '&component=' + component : '') +
-    (options && options.measure ? '&measure=1' : '') + (options && options.scheme === 'dark' ? '&scheme=dark' : '');
+    (options && options.measure ? '&measure=1' : '') + (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
+    (options && options.hosted === false ? '&hosted=0' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.__showcase && window.__showcase.ready === true;

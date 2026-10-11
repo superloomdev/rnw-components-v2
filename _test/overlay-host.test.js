@@ -1,11 +1,12 @@
 // Info: OverlayHost provider and the hosted-overlay contract. The host
 // mounts once, wraps the app and owns the layer stack: an open overlay
 // inside it registers a layer that paints inside the layer root in
-// registration order, and unregisters when it closes. On a native platform
-// the hosted layer mounts `absolute` inside the host at window
-// coordinates; an open overlay outside a host warns once per component
-// name through the injected Debug. On the web an unhosted layer still
-// escapes its cell - it mounts `fixed` - so no warning is owed.
+// registration order, and unregisters when it closes. A hosted layer
+// mounts `absolute` inside the host's own space on every platform - the
+// host's coordinate space, not the window's; an open overlay outside a
+// host warns once per component name through the injected Debug on a
+// native platform. On the web an unhosted layer still escapes its cell -
+// it mounts `fixed` - so no warning is owed.
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -97,6 +98,11 @@ describe('OverlayHost: membership, order and unregistration', function () {
     const dialogs = root.querySelectorAll('[role="dialog"]');
     assert.equal(dialogs.length, 1);
     assert.match(dialogs[0].textContent, /First/);
+    // The hosted layer covers the host's space, not the viewport: the
+    // scrim mounts `absolute` inside the layer root on the web too
+    const scrim = root.querySelector('[data-testid="modal-scrim"]');
+    assert.notEqual(scrim, null);
+    assert.equal(scrim.style.position, 'absolute');
     // The Modal's own mount point renders nothing while hosted: the one
     // dialog in the container is the layer root's
     assert.equal(container.querySelectorAll('[role="dialog"]').length, 1);

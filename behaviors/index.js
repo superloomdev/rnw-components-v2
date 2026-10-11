@@ -65,7 +65,7 @@ export default function createBehaviors (deps) {
     createHeadingBehaviors(deps),
     createKeyboardBehaviors(deps),
     createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
-    createMenuBehaviors(deps),
+    createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     overlay,
     createPickersBehaviors(deps),
     createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),

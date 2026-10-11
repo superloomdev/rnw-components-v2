@@ -35,6 +35,9 @@ const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 const only = params.get('component');
 // Measurement mode lays each cell body out as the reference page does
 const measuring = params.get('measure') === '1';
+// A measurement page renders unhosted, as the upstream it is compared
+// with does: its layer is viewport-relative, not confined to a stage
+const hosting = params.get('hosted') !== '0';
 
 const Utils = utils({});
 const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
@@ -109,6 +112,13 @@ function bodyStyle (name) {
 function Cell (props) {
 
   const Component = Registry[props.name];
+  // A staged cell renders its component inside the overlay host, as every
+  // host's showcase does: the body is the stage (its frame's width and
+  // height) and the layer covers it. A measurement page opens unhosted
+  const frame = frames[props.name];
+  const content = hosting && frame !== null && frame !== undefined && frame.stage === true
+    ? React.createElement(Registry.OverlayHost, null, React.createElement(Component, props.state.props))
+    : React.createElement(Component, props.state.props);
 
   return React.createElement('div', {
     className: 'cell',
@@ -119,7 +129,7 @@ function Cell (props) {
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
   React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: bodyStyle(props.name) },
-    React.createElement(Component, props.state.props)));
+    content));
 
 }
 

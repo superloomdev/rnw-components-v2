@@ -216,9 +216,10 @@ export default function Menu (ctx) {
     };
 
     // Render the surface: a container of items and separator entries, on the
-    // layer style the positioner returns (`fixed` at viewport coordinates on
-    // the web, `absolute` at window coordinates inside the overlay host on a
-    // native platform) and floored at the icon-menu minimum when any item
+    // layer style the positioner returns (`absolute` at host coordinates
+    // inside an overlay host on every platform; unhosted `fixed` at viewport
+    // coordinates on the web, `absolute` at window coordinates on a native
+    // platform) and floored at the icon-menu minimum when any item
     // carries an icon
     const surface = React.createElement(View, {
       ref: menuRef,

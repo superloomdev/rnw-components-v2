@@ -328,7 +328,7 @@ export async function runFidelity (page, component, set, scheme) {
   }));
   const status = await openReference(page, component.name, set, scheme);
   const upstream = await collect(page, component, reference, 'upstream');
-  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme });
+  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });
   const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];
 

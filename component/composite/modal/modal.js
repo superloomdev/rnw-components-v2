@@ -182,11 +182,11 @@ export default function Modal (ctx) {
       }, action.label);
     })));
 
-    // The scrim layer covers the viewport and centers the container in it;
-    // the layer style the behavior returns mounts it `fixed` and sized to
-    // the viewport on the web (covering the screen even inside a transformed
-    // cell) and `absolute` inset 0 inside the overlay host on a native
-    // platform
+    // The scrim layer covers the space it lives in and centers the
+    // container in it: hosted it mounts `absolute` inset 0 inside the
+    // host's bounds on every platform (a staged cell, the app root);
+    // unhosted it mounts `fixed` and sized to the viewport on the web and
+    // `absolute` inset 0 on a native platform
     const layerStyle = useViewportLayer();
     const scrim = React.createElement(Pressable, {
       testID: 'modal-scrim',

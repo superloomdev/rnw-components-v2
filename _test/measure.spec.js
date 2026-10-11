@@ -144,8 +144,9 @@ test.describe('measure: primary reference', function () {
       const upstream = await readParts(page, name, parts, 'upstream');
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
 
-      // Ours under the template that shares the reference's values
-      const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true });
+      // Ours under the template that shares the reference's values,
+      // unhosted as the upstream is
+      const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, name, parts, 'ours');
 
@@ -233,7 +234,7 @@ test.describe('measure: second reference', function () {
         });
       });
       expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
-      const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true });
+      const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true });
       const undrawn = Object.keys(parts).filter(function (part) {

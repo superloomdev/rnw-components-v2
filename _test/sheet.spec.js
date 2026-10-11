@@ -61,8 +61,8 @@ test('contact sheet: one stacked PNG per family and scheme across the three temp
     for (const template of TEMPLATE_NAMES) {
       const page = await browser.newPage();
       // Measure mode lays every cell out on the frame height the fidelity
-      // harness uses; the staging below makes every body the containing
-      // block of its own fixed layer, as a reference body with `stage` does
+      // harness uses; a staged cell hosts its component, so its layer
+      // already covers the body it opened on
       const opened = await openShowcase(page, template, undefined, { measure: true, scheme: scheme });
       expect(opened.status.errors).toEqual([]);
       const families = page.locator('section.family');
@@ -72,13 +72,8 @@ test('contact sheet: one stacked PNG per family and scheme across the three temp
         const family = await families.nth(i).getAttribute('data-family');
         captured[family] = captured[family] || {};
         const section = families.nth(i);
-        await section.evaluate(function (element) {
-          element.querySelectorAll('.cell-body').forEach(function (body) {
-            body.style.transform = 'translateZ(0)';
-          });
-        });
-        // A fixed layer that still escapes its cell must not bleed over
-        // another cell's picture
+        // A layer that still escapes its cell must not bleed over another
+        // cell's picture
         await hideOutsideLayers(section);
         try {
           captured[family][template] = await section.screenshot({ scale: 'css' });

@@ -6,7 +6,9 @@
 /********************************************************************
 Build the menu behaviors for one component system.
 
-@param {Object} deps - { Utils, React, platform }
+@param {Object} deps - { Utils, React, platform, OverlayContext? }
+        `OverlayContext` is the overlay family's context, wired by
+        createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getMenuPosition, useMenuPosition, useMenuCollection }
 *********************************************************************/
@@ -15,6 +17,9 @@ export default function createMenuBehaviors (deps) {
   const Utils = deps.Utils;
   const React = deps.React;
   const platform = deps.platform;
+  // Inside a host the layer mounts `absolute` at the host's own
+  // coordinates; unhosted keeps the window answer
+  const OverlayContext = deps.OverlayContext === undefined ? React.createContext(null) : deps.OverlayContext;
 
 
   function finiteNumber (value) {
@@ -165,14 +170,17 @@ export default function createMenuBehaviors (deps) {
       }
     }, []);
 
-    // The style the measured surface mounts with: `fixed` at viewport
+    // The style the measured surface mounts with: inside a host `absolute`
+    // at host coordinates on every platform; unhosted `fixed` at viewport
     // coordinates on the web, `absolute` at window coordinates on a native
-    // platform (where the layer lives inside the overlay host's bounds).
-    // Before the first measure it sits at the point the menu opened on
+    // platform. Before the first measure it sits at the point the menu
+    // opened on
+    const overlay = React.useContext(OverlayContext);
+    const hosted = overlay !== null && overlay.hosted === true;
     return {
       layerStyle: {
         left: position === null ? (finiteNumber(latestRef.current.x) ? latestRef.current.x : 0) : position.left,
-        position: platform.isNative ? 'absolute' : 'fixed',
+        position: hosted || platform.isNative ? 'absolute' : 'fixed',
         top: position === null ? (finiteNumber(latestRef.current.y) ? latestRef.current.y : 0) : position.top
       },
       position: position,
