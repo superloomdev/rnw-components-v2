@@ -146,6 +146,18 @@ describe('Tooltip: popover behavior', function () {
     assert.notEqual(root.querySelector('[role="tooltip"]'), null);
   });
 
+  test('a centered top tooltip centers its caret by a negative margin, not auto margins', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTooltip(registryFor('carbon'), { children: 'Anchor', label: 'Tip', defaultOpen: true });
+    assert.notEqual(parts.caret, null);
+    const width = t['control.tooltip_caret_width'];
+    assert.equal(parts.caret.style.left, '50%');
+    assert.equal(parts.caret.style.marginLeft, -width / 2 + 'px');
+    for (const edge of ['marginRight', 'marginTop', 'marginBottom']) {
+      assert.notEqual(parts.caret.style[edge], 'auto');
+    }
+  });
+
 });
 
 
@@ -167,6 +179,25 @@ describe('Tooltip: native', function () {
     assert.notEqual(parts.popover.style.transform.indexOf('translateX'), -1);
     assert.equal(parts.bubble.style.maxWidth, t['control.tooltip_max_width'] + 'px');
     assert.equal(parts.bubble.style.transform, '');
+  });
+
+  // Yoga does not read `margin: auto` on an absolute box the way CSS does:
+  // a centered caret is placed at half the popover's width and pulled back
+  // by half its own
+  test('a centered caret on android sits at 50% minus half its width, with no auto margins', async function () {
+    const androidLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' } })
+    });
+    const Registry = buildSystem('carbon', factories, { lib: androidLib });
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
+    assert.notEqual(parts.caret, null);
+    const width = t['control.tooltip_caret_width'];
+    assert.equal(parts.caret.style.left, '50%');
+    assert.equal(parts.caret.style.marginLeft, -width / 2 + 'px');
+    for (const edge of ['marginRight', 'marginTop', 'marginBottom']) {
+      assert.notEqual(parts.caret.style[edge], 'auto');
+    }
   });
 
 });

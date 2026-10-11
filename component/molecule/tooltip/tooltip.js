@@ -68,10 +68,10 @@ export default function Tooltip (ctx) {
       } else if (alignment === 'end') {
         position.right = lead;
       } else {
-        position.left = 0;
-        position.right = 0;
-        position.marginLeft = 'auto';
-        position.marginRight = 'auto';
+        // Auto margins do not center an absolute box on a native platform
+        // (`left: 0` wins), so the box is pulled back by half its own width
+        position.left = 50 + '%';
+        position.marginLeft = -boxWidth / 2;
       }
       inner.left = (boxWidth - side) / 2;
       inner.top = edge === 'bottom' ? -side / 2 : boxHeight - side / 2;
@@ -81,10 +81,8 @@ export default function Tooltip (ctx) {
       } else if (alignment === 'end') {
         position.bottom = lead;
       } else {
-        position.top = 0;
-        position.bottom = 0;
-        position.marginTop = 'auto';
-        position.marginBottom = 'auto';
+        position.top = 50 + '%';
+        position.marginTop = -boxHeight / 2;
       }
       inner.top = (boxHeight - side) / 2;
       inner.left = edge === 'right' ? -side / 2 : boxWidth - side / 2;
