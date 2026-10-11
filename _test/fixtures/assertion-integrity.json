@@ -684,6 +684,46 @@
       "test": "fidelity.spec.js",
       "testName": "Checkbox / second / light: matches the reference in every state",
       "why": "a masked omission whose box contains the anchor part would hide the component from the pixels; the fidelity gate must reject the mask"
+    },
+    {
+      "id": "purity-ctx-platform",
+      "file": "component/molecule/tooltip/tooltip.js",
+      "find": "    const placement = anchored.actualPlacement || 'top';",
+      "replace": "    const placement = ctx.platform.isNative ? 'top' : anchored.actualPlacement || 'top';",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "no forbidden construct in any shipped file",
+      "why": "a component reading the platform answer directly must fail the purity scan; behaviors own it"
+    },
+    {
+      "id": "structural-target-size",
+      "file": "component/molecule/button/icon-button.js",
+      "find": "  const TARGET = 44;",
+      "replace": "  const TARGET = 32;",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "interactive targets are at least 44 points",
+      "why": "a transparent hit layer shrunk below 44 points must fail the target-size gate"
+    },
+    {
+      "id": "structural-contrast-enabled",
+      "file": "component/molecule/tag/tag.js",
+      "find": "        label: type === null ? 'tag_label' : 'tag_color_' + type,",
+      "replace": "        label: type === null ? 'tag_container' : 'tag_color_' + type,",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "sub-4.5 text on an enabled cell must fail the contrast gate; only disabled cells are exempt"
+    },
+    {
+      "id": "measure-second-textarea-counter-edge",
+      "file": "component/molecule/text-input/text-area.js",
+      "find": "marginEnd: ctx.metric('TextArea', 'messageInset') }",
+      "replace": "marginEnd: ctx.metric('TextArea', 'messageInset') + 4 }",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "TextArea: parts match the second reference",
+      "why": "a counter pulled off the row's trailing edge must fail the end-edge comparison even though its left edge may move with its own width"
     }
   ]
 }

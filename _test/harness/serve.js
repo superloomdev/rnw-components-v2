@@ -84,6 +84,10 @@ function page (title, script, head) {
 
 const SHOWCASE = page('rnw-components showcase', '/bundle.js', '');
 const REFERENCE = page('rnw-components reference', '/reference-bundle.js', '<link rel="stylesheet" href="/upstream.css">');
+// The second reference draws self-styled components: the primary's
+// stylesheet carries a global box-sizing reset that reaches into the
+// upstream shadow trees and beats their own rules, so its page loads none
+const REFERENCE_SECOND = page('rnw-components reference', '/reference-bundle.js', '');
 
 
 /********************************************************************
@@ -161,7 +165,7 @@ const server = createServer(function (req, res) {
   }
 
   res.writeHead(200, { 'content-type': 'text/html' });
-  res.end(path === '/reference' ? REFERENCE : SHOWCASE);
+  res.end(path === '/reference' ? (/[?&]set=second\b/.test(req.url) ? REFERENCE_SECOND : REFERENCE) : SHOWCASE);
 
 });
 

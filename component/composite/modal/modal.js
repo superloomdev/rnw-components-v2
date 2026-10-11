@@ -30,7 +30,7 @@ export default function Modal (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useA11yId, useFocusTrap, useOverlay, useViewportSize } = ctx.behaviors;
+  const { useA11yId, useFocusTrap, useOverlay, useViewportLayer } = ctx.behaviors;
 
 
   /********************************************************************
@@ -182,11 +182,12 @@ export default function Modal (ctx) {
       }, action.label);
     })));
 
-    // The scrim layer covers the viewport and centers the container in it:
-    // on web the reference anchors the layer at its containing block's
-    // origin but sizes it to the viewport itself, so the layer covers the
-    // screen even inside a transformed cell
-    const windowSize = useViewportSize();
+    // The scrim layer covers the viewport and centers the container in it;
+    // the layer style the behavior returns mounts it `fixed` and sized to
+    // the viewport on the web (covering the screen even inside a transformed
+    // cell) and `absolute` inset 0 inside the overlay host on a native
+    // platform
+    const layerStyle = useViewportLayer();
     const scrim = React.createElement(Pressable, {
       testID: 'modal-scrim',
       onPress: function (event) {
@@ -194,35 +195,18 @@ export default function Modal (ctx) {
           trap.onOutsidePress();
         }
       },
-      style: ctx.platform.split({
-        native: {
-          alignItems: 'center',
-          backgroundColor: ctx.color('dialog_scrim'),
-          bottom: 0,
-          justifyContent: 'center',
-          left: 0,
-          position: 'absolute',
-          right: 0,
-          top: 0,
-          zIndex: ctx.metric('Modal', 'stacking')
-        },
-        web: {
-          alignItems: 'center',
-          backgroundColor: ctx.color('dialog_scrim'),
-          height: windowSize.height,
-          justifyContent: 'center',
-          left: 0,
-          position: 'fixed',
-          top: 0,
-          width: windowSize.width,
-          zIndex: ctx.metric('Modal', 'stacking')
-        }
-      })
+      style: [layerStyle, {
+        alignItems: 'center',
+        backgroundColor: ctx.color('dialog_scrim'),
+        justifyContent: 'center',
+        zIndex: ctx.metric('Modal', 'stacking')
+      }]
     }, container);
 
     // The layer renders through an overlay host where one is mounted
     const overlay = useOverlay({
       isOpen: open,
+      name: 'Modal',
       onClose: requestClose,
       render: function () {
         return scrim;

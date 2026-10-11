@@ -83,21 +83,24 @@ export default function TextArea (ctx) {
       label.top = label.top - ctx.typeStyle('field_label_raised').lineHeight / 2;
     }
 
-    // The counter reads the field's own count and the limit; both its
+    // The counter reads the field's own count and the limit, written in the
+    // theme's format ('tight' is "n/max", 'spaced' "n / max"); both its
     // possible seats mount so the element tree stays the same under every
     // template, and only the theme's placement draws
     const counts = Utils.isNumber(props.maxCount);
     const counterPlace = ctx.enum('anatomy.field_counter');
-    const counterText = counts ? String(Utils.isString(state.value) ? state.value.length : 0) + '/' + String(props.maxCount) : null;
+    const counterJoiner = ctx.enum('anatomy.field_counter_format') === 'spaced' ? ' / ' : '/';
+    const counterText = counts ? String(Utils.isString(state.value) ? state.value.length : 0) + counterJoiner + String(props.maxCount) : null;
 
     // Render the error icon at the frame's top while invalid
     const icon = invalid ? React.createElement(View, { style: { end: ctx.metric('TextArea', 'iconInsetEnd'), position: 'absolute', top: ctx.metric('TextArea', 'iconInsetTop') } },
       React.createElement(ctx.Registry.Icon, { name: 'invalid', size: ctx.metric('TextArea', 'iconSize'), color: presentation.invalidIcon })) : null;
 
-    // `rows` sizes the field on web only: a native multiline input reads no
-    // rows attribute, so the value's own line height supplies the room there
+    // `rows` sizes the field on every platform: the web input's rows
+    // attribute and a native multiline input's minimum height both hold the
+    // room that many value lines take
     const rows = Utils.isNumber(props.rows) ? props.rows : 4;
-    const rowsHeight = ctx.platform.isNative ? rows * ctx.typeStyle('text_area_value').lineHeight : undefined;
+    const rowsHeight = rows * ctx.typeStyle('text_area_value').lineHeight;
 
     // Render the message below: the error while invalid, else the helper
     const message = invalid && Utils.isString(props.invalidText) ? props.invalidText

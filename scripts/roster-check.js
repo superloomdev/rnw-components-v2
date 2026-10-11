@@ -27,8 +27,8 @@ const nonEmpty = (value) => typeof value === 'string' && value.length > 0;
 if (roster.schema !== 1 || !Array.isArray(roster.rows)) {
   fail('invalid roster envelope');
 }
-if (roster.rows.length !== candidate.rows.length + 2) {
-  fail(`row count ${roster.rows.length} != candidate ${candidate.rows.length} + 2 substrate rows`);
+if (roster.rows.length !== candidate.rows.length + 3) {
+  fail(`row count ${roster.rows.length} != candidate ${candidate.rows.length} + 3 substrate rows`);
 }
 
 const rosterNames = new Set();
@@ -103,7 +103,7 @@ for (const row of candidate.rows) {
     fail(`candidate source missing: ${key}`);
   }
 }
-for (const name of ['Icon', 'View']) {
+for (const name of ['Icon', 'View', 'OverlayHost']) {
   const row = roster.rows.find((item) => item.name === name);
   if (!row || row.source.package !== 'local') {
     fail(`substrate row missing: ${name}`);

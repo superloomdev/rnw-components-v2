@@ -36,6 +36,7 @@ Build every behavior for one component system.
 @param {Object} deps.React       - The host's React
 @param {Object} deps.ReactNative - The host's React Native (or the web build)
 @param {Object} deps.Utils       - helper-utils
+@param {Object} deps.Debug       - helper-debug
 @param {Object} deps.platform    - From `component/platform.js`
 
 @return {Object} - Frozen map of every behavior, keyed by name
@@ -43,14 +44,17 @@ Build every behavior for one component system.
 export default function createBehaviors (deps) {
 
   // Validate the injected dependencies
-  for (const name of ['React', 'ReactNative', 'Utils', 'platform']) {
+  for (const name of ['React', 'ReactNative', 'Utils', 'Debug', 'platform']) {
     if (deps === undefined || deps === null || deps[name] === undefined || deps[name] === null) {
       throw new TypeError('createBehaviors requires deps.' + name);
     }
   }
 
-  // Init the state primitives first; local behaviors compose them
+  // Init the state primitives first; local behaviors compose them. The
+  // overlay family is built early: positioning reads its OverlayContext for
+  // the host's layer-root origin
   const state = createStateBehaviors(deps);
+  const overlay = createOverlayBehaviors(deps);
 
   // Build every family from the same dependencies
   const families = [
@@ -62,9 +66,9 @@ export default function createBehaviors (deps) {
     createKeyboardBehaviors(deps),
     createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
     createMenuBehaviors(deps),
-    createOverlayBehaviors(deps),
+    overlay,
     createPickersBehaviors(deps),
-    createPositioningBehaviors(deps),
+    createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     createPressBehaviors(deps),
     createRovingBehaviors(deps),
     state,

@@ -151,7 +151,7 @@ describe('Tooltip: popover behavior', function () {
 
 describe('Tooltip: native', function () {
 
-  test('the popover is block-relative, takes the room the bubble may take, and shifts the bubble', async function () {
+  test('the popover mounts absolute at window coordinates and carries the shift itself', async function () {
     const androidLib = Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' } })
     });
@@ -159,14 +159,14 @@ describe('Tooltip: native', function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
 
-    // The positioning box is absolute in the containing block at the room the
-    // bubble may take; the shift is percents of the bubble, so it lives there
+    // The positioning box mounts `absolute` at window coordinates inside the
+    // host's bounds; the shift (percents of the box) lives on the box on
+    // every platform, and the bubble keeps its max width inside it
     assert.notEqual(parts.popover, null);
     assert.equal(parts.popover.style.position, 'absolute');
-    assert.equal(parts.popover.style.alignItems, 'flex-start');
-    assert.equal(parts.popover.style.width, t['control.tooltip_max_width'] + 'px');
-    assert.equal(parts.popover.style.transform, '');
-    assert.notEqual(parts.bubble.style.transform.indexOf('translateX'), -1);
+    assert.notEqual(parts.popover.style.transform.indexOf('translateX'), -1);
+    assert.equal(parts.bubble.style.maxWidth, t['control.tooltip_max_width'] + 'px');
+    assert.equal(parts.bubble.style.transform, '');
   });
 
 });

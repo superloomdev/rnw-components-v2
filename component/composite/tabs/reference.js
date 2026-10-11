@@ -55,10 +55,16 @@ export default Object.freeze({
       }));
     },
     parts: Object.freeze({
-      bar: Object.freeze({ upstream: 'md-tabs >>> .tabs', ours: '[role="tablist"]', measure: 'box' }),
+      // The upstream host is a flex column of `.tabs` plus the md-divider,
+      // matching our bar's tab strip plus bottom border; its line is the
+      // `divider` part's, so no border property compares here
+      bar: Object.freeze({ upstream: 'md-tabs', ours: '[role="tablist"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor'] }),
       tab: Object.freeze({ upstream: 'md-primary-tab', ours: '[role="tab"]:first-of-type', measure: 'box' }),
       label: Object.freeze({ upstream: 'md-primary-tab[active]', ours: '[role="tab"][aria-selected="true"] [dir="auto"]', measure: 'text' }),
-      indicator: Object.freeze({ upstream: 'md-primary-tab[active] >>> .indicator', ours: '[role="tab"][aria-selected="true"] > div:nth-of-type(3) > [aria-hidden="true"]', measure: 'box', compare: ['x', 'width', 'height', 'backgroundColor', 'borderTopLeftRadius'] })
+      indicator: Object.freeze({ upstream: 'md-primary-tab[active] >>> .indicator', ours: '[role="tab"][aria-selected="true"] > div:nth-of-type(3) > [aria-hidden="true"]', measure: 'box', compare: ['x', 'width', 'height', 'backgroundColor', 'borderTopLeftRadius'] }),
+      // The upstream divider draws its line on a `::before` inside the
+      // md-divider child; ours is the tablist's own bottom edge, read as a strip
+      divider: Object.freeze({ upstream: 'md-tabs >>> md-divider', pseudo: '::before', ours: '[role="tablist"]', oursStrip: 'borderBottom', measure: 'box', compare: ['y', 'width', 'height', 'backgroundColor'] })
     })
   })
 });

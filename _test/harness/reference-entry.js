@@ -48,6 +48,7 @@ import '@material/web/dialog/dialog.js';
 import utils from 'helper-utils';
 import debug from 'helper-debug';
 import themer from 'helper-themer';
+import carbonProfile from 'helper-themer-template-carbon';
 import materialProfile from 'helper-themer-template-material';
 
 import { references, rows, samples } from './manifest.js';
@@ -124,6 +125,16 @@ const MATERIAL_THEME = set === 'second' ? buildMaterialTheme() : {};
 if (set === 'second') {
   // The page paints the material scheme's background behind every cell, as the showcase does
   document.body.style.background = MATERIAL_TOKENS.tokens['color.background'];
+}
+// The primary mount receives the carbon template's built tokens on the
+// upstream (`upstream.tokens`), as the second receives the material's: ours
+// renders under carbon here, and a mount drawing from the theme reads them
+if (set === 'primary') {
+  const Lib = {};
+  Lib.Utils = utils(Lib, {});
+  Lib.Debug = debug(Lib, {});
+  const Themer = themer(Lib, {});
+  UPSTREAM['render-web'].tokens = Themer.buildTheme(carbonProfile.schemes[schemeName === 'dark' ? 'g100' : 'white'], [], 'native').tokens;
 }
 
 const status = { ready: false, errors: [], cells: 0, unmeasured: [] };

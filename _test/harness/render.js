@@ -118,7 +118,9 @@ export function a11yTree (root) {
       return child.textContent.trim();
     }).filter(Boolean).join(' ');
     if (ownText) {
-      parts.push('text=' + JSON.stringify(ownText));
+      // Whitespace is compared empty-handed: a theme's format choice may
+      // space a run ('4 / 100' vs '4/100') without changing what it says
+      parts.push('text=' + JSON.stringify(ownText.replace(/\s/g, '')));
     }
     lines.push('  '.repeat(depth) + parts.join(' '));
     // An svg is one accessible node; its paths are drawing, and a set may

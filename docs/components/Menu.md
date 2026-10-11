@@ -98,7 +98,9 @@ Menu is a list of menu items and separators that opens at a point, roves focus o
 | `markSize` | `size.icon_01` |
 | `dividerWidth` | `control.menu_divider_width` |
 | `level` | `stacking.dropdown` |
-| `itemGap` | `control.field_icon_gap` |
+| `itemGap` | `control.menu_item_gap` |
+| `minWidth` | `control.menu_min_width` |
+| `iconMinWidth` | `control.menu_icon_min_width` |
 | `radius` | `control.list_radius` |
 | `spacing` | constant `8` (decision) |
 

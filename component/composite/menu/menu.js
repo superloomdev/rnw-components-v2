@@ -64,10 +64,8 @@ export default function Menu (ctx) {
       : danger ? (active ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
         : props.list.labelLeaf(state);
     const itemFill = !disabled && danger && active ? 'menu_item_danger_container_hover' : null;
-    // The item icon's ink reads the icon cells until the queued
-    // color.menu_item_icon members land: the secondary ink, which is the
-    // resting icon color in both references
-    const iconLeaf = disabled ? 'icon_disabled' : 'icon_secondary';
+    // The item icon's ink reads the menu's own icon cells for the state
+    const iconLeaf = disabled ? 'menu_item_icon_disabled' : active ? 'menu_item_icon_hover' : 'menu_item_icon';
     const itemStyle = Object.assign({}, props.list.item(state));
     if (itemFill !== null) {
       itemStyle.backgroundColor = ctx.color(itemFill);
@@ -121,8 +119,10 @@ export default function Menu (ctx) {
         numberOfLines: 1,
         style: [props.list.label(state), { color: ctx.color(labelLeaf), flexGrow: 1 }]
       }, item.label),
+      // The shortcut is its own run: its own type and ink cells. A disabled
+      // or danger item paints all its content in the one color
       item.shortcut === undefined ? null : React.createElement(Text, {
-        style: [props.list.label(state), { color: ctx.color(labelLeaf), marginStart: ctx.metric('Menu', 'itemGap') }]
+        style: [ctx.typeStyle('menu_item_shortcut'), { color: ctx.color(disabled || danger ? labelLeaf : active ? 'menu_item_shortcut_hover' : 'menu_item_shortcut'), marginStart: ctx.metric('Menu', 'itemGap') }]
       }, item.shortcut)));
 
   }
@@ -215,8 +215,11 @@ export default function Menu (ctx) {
       collection.focusItem(direction, focused === undefined ? null : focused.ref);
     };
 
-    // Render the surface: a container of items and separator entries
-    const position = positioned.position || { left: Utils.isNumber(props.x) ? props.x : 0, top: Utils.isNumber(props.y) ? props.y : 0 };
+    // Render the surface: a container of items and separator entries, on the
+    // layer style the positioner returns (`fixed` at viewport coordinates on
+    // the web, `absolute` at window coordinates inside the overlay host on a
+    // native platform) and floored at the icon-menu minimum when any item
+    // carries an icon
     const surface = React.createElement(View, {
       ref: menuRef,
       accessibilityLabel: props.accessibilityLabel,
@@ -228,10 +231,8 @@ export default function Menu (ctx) {
       onMouseDown: dismiss.rootProps.onMouseDown,
       role: 'menu',
       tabIndex: -1,
-      style: [list.container, {
-        left: position.left,
-        position: ctx.platform.isNative ? 'absolute' : 'fixed',
-        top: position.top
+      style: [list.container, positioned.layerStyle, {
+        minWidth: icons ? ctx.metric('Menu', 'iconMinWidth') : ctx.metric('Menu', 'minWidth')
       }],
       testID: props.testID
     }, items.map(function (item, index) {
@@ -270,6 +271,7 @@ export default function Menu (ctx) {
     // The surface renders through an overlay host where one is mounted
     const overlay = useOverlay({
       isOpen: open,
+      name: 'Menu',
       onClose: props.onClose,
       render: function () {
         return surface;

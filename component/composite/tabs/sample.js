@@ -14,9 +14,6 @@ const DISABLED_ITEMS = Object.freeze([
   Object.freeze({ label: 'Third' })
 ]);
 
-// A tab bar stretches to the width its container gives it
-export const FRAME = Object.freeze({ width: 400 });
-
 export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', defaultSelectedIndex: 1 }) }),
   Object.freeze({ label: 'contained', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', variant: 'contained', defaultSelectedIndex: 1 }) }),

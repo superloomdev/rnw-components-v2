@@ -186,10 +186,9 @@ export default function Tabs (ctx) {
       accessibilityLabel: props.accessibilityLabel,
       testID: props.testID,
       style: {
+        // The bar hugs its tabs: self-start keeps the shrink-wrap under a
+        // block or a flex parent on every platform
         alignSelf: 'flex-start',
-        // The bar hugs its tabs; on web, where a block parent would stretch
-        // a plain flex box, the inline form keeps the shrink-wrap
-        display: ctx.platform.os === 'web' ? 'inline-flex' : 'flex',
         backgroundColor: ctx.color('tab_container'),
         borderBottomColor: ctx.color('tab_divider'),
         borderBottomWidth: ctx.metric('Tabs', 'dividerWidth'),

@@ -53,17 +53,15 @@ export default Object.freeze({
   // The fixed surface mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 400, height: 280, stage: true }),
-  // `width` waits on the queued control.menu_min_width cells (the primary's
-  // surface floors at 10rem, 12rem when its items carry icons)
   parts: Object.freeze({
-    surface: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'paddingTop', 'paddingBottom', 'backgroundColor'] }),
-    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'height', 'backgroundColor'] }),
+    surface: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'paddingTop', 'paddingBottom', 'backgroundColor'] }),
+    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     label: Object.freeze({ upstream: '.cds--menu-item .cds--menu-item__label', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"]', measure: 'text' }),
+    // The shortcut is its own text run: the item's last labelled text
+    shortcut: Object.freeze({ upstream: '.cds--menu-item__shortcut', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
     icon: Object.freeze({ upstream: '.cds--menu-item__icon svg', ours: '[role="menuitem"] svg', measure: 'box', optional: true }),
     mark: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"] .cds--menu-item__selection-icon svg', ours: '[role="menuitemcheckbox"][aria-checked="true"] > div > div:first-child svg', measure: 'box', optional: true }),
-    // The divider is full-bleed, so `width` waits on `control.menu_min_width`
-    // with the surface
-    divider: Object.freeze({ upstream: '.cds--menu-item-divider', ours: '[role="separator"]', measure: 'box', compare: ['height', 'backgroundColor', 'marginTop', 'marginBottom'] })
+    divider: Object.freeze({ upstream: '.cds--menu-item-divider', ours: '[role="separator"]', measure: 'box', compare: ['width', 'height', 'backgroundColor', 'marginTop', 'marginBottom'] })
   }),
   second: Object.freeze({
     mount: function (React, upstream, props) {
@@ -129,27 +127,25 @@ export default Object.freeze({
           return React.createElement('md-menu-item', {
             disabled: item.disabled === true ? true : undefined,
             key: index
-          }, glyph, item.label);
+          }, glyph, item.label,
+          item.shortcut === undefined ? null : React.createElement('span', { slot: 'trailing-supporting-text' }, item.shortcut));
         })));
     },
     // The fixed surface mounts inside its cell: the body stages it, matching
     // the sample's frame
     body: Object.freeze({ width: 400, height: 280, stage: true }),
     // The surface is `.items`: the `.menu` wrapper stays transparent while
-    // `.items` carries the fill and radius. `width` waits on the queued
-    // control.menu_min_width cell (md-menu's 112px floor)
+    // `.items` carries the fill and radius
     parts: Object.freeze({
-      surface: Object.freeze({ upstream: 'md-menu >>> .items', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'height', 'backgroundColor', 'borderTopLeftRadius'] }),
+      surface: Object.freeze({ upstream: 'md-menu >>> .items', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopLeftRadius'] }),
       // The upstream `li` never paints (state layers live inside `md-item`);
       // `backgroundColor` on it would always read transparent
-      item: Object.freeze({ upstream: 'md-menu-item >>> li.list-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'height'] }),
+      item: Object.freeze({ upstream: 'md-menu-item >>> li.list-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'width', 'height'] }),
       label: Object.freeze({ upstream: 'md-menu-item', styleOf: 'md-menu-item >>> .list-item', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"]', measure: 'text' }),
-      // `ink` waits on the queued color.menu_item_icon cells (the second
-      // draws its start icon in on-surface-variant, not the label color)
-      icon: Object.freeze({ upstream: 'md-menu-item svg[slot="start"]', ours: '[role="menuitem"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height'], optional: true }),
-      // The upstream divider paints its line on a `::before`; `width` waits
-      // on `control.menu_min_width` with the surface
-      divider: Object.freeze({ upstream: 'md-divider', pseudo: '::before', ours: '[role="separator"]', measure: 'box', compare: ['height', 'backgroundColor'] })
+      shortcut: Object.freeze({ upstream: 'md-menu-item [slot="trailing-supporting-text"]', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
+      icon: Object.freeze({ upstream: 'md-menu-item svg[slot="start"]', ours: '[role="menuitem"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'ink'], optional: true }),
+      // The upstream divider paints its line on a `::before`
+      divider: Object.freeze({ upstream: 'md-divider', pseudo: '::before', ours: '[role="separator"]', measure: 'box', compare: ['width', 'height', 'backgroundColor'] })
     }),
     omit: Object.freeze({
       mark: Object.freeze({ reason: 'the second reference knows no selectable menu item and draws no selection mark', upstream: 'md-menu-item >>> [class*="check"], md-menu-item >>> [class*="selected"]' })

@@ -136,6 +136,17 @@ export function findDisagreements (ours, upstream, parts, extra, skip) {
         if (typeof skip === 'function' && skip(state, part, property, o, u)) {
           continue;
         }
+        // A part pinned to the trailing edge (`edge: 'end'`) compares the
+        // right edge, reported as `right`; the leading x may differ where a
+        // text's own tracking widens it
+        if (property === 'x' && parts[part].edge === 'end') {
+          const oright = parseFloat(o.x) + parseFloat(o.width);
+          const uright = parseFloat(u.x) + parseFloat(u.width);
+          if (!undrawn && !agrees('x', oright, uright, slack)) {
+            lines.push(state + ' / ' + part + ' / right: ' + oright + ' here, ' + uright + ' upstream');
+          }
+          continue;
+        }
         if (!undrawn && !agrees(property, o[property], u[property], slack)) {
           lines.push(state + ' / ' + part + ' / ' + property + ': ' + o[property] + ' here, ' + u[property] + ' upstream');
         }

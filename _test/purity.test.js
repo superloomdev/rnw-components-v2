@@ -30,6 +30,17 @@ const FORBIDDEN = [
   { name: 'vendor name', pattern: /carbon|material|ibm/i },
   { name: 'framework import', pattern: /(require\(|from )['"](react|react-dom|react-native|react-native-web|react-native-svg)['"]/ },
   { name: 'platform read', pattern: /\bPlatform\s*\.\s*(OS|select)\b/, except: /component\/platform\.js$/ },
+  { name: 'ctx.platform in a component', pattern: /\bctx\.platform\b/, except: {
+    test: function (file) {
+      if (/component[/\\](context|platform)\.js$/.test(file)) {
+        return true;
+      }
+      // A <name>.js dispatcher that has sibling <name>.web.js or
+      // <name>.native.js halves reads the platform answer to pick between them
+      const base = file.replace(/\.js$/, '');
+      return existsSync(base + '.web.js') || existsSync(base + '.native.js');
+    }
+  } },
   { name: 'banned accessibility prop', pattern: /accessibilityState|accessibilityValue|accessibilityHint|accessibilityViewIsModal|importantForAccessibility/ },
   { name: 'banned mechanism', pattern: /createPortal|LayoutAnimation|useWindowDimensions|__DEV__/ },
   { name: 'JSX', pattern: /^\s*<[A-Z][A-Za-z.]*[\s>/]/ },

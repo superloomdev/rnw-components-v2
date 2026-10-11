@@ -43,6 +43,7 @@ export default function Text (ctx) {
     return React.createElement(NativeText, {
       accessibilityRole: props.accessibilityRole,
       ellipsizeMode: cut ? props.breakMode : undefined,
+      focusable: props.focusable === true ? true : undefined,
       numberOfLines: cut ? 1 : undefined,
       style: [typeStyle, { color: textColor }, props.style],
       testID: props.testID

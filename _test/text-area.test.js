@@ -118,9 +118,10 @@ describe('TextArea: every sample state under every template', function () {
         const counts = typeof props.maxCount === 'number';
         const atLabel = t['anatomy.field_counter'] === 'label';
         // Both seats always mount; the theme's placement draws and only a
-        // counting field carries text
+        // counting field carries text, written in the theme's format
+        const joiner = t['anatomy.field_counter_format'] === 'spaced' ? ' / ' : '/';
         assert.equal(parts.counterLabel.style.display, counts && atLabel ? 'flex' : 'none');
-        assert.equal(parts.counterLabel.textContent, counts ? (props.value || '').length + '/' + props.maxCount : '');
+        assert.equal(parts.counterLabel.textContent, counts ? (props.value || '').length + joiner + props.maxCount : '');
         if (counts) {
           assert.equal(parts.counterMessage.style.display, atLabel ? 'none' : 'flex');
           assert.equal(parts.input.getAttribute('maxlength'), String(props.maxCount));
@@ -149,6 +150,22 @@ describe('TextArea: every sample state under every template', function () {
         assert.equal(parts.input.getAttribute('aria-label'), props.accessibilityLabel || null);
       });
     }
+  }
+
+});
+
+
+describe("TextArea: the counter format is the theme's", function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': ' + "'tight' writes n/max, 'spaced' writes n / max", async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderField(registryFor(template), { label: 'Label', value: 'I am', maxCount: 100 });
+      const joiner = t['anatomy.field_counter_format'] === 'spaced' ? ' / ' : '/';
+      const shown = t['anatomy.field_counter'] === 'label' ? parts.counterLabel : parts.counterMessage;
+      assert.equal(shown.style.display, 'flex');
+      assert.equal(shown.textContent, '4' + joiner + '100');
+    });
   }
 
 });

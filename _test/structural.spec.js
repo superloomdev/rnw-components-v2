@@ -8,6 +8,7 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
+import { discoverComponents } from '../scripts/lib/components.js';
 import { TEMPLATE_NAMES, openShowcase, readA11yTrees, readCells, readControlPaint, readTextContrast } from './harness/page.js';
 
 const INTERACTIVE_ROLES = ['button', 'checkbox', 'combobox', 'link', 'menuitem', 'option', 'radio', 'slider', 'switch', 'tab', 'textbox'];
@@ -16,6 +17,17 @@ const UNIT = /:\s*-?[0-9.]+(rem|em|vw|vh)\b/;
 const CONTRAST_MIN = 4.5;
 const CONTRAST_MIN_LARGE = 3;
 const EXCEPTIONS = JSON.parse(readFileSync(new URL('./fixtures/contrast-exceptions.json', import.meta.url), 'utf8')).exceptions;
+
+// The cells whose sample state is declared disabled: a non-interactive
+// component draws no aria marker for the gate to find, so the contrast
+// exemption reads the props the cell was rendered with
+const DISABLED_CELLS = (await discoverComponents()).flatMap(function (component) {
+  return component.sample.filter(function (entry) {
+    return entry.props !== undefined && entry.props.disabled === true;
+  }).map(function (entry) {
+    return component.name + ' / ' + entry.label;
+  });
+});
 
 
 /********************************************************************
@@ -63,7 +75,7 @@ for (const template of TEMPLATE_NAMES) {
       const page = await browser.newPage();
       opened = await openShowcase(page, template);
       cells = await readCells(page);
-      runs = await readTextContrast(page);
+      runs = await readTextContrast(page, DISABLED_CELLS);
       paints = await readControlPaint(page);
       await page.close();
     });
@@ -146,8 +158,9 @@ for (const template of TEMPLATE_NAMES) {
     test('interactive targets are at least 44 points', function () {
       for (const cell of cells) {
         for (const child of cell.children) {
-          // An undrawn seat (a hidden close variant, a transparent layer) is no target
-          if (!child.undrawn && INTERACTIVE_ROLES.includes(child.role)) {
+          // A hidden seat (a closed variant's control, a sizer) is no
+          // target; a drawn-but-unpainted layer still is
+          if (!child.hidden && INTERACTIVE_ROLES.includes(child.role)) {
             expect(Math.max(child.rect.width, child.rect.height), cell.component + ' / ' + cell.state + ' ' + child.role + ' target').toBeGreaterThanOrEqual(44);
           }
         }

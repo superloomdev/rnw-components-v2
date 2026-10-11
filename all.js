@@ -21,3 +21,4 @@ export { default as Modal } from './component/composite/modal/modal.js';
 export { default as ToastNotification } from './component/molecule/notification/toast-notification.js';
 export { default as ProgressBar } from './component/molecule/progress/progress-bar.js';
 export { default as Tooltip } from './component/molecule/tooltip/tooltip.js';
+export { default as OverlayHost } from './component/provider/overlay-host/overlay-host.js';

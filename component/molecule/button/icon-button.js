@@ -3,7 +3,8 @@
 // the button's accessible name. It reads the button family's role cells per
 // kind, and the member icon cells where the standard and outlined kinds
 // color their icon apart from a labelled button's; `selected` makes it a
-// toggle (`aria-pressed`) and draws the kind's selected cells.
+// toggle (`aria-pressed`), drawing the kind's selected cells when true and
+// its unselected-toggle cells when false.
 
 import SPEC from './spec.icon-button.js';
 
@@ -58,18 +59,25 @@ export default function IconButton (ctx) {
     const borderWidth = ctx.metric('IconButton', 'borderWidth');
     const radius = ctx.metric('IconButton', 'radius');
     const press = ctx.pressPresentation(state, 'button_' + kind + '_container');
-    const iconLeaf = Utils.inArray(ICON_KINDS, kind)
-      ? 'icon_button_' + kind + '_icon' + press.phase
-      : 'button_' + kind + '_label' + press.phase;
+    // A toggle's identity pair is its own: `selected` draws the kind's
+    // selected cells, `selected === false` the unselected-toggle cells; any
+    // other value is an ordinary button at the family cells. The toggle's
+    // face keeps its paint through an interaction, as the selected face does
+    const toggle = state.selected === true ? '_selected' : props.selected === false ? '_unselected' : null;
+    const iconLeaf = toggle !== null && state.disabled !== true
+      ? 'icon_button_' + kind + '_icon' + toggle
+      : Utils.inArray(ICON_KINDS, kind)
+        ? 'icon_button_' + kind + '_icon' + press.phase
+        : 'button_' + kind + '_label' + press.phase;
     const borderLeaf = 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
     const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
 
     // The focus ring; a ring drawn with the border gives way to a pressed
     // border the kind states apart, and keeps the kind's elevation beside it.
     // A face whose resting cells draw neither fill nor border (the ghost
-    // kind) draws the ring without the theme's separating line inside it
-    const transparent = /^transparent$|,\s*0\.?0*\s*\)$/;
-    const drawn = !transparent.test(ctx.color('button_' + kind + '_container')) || !transparent.test(ctx.color('button_' + kind + '_border'));
+    // kind paints no face by definition) draws the ring without the theme's
+    // separating line inside it
+    const drawn = kind !== 'ghost';
     const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth, { gap: drawn }));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
@@ -77,6 +85,17 @@ export default function IconButton (ctx) {
     if (Utils.isString(ring.boxShadow) && Utils.isObject(shadow) && Utils.isString(shadow.boxShadow)) {
       ring.boxShadow = ring.boxShadow + ', ' + shadow.boxShadow;
     }
+
+    // The toggle's resting container paint is the icon-button pair's own:
+    // where the presentation's container carries the rest fill (the selected
+    // phase, the resting phase, or every phase of a layered press mode), a
+    // toggle reads its `_selected` or `_unselected` cell instead of the
+    // family's; an interaction face a highlight mode paints stays the
+    // family's, and a disabled control keeps its disabled cell
+    const face = toggle !== null && state.disabled !== true &&
+      (Utils.isEmptyString(press.phase) || press.phase === '_selected' || ctx.enum('feedback.press') !== 'highlight')
+      ? Object.assign({}, press.container, { backgroundColor: ctx.color('icon_button_' + kind + '_container' + toggle) })
+      : press.container;
 
     // The button: the face carries the square and all of its paint where it
     // has always sat; the pressable is a transparent layer over its center,
@@ -98,7 +117,7 @@ export default function IconButton (ctx) {
           justifyContent: 'center',
           width: side
         },
-        press.container,
+        face,
         shadow,
         ring
       ]

@@ -45,10 +45,8 @@ export default Object.freeze({
   second: Object.freeze({
     mount: function (React, upstream, props) {
       const actions = Array.isArray(props.actions) ? props.actions : [];
-      const last = actions.length - 1;
-      // The page's own stylesheet suppresses the `::slotted` spacing the
-      // upstream dialog's slots ask for; the mount restores it inline so the
-      // reference draws the layout the upstream intends
+      // The second page loads no global reset, so the upstream dialog's
+      // `::slotted` spacing stands: the slots carry no inline layout
       return React.createElement('md-dialog', {
         open: props.open === true ? true : undefined,
         // The upstream dialog mounts to the top layer, centered on the
@@ -69,9 +67,9 @@ export default Object.freeze({
           }
         }
       },
-      React.createElement('div', { slot: 'headline', style: { paddingInline: 24, paddingTop: 24 } }, props.title),
-      React.createElement('div', { slot: 'content', style: Object.assign({ letterSpacing: 0.25, padding: 24 }, last >= 0 ? { paddingBottom: 8 } : {}) }, props.children),
-      actions.length < 1 ? null : React.createElement('div', { slot: 'actions', style: { display: 'flex', gap: 8, justifyContent: 'flex-end', letterSpacing: 0.1, paddingTop: 16, paddingInline: 24, paddingBottom: 24 } },
+      React.createElement('div', { slot: 'headline' }, props.title),
+      React.createElement('div', { slot: 'content', style: { letterSpacing: 0.25 } }, props.children),
+      actions.length < 1 ? null : React.createElement('div', { slot: 'actions', style: { letterSpacing: 0.1 } },
         actions.map(function (action, index) {
           return React.createElement('md-text-button', { key: index }, action.label);
         })));
@@ -91,12 +89,12 @@ export default Object.freeze({
       // The upstream dialog mounts to the top layer, so its scrim's sampled
       // pixel reads a different backdrop than the stage-contained one here;
       // the scrim's own color is still compared
-      scrim: Object.freeze({ upstream: 'md-dialog >>> .scrim', ours: '[data-testid="modal-scrim"]', measure: 'box', compare: ['backgroundColor'], except: ['x', 'y', 'paint'] }),
+      scrim: Object.freeze({ upstream: 'md-dialog >>> .scrim', ours: '[data-testid="modal-scrim"]', measure: 'box', compare: ['backgroundColor'], except: ['paint'] }),
       container: Object.freeze({ upstream: 'md-dialog >>> dialog', ours: '[role="dialog"], [role="alertdialog"]', measure: 'box', compare: ['width', 'minWidth', 'maxWidth'] }),
       surface: Object.freeze({ upstream: 'md-dialog >>> .container', pseudo: '::before', ours: '[role="dialog"], [role="alertdialog"]', measure: 'box', compare: ['backgroundColor', 'borderRadius', 'boxShadow'] }),
       heading: Object.freeze({ upstream: '[slot="headline"]', ours: '[role="dialog"] > div:first-child > [dir="auto"]:last-child', measure: 'text' }),
       body: Object.freeze({ upstream: 'md-dialog >>> .content', ours: '[role="dialog"] > div:nth-of-type(2)', measure: 'box', compare: ['x', 'y', 'width', 'height'] }),
-      action: Object.freeze({ upstream: 'md-text-button >>> .button', ours: '[data-testid="modal-actions"] [role="button"]', measure: 'box', compare: ['height'] })
+      action: Object.freeze({ upstream: 'md-text-button', ours: '[data-testid="modal-actions"] [role="button"]', measure: 'box', compare: ['height'] })
     }),
     omit: Object.freeze({
       label: Object.freeze({ reason: 'the second reference draws no eyebrow label', upstream: 'md-dialog >>> .label', mask: true }),

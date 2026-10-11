@@ -164,31 +164,21 @@ export default function Tooltip (ctx) {
     }, shown === true);
 
     // The popover: the caret's clipping box on the anchor-facing edge of the
-    // bubble; both mount under every template, a zero caret cell undrawn
+    // bubble; both mount under every template, a zero caret cell undrawn.
+    // The layer style the positioner returns mounts the box `fixed` at
+    // viewport coordinates on the web and `absolute` at window coordinates
+    // inside the overlay host on a native platform; the box carries the
+    // shift (percents of itself) on every platform
     const placement = anchored.actualPlacement || 'top';
-    const position = anchored.position || { top: 0, left: 0 };
     const shift = anchored.shift || { x: 0, y: 0 };
-    const anchorOrigin = anchored.anchor || { x: 0, y: 0 };
-    // A fixed popover carries viewport coordinates and the shift on one box.
-    // An absolute one is measured and positioned inside its containing block
-    // - here the anchor's own wrapper - so on native the coordinates become
-    // block-relative, the shift moves onto the bubble (percents are of the
-    // element they translate), and the box is sized to the room the bubble
-    // may take; otherwise the wrapper's own width would crush the label to a
-    // column of single glyphs
     const popover = React.createElement(View, {
       nativeID: tooltipId,
       // `role` carries the ARIA name on every platform; `accessibilityRole`
       // would throw on Android, whose TalkBack enum has no tooltip value
       role: 'tooltip',
       pointerEvents: 'none',
-      style: [{
-        alignItems: ctx.platform.isNative ? 'flex-start' : undefined,
-        left: ctx.platform.isNative ? position.left - anchorOrigin.x : position.left,
-        position: ctx.platform.isNative ? 'absolute' : 'fixed',
-        top: ctx.platform.isNative ? position.top - anchorOrigin.y : position.top,
-        transform: ctx.platform.isNative ? undefined : [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }],
-        width: ctx.platform.isNative ? ctx.metric('Tooltip', 'maxWidth') : undefined,
+      style: [anchored.layerStyle, {
+        transform: [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }],
         zIndex: ctx.metric('Tooltip', 'level')
       }]
     },
@@ -199,16 +189,12 @@ export default function Tooltip (ctx) {
         borderRadius: ctx.metric('Tooltip', 'radius'),
         maxWidth: ctx.metric('Tooltip', 'maxWidth'),
         paddingHorizontal: ctx.metric('Tooltip', 'paddingInline'),
-        paddingVertical: paddingBlock,
-        transform: ctx.platform.isNative ? [{ translateX: shift.x + '%' }, { translateY: shift.y + '%' }] : undefined
+        paddingVertical: paddingBlock
       }]
     },
-    // Android pads a text line beyond its declared line height unless told
-    // not to; the bubble's box is the token height only when it is told
     React.createElement(Text, {
       style: [ctx.typeStyle(compact ? 'tooltip_compact_label' : 'tooltip_label'), {
-        color: ctx.color('tooltip_label'),
-        includeFontPadding: ctx.platform.isNative ? false : undefined
+        color: ctx.color('tooltip_label')
       }]
     }, props.label),
     caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'), height: caretHeight, placement: placement, width: caretWidth })));
@@ -216,6 +202,7 @@ export default function Tooltip (ctx) {
     // The popover renders through an overlay host where one is mounted
     const overlay = useOverlay({
       isOpen: shown === true,
+      name: 'Tooltip',
       onClose: function () {
         setShown(false);
       },
@@ -247,11 +234,11 @@ export default function Tooltip (ctx) {
       }
     },
     React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, testID: props.testID },
-      // A bare string anchor gets a tab stop: a tooltip opens on focus, so a
+      // A bare string anchor renders through the registry Text (the theme's
+      // typography) and gets a tab stop: a tooltip opens on focus, so a
       // keyboard has to reach it; an element child brings its own
-      Utils.isString(props.children) ? React.createElement(Text, {
-        focusable: true,
-        style: { includeFontPadding: ctx.platform.isNative ? false : undefined }
+      Utils.isString(props.children) ? React.createElement(ctx.Registry.Text, {
+        focusable: true
       }, props.children) : props.children),
     overlay.hosted ? null : shown === true ? popover : null);
 

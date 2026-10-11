@@ -23,7 +23,7 @@ export default function Dropdown (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useSelect, getA11yState } = ctx.behaviors;
+  const { useAnchoredPosition, useOverlay, useSelect, getA11yState } = ctx.behaviors;
 
   // Size -> height metric in the spec sheet
   const SIZES = Object.freeze({ sm: 'heightSmall', md: 'height', lg: 'heightLarge' });
@@ -115,16 +115,54 @@ export default function Dropdown (ctx) {
     const icon = invalid ? React.createElement(View, { style: { marginStart: iconGapEnd } },
       React.createElement(ctx.Registry.Icon, { name: 'invalid', size: iconSize, color: presentation.invalidIcon })) : null;
 
+    // The frame is the open list's anchor: where an overlay host is mounted
+    // the list renders through it on the layer style the positioner returns
+    // (`fixed` at viewport coordinates on the web, `absolute` at window
+    // coordinates inside the host on a native platform); unhosted it keeps
+    // its inline seat below the frame
+    const frameRef = React.useRef(null);
+    const anchored = useAnchoredPosition({
+      anchor: frameRef,
+      offset: 0,
+      placement: 'bottom-start',
+      track: state.open === true
+    });
+    React.useEffect(function () {
+      if (state.open === true) {
+        anchored.measure();
+      }
+    }, [state.open, anchored.measure]);
+
+    // The list registers with the overlay host while open; the host calls
+    // `render` after this component has returned, when `listElement` exists
+    const overlay = useOverlay({
+      isOpen: state.open === true,
+      name: 'Dropdown',
+      onClose: function () {
+        select.setOpen(false);
+      },
+      render: function () {
+        return listElement;
+      }
+    });
+
     // Render the option list while open; it spans the frame border to border,
-    // so it pulls itself out by the side borders' thickness
+    // so it pulls itself out by the side borders' thickness - the same
+    // margins apply to the hosted copy's measured box
     const edge = presentation.borderSide;
-    const openList = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
-      style: [{
-        left: -edge,
-        position: 'absolute',
-        right: -edge,
-        top: height
-      }, list.container, {
+    const listElement = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
+      style: [overlay.hosted === true
+        ? Object.assign({}, anchored.layerStyle, {
+          left: anchored.layerStyle.left - edge,
+          transform: [{ translateX: (anchored.shift || { x: 0 }).x + '%' }, { translateY: (anchored.shift || { y: 0 }).y + '%' }],
+          width: anchored.anchor === null ? undefined : anchored.anchor.width + 2 * edge
+        })
+        : {
+          left: -edge,
+          position: 'absolute',
+          right: -edge,
+          top: height
+        }, list.container, {
         maxHeight: height * ctx.metric('Dropdown', 'listMaxRows') + ctx.metric('Dropdown', 'listPaddingBlock') * 2,
         overflowY: 'auto'
       }]
@@ -184,7 +222,7 @@ export default function Dropdown (ctx) {
         // from its line box; the floating label sits inside the frame instead
         style: ctx.enum('anatomy.label') === 'above' ? [presentation.label, { marginTop: ctx.metric('Dropdown', 'labelInset') }] : presentation.label
       }), props.label) : null,
-      React.createElement(View, { style: frame },
+      React.createElement(View, { ref: frameRef, style: frame },
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
           accessibilityLabel: props.accessibilityLabel,
           testID: props.testID,
@@ -206,7 +244,7 @@ export default function Dropdown (ctx) {
           sizer),
         icon,
         caret),
-        openList
+        overlay.hosted === true ? null : listElement
       ),
       message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );

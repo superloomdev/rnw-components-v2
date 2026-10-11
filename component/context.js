@@ -603,6 +603,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     React: Lib.React,
     ReactNative: Lib.ReactNative,
     Utils: Utils,
+    Debug: Lib.Debug,
     platform: platform
   });
 

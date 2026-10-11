@@ -14,12 +14,13 @@ import DropdownSample, { FRAME as DropdownFrame } from './component/composite/se
 import RadioButtonSample from './component/molecule/radio-button/sample.js';
 import ToggleSample from './component/molecule/switch/sample.js';
 import TagSample from './component/molecule/tag/sample.js';
-import TabsSample, { FRAME as TabsFrame } from './component/composite/tabs/sample.js';
+import TabsSample from './component/composite/tabs/sample.js';
 import MenuSample, { FRAME as MenuFrame } from './component/composite/menu/sample.js';
 import ModalSample, { FRAME as ModalFrame } from './component/composite/modal/sample.js';
 import ToastNotificationSample from './component/molecule/notification/sample.toast-notification.js';
 import ProgressBarSample, { FRAME as ProgressBarFrame } from './component/molecule/progress/sample.js';
 import TooltipSample from './component/molecule/tooltip/sample.js';
+import OverlayHostSample from './component/provider/overlay-host/sample.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -35,10 +36,11 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'RadioButton', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: RadioButtonSample }),
   Object.freeze({ name: 'Toggle', family: 'Switch', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ToggleSample }),
   Object.freeze({ name: 'Tag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSample }),
-  Object.freeze({ name: 'Tabs', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: TabsFrame, sample: TabsSample }),
+  Object.freeze({ name: 'Tabs', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: TabsSample }),
   Object.freeze({ name: 'Menu', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: MenuFrame, sample: MenuSample }),
   Object.freeze({ name: 'Modal', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ModalFrame, sample: ModalSample }),
   Object.freeze({ name: 'ToastNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ToastNotificationSample }),
   Object.freeze({ name: 'ProgressBar', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: ProgressBarFrame, sample: ProgressBarSample }),
-  Object.freeze({ name: 'Tooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: TooltipSample })
+  Object.freeze({ name: 'Tooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: TooltipSample }),
+  Object.freeze({ name: 'OverlayHost', family: 'OverlayHost', tier: 'provider', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: OverlayHostSample })
 ]);

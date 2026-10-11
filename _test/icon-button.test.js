@@ -1,8 +1,10 @@
 // Info: IconButton molecule. Every sample state renders under all three
 // templates with its square, border, fill and icon read from the kind's
 // role cells in the built theme (the standard and outlined kinds' icon
-// reads the member cells); `selected` makes the button `aria-pressed` and
-// draws the selected cells; the compact tooltip names it.
+// reads the member cells); `selected` makes the button `aria-pressed` -
+// true draws the member's selected cells, false the unselected-toggle
+// cells, and any other value the family's rest cells; the compact tooltip
+// names it.
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -88,20 +90,26 @@ describe('IconButton: every sample state under every template', function () {
         const props = state.props;
         const kind = props.kind || 'primary';
         const disabled = props.disabled === true;
-        const phase = disabled ? '_disabled' : props.selected === true ? '_selected' : '';
+        // A toggle's resting face is the member's own cell: `_selected`
+        // when true, `_unselected` when false; every other state reads the
+        // family's cells
+        const toggle = disabled ? '' : props.selected === true ? '_selected' : props.selected === false ? '_unselected' : '';
+        const phase = disabled ? '_disabled' : '';
         const parts = await renderIconButton(registryFor(template), props);
 
         // The square's side, fill, border and radius live on the face
         const side = SIDES[props.size] ? t[SIDES[props.size]] : t['control.icon_button_size'];
         assert.equal(parts.face.style.width, side + 'px');
         assert.equal(parts.face.style.height, side + 'px');
-        assert.equal(parts.face.style.backgroundColor, cssValue('backgroundColor', t['color.button_' + kind + '_container' + phase]));
-        assert.equal(parts.face.style.borderTopColor, cssValue('borderTopColor', t['color.button_' + kind + '_border' + (phase === '_selected' ? '' : phase)]));
+        assert.equal(parts.face.style.backgroundColor, cssValue('backgroundColor',
+          t[toggle !== '' ? 'color.icon_button_' + kind + '_container' + toggle : 'color.button_' + kind + '_container' + phase]));
+        assert.equal(parts.face.style.borderTopColor, cssValue('borderTopColor', t['color.button_' + kind + '_border' + phase]));
         assert.equal(parts.face.style.borderTopWidth, t['border.width_01'] + 'px');
         assert.equal(parts.face.style.borderTopLeftRadius, t['control.button_radius'] + 'px');
 
         // The one icon, sized and colored by the theme
-        const iconLeaf = ICON_KINDS.indexOf(kind) >= 0 ? 'icon_button_' + kind + '_icon' + phase : 'button_' + kind + '_label' + phase;
+        const iconLeaf = toggle !== '' ? 'icon_button_' + kind + '_icon' + toggle
+          : ICON_KINDS.indexOf(kind) >= 0 ? 'icon_button_' + kind + '_icon' + phase : 'button_' + kind + '_label' + phase;
         assert.equal(parts.icon.getAttribute('width'), String(t['control.icon_button_icon_size']));
         assert.equal(parts.icon.getAttribute('height'), String(t['control.icon_button_icon_size']));
         assert.equal(parts.icon.getAttribute('fill'), t['color.' + iconLeaf]);
@@ -116,6 +124,38 @@ describe('IconButton: every sample state under every template', function () {
         assert.equal(parts.root.getAttribute('aria-label'), props.label);
         assert.equal(parts.root.getAttribute('aria-pressed'), props.selected === undefined ? null : String(props.selected === true));
         assert.equal(parts.root.getAttribute('aria-disabled'), disabled ? 'true' : null);
+      });
+    }
+  }
+
+});
+
+
+describe('IconButton: the three toggle states read their own cells', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    for (const kind of ['primary', 'secondary', 'ghost', 'tertiary']) {
+      test(template + ' / ' + kind + ': rest, unselected and selected', async function () {
+        const t = buildNative(template).tokens;
+        const Registry = registryFor(template);
+        const rest = await renderIconButton(Registry, { icon: 'add', label: 'Add', kind: kind });
+        const unselected = await renderIconButton(Registry, { icon: 'add', label: 'Add', kind: kind, selected: false });
+        const selected = await renderIconButton(Registry, { icon: 'add', label: 'Add', kind: kind, selected: true });
+
+        // `selected` absent: an ordinary button at the family's rest cells
+        assert.equal(rest.face.style.backgroundColor, cssValue('backgroundColor', t['color.button_' + kind + '_container']));
+        assert.equal(rest.icon.getAttribute('fill'), t[ICON_KINDS.indexOf(kind) >= 0 ? 'color.icon_button_' + kind + '_icon' : 'color.button_' + kind + '_label']);
+        assert.equal(rest.root.getAttribute('aria-pressed'), null);
+
+        // `selected === false`: the unselected-toggle cells, `aria-pressed` false
+        assert.equal(unselected.face.style.backgroundColor, cssValue('backgroundColor', t['color.icon_button_' + kind + '_container_unselected']));
+        assert.equal(unselected.icon.getAttribute('fill'), t['color.icon_button_' + kind + '_icon_unselected']);
+        assert.equal(unselected.root.getAttribute('aria-pressed'), 'false');
+
+        // `selected === true`: the selected cells, `aria-pressed` true
+        assert.equal(selected.face.style.backgroundColor, cssValue('backgroundColor', t['color.icon_button_' + kind + '_container_selected']));
+        assert.equal(selected.icon.getAttribute('fill'), t['color.icon_button_' + kind + '_icon_selected']);
+        assert.equal(selected.root.getAttribute('aria-pressed'), 'true');
       });
     }
   }

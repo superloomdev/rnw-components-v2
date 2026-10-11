@@ -42,6 +42,7 @@ Text draws one run of text in the type set and color token a caller names, and c
 | `color` | `string` | no | Color token leaf under `color.`. Default `text_primary`. |
 | `breakMode` | `string` | no | Where a single line is cut: `head`, `middle` or `tail` render one line with an ellipsis there; `wrap` or absent wraps freely. |
 | `accessibilityRole` | `string` | no | Role forwarded to the text element, for example `header` for a heading. |
+| `focusable` | `boolean` | no | Whether the text sits in the tab order; a tooltip gives its bare string anchor a tab stop this way. |
 | `testID` | `string` | no | Test identifier forwarded to the text element. |
 | `style` | `object` | no | Style merged last (layout only; type and color are props). |
 

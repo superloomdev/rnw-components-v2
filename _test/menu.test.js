@@ -147,6 +147,59 @@ describe('Menu: every sample state under every template', function () {
 });
 
 
+describe('Menu: the surface floors and the item icon ink come from the theme', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': the surface floors at the menu and icon-menu minimum widths', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = registryFor(template);
+      const plain = await renderMenu(Registry, { items: [{ label: 'A' }, { label: 'B' }], open: true });
+      assert.equal(plain.surface.style.minWidth, t['control.menu_min_width'] + 'px');
+      const icons = await renderMenu(Registry, { items: [{ label: 'A', icon: 'add' }, { label: 'B' }], open: true });
+      assert.equal(icons.surface.style.minWidth, t['control.menu_icon_min_width'] + 'px');
+    });
+
+    test(template + ': the item icon reads the menu icon cells, hover and disabled included', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderMenu(registryFor(template), {
+        items: [{ label: 'A', icon: 'add' }, { label: 'B', disabled: true, icon: 'add' }],
+        open: true
+      });
+      const items = parts.items();
+      const icon = function (item) {
+        return parts.option(item).querySelector('svg');
+      };
+      assert.equal(icon(items[0]).getAttribute('fill'), t['color.menu_item_icon']);
+      assert.equal(icon(items[1]).getAttribute('fill'), t['color.menu_item_icon_disabled']);
+      await act(async function () {
+        items[0].dispatchEvent(new Event('pointerover', { bubbles: true }));
+      });
+      assert.equal(icon(items[0]).getAttribute('fill'), t['color.menu_item_icon_hover']);
+    });
+
+    test(template + ': the item shortcut reads the menu shortcut type and ink cells', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderMenu(registryFor(template), {
+        items: [{ label: 'A', shortcut: 'Ctrl+A' }],
+        open: true
+      });
+      const runs = parts.items()[0].querySelectorAll('[dir="auto"]');
+      const shortcut = runs[runs.length - 1];
+      const type = t['type.menu_item_shortcut'];
+      assert.equal(shortcut.style.fontSize, type.fontSize + 'px');
+      assert.equal(shortcut.style.lineHeight, type.lineHeight + 'px');
+      assert.equal(shortcut.style.fontWeight, String(type.fontWeight));
+      assert.equal(shortcut.style.color, cssValue('color', t['color.menu_item_shortcut']));
+      await act(async function () {
+        parts.items()[0].dispatchEvent(new Event('pointerover', { bubbles: true }));
+      });
+      assert.equal(shortcut.style.color, cssValue('color', t['color.menu_item_shortcut_hover']));
+    });
+  }
+
+});
+
+
 describe('Menu: behavior through the DOM', function () {
 
   test('closed renders nothing; choosing an item reports and closes; Escape closes', async function () {

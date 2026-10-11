@@ -24,24 +24,30 @@ export default Object.freeze({
       // The compact tooltip is the same component under the icon-tooltip
       // container class - what the upstream icon button applies around its label
       className: props.compact === true ? 'cds--icon-tooltip' : undefined
-    // The trigger is a focusable control drawn like the plain text anchor our
-    // side wraps a string child in; only the popover is the compared subject
+    // The trigger is a focusable control drawn like the text anchor our
+    // side wraps a string child in - the theme's own default type and ink,
+    // read from the template tokens; only the popover is the compared subject
     }, React.createElement('button', {
       type: 'button',
-      style: {
-        appearance: 'none',
-        background: 'none',
-        border: 'none',
-        color: 'black',
-        cursor: 'default',
-        fontFamily: '-apple-system, "system-ui", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        fontSize: 14,
-        lineHeight: 'normal',
-        margin: 0,
-        padding: 0,
-        textAlign: 'left',
-        verticalAlign: 'top'
-      }
+      style: (function () {
+        const type = upstream.tokens['type.body_compact_02'];
+        return {
+          appearance: 'none',
+          background: 'none',
+          border: 'none',
+          color: upstream.tokens['color.text_primary'],
+          cursor: 'default',
+          fontFamily: String(upstream.tokens['font.family.' + type.fontFamily] || type.fontFamily),
+          fontSize: String(type.fontSize) + 'px',
+          fontWeight: String(type.fontWeight),
+          letterSpacing: String(type.letterSpacing) + 'px',
+          lineHeight: String(type.lineHeight) + 'px',
+          margin: 0,
+          padding: 0,
+          textAlign: 'left',
+          verticalAlign: 'top'
+        };
+      })()
     }, typeof props.children === 'string' ? props.children : 'Anchor'));
   },
   // The element a person hovers and focuses: the trigger the tooltip wraps

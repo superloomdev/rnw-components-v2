@@ -168,8 +168,10 @@ export async function readParts (page, name, parts, side, origin, options) {
         }
         const pseudo = input.side === 'upstream' && part.pseudo ? part.pseudo : null;
         // A part drawn as one of its element's edges (a border line rather
-        // than a child box) measures as the strip that edge paints
-        const strip = input.side === 'upstream' && part.strip ? part.strip : null;
+        // than a child box) measures as the strip that edge paints; on ours
+        // the field is `oursStrip`, the edge an own element draws a line with
+        const strip = input.side === 'upstream' && part.strip ? part.strip
+          : input.side === 'ours' && part.oursStrip ? part.oursStrip : null;
         // The text style may come from another element (the shadow element that styles slotted text)
         const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
@@ -393,7 +395,7 @@ comparison. Hiding uses `visibility` so no geometry moves.
 
 @return {Promise<void>} - Nothing; call the paired restore after shooting
 *********************************************************************/
-async function hideOutsideLayers (body) {
+export async function hideOutsideLayers (body) {
 
   await body.evaluate(function (element) {
     const composedParent = function (node) {
@@ -433,7 +435,7 @@ Restore the layers `hideOutsideLayers` hid for a cell's body.
 
 @return {Promise<void>} - Nothing
 *********************************************************************/
-async function restoreLayers (body) {
+export async function restoreLayers (body) {
 
   await body.evaluate(function (element) {
     const hidden = element.__hiddenLayers || [];
@@ -560,12 +562,9 @@ export async function readCells (page) {
     return Array.from(document.querySelectorAll('.cell')).map(function (cell) {
       const body = cell.querySelector('[data-part="body"]');
       const rect = body.getBoundingClientRect();
-      // An element draws nothing when it or an ancestor in the cell is fully
-      // transparent or hidden, or sits in a zero-height aria-hidden sizer;
-      // a leaf that paints no pixels of its own - no fill, image, border,
-      // shadow or ring, and no text - draws nothing either (a transparent
-      // hit layer)
-      const isUndrawn = function (node) {
+      // An element is hidden when it or an ancestor in the cell is fully
+      // transparent or hidden, or sits in a zero-height aria-hidden sizer
+      const isHidden = function (node) {
         for (let current = node; current !== null && current !== body; current = current.parentElement) {
           const style = getComputedStyle(current);
           if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
@@ -574,6 +573,15 @@ export async function readCells (page) {
           if (current.getAttribute('aria-hidden') === 'true' && current.getBoundingClientRect().height === 0) {
             return true;
           }
+        }
+        return false;
+      };
+      // An element draws nothing when it is hidden or paints no pixels of
+      // its own - a leaf with no fill, image, border, shadow or ring and no
+      // text (a transparent hit layer)
+      const isUndrawn = function (node) {
+        if (isHidden(node)) {
+          return true;
         }
         if (!(node instanceof SVGElement) && node.children.length === 0 && (node.textContent || '').trim() === '') {
           const style = getComputedStyle(node);
@@ -628,6 +636,7 @@ export async function readCells (page) {
         const overlay = overlayOf(node);
         const overlayRect = overlay === null ? null : overlay.getBoundingClientRect();
         return {
+          hidden: isHidden(node),
           undrawn: isUndrawn(node),
           tag: node.tagName.toLowerCase(),
           role: node.getAttribute('role'),
@@ -707,7 +716,9 @@ export async function readA11yTrees (page) {
           return c.textContent.trim();
         }).filter(Boolean).join(' ');
         if (text) {
-          parts.push('text=' + JSON.stringify(text));
+          // Whitespace is compared empty-handed: a theme's format choice
+          // may space a run without changing what it says
+          parts.push('text=' + JSON.stringify(text.replace(/\s/g, '')));
         }
         lines.push('  '.repeat(depth) + parts.join(' '));
         if (node.tagName.toLowerCase() === 'svg') {
@@ -740,11 +751,12 @@ not drawn and is not reported.
 
 @return {Promise<Array>} - [{ component, state, kind, text, color, fontSize,
   fontWeight, ratio, disabled }]; `kind` is text | value | placeholder;
-  `color` is the computed color before compositing, for matching a token
+  `color` is the computed color before compositing, for matching a token;
+  `disabled` is the cell's disabled marker or the sample's `disabled` prop
 *********************************************************************/
-export async function readTextContrast (page) {
+export async function readTextContrast (page, disabledCells) {
 
-  return page.evaluate(function () {
+  return page.evaluate(function (input) {
     const parse = function (value) {
       const match = value.match(/rgba?\(([^)]+)\)/);
       if (match === null) {
@@ -797,7 +809,11 @@ export async function readTextContrast (page) {
     const rows = [];
     for (const cell of document.querySelectorAll('.cell')) {
       const body = cell.querySelector('[data-part="body"]');
-      const disabled = body.querySelector('[aria-disabled="true"], [disabled]') !== null;
+      // A cell is disabled when a control in it carries the disabled marker
+      // or its sample state is declared disabled (a non-interactive
+      // component draws no marker)
+      const disabled = body.querySelector('[aria-disabled="true"], [disabled]') !== null ||
+        input.disabled.indexOf(cell.getAttribute('data-component') + ' / ' + cell.getAttribute('data-state')) !== -1;
       const runs = [];
       for (const node of body.querySelectorAll('*')) {
         if (undrawn(node, body)) {
@@ -839,7 +855,7 @@ export async function readTextContrast (page) {
       }
     }
     return rows;
-  });
+  }, { disabled: Array.isArray(disabledCells) ? disabledCells : [] });
 
 }
 

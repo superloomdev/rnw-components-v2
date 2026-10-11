@@ -38,7 +38,9 @@ export default Object.freeze({
   target: Object.freeze({ upstream: '.cds--text-area', ours: 'textarea' }),
   parts: Object.freeze({
     label: Object.freeze({ upstream: '.cds--label', ours: ':scope > div > div:nth-child(1) > [dir="auto"]:nth-child(1)', measure: 'text' }),
-    counter: Object.freeze({ upstream: '.cds--text-area__label-wrapper > :nth-child(2)', ours: ':scope > div > div:nth-child(1) > [dir="auto"]:last-child', measure: 'text', optional: true }),
+    // The counter pins to the row's trailing edge; compared there so the
+    // text's own tracking may widen it without moving the edge
+    counter: Object.freeze({ upstream: '.cds--text-area__label-wrapper > :nth-child(2)', ours: ':scope > div > div:nth-child(1) > [dir="auto"]:last-child', measure: 'text', optional: true, edge: 'end' }),
     frame: Object.freeze({ upstream: '.cds--text-area', ours: 'div:has(> textarea)', measure: 'box' }),
     value: Object.freeze({ upstream: '.cds--text-area', ours: 'textarea', measure: 'type' }),
     icon: Object.freeze({ upstream: 'svg.cds--text-area__invalid-icon path', ours: 'div:has(> textarea) svg path', measure: 'box', optional: true }),
@@ -73,10 +75,11 @@ export default Object.freeze({
       frame: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .outline', ours: 'div:has(> textarea)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
       edge: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .outline-start', pseudo: '::before', ours: 'div:has(> textarea)', measure: 'box', compare: ['borderTopWidth', 'borderBottomColor'] }),
       label: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .label:not(.hidden)', ours: ':scope > div > div:nth-child(1) > [dir="auto"]:nth-child(1)', measure: 'text' }),
-      // The upstream counter reads `4 / 100` with spaced slashes; ours
-      // renders `4/100`, so the leading edge differs while the trailing
-      // edge, the line and the type still compare
-      counter: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .counter', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:last-child', measure: 'text', optional: true, except: ['x', 'width'] }),
+      // The upstream counter reads `4 / 100` with spaced slashes, the
+      // 'spaced' value of the counter format ours writes here; the upstream
+      // applies no tracking to supporting text, so ours runs its glyphs
+      // wider while staying pinned to the same trailing edge
+      counter: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .counter', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:last-child', measure: 'text', optional: true, edge: 'end' }),
       value: Object.freeze({ upstream: 'md-outlined-text-field >>> textarea', ours: 'textarea', measure: 'type' }),
       message: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .supporting-text > span', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:nth-child(1)', measure: 'text', optional: true })
     }),

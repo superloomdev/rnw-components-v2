@@ -6,7 +6,7 @@
 /********************************************************************
 Build the menu behaviors for one component system.
 
-@param {Object} deps - { Utils, React }
+@param {Object} deps - { Utils, React, platform }
 
 @return {Object} - { getMenuPosition, useMenuPosition, useMenuCollection }
 *********************************************************************/
@@ -14,6 +14,7 @@ export default function createMenuBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
+  const platform = deps.platform;
 
 
   function finiteNumber (value) {
@@ -164,7 +165,16 @@ export default function createMenuBehaviors (deps) {
       }
     }, []);
 
+    // The style the measured surface mounts with: `fixed` at viewport
+    // coordinates on the web, `absolute` at window coordinates on a native
+    // platform (where the layer lives inside the overlay host's bounds).
+    // Before the first measure it sits at the point the menu opened on
     return {
+      layerStyle: {
+        left: position === null ? (finiteNumber(latestRef.current.x) ? latestRef.current.x : 0) : position.left,
+        position: platform.isNative ? 'absolute' : 'fixed',
+        top: position === null ? (finiteNumber(latestRef.current.y) ? latestRef.current.y : 0) : position.top
+      },
       position: position,
       measure: measure
     };

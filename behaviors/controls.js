@@ -529,6 +529,8 @@ export default function createControlsBehaviors (deps) {
       // build never survives
       listProps: { nativeID: listId, role: 'listbox' },
       labelProps: { nativeID: labelId },
+      // The open/close channel an overlay host's dismissal uses
+      setOpen: setOpen,
       getOptionProps: function (index) {
         const itemDisabled = items[index] !== undefined && items[index].disabled === true;
         return {

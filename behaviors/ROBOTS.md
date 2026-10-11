@@ -43,9 +43,10 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 
 ## Overlay and positioning (`overlay.js`, `positioning.js`, `menu.js`)
 
-- `OverlayContext`; `useOverlayHost()` -> `{ contextValue, layers }`; `useOverlay({ isOpen, onRequestClose })` -> `{ hosted, layerId, isTopmost }`
-- `getAnchoredPosition(rect, placement, offset, viewport)` -> `{ top, left, placement }`; `useAnchoredPosition({ anchor, placement, offset, alignmentAxisOffset, source })` -> `{ position, actualPlacement, measure }`; `usePopoverDismiss({ onDismiss })` -> `{ rootProps }`
-- `getMenuPosition({ x, y, width, height, viewport })` -> `{ top, left }`; `useMenuPosition({ ... })` -> `{ position, measure }`; `useMenuCollection({ ... })` -> `{ registerItem, enableIcons, enableSelectableItems, focusItem, containerProps, state }` | state: `hasIcons, hasSelectableItems, items`
+- `OverlayContext`; `useOverlayHost()` -> `{ contextValue, layers }` (the `OverlayHost` provider renders `layers` in registration order); `useOverlay({ isOpen, name, trap, onClose, render })` -> `{ hosted, layerId, isTopmost }` (while open and hosted, the host calls `render`; unhosted on a native platform it warns once per `name`)
+- `getAnchoredPosition(rect, placement, offset, viewport)` -> `{ top, left, placement }`; `useAnchoredPosition({ anchor, placement, offset, alignmentAxisOffset, track, source })` -> `{ position, actualPlacement, shift, anchor, layerStyle, measure }`; `usePopoverDismiss({ onDismiss })` -> `{ rootProps }`
+- `layerStyle` is the only place an overlay's position mode is chosen: `fixed` at viewport coordinates on the web, `absolute` on a native platform at window coordinates less the hosting `OverlayHost`'s own window origin, so an anchored layer lands on its anchor wherever the host is mounted (a Menu's `x`/`y` are already in the host's layer space and are not shifted); `useViewportLayer()` -> the same choice for a viewport-covering layer (`fixed` sized to the viewport, or `absolute` inset 0); `useViewportSize()` -> `{ width, height }`
+- `getMenuPosition({ x, y, width, height, viewport })` -> `{ top, left }`; `useMenuPosition({ ... })` -> `{ position, layerStyle, measure }`; `useMenuCollection({ ... })` -> `{ registerItem, enableIcons, enableSelectableItems, focusItem, containerProps, state }` | state: `hasIcons, hasSelectableItems, items`
 
 ## Pickers (`pickers.js`)
 

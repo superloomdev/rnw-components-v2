@@ -13,7 +13,7 @@
 /********************************************************************
 Build the overlay behaviors for one component system.
 
-@param {Object} deps - { Utils, React }
+@param {Object} deps - { Utils, React, Debug, platform }
 
 @return {Object} - { OverlayContext, useOverlayHost, useOverlay }
 *********************************************************************/
@@ -21,6 +21,11 @@ export default function createOverlayBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
+  const Debug = deps.Debug;
+  const platform = deps.platform;
+
+  // The component names already warned about a native overlay outside a host
+  const warned = new Set();
 
 
   /********************************************************************
@@ -33,6 +38,7 @@ export default function createOverlayBehaviors (deps) {
   const OverlayContext = React.createContext({
     hosted: false,
     layers: [],
+    origin: { x: 0, y: 0 },
     register: function () {
       return null;
     },
@@ -42,14 +48,17 @@ export default function createOverlayBehaviors (deps) {
 
   /********************************************************************
   Host-side hook: owns the layer stack and the context value a provider
-  publishes.
+  publishes. `origin` is the layer root's window position, measured by the
+  provider's onLayout: a layer computes viewport coordinates, so inside the
+  host they must be shifted back by the host's own origin.
 
-  @return {Object} - { contextValue, layers }
+  @return {Object} - { contextValue, layers, setOrigin }
   *********************************************************************/
   function useOverlayHost () {
 
     const nextIdRef = React.useRef(0);
     const [layers, setLayers] = React.useState([]);
+    const [origin, setOrigin] = React.useState({ x: 0, y: 0 });
 
     const register = React.useCallback(function (layer) {
       const id = nextIdRef.current;
@@ -73,14 +82,16 @@ export default function createOverlayBehaviors (deps) {
       return {
         hosted: true,
         layers: layers,
+        origin: origin,
         register: register,
         unregister: unregister
       };
-    }, [layers, register, unregister]);
+    }, [layers, origin, register, unregister]);
 
     return {
       contextValue: contextValue,
-      layers: layers
+      layers: layers,
+      setOrigin: setOrigin
     };
 
   }
@@ -123,6 +134,7 @@ export default function createOverlayBehaviors (deps) {
 
   @param {Object} options
   @param {Boolean}  options.isOpen  - Whether the overlay is open
+  @param {String}   [options.name]  - The overlay component's name, for the unhosted warning
   @param {Boolean}  [options.trap]  - Whether the layer traps focus
   @param {Function} options.onClose - Called on Escape/outside dismissal
   @param {Function} options.render  - Returns the overlay children
@@ -210,6 +222,20 @@ export default function createOverlayBehaviors (deps) {
       };
 
     }, [isOpen, hosted, register, unregister]);
+
+    // An open overlay with no host renders in place; on a native platform
+    // that keeps it inside its parent's bounds and clipping, so warn once
+    // per component name that an OverlayHost is required
+    React.useEffect(function () {
+      if (isOpen !== true || hosted === true || platform.isNative !== true) {
+        return;
+      }
+      const name = options.name;
+      if (Utils.isString(name) && !warned.has(name)) {
+        warned.add(name);
+        Debug.warn(name + ': an overlay rendered without a mounted OverlayHost; on a native platform it stays inside its parent\'s bounds');
+      }
+    }, [isOpen, hosted, options.name]);
 
     const isTopmost = layerIdRef.current !== null
       && !Utils.isEmptyArray(layers)

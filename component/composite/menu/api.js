@@ -24,8 +24,9 @@ export default Object.freeze({
     'color.list_item_container_selected', 'color.list_item_container_selected_hover',
     'color.list_item_label', 'color.list_item_label_hover', 'color.list_item_label_selected', 'color.list_item_label_disabled',
     'color.menu_divider', 'color.menu_item_danger_container_hover', 'color.menu_item_danger_label', 'color.menu_item_danger_label_hover',
+    'color.menu_item_shortcut', 'color.menu_item_shortcut_hover',
     'color.icon_secondary', 'color.icon_disabled',
-    'type.list_item', 'font.family.sans',
+    'type.list_item', 'type.menu_item_shortcut', 'font.family.sans',
     'anatomy.list_selected_mark', 'anatomy.menu_icon_seat', 'motion.duration_fast_01', 'motion.easing_standard_productive',
     'size.icon_01'
   ]),

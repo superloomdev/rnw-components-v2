@@ -592,6 +592,38 @@
       "status": "pending"
     },
     {
+      "name": "OverlayHost",
+      "family": "OverlayHost",
+      "tier": "provider",
+      "source": {
+        "package": "local",
+        "version": "1.0.0",
+        "export": "OverlayHost"
+      },
+      "description": "OverlayHost mounts once at the app root and owns the ordered overlay layer stack that lets an overlay escape its parent's bounds on a native platform; it has no upstream visual reference because neither reference system publishes a layer host, and its anatomy is a Superloom decision.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "overlay"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "none",
+        "package": "none"
+      },
+      "carbon_twin": "none",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "no_reference",
+        "superloom_decision"
+      ],
+      "status": "built"
+    },
+    {
       "name": "AspectRatio",
       "family": "AspectRatio",
       "tier": "atom",

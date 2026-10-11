@@ -6,15 +6,21 @@
 /********************************************************************
 Build the positioning behaviors for one component system.
 
-@param {Object} deps - { Utils, React, platform }
+@param {Object} deps - { Utils, React, platform, OverlayContext? }
+        `OverlayContext` is the overlay family's context, wired by
+        createBehaviors; a context-free call gets an empty one
 
-@return {Object} - { getAnchoredPosition, useAnchoredPosition, usePopoverDismiss }
+@return {Object} - { getAnchoredPosition, useAnchoredPosition, usePopoverDismiss, useViewportLayer, useViewportSize }
 *********************************************************************/
 export default function createPositioningBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
   const platform = deps.platform;
+  // The overlay host's context carries `origin`, the layer root's window
+  // position; a native layer computes window coordinates and must shift
+  // them back into the host's own space
+  const OverlayContext = deps.OverlayContext === undefined ? React.createContext(null) : deps.OverlayContext;
 
 
   function parsePlacement (placement) {
@@ -207,13 +213,45 @@ export default function createPositioningBehaviors (deps) {
       };
     }, [options.track, measure]);
 
+    // The style the measured layer mounts with: `fixed` at viewport
+    // coordinates on the web, `absolute` inside the overlay host on a native
+    // platform, shifted back by the host's own window origin (zero without
+    // a host). Before the first measure the layer sits at the frame origin
+    const overlay = React.useContext(OverlayContext);
+    const origin = overlay !== null && overlay.origin !== undefined ? overlay.origin : { x: 0, y: 0 };
+    const shiftX = platform.isNative ? origin.x : 0;
+    const shiftY = platform.isNative ? origin.y : 0;
+    const layerStyle = {
+      left: state.position === null ? 0 : state.position.left - shiftX,
+      position: platform.isNative ? 'absolute' : 'fixed',
+      top: state.position === null ? 0 : state.position.top - shiftY
+    };
+
     return {
       position: state.position,
       actualPlacement: state.actualPlacement,
       shift: state.shift,
       anchor: state.anchor,
+      layerStyle: layerStyle,
       measure: measure
     };
+
+  }
+
+  /********************************************************************
+  The layer a viewport-covering surface mounts with: on the web `fixed` at
+  the origin, sized to the live viewport; on a native platform `absolute`
+  inset 0 inside the overlay host's bounds.
+
+  @return {Object} - The layer style
+  *********************************************************************/
+  function useViewportLayer () {
+
+    const viewport = useViewportSize();
+
+    return platform.isNative
+      ? { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }
+      : { height: viewport.height, left: 0, position: 'fixed', top: 0, width: viewport.width };
 
   }
 
@@ -356,6 +394,7 @@ export default function createPositioningBehaviors (deps) {
     getAnchoredPosition: getAnchoredPosition,
     useAnchoredPosition: useAnchoredPosition,
     usePopoverDismiss: usePopoverDismiss,
+    useViewportLayer: useViewportLayer,
     useViewportSize: useViewportSize
   };
 

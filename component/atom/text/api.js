@@ -10,6 +10,7 @@ export default Object.freeze({
     color: { type: 'string', required: false, description: 'Color token leaf under `color.`. Default `text_primary`.' },
     breakMode: { type: 'string', required: false, description: 'Where a single line is cut: `head`, `middle` or `tail` render one line with an ellipsis there; `wrap` or absent wraps freely.' },
     accessibilityRole: { type: 'string', required: false, description: 'Role forwarded to the text element, for example `header` for a heading.' },
+    focusable: { type: 'boolean', required: false, description: 'Whether the text sits in the tab order; a tooltip gives its bare string anchor a tab stop this way.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the text element.' },
     style: { type: 'object', required: false, description: 'Style merged last (layout only; type and color are props).' }
   }),
