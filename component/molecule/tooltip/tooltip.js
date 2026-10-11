@@ -59,37 +59,45 @@ export default function Tooltip (ctx) {
     // the anchor's half-extent in from that edge; a centered one centers
     const extent = options.anchor ? (horizontal ? options.anchor.width : options.anchor.height) : 0;
     const lead = Math.max(0, extent / 2 - (horizontal ? boxWidth : boxHeight) / 2);
-    const position = { position: 'absolute' };
-    position[edge] = -(horizontal ? boxHeight : boxWidth);
     const inner = { backgroundColor: options.color, height: side, position: 'absolute', transform: [{ rotate: '45deg' }], width: side };
     if (horizontal) {
-      if (alignment === 'start') {
-        position.left = lead;
-      } else if (alignment === 'end') {
-        position.right = lead;
-      } else {
-        // Auto margins do not center an absolute box on a native platform
-        // (`left: 0` wins), so the box is pulled back by half its own width
-        position.left = 50 + '%';
-        position.marginLeft = -boxWidth / 2;
-      }
       inner.left = (boxWidth - side) / 2;
       inner.top = edge === 'bottom' ? -side / 2 : boxHeight - side / 2;
     } else {
-      if (alignment === 'start') {
-        position.top = lead;
-      } else if (alignment === 'end') {
-        position.bottom = lead;
-      } else {
-        position.top = 50 + '%';
-        position.marginTop = -boxHeight / 2;
-      }
       inner.top = (boxHeight - side) / 2;
       inner.left = edge === 'right' ? -side / 2 : boxWidth - side / 2;
     }
 
-    return React.createElement(View, { 'aria-hidden': true, style: [position, { alignItems: 'center', height: boxHeight, justifyContent: 'center', overflow: 'hidden', width: boxWidth }] },
+    // The clipping box reads the caret cells and hides the square's
+    // run-out; `relative` so the rotated square anchors to it
+    const clip = React.createElement(View, { 'aria-hidden': true, style: { height: boxHeight, overflow: 'hidden', position: 'relative', width: boxWidth } },
       React.createElement(View, { style: drawn ? inner : { height: 0, width: 0 } }));
+
+    // Neither auto margins nor a percentage offset centers an absolute
+    // child on a native platform (`auto` reads as 0, a percentage reads the
+    // parent's content box), so a centered caret hangs from a full-span
+    // flex wrapper that centers it on every platform; an aligned one keeps
+    // its pixel offset from the edge
+    if (alignment === 'center') {
+      const wrapper = { position: 'absolute' };
+      wrapper[edge] = -(horizontal ? boxHeight : boxWidth);
+      if (horizontal) {
+        wrapper.left = 0;
+        wrapper.right = 0;
+        wrapper.flexDirection = 'row';
+        wrapper.justifyContent = 'center';
+      } else {
+        wrapper.top = 0;
+        wrapper.bottom = 0;
+        wrapper.flexDirection = 'column';
+        wrapper.justifyContent = 'center';
+      }
+      return React.createElement(View, { style: wrapper }, clip);
+    }
+    const position = { position: 'absolute' };
+    position[edge] = -(horizontal ? boxHeight : boxWidth);
+    position[horizontal ? (alignment === 'start' ? 'left' : 'right') : (alignment === 'start' ? 'top' : 'bottom')] = lead;
+    return React.cloneElement(clip, { style: [clip.props.style, position] });
 
   }
 

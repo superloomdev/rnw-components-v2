@@ -146,15 +146,24 @@ describe('Tooltip: popover behavior', function () {
     assert.notEqual(root.querySelector('[role="tooltip"]'), null);
   });
 
-  test('a centered top tooltip centers its caret by a negative margin, not auto margins', async function () {
+  test('a centered top tooltip centers its caret in a full-span row, not by margin or percent', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderTooltip(registryFor('carbon'), { children: 'Anchor', label: 'Tip', defaultOpen: true });
     assert.notEqual(parts.caret, null);
-    const width = t['control.tooltip_caret_width'];
-    assert.equal(parts.caret.style.left, '50%');
-    assert.equal(parts.caret.style.marginLeft, -width / 2 + 'px');
-    for (const edge of ['marginRight', 'marginTop', 'marginBottom']) {
-      assert.notEqual(parts.caret.style[edge], 'auto');
+    // The clipping box keeps its cells; the wrapper spans the popover and
+    // hangs off the anchor-facing edge, centering the box in the row
+    assert.equal(parts.caret.style.width, t['control.tooltip_caret_width'] + 'px');
+    const row = parts.caret.parentElement;
+    assert.equal(row.style.position, 'absolute');
+    assert.equal(row.style.left, '0px');
+    assert.equal(row.style.right, '0px');
+    // The zero-size jsdom anchor flips `top` to `bottom`, so the caret
+    // hangs off the popover's top edge by its own height
+    const hung = row.style.bottom !== '' ? 'bottom' : 'top';
+    assert.equal(row.style[hung], -t['control.tooltip_caret_height'] + 'px');
+    assert.equal(row.style.justifyContent, 'center');
+    for (const element of [row, parts.caret, parts.caret.firstElementChild]) {
+      assert.equal(/%|auto/.test(element.style.cssText), false, element.style.cssText);
     }
   });
 
@@ -181,10 +190,10 @@ describe('Tooltip: native', function () {
     assert.equal(parts.bubble.style.transform, '');
   });
 
-  // Yoga does not read `margin: auto` on an absolute box the way CSS does:
-  // a centered caret is placed at half the popover's width and pulled back
-  // by half its own
-  test('a centered caret on android sits at 50% minus half its width, with no auto margins', async function () {
+  // Yoga does not read `margin: auto` on an absolute box the way CSS does,
+  // and a percentage `left` resolves against the parent's content box: a
+  // centered caret hangs from a full-span flex wrapper instead
+  test('a centered caret on android hangs from a full-span centered row', async function () {
     const androidLib = Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' } })
     });
@@ -192,11 +201,14 @@ describe('Tooltip: native', function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
     assert.notEqual(parts.caret, null);
-    const width = t['control.tooltip_caret_width'];
-    assert.equal(parts.caret.style.left, '50%');
-    assert.equal(parts.caret.style.marginLeft, -width / 2 + 'px');
-    for (const edge of ['marginRight', 'marginTop', 'marginBottom']) {
-      assert.notEqual(parts.caret.style[edge], 'auto');
+    const row = parts.caret.parentElement;
+    assert.equal(row.style.position, 'absolute');
+    assert.equal(row.style.left, '0px');
+    assert.equal(row.style.right, '0px');
+    assert.equal(row.style.bottom, -t['control.tooltip_caret_height'] + 'px');
+    assert.equal(row.style.justifyContent, 'center');
+    for (const element of [row, parts.caret, parts.caret.firstElementChild]) {
+      assert.equal(/%|auto/.test(element.style.cssText), false, element.style.cssText);
     }
   });
 
