@@ -92,6 +92,45 @@ test.describe('perceptual', function () {
     test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + withReference.length + ', without (skipped) ' + withoutReference.length });
   });
 
+  // A shot is cropped from the page, so anything the harness itself paints
+  // around a cell (its border, outline or shadow) can enter a comparison
+  test('a measurement cell paints no chrome of its own', async function ({ page }) {
+    const chrome = function (where) {
+      return page.evaluate(function (label) {
+        const out = [];
+        for (const cell of document.querySelectorAll('.cell')) {
+          const style = getComputedStyle(cell);
+          const id = label + ' ' + cell.getAttribute('data-component') + ' / ' + cell.getAttribute('data-state');
+          for (const side of ['Top', 'Right', 'Bottom', 'Left']) {
+            const color = style['border' + side + 'Color'];
+            const alpha = /^rgba\(.*,\s*([\d.]+)\)$/.exec(color);
+            if (style['border' + side + 'Style'] !== 'none' && parseFloat(style['border' + side + 'Width']) > 0 &&
+                color !== 'transparent' && (alpha === null || parseFloat(alpha[1]) > 0)) {
+              out.push(id + ': border-' + side.toLowerCase() + ' ' + color);
+            }
+          }
+          if (style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0) {
+            out.push(id + ': outline ' + style.outlineColor);
+          }
+          if (style.boxShadow !== 'none') {
+            out.push(id + ': box-shadow ' + style.boxShadow);
+          }
+        }
+        return out;
+      }, where);
+    };
+    const found = [];
+    await openShowcase(page, REFERENCE_TEMPLATE, 'TextArea', { measure: true, hosted: false });
+    found.push(...await chrome('ours'));
+    expect(await page.locator('.cell').count()).toBeGreaterThanOrEqual(1);
+    for (const set of ['primary', 'second']) {
+      const reference = await openReference(page, 'TextArea', set, 'dark');
+      expect(reference.cells, 'TextArea: the ' + set + ' reference page drew no state').toBeGreaterThanOrEqual(1);
+      found.push(...await chrome(set));
+    }
+    expect(found, 'measurement cells painting their own chrome').toEqual([]);
+  });
+
   for (const row of withReference) {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
       const reference = await openReference(page, row.name);

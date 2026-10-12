@@ -456,6 +456,16 @@
       "why": "an invisible render must not pass the pixel pipeline"
     },
     {
+      "id": "measure-cell-chrome",
+      "file": "_test/harness/serve.js",
+      "find": "  '.measure .cell{border-color:transparent}';",
+      "replace": "  '';",
+      "runner": "pw",
+      "test": "perceptual.spec.js",
+      "testName": "a measurement cell paints no chrome of its own",
+      "why": "the harness's own cell border must never enter a compared screenshot"
+    },
+    {
       "id": "measure-checkbox-label-inset",
       "file": "component/molecule/checkbox/spec.js",
       "find": "  labelGap: { tokens: ['spacing.spacing_04', 'border.width_01'], operation: 'subtract' },",

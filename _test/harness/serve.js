@@ -55,6 +55,8 @@ const FONT_CSS = FACES.map(function (face) {
 // layout box around a cell has an explicit whole-pixel size (the upstream
 // stylesheet resets margins and line heights), so a cell sits on the same
 // pixel grid on both pages and a pixel comparison sees the component only
+// A measurement cell keeps its border's width but paints none of it: a
+// cell taller than its row pitch would otherwise carry its own edge into the shot
 const LAYOUT_CSS = 'body{margin:0;padding:24px;background:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}' +
   'h2{margin:0 0 12px;font:600 16px/24px system-ui}' +
   '.family{margin:0 0 32px}.grid{display:flex;flex-wrap:wrap;gap:24px}' +
@@ -62,7 +64,8 @@ const LAYOUT_CSS = 'body{margin:0;padding:24px;background:#fff;-webkit-font-smoo
   '.cell-label{font:11px/16px system-ui;color:#666}.cell-body{display:inline-flex}' +
   // Measurement layout: one cell per row on a fixed row pitch, so every cell
   // body starts on a whole pixel whatever the fractional sizes before it
-  '.measure .grid{display:grid;grid-template-columns:max-content;grid-auto-rows:160px}';
+  '.measure .grid{display:grid;grid-template-columns:max-content;grid-auto-rows:160px}' +
+  '.measure .cell{border-color:transparent}';
 
 
 /********************************************************************
