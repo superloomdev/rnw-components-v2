@@ -570,7 +570,7 @@
         "version": "1.115.0",
         "export": "Tooltip"
       },
-      "description": "Tooltip is a component in the Tooltip family.",
+      "description": "Tooltip is a short label on a bubble beside the element it describes, opening after a delay on hover or focus (on press where there is no hover), placed against its anchor and flipped to stay in view.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -589,7 +589,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OverlayHost",

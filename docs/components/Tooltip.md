@@ -53,7 +53,7 @@ cells.
 
 ## Tooltip
 
-Tooltip is a component in the Tooltip family.
+Tooltip is a short label on a bubble beside the element it describes, opening after a delay on hover or focus (on press where there is no hover), placed against its anchor and flipped to stay in view.
 
 | | |
 |---|---|
