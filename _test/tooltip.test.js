@@ -199,15 +199,25 @@ describe('Tooltip: native', function () {
     });
     const Registry = buildSystem('carbon', factories, { lib: androidLib });
     const t = buildNative('carbon').tokens;
-    const parts = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
-    assert.notEqual(parts.caret, null);
-    const row = parts.caret.parentElement;
+    const { root } = await renderTooltip(Registry, { children: 'Anchor', label: 'Tip', open: true });
+    // `measureInWindow` answers from a timer, which `act` does not wait for;
+    // once it lands, the zero-size jsdom anchor flips `top` to `bottom`, so
+    // the caret hangs off the popover's top edge by its own height
+    await act(async function () {
+      await new Promise(function (resolve) {
+        setTimeout(resolve, 0);
+      });
+    });
+    const caret = root.querySelector('[role="tooltip"] [aria-hidden="true"]');
+    assert.notEqual(caret, null);
+    const row = caret.parentElement;
     assert.equal(row.style.position, 'absolute');
     assert.equal(row.style.left, '0px');
     assert.equal(row.style.right, '0px');
-    assert.equal(row.style.bottom, -t['control.tooltip_caret_height'] + 'px');
+    assert.equal(row.style.top, -t['control.tooltip_caret_height'] + 'px');
+    assert.equal(row.style.bottom, '');
     assert.equal(row.style.justifyContent, 'center');
-    for (const element of [row, parts.caret, parts.caret.firstElementChild]) {
+    for (const element of [row, caret, caret.firstElementChild]) {
       assert.equal(/%|auto/.test(element.style.cssText), false, element.style.cssText);
     }
   });
