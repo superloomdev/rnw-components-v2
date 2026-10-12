@@ -22,6 +22,22 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 
 Both. The pressable root, the label and the icon render on iOS, Android and web; hover feedback appears only where a pointer exists.
 
+## IconButton
+
+The Button family's icon-only member: a square Pressable holding one icon token inside a compact `Tooltip` whose label is the button's accessible name. It shares the button's role cells, press presentation and focus ring; only its own member cells and decisions follow.
+
+### Decisions
+
+- **The square.** `lg` reads `control.icon_button_size` (the button's own height); `sm` and `md` come off the shared size scale. The border is always drawn, as the button's, so every kind shares the outer size, and `control.button_radius` gives each template its shape (a full radius on a square is a circle).
+- **Icon color.** Filled kinds draw their icon in the kind's label cells; the standard (`ghost`) and outlined (`tertiary`) kinds read the member cells `color.icon_button_<kind>_icon` per state, which state the icon color apart from a labelled button's.
+- **Toggle.** A `selected` prop makes the button `aria-pressed`; true draws the kind's selected cells, and hover and press still apply over it.
+- **The tooltip is `compact`.** `align` chooses the side (default `top`); the label names the button and describes it through the tooltip's own `aria-describedby`. A disabled button still shows it.
+- **Composition.** The icon atom draws the glyph, the Tooltip molecule the popover; both keep the element tree identical across templates.
+
+### Second reference
+
+`md-icon-button` (standard -> `ghost`), `md-outlined-icon-button` (`tertiary`), `md-filled-icon-button` (`primary`), `md-filled-tonal-icon-button` (`secondary`). It has no sizes, so `sm` and `md` are unmeasured there, and no rendered tooltip.
+
 ## Button
 
 Button draws a pressable label with an optional trailing icon in nine kinds and six sizes, each kind's fill, label, border and elevation per state from the theme's button role cells, and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision.
@@ -45,6 +61,7 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
 | `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
+| `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -92,3 +109,56 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | medium | `{"children":"Medium","size":"md"}` |
 | extra large | `{"children":"Extra large","size":"xl"}` |
 | 2x large | `{"children":"2x large","size":"2xl"}` |
+
+## IconButton
+
+IconButton is a square button that shows one icon token and a tooltip label.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `icon` | `string` | yes | The icon token the button draws. |
+| `iconSize` | `number` | no | The glyph's size; default the icon button member cell. Composing parents pass their own cell (the dialog's close icon). |
+| `iconColor` | `string` | no | The color leaf the glyph draws; default the kind's icon cell. Composing parents name their own cell (the notification's close icon). |
+| `label` | `string` | yes | The button's accessible name, which its compact tooltip shows. |
+| `kind` | `string` | no | One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`. |
+| `size` | `string` | no | One of `sm`, `md`, `lg`: the square's side. Default `lg`, the `icon_button` member cell. |
+| `disabled` | `boolean` | no | Disables the button. |
+| `selected` | `boolean` | no | A toggle button's state: present makes it `aria-pressed`, true draws the kind's selected cells. |
+| `onPress` | `function` | no | Called when the button is pressed. |
+| `align` | `string` | no | The side the tooltip opens on. Default `top`. |
+| `testID` | `string` | no | Test identifier forwarded to the button. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `size` | `control.icon_button_size` |
+| `sizeSmall` | `size.size_small` |
+| `sizeMedium` | `size.size_medium` |
+| `iconSize` | `control.icon_button_icon_size` |
+| `radius` | `control.button_radius` |
+| `borderWidth` | `border.width_01` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"icon":"add","label":"Add"}` |
+| secondary | `{"icon":"add","label":"Add","kind":"secondary"}` |
+| ghost | `{"icon":"add","label":"Add","kind":"ghost"}` |
+| tertiary | `{"icon":"add","label":"Add","kind":"tertiary"}` |
+| selected | `{"icon":"add","label":"Add","kind":"ghost","selected":true}` |
+| disabled | `{"icon":"add","label":"Add","disabled":true}` |
+| small | `{"icon":"add","label":"Add","kind":"ghost","size":"sm"}` |
+| medium | `{"icon":"add","label":"Add","kind":"ghost","size":"md"}` |

@@ -97,7 +97,7 @@ test.describe('perceptual', function () {
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await shootBodies(page, row.name);
-      await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true });
+      await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
       const ours = await shootBodies(page, row.name);
       const ratios = [];
       const over = [];

@@ -6,7 +6,9 @@
 /********************************************************************
 Build the menu behaviors for one component system.
 
-@param {Object} deps - { Utils, React }
+@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
+        `OverlayContext` is the overlay family's context, wired by
+        createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getMenuPosition, useMenuPosition, useMenuCollection }
 *********************************************************************/
@@ -14,6 +16,11 @@ export default function createMenuBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
+  const ReactNative = deps.ReactNative;
+  const platform = deps.platform;
+  // Inside a host the layer mounts `absolute` at the host's own
+  // coordinates; unhosted keeps the window answer
+  const OverlayContext = deps.OverlayContext === undefined ? React.createContext(null) : deps.OverlayContext;
 
 
   function finiteNumber (value) {
@@ -109,6 +116,12 @@ export default function createMenuBehaviors (deps) {
     latestRef.current = options;
     const [position, setPosition] = React.useState(null);
 
+    // The overlay context at call time, not render time: `measure` is
+    // memoized, and the host's size may arrive after mount
+    const overlay = React.useContext(OverlayContext);
+    const overlayRef = React.useRef(overlay);
+    overlayRef.current = overlay;
+
     const measure = React.useCallback(function () {
       const current = latestRef.current;
       const menu = current.menuRef && current.menuRef.current;
@@ -125,10 +138,23 @@ export default function createMenuBehaviors (deps) {
           }
         }
         if (!viewport) {
-          viewport = {
-            width: typeof window === 'undefined' ? 0 : window.innerWidth,
-            height: typeof window === 'undefined' ? 0 : window.innerHeight
-          };
+          const host = overlayRef.current;
+          const hosted = host !== null && host.hosted === true;
+          if (hosted && host.size !== undefined) {
+            // A hosted menu's x/y are already host coordinates, so the
+            // space it fits is the host's own
+            viewport = { width: host.size.width, height: host.size.height };
+          } else if (platform.isNative && ReactNative.Dimensions !== undefined &&
+              typeof ReactNative.Dimensions.get === 'function') {
+            // There is no `window` on a native platform; the window the
+            // layer's coordinates live in is Dimensions'
+            viewport = ReactNative.Dimensions.get('window');
+          } else {
+            viewport = {
+              width: typeof window === 'undefined' ? 0 : window.innerWidth,
+              height: typeof window === 'undefined' ? 0 : window.innerHeight
+            };
+          }
         }
         const container = current.containerRef && current.containerRef.current;
         let actionButtonWidth = current.actionButtonWidth;
@@ -136,7 +162,9 @@ export default function createMenuBehaviors (deps) {
             typeof container.getBoundingClientRect === 'function') {
           actionButtonWidth = container.getBoundingClientRect().width;
         }
-        setPosition(getMenuPosition({
+        // No state write when the answer is unchanged: the surface's own
+        // onLayout re-fires measure, and a same-position write would loop
+        const next = getMenuPosition({
           x: current.x,
           y: current.y,
           menuAlignment: current.menuAlignment,
@@ -144,7 +172,10 @@ export default function createMenuBehaviors (deps) {
           viewport: viewport,
           spacing: current.spacing,
           actionButtonWidth: actionButtonWidth
-        }));
+        });
+        setPosition(function (previous) {
+          return previous !== null && previous.left === next.left && previous.top === next.top ? previous : next;
+        });
       };
       if (typeof menu.getBoundingClientRect === 'function') {
         finish(menu.getBoundingClientRect());
@@ -164,7 +195,18 @@ export default function createMenuBehaviors (deps) {
       }
     }, []);
 
+    // The style the measured surface mounts with: inside a host `absolute`
+    // at host coordinates on every platform; unhosted `fixed` at viewport
+    // coordinates on the web, `absolute` at window coordinates on a native
+    // platform. Before the first measure it sits at the point the menu
+    // opened on
+    const hosted = overlay !== null && overlay.hosted === true;
     return {
+      layerStyle: {
+        left: position === null ? (finiteNumber(latestRef.current.x) ? latestRef.current.x : 0) : position.left,
+        position: hosted || platform.isNative ? 'absolute' : 'fixed',
+        top: position === null ? (finiteNumber(latestRef.current.y) ? latestRef.current.y : 0) : position.top
+      },
       position: position,
       measure: measure
     };

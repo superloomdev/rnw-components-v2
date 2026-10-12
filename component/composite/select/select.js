@@ -21,7 +21,7 @@ export default function Select (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useSelect, getA11yState } = ctx.behaviors;
+  const { useAnchoredPosition, useOverlay, useSelect, getA11yState } = ctx.behaviors;
 
   // Size -> height metric in the spec sheet
   const SIZES = Object.freeze({ sm: 'heightSmall', md: 'height', lg: 'heightLarge' });
@@ -63,38 +63,92 @@ export default function Select (ctx) {
       trailing: true
     });
     const iconGap = presentation.iconGap;
+    const list = ctx.listPresentation({
+      itemHeight: ctx.metric('Select', 'itemHeight'),
+      paddingInline: ctx.metric('Select', 'itemPaddingInline'),
+      dividerWidth: ctx.metric('Select', 'itemDividerWidth'),
+      paddingBlock: ctx.metric('Select', 'listPaddingBlock'),
+      radius: ctx.metric('Select', 'listRadius'),
+      level: ctx.metric('Select', 'listLevel')
+    });
 
     // The indicator: the theme's own dropdown glyph, in the field's indicator color for the state
-    const caret = React.createElement(View, { style: { marginStart: iconGap } },
+    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },
       React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }));
 
     // Render the error icon while invalid
     const icon = invalid ? React.createElement(View, { style: { marginStart: iconGap } },
       React.createElement(ctx.Registry.Icon, { name: 'invalid', size: iconSize, color: presentation.invalidIcon })) : null;
 
+    // The frame is the open list's anchor: where an overlay host is mounted
+    // the list renders through it on the layer style the positioner returns
+    // (`fixed` at viewport coordinates on the web, `absolute` at window
+    // coordinates inside the host on a native platform); unhosted it keeps
+    // its inline seat below the frame
+    const frameRef = React.useRef(null);
+    const anchored = useAnchoredPosition({
+      anchor: frameRef,
+      offset: 0,
+      placement: 'bottom-start',
+      track: state.open === true
+    });
+    React.useEffect(function () {
+      if (state.open === true) {
+        anchored.measure();
+      }
+    }, [state.open, anchored.measure]);
+
+    // The list registers with the overlay host while open; the host calls
+    // `render` after this component has returned, when `listElement` exists
+    const overlay = useOverlay({
+      isOpen: state.open === true,
+      name: 'Select',
+      onClose: function () {
+        select.setOpen(false);
+      },
+      render: function () {
+        return listElement;
+      }
+    });
+
     // Render the option list while open
-    const list = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
-      style: [{
-        backgroundColor: ctx.color('layer_01'),
-        left: 0,
-        position: 'absolute',
-        right: 0,
-        top: height,
-        zIndex: ctx.metric('Select', 'listLevel')
-      }, ctx.token('shadow.level_02')]
+    const listElement = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
+      style: [overlay.hosted === true
+        ? Object.assign({}, anchored.layerStyle, {
+          transform: [{ translateX: (anchored.shift || { x: 0 }).x + '%' }, { translateY: (anchored.shift || { y: 0 }).y + '%' }],
+          width: anchored.anchor === null ? undefined : anchored.anchor.width
+        })
+        : {
+          left: 0,
+          position: 'absolute',
+          right: 0,
+          top: height
+        }, list.container, {
+        maxHeight: ctx.metric('Select', 'itemHeight') * ctx.metric('Select', 'listMaxRows') + ctx.metric('Select', 'listPaddingBlock') * 2,
+        overflowY: 'auto'
+      }]
     }), items.map(function (item, index) {
-      const fill = index === state.selectedIndex ? 'layer_selected_01' : index === state.highlightedIndex ? 'layer_hover_01' : 'layer_01';
+      const itemDisabled = item.disabled === true;
+      const selectedItem = index === state.selectedIndex;
+      const itemState = function (interaction) {
+        return {
+          disabled: itemDisabled,
+          highlighted: index === state.highlightedIndex,
+          hovered: interaction.hovered === true,
+          pressed: interaction.pressed === true,
+          selected: selectedItem
+        };
+      };
       return React.createElement(Pressable, Object.assign({ key: item.value }, select.getOptionProps(index), {
-        style: {
-          backgroundColor: ctx.color(fill),
-          height: ctx.metric('Select', 'optionHeight'),
-          justifyContent: 'center',
-          paddingHorizontal: ctx.metric('Select', 'optionPadding')
+        style: function (interaction) {
+          return list.item(itemState(interaction));
         }
-      }), React.createElement(Text, {
-        numberOfLines: 1,
-        style: [presentation.value, { color: ctx.color('text_primary') }]
-      }, item.label));
+      }),
+      React.createElement(View, { style: list.option(index !== 0) },
+        React.createElement(Text, {
+          numberOfLines: 1,
+          style: list.label(itemState({}))
+        }, item.label)));
     })) : null;
 
     // Render the message below: the error while invalid, else the helper
@@ -116,7 +170,7 @@ export default function Select (ctx) {
     // Render the root, the label, the frame with the trigger and the list, and the message
     return React.createElement(View, Object.assign({}, select.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
       labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-      React.createElement(View, { style: presentation.frame },
+      React.createElement(View, { ref: frameRef, style: presentation.frame },
         React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
           accessibilityLabel: props.accessibilityLabel,
           testID: props.testID,
@@ -129,16 +183,16 @@ export default function Select (ctx) {
         React.createElement(View, { style: { flexGrow: 1 } },
           React.createElement(Text, {
             numberOfLines: 1,
+            // A list box's placeholder is its label, drawn in the field's own
+            // ink; under a floating label it stays in the tree, undrawn
             style: [bodyStyle, {
-              color: selected === null ? presentation.placeholderColor : bodyStyle.color,
-              // Under a floating label a select draws no placeholder: it stays in the tree, undrawn
               opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
             }]
           }, selected === null ? placeholder : selected.label),
           sizer),
         icon,
         caret),
-        list
+        overlay.hosted === true ? null : listElement
       ),
       message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );

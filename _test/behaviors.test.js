@@ -22,6 +22,7 @@ import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import * as ReactNative from 'react-native-web';
 import utils from 'helper-utils';
+import debug from 'helper-debug';
 
 import createBehaviors from '../behaviors/index.js';
 import createPlatform from '../component/platform.js';
@@ -30,8 +31,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const BEHAVIORS_DIR = join(HERE, '..', 'behaviors');
 
 const Utils = utils({});
+const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
 const platform = createPlatform(ReactNative, Utils);
-const behaviors = createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, platform: platform });
+const behaviors = createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, Debug: Debug, platform: platform });
 
 // Every name the composer must expose. Adding a behavior means adding it here.
 const EXPECTED_NAMES = [
@@ -43,10 +45,10 @@ const EXPECTED_NAMES = [
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
-  'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
+  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
   'usePopoverDismiss', 'usePressKeys', 'useReducedMotion', 'useResponsiveStack',
   'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useTabsState', 'useTextField',
-  'useTimePickerDraft', 'useTimedFlag'
+  'useTimePickerDraft', 'useTimedFlag', 'useViewportLayer', 'useViewportSize'
 ];
 
 // Hooks that own no state and therefore return no `state`. Each is named with
@@ -58,13 +60,16 @@ const STATELESS_HOOKS = {
   useEscapeKey: 'undefined',
   useFocusTrap: 'object',
   useHeadingLevel: 'number',
+  useLayerSpace: 'object',
   useMenuPosition: 'object',
   useOverlay: 'object',
   useOverlayHost: 'object',
   usePopoverDismiss: 'object',
   usePressKeys: 'object',
   useRovingTabIndex: 'object',
-  useSectionLevel: 'number'
+  useSectionLevel: 'number',
+  useViewportLayer: 'object',
+  useViewportSize: 'object'
 };
 
 // Minimal props per state-owning hook so the probe renders without throwing.
@@ -186,8 +191,11 @@ describe('behaviors: presence', function () {
 
   test('the composer refuses a missing dependency', function () {
     assert.throws(function () {
-      createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils });
+      createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, Debug: Debug });
     }, /requires deps\.platform/);
+    assert.throws(function () {
+      createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, platform: platform });
+    }, /requires deps\.Debug/);
   });
 
 });
@@ -229,7 +237,9 @@ describe('behaviors: stateless hooks return the declared kind', function () {
     usePopoverDismiss: [{}],
     usePressKeys: [{}],
     useRovingTabIndex: [{ count: 2 }],
-    useSectionLevel: []
+    useSectionLevel: [],
+    useViewportLayer: [],
+    useViewportSize: []
   };
 
   for (const name of Object.keys(STATELESS_HOOKS)) {
@@ -271,6 +281,329 @@ describe('behaviors: purity', function () {
       });
     }
     assert.deepEqual(violations, []);
+  });
+
+});
+
+
+describe('behaviors: the platform answer owns the layer style', function () {
+
+  const native = createBehaviors({
+    React: React, ReactNative: ReactNative, Utils: Utils, Debug: Debug,
+    platform: createPlatform({ Platform: { OS: 'android' } }, Utils)
+  });
+
+  for (const name of ['useAnchoredPosition', 'useMenuPosition']) {
+    test(name + ': layerStyle is fixed on the web, absolute on a native platform', async function () {
+      const web = await renderHook(behaviors[name], {});
+      assert.equal(web.layerStyle.position, 'fixed');
+      assert.equal(typeof web.layerStyle.left, 'number');
+      assert.equal(typeof web.layerStyle.top, 'number');
+      const android = await renderHook(native[name], {});
+      assert.equal(android.layerStyle.position, 'absolute');
+      assert.equal(typeof android.layerStyle.left, 'number');
+      assert.equal(typeof android.layerStyle.top, 'number');
+    });
+  }
+
+  test('useAnchoredPosition: on a native platform the layer shifts by the host origin', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 60, 20, 10);
+      }
+    };
+    let result;
+    function Inner () {
+      result = native.useAnchoredPosition({ anchor: anchor, placement: 'bottom-start', flip: false });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(native.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 10, y: 50 } } },
+        React.createElement(Inner)));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // Window position minus the host origin: left 100 - 10,
+    // top (60 + 10 + 8 offset) - 50
+    assert.equal(result.layerStyle.position, 'absolute');
+    assert.equal(result.layerStyle.left, 90);
+    assert.equal(result.layerStyle.top, 28);
+  });
+
+  test('useAnchoredPosition: without a host the native layer keeps window coordinates', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 60, 20, 10);
+      }
+    };
+    let result;
+    function Probe () {
+      result = native.useAnchoredPosition({ anchor: anchor, placement: 'bottom-start', flip: false });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    assert.equal(result.layerStyle.left, 100);
+    assert.equal(result.layerStyle.top, 78);
+  });
+
+  test('useViewportLayer: fixed and viewport-sized on the web', async function () {
+    const layer = await renderHook(behaviors.useViewportLayer);
+    assert.equal(layer.position, 'fixed');
+    assert.equal(layer.left, 0);
+    assert.equal(layer.top, 0);
+    assert.equal(layer.width, window.innerWidth);
+    assert.equal(layer.height, window.innerHeight);
+  });
+
+  test('useViewportLayer: inside a host the web layer covers the host, not the viewport', async function () {
+    let layer;
+    function Probe () {
+      layer = behaviors.useViewportLayer();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(layer, {
+      bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
+    });
+  });
+
+  test('useMenuPosition: inside a host the web layer mounts absolute at the same point', async function () {
+    let positioned;
+    function Probe () {
+      positioned = behaviors.useMenuPosition({ x: 20, y: 30 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.equal(positioned.layerStyle.position, 'absolute');
+    assert.equal(positioned.layerStyle.left, 20);
+    assert.equal(positioned.layerStyle.top, 30);
+  });
+
+  test('useViewportLayer: absolute inset 0 inside the host on a native platform', async function () {
+    assert.deepEqual(await renderHook(native.useViewportLayer), {
+      bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
+    });
+  });
+
+  // A native platform has no `window`: the space the layer positions
+  // against is `Dimensions.get('window')`, or the host's own box when the
+  // layer is mounted inside a host
+  const withDimensions = Object.assign({}, ReactNative, {
+    Dimensions: {
+      addEventListener: function () {
+        return { remove: function () {} };
+      },
+      get: function () {
+        return { width: 400, height: 800 };
+      }
+    }
+  });
+  const nativeDims = createBehaviors({
+    React: React, ReactNative: withDimensions, Utils: Utils, Debug: Debug,
+    platform: createPlatform({ Platform: { OS: 'android' } }, Utils)
+  });
+
+  test('useAnchoredPosition: an unhosted native layer measures against the Dimensions window', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 200, 20, 10);
+      }
+    };
+    let result;
+    function Probe () {
+      result = nativeDims.useAnchoredPosition({ anchor: anchor, placement: 'bottom' });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // Room below the anchor in the 400x800 window keeps the placement and
+    // the layer sits below the anchor's bottom edge
+    assert.equal(result.actualPlacement, 'bottom');
+    assert.equal(result.layerStyle.position, 'absolute');
+    assert.equal(result.layerStyle.top, 218);
+    assert.equal(result.layerStyle.left, 110);
+  });
+
+  test('useAnchoredPosition: a hosted native layer measures in the host space', async function () {
+    const anchor = {
+      measureInWindow: function (callback) {
+        callback(100, 640, 20, 10);
+      }
+    };
+    let result;
+    function Probe () {
+      result = nativeDims.useAnchoredPosition({ anchor: anchor, placement: 'bottom' });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(nativeDims.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+        React.createElement(Probe)));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // The host-space anchor bottom is 600: `bottom` plus the offset
+    // overflows the 300x600 host, so the placement flips to `top`
+    assert.equal(result.actualPlacement, 'top');
+    assert.equal(result.layerStyle.top, 582);
+    assert.equal(result.layerStyle.left, 100);
+  });
+
+  test('useMenuPosition: a hosted native menu clamps into the host', async function () {
+    const menu = {
+      measureInWindow: function (callback) {
+        callback(0, 0, 160, 50);
+      }
+    };
+    let positioned;
+    function Probe () {
+      positioned = nativeDims.useMenuPosition({ x: 240, y: 30, menuRef: { current: menu } });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(nativeDims.OverlayContext.Provider,
+        { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+        React.createElement(Probe)));
+    });
+    await act(async function () {
+      positioned.measure();
+    });
+    // 240 + 160 overflows the 300-wide host, so the menu's right edge
+    // pins at the anchor's: left 80
+    assert.equal(positioned.layerStyle.position, 'absolute');
+    assert.equal(positioned.layerStyle.left, 80);
+    assert.equal(positioned.layerStyle.top, 30);
+  });
+
+  test('useLayerSpace: the host size when hosted, the Dimensions window when not', async function () {
+    let unhosted;
+    function Plain () {
+      unhosted = nativeDims.useLayerSpace();
+      return null;
+    }
+    let hosted;
+    function InsideHost () {
+      hosted = nativeDims.useLayerSpace();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(React.Fragment, null,
+        React.createElement(Plain),
+        React.createElement(nativeDims.OverlayContext.Provider,
+          { value: { hosted: true, origin: { x: 10, y: 50 }, size: { width: 300, height: 600 } } },
+          React.createElement(InsideHost))));
+    });
+    assert.deepEqual(hosted, { width: 300, height: 600 });
+    assert.deepEqual(unhosted, { width: 400, height: 800 });
+  });
+
+  test('useOverlay warns once per component name when open and unhosted on a native platform', async function () {
+    const warnings = [];
+    const recorded = Object.assign({}, Debug, {
+      warn: function (message) {
+        warnings.push(message);
+      }
+    });
+    const unhosted = createBehaviors({
+      React: React, ReactNative: ReactNative, Utils: Utils, Debug: recorded,
+      platform: createPlatform({ Platform: { OS: 'android' } }, Utils)
+    });
+    await renderHook(unhosted.useOverlay, { isOpen: true, name: 'Probe' });
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /Probe.*OverlayHost/);
+    // A second mount of the same name does not repeat the warning
+    await renderHook(unhosted.useOverlay, { isOpen: true, name: 'Probe' });
+    assert.equal(warnings.length, 1);
+  });
+
+  test('useOverlay does not warn when closed, hosted, or on the web', async function () {
+    const warnings = [];
+    const recorded = Object.assign({}, Debug, {
+      warn: function (message) {
+        warnings.push(message);
+      }
+    });
+    const unhosted = createBehaviors({
+      React: React, ReactNative: ReactNative, Utils: Utils, Debug: recorded,
+      platform: createPlatform({ Platform: { OS: 'android' } }, Utils)
+    });
+    // Closed on a native platform
+    await renderHook(unhosted.useOverlay, { isOpen: false, name: 'Shut' });
+    // Hosted on a native platform
+    let hosted;
+    function Inner () {
+      hosted = unhosted.useOverlay({ isOpen: true, name: 'Hosted' });
+      return null;
+    }
+    function Outer () {
+      const host = unhosted.useOverlayHost();
+      return React.createElement(unhosted.OverlayContext.Provider, { value: host.contextValue },
+        React.createElement(Inner));
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Outer));
+    });
+    assert.equal(hosted.hosted, true);
+    // Open and unhosted on the web
+    const web = createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, Debug: recorded, platform: platform });
+    await renderHook(web.useOverlay, { isOpen: true, name: 'Web' });
+    assert.deepEqual(warnings, []);
   });
 
 });

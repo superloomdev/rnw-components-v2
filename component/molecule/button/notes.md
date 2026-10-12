@@ -17,3 +17,19 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 ## Platform
 
 Both. The pressable root, the label and the icon render on iOS, Android and web; hover feedback appears only where a pointer exists.
+
+# IconButton
+
+The Button family's icon-only member: a square Pressable holding one icon token inside a compact `Tooltip` whose label is the button's accessible name. It shares the button's role cells, press presentation and focus ring; only its own member cells and decisions follow.
+
+## Decisions
+
+- **The square.** `lg` reads `control.icon_button_size` (the button's own height); `sm` and `md` come off the shared size scale. The border is always drawn, as the button's, so every kind shares the outer size, and `control.button_radius` gives each template its shape (a full radius on a square is a circle).
+- **Icon color.** Filled kinds draw their icon in the kind's label cells; the standard (`ghost`) and outlined (`tertiary`) kinds read the member cells `color.icon_button_<kind>_icon` per state, which state the icon color apart from a labelled button's.
+- **Toggle.** A `selected` prop makes the button `aria-pressed`; true draws the kind's selected cells, and hover and press still apply over it.
+- **The tooltip is `compact`.** `align` chooses the side (default `top`); the label names the button and describes it through the tooltip's own `aria-describedby`. A disabled button still shows it.
+- **Composition.** The icon atom draws the glyph, the Tooltip molecule the popover; both keep the element tree identical across templates.
+
+## Second reference
+
+`md-icon-button` (standard -> `ghost`), `md-outlined-icon-button` (`tertiary`), `md-filled-icon-button` (`primary`), `md-filled-tonal-icon-button` (`secondary`). It has no sizes, so `sm` and `md` are unmeasured there, and no rendered tooltip.

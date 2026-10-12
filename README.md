@@ -24,6 +24,8 @@ const Registry = createSystem(shared_libs, config, built, breakpoint, factories)
 
 `createSystem` validates the theme against the library's declared token and icon requirements through `Themer.validateContract` and throws one `TypeError` naming every missing token. Components are read from the returned registry by name.
 
+Mount `Registry.OverlayHost` once at the app root, around everything else. Overlays (Tooltip, Menu, Modal, the Select and Dropdown lists) render their layers through it; on iOS and Android it is what lifts an overlay out of its parent's bounds and clipping, and without it an open overlay stays inside its parent and logs a one-time warning.
+
 ## What this package is
 
 - **Roster-driven**: `data/roster.json` (exported as `./data/roster.json`) is the authoritative list of every component, its tier, family, platform answer, behaviors, enums and flags.

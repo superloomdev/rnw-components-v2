@@ -29,3 +29,18 @@ export const FIELD_PRESENTATION_TOKENS = Object.freeze([
 ].concat(FIELD_COLORS.map(function (cell) {
   return 'color.' + cell;
 })));
+
+// The tokens the list presentation reads: the container, the item fills and
+// labels by state, the divider and the item's type set. A consumer that marks
+// the selected item declares `anatomy.list_selected_mark` itself
+export const LIST_PRESENTATION_TOKENS = Object.freeze([
+  'stacking.dropdown', 'shadow.list', 'font.family.sans',
+  'control.list_item_height', 'control.list_item_padding_inline', 'control.list_item_divider_width',
+  'control.list_padding_block', 'control.list_radius',
+  'type.list_item',
+  'color.list_container',
+  'color.list_item_label', 'color.list_item_label_hover', 'color.list_item_label_selected', 'color.list_item_label_disabled',
+  'color.list_item_container_hover', 'color.list_item_container_active',
+  'color.list_item_container_selected', 'color.list_item_container_selected_hover',
+  'color.list_item_divider'
+]);

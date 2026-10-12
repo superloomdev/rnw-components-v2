@@ -114,7 +114,8 @@ export default function createFocusBehaviors (deps) {
         return;
       }
 
-      if (platform.os === 'web' && typeof document !== 'undefined') {
+      if (platform.os === 'web' && typeof document !== 'undefined' &&
+          typeof document.addEventListener === 'function') {
 
         const handleKeyDown = function (event) {
           if (event.key === 'Escape' && typeof onCloseRef.current === 'function') {
@@ -156,7 +157,8 @@ export default function createFocusBehaviors (deps) {
     // Tab wrapping: only while the layer is open, active, and trapping.
     React.useEffect(function () {
 
-      if (!isOpen || !active || !trap || platform.os !== 'web' || typeof document === 'undefined') {
+      if (!isOpen || !active || !trap || platform.os !== 'web' || typeof document === 'undefined' ||
+          typeof document.addEventListener !== 'function') {
         return;
       }
 
@@ -213,8 +215,10 @@ export default function createFocusBehaviors (deps) {
 
 
     // A non-trapping popover is still a dialog; it is simply not modal.
+    // `role` carries the ARIA name on every platform; `accessibilityRole`
+    // would throw on Android, whose TalkBack enum has no dialog value
     const accessibilityProps = {
-      accessibilityRole: 'dialog',
+      role: 'dialog',
       'aria-modal': trap ? true : undefined,
       focusable: true
     };

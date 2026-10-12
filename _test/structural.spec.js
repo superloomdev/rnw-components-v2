@@ -8,6 +8,7 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
+import { discoverComponents } from '../scripts/lib/components.js';
 import { TEMPLATE_NAMES, openShowcase, readA11yTrees, readCells, readControlPaint, readTextContrast } from './harness/page.js';
 
 const INTERACTIVE_ROLES = ['button', 'checkbox', 'combobox', 'link', 'menuitem', 'option', 'radio', 'slider', 'switch', 'tab', 'textbox'];
@@ -16,6 +17,17 @@ const UNIT = /:\s*-?[0-9.]+(rem|em|vw|vh)\b/;
 const CONTRAST_MIN = 4.5;
 const CONTRAST_MIN_LARGE = 3;
 const EXCEPTIONS = JSON.parse(readFileSync(new URL('./fixtures/contrast-exceptions.json', import.meta.url), 'utf8')).exceptions;
+
+// The cells whose sample state is declared disabled: a non-interactive
+// component draws no aria marker for the gate to find, so the contrast
+// exemption reads the props the cell was rendered with
+const DISABLED_CELLS = (await discoverComponents()).flatMap(function (component) {
+  return component.sample.filter(function (entry) {
+    return entry.props !== undefined && entry.props.disabled === true;
+  }).map(function (entry) {
+    return component.name + ' / ' + entry.label;
+  });
+});
 
 
 /********************************************************************
@@ -63,7 +75,7 @@ for (const template of TEMPLATE_NAMES) {
       const page = await browser.newPage();
       opened = await openShowcase(page, template);
       cells = await readCells(page);
-      runs = await readTextContrast(page);
+      runs = await readTextContrast(page, DISABLED_CELLS);
       paints = await readControlPaint(page);
       await page.close();
     });
@@ -88,10 +100,41 @@ for (const template of TEMPLATE_NAMES) {
           if ((child.rect.width === 0 && child.rect.height === 0) || child.undrawn) {
             continue;
           }
-          expect(child.rect.x, id + ' <' + child.tag + '> overflows left').toBeGreaterThanOrEqual(cell.rect.x - 0.5);
-          expect(child.rect.y, id + ' <' + child.tag + '> overflows top').toBeGreaterThanOrEqual(cell.rect.y - 0.5);
-          expect(child.rect.x + child.rect.width, id + ' <' + child.tag + '> overflows right').toBeLessThanOrEqual(cell.rect.x + cell.rect.width + 0.5);
-          expect(child.rect.y + child.rect.height, id + ' <' + child.tag + '> overflows bottom').toBeLessThanOrEqual(cell.rect.y + cell.rect.height + 0.5);
+          // A fixed layer's containing block is the viewport, unless a
+          // transformed ancestor inside the cell re-bounds it to the cell;
+          // a layer that covers the viewport by design (a scrim) is
+          // viewport-bounded either way. A viewport layer of a cell off
+          // the screen has no meaningful bound at all
+          const covers = child.layerCovers === true;
+          const free = child.overlay && (!child.contained || covers);
+          const offscreen = cell.rect.x + cell.rect.width <= cell.viewport.x ||
+                            cell.rect.y + cell.rect.height <= cell.viewport.y ||
+                            cell.rect.x >= cell.viewport.x + cell.viewport.width ||
+                            cell.rect.y >= cell.viewport.y + cell.viewport.height;
+          if (free && offscreen && !covers) {
+            continue;
+          }
+          const bounds = free ? cell.viewport : cell.rect;
+          let painted = free ? child.rect : child.painted;
+          // The part of a viewport layer that lies on the screen is what
+          // it paints; its overflow past the screen edge clips away
+          if (free) {
+            const x = Math.max(painted.x, cell.viewport.x);
+            const y = Math.max(painted.y, cell.viewport.y);
+            painted = {
+              x: x, y: y,
+              width: Math.max(0, Math.min(painted.x + painted.width, cell.viewport.x + cell.viewport.width) - x),
+              height: Math.max(0, Math.min(painted.y + painted.height, cell.viewport.y + cell.viewport.height) - y)
+            };
+          }
+          // Nothing painted after clipping cannot overflow
+          if (painted.width === 0 && painted.height === 0) {
+            continue;
+          }
+          expect(painted.x, id + ' <' + child.tag + '> overflows left').toBeGreaterThanOrEqual(bounds.x - 0.5);
+          expect(painted.y, id + ' <' + child.tag + '> overflows top').toBeGreaterThanOrEqual(bounds.y - 0.5);
+          expect(painted.x + painted.width, id + ' <' + child.tag + '> overflows right').toBeLessThanOrEqual(bounds.x + bounds.width + 0.5);
+          expect(painted.y + painted.height, id + ' <' + child.tag + '> overflows bottom').toBeLessThanOrEqual(bounds.y + bounds.height + 0.5);
         }
       }
     });
@@ -115,7 +158,9 @@ for (const template of TEMPLATE_NAMES) {
     test('interactive targets are at least 44 points', function () {
       for (const cell of cells) {
         for (const child of cell.children) {
-          if (INTERACTIVE_ROLES.includes(child.role)) {
+          // A hidden seat (a closed variant's control, a sizer) is no
+          // target; a drawn-but-unpainted layer still is
+          if (!child.hidden && INTERACTIVE_ROLES.includes(child.role)) {
             expect(Math.max(child.rect.width, child.rect.height), cell.component + ' / ' + cell.state + ' ' + child.role + ' target').toBeGreaterThanOrEqual(44);
           }
         }

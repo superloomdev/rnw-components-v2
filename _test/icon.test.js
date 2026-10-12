@@ -57,8 +57,8 @@ async function render (element) {
 
 describe('Icon: every icon under every template', function () {
 
-  test('data/icons.json names the 82 icons the contract carries', function () {
-    assert.equal(NAMES.length, 82);
+  test('data/icons.json names the 84 icons the contract carries', function () {
+    assert.equal(NAMES.length, 84);
   });
 
   for (const template of TEMPLATE_NAMES) {
