@@ -67,6 +67,7 @@ SkeletonPlaceholder factory.
 export default function SkeletonPlaceholder (ctx) {
 
   const React = ctx.React;
+  const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
   const { useReducedMotion } = ctx.behaviors;
 
@@ -94,7 +95,8 @@ export default function SkeletonPlaceholder (ctx) {
       testID: props.testID,
       style: {
         backgroundColor: ctx.color('skeleton_container'),
-        borderRadius: ctx.metric('SkeletonPlaceholder', 'radius'),
+        // A composing parent may pass its own corner (the chat button's pill)
+        borderRadius: Utils.isNumber(props.radius) ? props.radius : ctx.metric('SkeletonPlaceholder', 'radius'),
         height: height,
         overflow: 'hidden',
         position: 'relative',

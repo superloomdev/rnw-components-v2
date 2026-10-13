@@ -2,7 +2,7 @@
 // tests read this; the component implements exactly this and nothing more.
 
 // Kinds, each drawn from its own role cells in the theme
-const KINDS = Object.freeze(['primary', 'secondary', 'tertiary', 'ghost', 'danger', 'danger_tertiary', 'danger_ghost', 'tonal', 'elevated']);
+const KINDS = Object.freeze(['primary', 'secondary', 'tertiary', 'ghost', 'danger', 'danger_tertiary', 'danger_ghost', 'tonal', 'elevated', 'quick_action']);
 
 export default Object.freeze({
   name: 'Button',
@@ -14,6 +14,12 @@ export default Object.freeze({
     disabled: { type: 'boolean', required: false, description: 'Disables press, hover and focus feedback and announces the button as disabled.' },
     selected: { type: 'boolean', required: false, description: 'Draws the selected fill and label of the kind while true, for a button that toggles.' },
     fill: { type: 'boolean', required: false, description: 'Stretches the button to fill its seat instead of sizing to its height cell (the dialog\'s stretched actions).' },
+    pill: { type: 'boolean', required: false, description: 'Composition prop: the corner radius is half the button\'s height (the chat button\'s pill).' },
+    labelAlign: { type: 'string', required: false, description: 'Composition prop: `start` holds the label at the start padding when the button is wider than its content (the combo button\'s action); any other value centers it.' },
+    minWidth: { type: 'number', required: false, description: 'Composition prop: overrides the computed minimum width (the combo button\'s action).' },
+    maxWidth: { type: 'number', required: false, description: 'Composition prop: caps the computed width (the combo button\'s action).' },
+    paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' },
+    paddingEnd: { type: 'number', required: false, description: 'Composition prop: overrides the computed end padding (the chat button\'s icon-free end).' },
     onPress: { type: 'function', required: false, description: 'Called on activation (press, Enter, Space).' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when the label alone does not say what the button does.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
@@ -24,6 +30,7 @@ export default Object.freeze({
     'control.button_height', 'control.button_radius', 'control.button_padding_start', 'control.button_padding_end', 'control.button_icon_size',
     'control.button_ghost_padding_start', 'control.button_ghost_padding_end', 'control.button_min_width',
     'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width',
+    'control.button_quick_action_focus_gap_width',
     'size.size_xsmall', 'size.size_small', 'size.size_medium', 'size.size_xlarge', 'size.size_2xlarge',
     'border.width_01', 'spacing.spacing_05', 'spacing.spacing_03',
     'type.button_label', 'font.family.sans',

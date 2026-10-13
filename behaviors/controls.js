@@ -227,13 +227,19 @@ export default function createControlsBehaviors (deps) {
           setHovered(false);
         },
         onPointerDown: source.onPointerDown,
-        onFocus: function () {
+        onFocus: function (event) {
           source.enter();
           setFocused(true);
+          if (typeof props.onFocus === 'function') {
+            props.onFocus(event);
+          }
         },
-        onBlur: function () {
+        onBlur: function (event) {
           source.leave();
           setFocused(false);
+          if (typeof props.onBlur === 'function') {
+            props.onBlur(event);
+          }
         }
       },
       state: state

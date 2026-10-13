@@ -293,6 +293,19 @@ describe('context: focusRing', function () {
     });
   });
 
+  test('options.gapWidth replaces the family\'s gap cell; options.gap === false still draws no line', function () {
+    const t = buildNative('carbon').tokens;
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const override = ctx.focusRing('button', { focused: true }, 1, { gapWidth: 3 });
+    assert.equal(override.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring'] + ', inset 0 0 0 4px ' + t['color.button_focus_gap']);
+    const zero = ctx.focusRing('button', { focused: true }, 1, { gapWidth: 0 });
+    assert.equal(zero.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+    const none = ctx.focusRing('button', { focused: true }, 1, { gap: false });
+    assert.equal(none.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+    const both = ctx.focusRing('button', { focused: true }, 1, { gap: false, gapWidth: 9 });
+    assert.equal(both.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+  });
+
 });
 
 

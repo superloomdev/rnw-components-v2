@@ -266,9 +266,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // A button ring drawn inside the edge paints the border, then the rest of
     // its width and the page-color line as inset shadows inside the border.
     // `options.gap === false` draws no separating line - the reference omits
-    // it on a face that draws neither fill nor border
+    // it on a face that draws neither fill nor border; `options.gapWidth`
+    // replaces the family's gap cell (a kind's own answer, the quick action's)
     const inner = Math.max(0, width - (border || 0));
-    const gap = options !== undefined && options.gap === false ? 0 : token('control.' + family + '_focus_gap_width');
+    const gap = options !== undefined && options.gap === false ? 0
+      : options !== undefined && Utils.isNumber(options.gapWidth) ? options.gapWidth
+        : token('control.' + family + '_focus_gap_width');
     const layers = [];
     if (inner > 0) {
       layers.push('inset 0 0 0 ' + inner + 'px ' + ringColor);
@@ -406,7 +409,6 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         : state.selected === true ? 'list_item_label_selected'
           : state.hovered === true ? 'list_item_label_hover' : 'list_item_label';
     };
-
     return Object.freeze({
       // 'shown' draws the selected item's mark; 'hidden' mounts the seat undrawn
       mark: mark,

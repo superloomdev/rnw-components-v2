@@ -126,9 +126,28 @@ export default function IconButton (ctx) {
     React.createElement(View, {
       style: [{ borderRadius: radius, bottom: -borderWidth, left: -borderWidth, position: 'absolute', right: -borderWidth, top: -borderWidth }, press.layer]
     }),
-    React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf })),
+    // The glyph's wrapper turns by `iconRotation` degrees; the turn
+    // transitions on the theme's fast-02 duration and standard productive
+    // easing - transition keys a native platform ignores, so the glyph
+    // turns without a transition there, as the press fills' do
+    React.createElement(View, {
+      style: {
+        transform: [{ rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg' }],
+        transitionDuration: ctx.token('motion.duration_fast_02') + 'ms',
+        transitionProperty: 'transform',
+        transitionTimingFunction: 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')'
+      }
+    },
+    React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf }))),
     React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      // A composing parent's trigger announcements (the combo button's menu)
+      'aria-controls': props['aria-controls'],
+      'aria-expanded': props['aria-expanded'],
+      'aria-haspopup': props['aria-haspopup'],
       'aria-pressed': props.selected !== undefined ? state.selected : undefined,
+      // A composing parent's mousedown rule (the combo button's trigger
+      // suppresses the press focus)
+      onMouseDown: props.onMouseDown,
       testID: props.testID,
       style: {
         height: target,

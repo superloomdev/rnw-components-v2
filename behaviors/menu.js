@@ -44,15 +44,17 @@ export default function createMenuBehaviors (deps) {
 
   }
 
-  function fitMenuAxis (axis, name, spacing, topAlignment) {
+  function fitMenuAxis (axis, name, spacing, topAlignment, preferEnd) {
 
-    const candidates = [
-      axis.max - spacing - axis.size - axis.anchor >= 0 ? axis.anchor - axis.offset : false,
-      axis.reversedAnchor - axis.size >= 0 && axis.reversedAnchor <= axis.max - spacing
-        ? axis.reversedAnchor - axis.size + axis.offset
-        : false,
-      axis.max - spacing - axis.size
-    ];
+    // At the anchor edge the surface starts (or ends) flush with the range's
+    // start (end); a `-end` alignment or a `top` menu prefers the end side,
+    // falling back to the start side, then clamping to the viewport margin
+    const atStart = axis.max - spacing - axis.size - axis.anchor >= 0 ? axis.anchor - axis.offset : false;
+    const atEnd = axis.reversedAnchor - axis.size >= 0 && axis.reversedAnchor <= axis.max - spacing
+      ? axis.reversedAnchor - axis.size + axis.offset
+      : false;
+    const clamped = axis.max - spacing - axis.size;
+    const candidates = preferEnd === true ? [atEnd, atStart, clamped] : [atStart, atEnd, clamped];
     if (topAlignment && candidates[0] === false && name === 'y') {
       candidates[0] = axis.anchor - axis.offset;
     }
@@ -103,9 +105,12 @@ export default function createMenuBehaviors (deps) {
     }
     const topAlignment =
       menuAlignment === 'top' || menuAlignment === 'top-end' || menuAlignment === 'top-start';
+    // An `-end` alignment hangs the surface's end on the range's end; a `top`
+    // alignment ends the surface at the range's start (the container's top)
+    const endAligned = menuAlignment === 'bottom-end' || menuAlignment === 'top-end';
     return {
-      left: fitMenuAxis(axes.x, 'x', spacing, topAlignment),
-      top: fitMenuAxis(axes.y, 'y', spacing, topAlignment)
+      left: fitMenuAxis(axes.x, 'x', spacing, topAlignment, endAligned),
+      top: fitMenuAxis(axes.y, 'y', spacing, topAlignment, topAlignment)
     };
 
   }

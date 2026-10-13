@@ -109,6 +109,7 @@ SkeletonPlaceholder draws a box in the theme's skeleton container colour with a 
 |---|---|---|---|
 | `width` | `number` | no | The box's width; the placeholder size when omitted. |
 | `height` | `number` | no | The box's height; the placeholder size when omitted. |
+| `radius` | `number` | no | Composition prop: the corner radius; the skeleton radius when omitted (the chat button's pill passes half its height). |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 
 ### Metrics

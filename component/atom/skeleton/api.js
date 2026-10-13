@@ -7,6 +7,7 @@ export default Object.freeze({
   props: Object.freeze({
     width: { type: 'number', required: false, description: 'The box\'s width; the placeholder size when omitted.' },
     height: { type: 'number', required: false, description: 'The box\'s height; the placeholder size when omitted.' },
+    radius: { type: 'number', required: false, description: 'Composition prop: the corner radius; the skeleton radius when omitted (the chat button\'s pill passes half its height).' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' }
   }),
   kinds: Object.freeze([]),

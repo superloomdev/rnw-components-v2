@@ -75,6 +75,16 @@ describe('SkeletonPlaceholder: every sample state under every template', functio
     }
   }
 
+  test('a radius prop overrides the skeleton radius', async function () {
+    stubReducedMotion(true);
+    const t = buildNative('default').tokens;
+    const Registry = buildSystem('default', factories);
+    const container = await render(React.createElement(Registry.SkeletonPlaceholder, { radius: 24 }));
+    assert.equal(container.firstChild.style.borderTopLeftRadius, '24px');
+    const plain = await render(React.createElement(Registry.SkeletonPlaceholder, {}));
+    assert.equal(plain.firstChild.style.borderTopLeftRadius, t['control.skeleton_radius'] + 'px');
+  });
+
   test('under reduced motion the shimmer rests without an animation', async function () {
     stubReducedMotion(true);
     const Registry = buildSystem('default', factories);

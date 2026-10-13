@@ -181,6 +181,18 @@ describe('IconButton: states drive the theme through the DOM', function () {
     assert.equal(presses, 1);
   });
 
+  test('iconRotation turns the glyph\'s wrapper by the degrees, transitioning on the theme\'s fast-02 easing', async function () {
+    const t = buildNative('carbon').tokens;
+    const turned = await renderIconButton(registryFor('carbon'), { icon: 'chevron_down', label: 'Open', iconRotation: 180 });
+    const wrapper = turned.icon.parentElement;
+    assert.equal(wrapper.style.transform, 'rotate(180deg)');
+    assert.equal(wrapper.style.transitionDuration, t['motion.duration_fast_02'] + 'ms');
+    assert.equal(wrapper.style.transitionProperty, 'transform');
+    assert.equal(wrapper.style.transitionTimingFunction, 'cubic-bezier(' + t['motion.easing_standard_productive'].join(', ') + ')');
+    const plain = await renderIconButton(registryFor('carbon'), { icon: 'add', label: 'Add' });
+    assert.equal(plain.icon.parentElement.style.transform, 'rotate(0deg)');
+  });
+
   test('the compact tooltip opens on hover and names the button', async function () {
     const parts = await renderIconButton(registryFor('carbon'), { icon: 'add', label: 'Add thing', enterDelayMs: undefined });
     assert.equal(parts.popover(), null);

@@ -659,7 +659,7 @@
         "version": "1.115.0",
         "export": "ButtonSet"
       },
-      "description": "ButtonSet is a component in the Button family.",
+      "description": "ButtonSet lays out buttons from item data in a row, or a column when stacked, each sharing the row up to the set's item width with the theme's separator line and gap between them; a fluid set orders its buttons by kind and stacks when its container is narrower than its items' floor; the second system has no button set, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -678,8 +678,10 @@
       "carbon_twin": "ButtonSet",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "ButtonSkeleton",
@@ -690,14 +692,12 @@
         "version": "1.115.0",
         "export": "ButtonSkeleton"
       },
-      "description": "ButtonSkeleton is a component in the Button family.",
+      "description": "ButtonSkeleton draws the skeleton placeholder at the button's height for its size, in the button's corner and the skeleton button width; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
+      "enums": [],
       "behaviors": [
         "press"
       ],
@@ -709,8 +709,10 @@
       "carbon_twin": "ButtonSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "ComboButton",
@@ -721,7 +723,7 @@
         "version": "1.115.0",
         "export": "ComboButton"
       },
-      "description": "ComboButton is a component in the Button family.",
+      "description": "ComboButton joins a primary action Button and an icon button that opens a Menu of further actions, its chevron turning while the menu is open, the action no narrower than the combo floor less the trigger and no wider than the combo ceiling; the second system has no split button, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -740,8 +742,10 @@
       "carbon_twin": "ComboButton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "DangerButton",
@@ -752,7 +756,7 @@
         "version": "1.115.0",
         "export": "DangerButton"
       },
-      "description": "DangerButton is a component in the Button family.",
+      "description": "DangerButton draws a Button of the danger kind whatever kind it is given.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -772,7 +776,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "preview__ChatButton",
@@ -783,7 +787,7 @@
         "version": "1.115.0",
         "export": "preview__ChatButton"
       },
-      "description": "preview__ChatButton is a component in the Button family.",
+      "description": "preview__ChatButton draws a pill-shaped Button in the small, medium or large size, or as a quick action: a small outlined button in the quick-action kind that fills while selected; the second system has no chat button, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -802,8 +806,10 @@
       "carbon_twin": "preview__ChatButton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "preview__ChatButtonSkeleton",
@@ -814,14 +820,12 @@
         "version": "1.115.0",
         "export": "preview__ChatButtonSkeleton"
       },
-      "description": "preview__ChatButtonSkeleton is a component in the Button family.",
+      "description": "preview__ChatButtonSkeleton draws the skeleton placeholder in the chat button's pill at the button's height for its size and the skeleton button width; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
+      "enums": [],
       "behaviors": [
         "press"
       ],
@@ -833,8 +837,10 @@
       "carbon_twin": "preview__ChatButtonSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "PrimaryButton",
@@ -845,7 +851,7 @@
         "version": "1.115.0",
         "export": "PrimaryButton"
       },
-      "description": "PrimaryButton is a component in the Button family.",
+      "description": "PrimaryButton draws a Button of the primary kind unless it is given another kind.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -865,7 +871,7 @@
       "material_twin": "md-button",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SecondaryButton",
@@ -876,7 +882,7 @@
         "version": "1.115.0",
         "export": "SecondaryButton"
       },
-      "description": "SecondaryButton is a component in the Button family.",
+      "description": "SecondaryButton draws a Button of the secondary kind unless it is given another kind.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -896,7 +902,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Divider",

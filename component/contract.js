@@ -56,6 +56,22 @@ import skeletonIconApi from './molecule/skeleton/api.js';
 import skeletonIconSpec from './molecule/skeleton/spec.js';
 import skeletonTextApi from './molecule/skeleton/api.skeleton-text.js';
 import skeletonTextSpec from './molecule/skeleton/spec.skeleton-text.js';
+import buttonSetApi from './molecule/button/api.button-set.js';
+import buttonSetSpec from './molecule/button/spec.button-set.js';
+import buttonSkeletonApi from './molecule/button/api.button-skeleton.js';
+import buttonSkeletonSpec from './molecule/button/spec.button-skeleton.js';
+import comboButtonApi from './composite/button/api.js';
+import comboButtonSpec from './composite/button/spec.js';
+import dangerButtonApi from './molecule/button/api.danger-button.js';
+import dangerButtonSpec from './molecule/button/spec.danger-button.js';
+import chatButtonApi from './molecule/button/api.preview-chat-button.js';
+import chatButtonSpec from './molecule/button/spec.preview-chat-button.js';
+import chatButtonSkeletonApi from './molecule/button/api.preview-chat-button-skeleton.js';
+import chatButtonSkeletonSpec from './molecule/button/spec.preview-chat-button-skeleton.js';
+import primaryButtonApi from './molecule/button/api.primary-button.js';
+import primaryButtonSpec from './molecule/button/spec.primary-button.js';
+import secondaryButtonApi from './molecule/button/api.secondary-button.js';
+import secondaryButtonSpec from './molecule/button/spec.secondary-button.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
@@ -128,6 +144,14 @@ const LINK_REQUIRED = [].concat(linkApi.tokens, specTokens(linkSpec));
 const SKELETON_ICON_REQUIRED = [].concat(skeletonIconApi.tokens, specTokens(skeletonIconSpec));
 const SKELETON_PLACEHOLDER_REQUIRED = [].concat(skeletonPlaceholderApi.tokens, specTokens(skeletonPlaceholderSpec));
 const SKELETON_TEXT_REQUIRED = [].concat(skeletonTextApi.tokens, specTokens(skeletonTextSpec));
+const BUTTON_SET_REQUIRED = [].concat(buttonSetApi.tokens, specTokens(buttonSetSpec));
+const BUTTON_SKELETON_REQUIRED = [].concat(buttonSkeletonApi.tokens, specTokens(buttonSkeletonSpec));
+const COMBO_BUTTON_REQUIRED = [].concat(comboButtonApi.tokens, specTokens(comboButtonSpec));
+const DANGER_BUTTON_REQUIRED = [].concat(dangerButtonApi.tokens, specTokens(dangerButtonSpec));
+const CHAT_BUTTON_REQUIRED = [].concat(chatButtonApi.tokens, specTokens(chatButtonSpec));
+const CHAT_BUTTON_SKELETON_REQUIRED = [].concat(chatButtonSkeletonApi.tokens, specTokens(chatButtonSkeletonSpec));
+const PRIMARY_BUTTON_REQUIRED = [].concat(primaryButtonApi.tokens, specTokens(primaryButtonSpec));
+const SECONDARY_BUTTON_REQUIRED = [].concat(secondaryButtonApi.tokens, specTokens(secondaryButtonSpec));
 
 // The hue cells a Tag `type` reads on demand
 const TAG_SUPPORTED = tagApi.colors.map(function (leaf) {
@@ -150,8 +174,8 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, CHAT_BUTTON_REQUIRED, CHAT_BUTTON_SKELETON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 
-export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled']);
+export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled', 'chevron_down']);

@@ -19,5 +19,6 @@ export default Object.freeze([
   Object.freeze({ label: 'small', props: Object.freeze({ children: 'Small', size: 'sm' }) }),
   Object.freeze({ label: 'medium', props: Object.freeze({ children: 'Medium', size: 'md' }) }),
   Object.freeze({ label: 'extra large', props: Object.freeze({ children: 'Extra large', size: 'xl' }) }),
-  Object.freeze({ label: '2x large', props: Object.freeze({ children: '2x large', size: '2xl' }) })
+  Object.freeze({ label: '2x large', props: Object.freeze({ children: '2x large', size: '2xl' }) }),
+  Object.freeze({ label: 'quick action', props: Object.freeze({ children: 'Quick action', kind: 'quick_action', size: 'sm' }) })
 ]);

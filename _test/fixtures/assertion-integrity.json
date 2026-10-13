@@ -338,8 +338,8 @@
     {
       "id": "button-inline-ghost",
       "file": "component/molecule/button/button.js",
-      "find": "  const INLINE = Object.freeze(['ghost', 'danger_ghost']);",
-      "replace": "  const INLINE = Object.freeze(['danger_ghost']);",
+      "find": "  const INLINE = Object.freeze(['ghost', 'danger_ghost', 'quick_action']);",
+      "replace": "  const INLINE = Object.freeze(['danger_ghost', 'quick_action']);",
       "runner": "node",
       "test": "button.test.js",
       "testName": "carbon / ghost: geometry, fill and label come from the theme",
@@ -874,6 +874,176 @@
       "test": "structural.spec.js",
       "testName": "interactive targets are at least 44 points",
       "why": "the pressable must be no smaller than the platform minimum target; dropping the floor must fail the structural gate"
+    },
+    {
+      "id": "button-set-separator-color",
+      "file": "component/molecule/button/button-set.js",
+      "find": ": ctx.color('button_set_separator');",
+      "replace": ": ctx.color('button_set_separator_disabled');",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "every seat but the first carries the separator at its leading edge",
+      "why": "the separator must read the separator cell; another cell must fail the color assertion"
+    },
+    {
+      "id": "button-set-fluid-order",
+      "file": "component/molecule/button/button-set.js",
+      "find": "      return stacked ? pb - pa : pa - pb;",
+      "replace": "      return 0;",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "a fluid set orders its items by kind and end-aligns them",
+      "why": "a fluid set must order its items by the kind priorities; keeping the given order must fail the ordering assertion"
+    },
+    {
+      "id": "button-set-focus-seam",
+      "file": "component/molecule/button/button-set.js",
+      "find": "      const separator = focusedIndex === index || focusedIndex === index - 1 ? 'transparent'",
+      "replace": "      const separator = false ? 'transparent'",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "a focused item suppresses its own separator and the next one's",
+      "why": "a focused item's adjacent separators must be suppressed; ignoring the focused index must fail the suppression assertion"
+    },
+    {
+      "id": "button-skeleton-width",
+      "file": "component/molecule/button/button-skeleton.js",
+      "find": "      width: ctx.metric('ButtonSkeleton', 'width')",
+      "replace": "      width: ctx.metric('ButtonSkeleton', 'height')",
+      "runner": "node",
+      "test": "button-skeleton.test.js",
+      "testName": "renders as the skeleton placeholder at the skeleton width and the button's corner",
+      "why": "the skeleton must draw at the skeleton button width; another metric must fail the width assertion"
+    },
+    {
+      "id": "chat-button-pill",
+      "file": "component/molecule/button/preview__chat-button.js",
+      "find": "      pill: true,",
+      "replace": "      pill: props.pill === true,",
+      "runner": "node",
+      "test": "preview__chat-button.test.js",
+      "testName": "draws the pill: the corner is half the button's height at every size",
+      "why": "the chat button must always draw the pill; deferring to the caller's pill must fail the radius assertion"
+    },
+    {
+      "id": "chat-button-quick-action-size",
+      "file": "component/molecule/button/preview__chat-button.js",
+      "find": "    const size = quick ? 'sm' : Utils.inArray(SIZES, props.size) ? props.size : 'lg';",
+      "replace": "    const size = quick ? 'md' : Utils.inArray(SIZES, props.size) ? props.size : 'lg';",
+      "runner": "node",
+      "test": "preview__chat-button.test.js",
+      "testName": "isQuickAction forces the quick-action kind and the small size",
+      "why": "the quick action must force the small size; another size must fail the height assertion"
+    },
+    {
+      "id": "chat-button-skeleton-pill",
+      "file": "component/molecule/button/preview__chat-button-skeleton.js",
+      "find": "      radius: height / 2,",
+      "replace": "      radius: height,",
+      "runner": "node",
+      "test": "preview__chat-button-skeleton.test.js",
+      "testName": "draws the pill: the button's height for the size, half of it as the corner",
+      "why": "the chat button skeleton must draw the pill corner; another radius must fail the corner assertion"
+    },
+    {
+      "id": "primary-button-kind",
+      "file": "component/molecule/button/primary-button.js",
+      "find": "Object.assign({ kind: 'primary' }, props)",
+      "replace": "Object.assign({ kind: 'secondary' }, props)",
+      "runner": "node",
+      "test": "primary-button.test.js",
+      "testName": "every sample state renders the Button tree of its resulting kind",
+      "why": "the wrapper must default to the primary kind; another default must fail the kind assertion"
+    },
+    {
+      "id": "secondary-button-kind",
+      "file": "component/molecule/button/secondary-button.js",
+      "find": "Object.assign({ kind: 'secondary' }, props)",
+      "replace": "Object.assign({ kind: 'primary' }, props)",
+      "runner": "node",
+      "test": "secondary-button.test.js",
+      "testName": "every sample state renders the Button tree of its resulting kind",
+      "why": "the wrapper must default to the secondary kind; another default must fail the kind assertion"
+    },
+    {
+      "id": "danger-button-precedence",
+      "file": "component/molecule/button/danger-button.js",
+      "find": "Object.assign({}, props, { kind: 'danger' })",
+      "replace": "Object.assign({ kind: 'danger' }, props)",
+      "runner": "node",
+      "test": "danger-button.test.js",
+      "testName": "every sample state renders the Button tree of the danger kind",
+      "why": "the danger kind must win over the caller's kind; letting the caller's kind win must fail the precedence assertion"
+    },
+    {
+      "id": "combo-button-seam",
+      "file": "component/composite/button/combo-button.js",
+      "find": "style: { alignSelf: 'flex-start', columnGap: seam, flexDirection: 'row' }",
+      "replace": "style: { alignSelf: 'flex-start', columnGap: 0, flexDirection: 'row' }",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "the seats are a row separated by the border-width seam",
+      "why": "the seam must be the border width; another gap must fail the seam assertion"
+    },
+    {
+      "id": "combo-button-chevron-turn",
+      "file": "component/composite/button/combo-button.js",
+      "find": "      iconRotation: open ? 180 : 0,",
+      "replace": "      iconRotation: 0,",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "the chevron turns 180 degrees while the menu is open",
+      "why": "the chevron must turn while the menu is open; a fixed rotation must fail the turn assertion"
+    },
+    {
+      "id": "combo-button-menu-width",
+      "file": "component/composite/button/combo-button.js",
+      "find": "      width: alignment === 'top' || alignment === 'bottom' ? anchor.width : undefined,",
+      "replace": "      width: undefined,",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "pressing the trigger opens the menu against the container's edges",
+      "why": "the plain alignments must span the container's width; a natural width must fail the width assertion"
+    },
+    {
+      "id": "button-pill",
+      "file": "component/molecule/button/button.js",
+      "find": "const radius = props.pill === true ? height / 2 : ctx.metric('Button', 'radius');",
+      "replace": "const radius = ctx.metric('Button', 'radius');",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "pill draws the corner radius at half the button's height",
+      "why": "a pill button must draw half its height as the corner radius; ignoring pill must fail the radius assertion"
+    },
+    {
+      "id": "icon-button-rotation",
+      "file": "component/molecule/button/icon-button.js",
+      "find": "rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg'",
+      "replace": "rotate: '0deg'",
+      "runner": "node",
+      "test": "icon-button.test.js",
+      "testName": "iconRotation turns the glyph's wrapper by the degrees, transitioning on the theme's fast-02 easing",
+      "why": "the glyph must turn by iconRotation; a fixed rotation must fail the rotation assertion"
+    },
+    {
+      "id": "menu-width",
+      "file": "component/composite/menu/menu.js",
+      "find": "        width: Utils.isNumber(props.width) ? props.width : undefined",
+      "replace": "        width: undefined",
+      "runner": "node",
+      "test": "menu.test.js",
+      "testName": "a width prop fixes the surface's width",
+      "why": "a composing parent's width must fix the surface; ignoring it must fail the width assertion"
+    },
+    {
+      "id": "skeleton-radius",
+      "file": "component/atom/skeleton/skeleton-placeholder.js",
+      "find": "borderRadius: Utils.isNumber(props.radius) ? props.radius : ctx.metric('SkeletonPlaceholder', 'radius'),",
+      "replace": "borderRadius: ctx.metric('SkeletonPlaceholder', 'radius'),",
+      "runner": "node",
+      "test": "skeleton-placeholder.test.js",
+      "testName": "a radius prop overrides the skeleton radius",
+      "why": "a composing parent's radius must win over the skeleton radius; ignoring it must fail the radius assertion"
     }
   ]
 }

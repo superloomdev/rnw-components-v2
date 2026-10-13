@@ -10,6 +10,7 @@ export default Object.freeze({
     icon: { type: 'string', required: true, description: 'The icon token the button draws.' },
     iconSize: { type: 'number', required: false, description: 'The glyph\'s size; default the icon button member cell. Composing parents pass their own cell (the dialog\'s close icon).' },
     iconColor: { type: 'string', required: false, description: 'The color leaf the glyph draws; default the kind\'s icon cell. Composing parents name their own cell (the notification\'s close icon).' },
+    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
     label: { type: 'string', required: true, description: 'The button\'s accessible name, which its compact tooltip shows.' },
     kind: { type: 'string', required: false, description: 'One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`.' },
     size: { type: 'string', required: false, description: 'One of `sm`, `md`, `lg`: the square\'s side. Default `lg`, the `icon_button` member cell.' },
@@ -28,7 +29,7 @@ export default Object.freeze({
     'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
     'feedback.press', 'state.hover_opacity', 'state.pressed_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive'
+    'motion.duration_fast_01', 'motion.duration_fast_02', 'motion.easing_standard_productive'
   ].concat(KINDS.flatMap(function (kind) {
     // Every kind's role cells: fill and label per state, border and elevation per state
     return ['', '_hover', '_active', '_focus', '_disabled', '_selected'].flatMap(function (state) {

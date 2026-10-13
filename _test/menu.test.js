@@ -159,6 +159,15 @@ describe('Menu: the surface floors and the item icon ink come from the theme', f
       assert.equal(icons.surface.style.minWidth, t['control.menu_icon_min_width'] + 'px');
     });
 
+    test(template + ': a width prop fixes the surface\'s width, floored at the minimum', async function () {
+      const t = buildNative(template).tokens;
+      const fixed = await renderMenu(registryFor(template), { items: [{ label: 'A' }, { label: 'B' }], open: true, width: 217 });
+      assert.equal(fixed.surface.style.width, '217px');
+      assert.equal(fixed.surface.style.minWidth, t['control.menu_min_width'] + 'px');
+      const natural = await renderMenu(registryFor(template), { items: [{ label: 'A' }], open: true });
+      assert.equal(natural.surface.style.width, '');
+    });
+
     test(template + ': the item icon reads the menu icon cells, hover and disabled included', async function () {
       const t = buildNative(template).tokens;
       const parts = await renderMenu(registryFor(template), {
