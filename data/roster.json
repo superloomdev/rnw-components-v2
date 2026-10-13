@@ -653,7 +653,7 @@
     {
       "name": "ButtonSet",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -676,7 +676,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ButtonSet",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -684,7 +684,7 @@
     {
       "name": "ButtonSkeleton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -707,7 +707,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ButtonSkeleton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -715,7 +715,7 @@
     {
       "name": "ComboButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -738,7 +738,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ComboButton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -746,7 +746,7 @@
     {
       "name": "DangerButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -769,7 +769,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DangerButton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -777,7 +777,7 @@
     {
       "name": "preview__ChatButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -800,7 +800,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "preview__ChatButton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -808,7 +808,7 @@
     {
       "name": "preview__ChatButtonSkeleton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -831,7 +831,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "preview__ChatButtonSkeleton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -839,7 +839,7 @@
     {
       "name": "PrimaryButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -870,7 +870,7 @@
     {
       "name": "SecondaryButton",
       "family": "Button",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -893,7 +893,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SecondaryButton",
-      "material_twin": "md-button",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -927,8 +927,8 @@
     },
     {
       "name": "IconSkeleton",
-      "family": "Icon",
-      "tier": "atom",
+      "family": "Skeleton",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -947,28 +947,28 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "IconSkeleton",
-      "material_twin": "md-icon",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
     },
     {
       "name": "IconSwitch",
-      "family": "Icon",
-      "tier": "atom",
+      "family": "Tabs",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "IconSwitch"
       },
-      "description": "IconSwitch is a component in the Icon family.",
+      "description": "IconSwitch is a component in the Tabs family; it must be composed inside ContentSwitcher.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
-      "parent": null,
+      "parent": "ContentSwitcher",
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
@@ -976,7 +976,9 @@
       "carbon_twin": "IconSwitch",
       "material_twin": "md-icon",
       "diff_budget": 2,
-      "flags": [],
+      "flags": [
+        "requires_parent"
+      ],
       "status": "pending"
     },
     {
@@ -1036,7 +1038,7 @@
     {
       "name": "Link",
       "family": "Link",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1063,7 +1065,7 @@
     {
       "name": "InlineLoading",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1082,7 +1084,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "InlineLoading",
-      "material_twin": "md-linear-progress",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1109,7 +1111,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Loading",
-      "material_twin": "md-linear-progress",
+      "material_twin": "md-circular-progress",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1117,7 +1119,7 @@
     {
       "name": "ProgressIndicator",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1136,7 +1138,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressIndicator",
-      "material_twin": "md-linear-progress",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1144,7 +1146,7 @@
     {
       "name": "ProgressIndicatorSkeleton",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1163,7 +1165,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressIndicatorSkeleton",
-      "material_twin": "md-linear-progress",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1171,34 +1173,36 @@
     {
       "name": "ProgressStep",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "ProgressStep"
       },
-      "description": "ProgressStep is a component in the Progress family.",
+      "description": "ProgressStep is a component in the Progress family; it must be composed inside ProgressIndicator.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
-      "parent": null,
+      "parent": "ProgressIndicator",
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressStep",
-      "material_twin": "md-linear-progress",
+      "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
+      "flags": [
+        "requires_parent"
+      ],
       "status": "pending"
     },
     {
       "name": "Saving",
       "family": "Progress",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
         "version": "2.99.0",
@@ -1217,7 +1221,7 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "Saving",
-      "material_twin": "md-linear-progress",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1225,7 +1229,7 @@
     {
       "name": "SkeletonIcon",
       "family": "Skeleton",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1279,7 +1283,7 @@
     {
       "name": "SkeletonText",
       "family": "Skeleton",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1306,7 +1310,7 @@
     {
       "name": "DismissibleTag",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1325,7 +1329,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DismissibleTag",
-      "material_twin": "md-chip",
+      "material_twin": "md-input-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1333,7 +1337,7 @@
     {
       "name": "OperationalTag",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1352,7 +1356,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "OperationalTag",
-      "material_twin": "md-chip",
+      "material_twin": "md-assist-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1360,7 +1364,7 @@
     {
       "name": "SelectableTag",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1379,7 +1383,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectableTag",
-      "material_twin": "md-chip",
+      "material_twin": "md-filter-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1441,7 +1445,7 @@
     {
       "name": "TagSkeleton",
       "family": "Tag",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
@@ -1460,7 +1464,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TagSkeleton",
-      "material_twin": "md-chip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1468,7 +1472,7 @@
     {
       "name": "LandingView",
       "family": "View",
-      "tier": "atom",
+      "tier": "composite",
       "source": {
         "package": "@carbon/react-native",
         "version": "9.0.7",
