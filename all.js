@@ -22,3 +22,10 @@ export { default as ToastNotification } from './component/molecule/notification/
 export { default as ProgressBar } from './component/molecule/progress/progress-bar.js';
 export { default as Tooltip } from './component/molecule/tooltip/tooltip.js';
 export { default as OverlayHost } from './component/provider/overlay-host/overlay-host.js';
+export { default as AspectRatio } from './component/molecule/aspect-ratio/aspect-ratio.js';
+export { default as Divider } from './component/atom/divider/divider.js';
+export { default as IconSkeleton } from './component/molecule/skeleton/icon-skeleton.js';
+export { default as Link } from './component/molecule/link/link.js';
+export { default as SkeletonIcon } from './component/molecule/skeleton/skeleton-icon.js';
+export { default as SkeletonPlaceholder } from './component/atom/skeleton/skeleton-placeholder.js';
+export { default as SkeletonText } from './component/molecule/skeleton/skeleton-text.js';

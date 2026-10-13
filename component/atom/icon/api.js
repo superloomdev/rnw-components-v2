@@ -6,6 +6,7 @@ export default Object.freeze({
   props: Object.freeze({
     name: { type: 'string', required: true, description: 'Semantic icon name; a token `icon.<name>` in the theme. A name the theme lacks throws.' },
     size: { type: 'number', required: false, description: 'Rendered size in points. Default: the `size` metric (`size.icon_02`). The set\'s own glyph is used when it draws one at this size.' },
+    glyphSize: { type: 'number', required: false, description: 'The size whose glyph `ctx.icon` picks - the set\'s own glyph for that size when it draws one - drawn at `size`. Default: `size`.' },
     color: { type: 'string', required: false, description: 'Color token leaf under `color.`. Default `icon_primary`.' },
     accessibilityLabel: { type: 'string', required: false, description: 'Announced name. Absent means decorative: the icon is hidden from assistive technology.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' },

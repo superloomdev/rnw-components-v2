@@ -42,6 +42,20 @@ import modalApi from './composite/modal/api.js';
 import modalSpec from './composite/modal/spec.js';
 import toastNotificationApi from './molecule/notification/api.toast-notification.js';
 import toastNotificationSpec from './molecule/notification/spec.toast-notification.js';
+import aspectRatioApi from './molecule/aspect-ratio/api.js';
+import aspectRatioSpec from './molecule/aspect-ratio/spec.js';
+import dividerApi from './atom/divider/api.js';
+import dividerSpec from './atom/divider/spec.js';
+import skeletonPlaceholderApi from './atom/skeleton/api.js';
+import skeletonPlaceholderSpec from './atom/skeleton/spec.js';
+import iconSkeletonApi from './molecule/skeleton/api.icon-skeleton.js';
+import iconSkeletonSpec from './molecule/skeleton/spec.icon-skeleton.js';
+import linkApi from './molecule/link/api.js';
+import linkSpec from './molecule/link/spec.js';
+import skeletonIconApi from './molecule/skeleton/api.js';
+import skeletonIconSpec from './molecule/skeleton/spec.js';
+import skeletonTextApi from './molecule/skeleton/api.skeleton-text.js';
+import skeletonTextSpec from './molecule/skeleton/spec.skeleton-text.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
@@ -107,6 +121,13 @@ const TABS_REQUIRED = [].concat(tabsApi.tokens, specTokens(tabsSpec));
 const MENU_REQUIRED = [].concat(menuApi.tokens, specTokens(menuSpec));
 const MODAL_REQUIRED = [].concat(modalApi.tokens, specTokens(modalSpec));
 const TOAST_NOTIFICATION_REQUIRED = [].concat(toastNotificationApi.tokens, specTokens(toastNotificationSpec));
+const ASPECT_RATIO_REQUIRED = [].concat(aspectRatioApi.tokens, specTokens(aspectRatioSpec));
+const DIVIDER_REQUIRED = [].concat(dividerApi.tokens, specTokens(dividerSpec));
+const ICON_SKELETON_REQUIRED = [].concat(iconSkeletonApi.tokens, specTokens(iconSkeletonSpec));
+const LINK_REQUIRED = [].concat(linkApi.tokens, specTokens(linkSpec));
+const SKELETON_ICON_REQUIRED = [].concat(skeletonIconApi.tokens, specTokens(skeletonIconSpec));
+const SKELETON_PLACEHOLDER_REQUIRED = [].concat(skeletonPlaceholderApi.tokens, specTokens(skeletonPlaceholderSpec));
+const SKELETON_TEXT_REQUIRED = [].concat(skeletonTextApi.tokens, specTokens(skeletonTextSpec));
 
 // The hue cells a Tag `type` reads on demand
 const TAG_SUPPORTED = tagApi.colors.map(function (leaf) {
@@ -129,7 +150,7 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 

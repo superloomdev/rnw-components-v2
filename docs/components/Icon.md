@@ -36,6 +36,7 @@ Icon draws one semantic glyph from the theme through react-native-svg at a token
 |---|---|---|---|
 | `name` | `string` | yes | Semantic icon name; a token `icon.<name>` in the theme. A name the theme lacks throws. |
 | `size` | `number` | no | Rendered size in points. Default: the `size` metric (`size.icon_02`). The set's own glyph is used when it draws one at this size. |
+| `glyphSize` | `number` | no | The size whose glyph `ctx.icon` picks - the set's own glyph for that size when it draws one - drawn at `size`. Default: `size`. |
 | `color` | `string` | no | Color token leaf under `color.`. Default `icon_primary`. |
 | `accessibilityLabel` | `string` | no | Announced name. Absent means decorative: the icon is hidden from assistive technology. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |

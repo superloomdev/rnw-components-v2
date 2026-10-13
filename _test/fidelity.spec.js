@@ -22,16 +22,25 @@ const components = (await discoverComponents()).filter(function (component) {
 const BUDGET = Object.fromEntries(getRoster().rows.map(function (row) {
   return [row.name, row.diff_budget];
 }));
+// A row with no primary-system twin runs no primary set (its mount answers null)
+const NO_PRIMARY = new Set(getRoster().rows.filter(function (row) {
+  return row.carbon_twin === 'none';
+}).map(function (row) {
+  return row.name;
+}));
 
 
 test.describe('fidelity', function () {
 
   for (const component of components) {
-    const sets = component.reference.second ? ['primary', 'second'] : ['primary'];
+    const sets = (NO_PRIMARY.has(component.name) ? [] : ['primary']).concat(component.reference.second ? ['second'] : []);
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme + ': matches the reference in every state', async function ({ page }) {
           test.setTimeout(300000);
+          if (NO_PRIMARY.has(component.name)) {
+            test.info().annotations.push({ type: 'fidelity', description: component.name + ': primary set skipped (no primary twin)' });
+          }
           const run = await runFidelity(page, component, set, scheme);
           expect(run.errors, 'render errors').toEqual([]);
           expect(run.lines, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);

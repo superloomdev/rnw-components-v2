@@ -86,6 +86,16 @@
       "why": "an unlabelled icon must be hidden from assistive technology"
     },
     {
+      "id": "icon-glyph-size",
+      "file": "component/atom/icon/icon.js",
+      "find": "    const glyph = ctx.icon(props.name, glyphSize);",
+      "replace": "    const glyph = ctx.icon(props.name, size);",
+      "runner": "node",
+      "test": "icon.test.js",
+      "testName": "glyphSize picks the glyph of another size, drawn at size; without it the size glyph is used",
+      "why": "glyphSize must choose the glyph the drawn size scales; ignoring it must fail the assertion"
+    },
+    {
       "id": "a11y-identity-across-templates",
       "file": "component/atom/icon/icon.js",
       "find": "      accessibilityLabel: labelled ? props.accessibilityLabel : undefined,",
@@ -438,8 +448,8 @@
     {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
-      "find": "    const glyph = ctx.icon(props.name, size);",
-      "replace": "    const glyph = ctx.icon(props.name + '_planted', size);",
+      "find": "    const glyph = ctx.icon(props.name, glyphSize);",
+      "replace": "    const glyph = ctx.icon(props.name + '_planted', glyphSize);",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "the showcase renders every component with zero errors",
@@ -744,6 +754,126 @@
       "test": "measure.spec.js",
       "testName": "TextArea: parts match the second reference",
       "why": "a counter pulled off the row's trailing edge must fail the end-edge comparison even though its left edge may move with its own width"
+    },
+    {
+      "id": "aspect-ratio-ratio",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "aspectRatio: pair[0] / pair[1]",
+      "replace": "aspectRatio: pair[1] / pair[0]",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "the box keeps the ratio",
+      "why": "the box's aspect ratio must be W / H, not H / W"
+    },
+    {
+      "id": "aspect-ratio-unknown-fallback",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "RATIOS[props.ratio] : RATIOS['1x1'];",
+      "replace": "RATIOS[props.ratio] : RATIOS['16x9'];",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "an unknown ratio draws the square default",
+      "why": "an unknown ratio must fall back to the square, not another proportion"
+    },
+    {
+      "id": "aspect-ratio-children-text",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "const children = Utils.isString(props.children)",
+      "replace": "const children = false && Utils.isString(props.children)",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "draws through the Text atom",
+      "why": "a string child must render through the Text atom; skipping the composition must fail a state test"
+    },
+    {
+      "id": "divider-inset-start",
+      "file": "component/atom/divider/divider.js",
+      "find": "const start = props.inset === true || props.insetStart === true;",
+      "replace": "const start = props.inset === true;",
+      "runner": "node",
+      "test": "divider.test.js",
+      "testName": "inset start",
+      "why": "insetStart must indent the start end; ignoring the flag must fail the inset-start state"
+    },
+    {
+      "id": "skeleton-shimmer-color",
+      "file": "component/atom/skeleton/skeleton-placeholder.js",
+      "find": "backgroundColor: ctx.color('skeleton_shimmer'),",
+      "replace": "backgroundColor: ctx.color('skeleton_container'),",
+      "runner": "node",
+      "test": "skeleton-placeholder.test.js",
+      "testName": "colours and sweep",
+      "why": "the shimmer must paint in the shimmer colour; drawing it in the container colour must fail the colour assertion"
+    },
+    {
+      "id": "skeleton-icon-size",
+      "file": "component/molecule/skeleton/skeleton-icon.js",
+      "find": "const size = ctx.metric('SkeletonIcon', 'size');",
+      "replace": "const size = ctx.metric('SkeletonIcon', 'size') + 1;",
+      "runner": "node",
+      "test": "skeleton-icon.test.js",
+      "testName": "icon size",
+      "why": "the skeleton icon must draw at the icon size; a size read plus one must fail the size assertion"
+    },
+    {
+      "id": "icon-skeleton-size",
+      "file": "component/molecule/skeleton/icon-skeleton.js",
+      "find": "const size = ctx.metric('IconSkeleton', 'size');",
+      "replace": "const size = ctx.metric('IconSkeleton', 'size') + 1;",
+      "runner": "node",
+      "test": "icon-skeleton.test.js",
+      "testName": "icon size",
+      "why": "the skeleton icon must draw at the icon size; a size read plus one must fail the size assertion"
+    },
+    {
+      "id": "skeleton-text-sequence",
+      "file": "component/molecule/skeleton/skeleton-text.js",
+      "find": "0.15334737213558558, 0.5671034553053769",
+      "replace": "0.5671034553053769, 0.15334737213558558",
+      "runner": "node",
+      "test": "skeleton-text.test.js",
+      "testName": "step back",
+      "why": "the paragraph's line widths follow the fixed sequence; swapping two values must fail the width assertion"
+    },
+    {
+      "id": "link-underline-rest",
+      "file": "component/molecule/link/link.js",
+      "find": "const underline = !disabled && (props.inline === true ||",
+      "replace": "const underline = !disabled && (true || props.inline === true ||",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "underline",
+      "why": "an enabled link must not underline at rest; underlining always must fail the rest-state assertion"
+    },
+    {
+      "id": "link-hover-color",
+      "file": "component/molecule/link/link.js",
+      "find": ": state.hovered === true ? 'link_label_hover'",
+      "replace": ": state.hovered === true ? 'link_label'",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "hover",
+      "why": "hover must read the hover leaf; reading the rest leaf must fail the hover assertion"
+    },
+    {
+      "id": "link-disabled-href",
+      "file": "component/molecule/link/link.js",
+      "find": "href: disabled ? undefined : props.href,",
+      "replace": "href: props.href,",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "disabled",
+      "why": "a disabled link must keep no href; keeping it must fail the disabled-state assertion"
+    },
+    {
+      "id": "link-target-size",
+      "file": "component/molecule/link/link.js",
+      "find": "  const TARGET = 44;",
+      "replace": "  const TARGET = 0;",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "interactive targets are at least 44 points",
+      "why": "the pressable must be no smaller than the platform minimum target; dropping the floor must fail the structural gate"
     }
   ]
 }

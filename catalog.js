@@ -21,6 +21,13 @@ import ToastNotificationSample from './component/molecule/notification/sample.to
 import ProgressBarSample, { FRAME as ProgressBarFrame } from './component/molecule/progress/sample.js';
 import TooltipSample from './component/molecule/tooltip/sample.js';
 import OverlayHostSample from './component/provider/overlay-host/sample.js';
+import AspectRatioSample, { FRAME as AspectRatioFrame } from './component/molecule/aspect-ratio/sample.js';
+import DividerSample, { FRAME as DividerFrame } from './component/atom/divider/sample.js';
+import IconSkeletonSample from './component/molecule/skeleton/sample.icon-skeleton.js';
+import LinkSample from './component/molecule/link/sample.js';
+import SkeletonIconSample from './component/molecule/skeleton/sample.js';
+import SkeletonPlaceholderSample from './component/atom/skeleton/sample.js';
+import SkeletonTextSample, { FRAME as SkeletonTextFrame } from './component/molecule/skeleton/sample.skeleton-text.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -42,5 +49,12 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ToastNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ToastNotificationSample }),
   Object.freeze({ name: 'ProgressBar', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: ProgressBarFrame, sample: ProgressBarSample }),
   Object.freeze({ name: 'Tooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: TooltipSample }),
-  Object.freeze({ name: 'OverlayHost', family: 'OverlayHost', tier: 'provider', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: OverlayHostSample })
+  Object.freeze({ name: 'OverlayHost', family: 'OverlayHost', tier: 'provider', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: OverlayHostSample }),
+  Object.freeze({ name: 'AspectRatio', family: 'AspectRatio', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: AspectRatioFrame, sample: AspectRatioSample }),
+  Object.freeze({ name: 'Divider', family: 'Divider', tier: 'atom', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: DividerFrame, sample: DividerSample }),
+  Object.freeze({ name: 'IconSkeleton', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: IconSkeletonSample }),
+  Object.freeze({ name: 'Link', family: 'Link', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LinkSample }),
+  Object.freeze({ name: 'SkeletonIcon', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: SkeletonIconSample }),
+  Object.freeze({ name: 'SkeletonPlaceholder', family: 'Skeleton', tier: 'atom', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: SkeletonPlaceholderSample }),
+  Object.freeze({ name: 'SkeletonText', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: SkeletonTextFrame, sample: SkeletonTextSample })
 ]);

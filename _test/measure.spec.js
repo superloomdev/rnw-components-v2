@@ -24,6 +24,7 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import React from 'react';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
@@ -41,6 +42,14 @@ const byKind = { 'render-web': [], 'parse-rn': [], none: [] };
 for (const row of built) {
   byKind[row.reference.kind].push(row.name);
 }
+// A built row with no primary-system twin draws no primary reference: its
+// primary mount must answer null for every sample state, so the skip cannot
+// hide a primary that exists
+const noPrimaryTwin = new Set(built.filter(function (row) {
+  return row.carbon_twin === 'none' && row.reference.kind !== 'none';
+}).map(function (row) {
+  return row.name;
+}));
 
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
@@ -121,7 +130,17 @@ test.describe('measure: reference coverage', function () {
     })) {
       expect(opened.status.components, name + ' is built in the roster but not in all.js').toContain(name);
     }
-    test.info().annotations.push({ type: 'measure', description: 'render-web ' + byKind['render-web'].length + ', parse-rn ' + byKind['parse-rn'].length + ', none (skipped) ' + byKind.none.length });
+    // A row with no primary-system twin must mount nothing for every sample
+    // state; an upstream stub proves the mount never reaches for one
+    for (const name of noPrimaryTwin) {
+      const component = components.find(function (entry) {
+        return entry.name === name;
+      });
+      for (const state of component.sample) {
+        expect(component.reference.mount(React, {}, state.props), name + ' / ' + state.label + ': no primary twin but the primary mount drew something').toBeNull();
+      }
+    }
+    test.info().annotations.push({ type: 'measure', description: 'render-web ' + byKind['render-web'].length + ', parse-rn ' + byKind['parse-rn'].length + ', none (skipped) ' + byKind.none.length + ', no primary twin (skipped) ' + noPrimaryTwin.size });
   });
 
 });
@@ -129,7 +148,9 @@ test.describe('measure: reference coverage', function () {
 
 test.describe('measure: primary reference', function () {
 
-  for (const name of byKind['render-web'].concat(byKind['parse-rn'])) {
+  for (const name of byKind['render-web'].concat(byKind['parse-rn']).filter(function (name) {
+    return !noPrimaryTwin.has(name);
+  })) {
     test(name + ': parts match the rendered upstream', async function ({ page }) {
       const component = components.find(function (entry) {
         return entry.name === name;

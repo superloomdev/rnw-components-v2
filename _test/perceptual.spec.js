@@ -29,6 +29,15 @@ const withReference = roster.rows.filter(function (row) {
 const withoutReference = roster.rows.filter(function (row) {
   return row.status !== 'pending' && row.status !== 'not_applicable' && row.reference.kind === 'none';
 });
+// A row with no primary-system twin draws no primary reference, so its
+// primary pixel comparison is skipped (a second twin is measured inside
+// the fidelity gate)
+const noPrimaryTwin = withReference.filter(function (row) {
+  return row.carbon_twin === 'none';
+});
+const primaryReference = withReference.filter(function (row) {
+  return row.carbon_twin !== 'none';
+});
 
 // The template whose values the primary reference draws, and the page the pipeline proof uses
 const REFERENCE_TEMPLATE = 'carbon';
@@ -89,7 +98,7 @@ test.describe('perceptual', function () {
     }
     expect(stale, 'expected gaps that no longer reproduce').toEqual([]);
     expect(blank, 'cells that rendered nothing visible').toEqual([]);
-    test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + withReference.length + ', without (skipped) ' + withoutReference.length });
+    test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + primaryReference.length + ', without (skipped) ' + withoutReference.length + ', no primary twin (skipped) ' + noPrimaryTwin.length });
   });
 
   // A shot is cropped from the page, so anything the harness itself paints
@@ -131,7 +140,7 @@ test.describe('perceptual', function () {
     expect(found, 'measurement cells painting their own chrome').toEqual([]);
   });
 
-  for (const row of withReference) {
+  for (const row of primaryReference) {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);

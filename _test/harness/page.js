@@ -180,9 +180,20 @@ export async function readParts (page, name, parts, side, origin, options) {
         const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
         const rect = element.getBoundingClientRect();
-        // A positioned pseudo-element sits at its offset plus its margin inside its host
-        const pseudoX = pseudo ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0) : 0;
-        const pseudoY = pseudo ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0) : 0;
+        // A positioned pseudo-element (absolute or fixed) sits at its left/top
+        // offset plus its margin inside the host. An in-flow one (static, or
+        // relative - whose left/top then shifts it) sits inside the host's
+        // padding box plus its margin, so the host's border and padding move it
+        const positioned = pseudo !== null && (style.position === 'absolute' || style.position === 'fixed');
+        const hostStyle = pseudo !== null && !positioned ? getComputedStyle(element) : null;
+        const pseudoX = pseudo === null ? 0 : positioned
+          ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
+          : (parseFloat(hostStyle.borderLeftWidth) || 0) + (parseFloat(hostStyle.paddingLeft) || 0) +
+            (parseFloat(style.marginLeft) || 0) + (style.position === 'relative' ? parseFloat(style.left) || 0 : 0);
+        const pseudoY = pseudo === null ? 0 : positioned
+          ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
+          : (parseFloat(hostStyle.borderTopWidth) || 0) + (parseFloat(hostStyle.paddingTop) || 0) +
+            (parseFloat(style.marginTop) || 0) + (style.position === 'relative' ? parseFloat(style.top) || 0 : 0);
         const stripTop = strip === null ? 0
           : strip === 'borderTop' ? rect.top : rect.bottom - parseFloat(style[strip + 'Width']);
         const measured = {};

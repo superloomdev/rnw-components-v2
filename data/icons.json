@@ -74,6 +74,7 @@
     "pending_filled": { "carbon": "pending--filled", "material": "pending" },
     "radio_button": { "carbon": "radio-button", "material": "radio_button_unchecked" },
     "radio_button_checked": { "carbon": "radio-button--checked", "material": "radio_button_checked" },
+    "save": { "carbon": "save", "material": "save" },
     "search": { "carbon": "search", "material": "search" },
     "selected_indicator": { "carbon": "checkmark", "material": "check" },
     "settings": { "carbon": "settings", "material": "settings" },

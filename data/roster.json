@@ -626,13 +626,13 @@
     {
       "name": "AspectRatio",
       "family": "AspectRatio",
-      "tier": "atom",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
         "export": "AspectRatio"
       },
-      "description": "AspectRatio is a component in the AspectRatio family.",
+      "description": "AspectRatio sizes its box to one of nine width-to-height ratios through the platform's own aspect-ratio layout and draws nothing else; a text child renders through the Text atom.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -648,7 +648,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ButtonSet",
@@ -907,7 +907,7 @@
         "version": "2.5.0",
         "export": "MdDivider"
       },
-      "description": "Divider is a component in the Divider family.",
+      "description": "Divider draws a horizontal rule of the theme's divider width and colour, inset at either end by the divider inset when asked; the primary system has no divider, so its values there are a Superloom decision from that system's own scale.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -922,8 +922,8 @@
       "carbon_twin": "none",
       "material_twin": "md-divider",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "IconSkeleton",
@@ -934,7 +934,7 @@
         "version": "1.115.0",
         "export": "IconSkeleton"
       },
-      "description": "IconSkeleton is a component in the Icon family.",
+      "description": "IconSkeleton is the icon family's export of the placeholder SkeletonIcon draws, at the smallest icon size; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -949,8 +949,8 @@
       "carbon_twin": "IconSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "IconSwitch",
@@ -1044,7 +1044,7 @@
         "version": "1.115.0",
         "export": "Link"
       },
-      "description": "Link is a component in the Link family.",
+      "description": "Link draws a pressable run of text in the theme's link colours for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon; the second system has no link, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1057,10 +1057,10 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Link",
-      "material_twin": "md-text-button",
+      "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "InlineLoading",
@@ -1235,7 +1235,7 @@
         "version": "1.115.0",
         "export": "SkeletonIcon"
       },
-      "description": "SkeletonIcon is a component in the Skeleton family.",
+      "description": "SkeletonIcon draws the skeleton placeholder at the smallest icon size; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1250,8 +1250,8 @@
       "carbon_twin": "SkeletonIcon",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "SkeletonPlaceholder",
@@ -1262,7 +1262,7 @@
         "version": "1.115.0",
         "export": "SkeletonPlaceholder"
       },
-      "description": "SkeletonPlaceholder is a component in the Skeleton family.",
+      "description": "SkeletonPlaceholder draws a box in the theme's skeleton container colour with a shimmer sweeping across it in the skeleton shimmer colour, sized by its props or the placeholder size; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1277,8 +1277,8 @@
       "carbon_twin": "SkeletonPlaceholder",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "SkeletonText",
@@ -1289,7 +1289,7 @@
         "version": "1.115.0",
         "export": "SkeletonText"
       },
-      "description": "SkeletonText is a component in the Skeleton family.",
+      "description": "SkeletonText draws one skeleton line of the theme's text height, a heading-height line, or a paragraph of lines whose widths step back by a fixed sequence, each followed by the skeleton text gap; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1304,8 +1304,8 @@
       "carbon_twin": "SkeletonText",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": ["superloom_decision"],
+      "status": "built"
     },
     {
       "name": "DismissibleTag",
