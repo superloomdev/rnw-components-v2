@@ -26,8 +26,6 @@ import ButtonSetSample, { FRAME as ButtonSetFrame } from './component/molecule/b
 import ButtonSkeletonSample from './component/molecule/button/sample.button-skeleton.js';
 import ComboButtonSample from './component/composite/button/sample.js';
 import DangerButtonSample from './component/molecule/button/sample.danger-button.js';
-import preview__ChatButtonSample from './component/molecule/button/sample.preview-chat-button.js';
-import preview__ChatButtonSkeletonSample from './component/molecule/button/sample.preview-chat-button-skeleton.js';
 import PrimaryButtonSample from './component/molecule/button/sample.primary-button.js';
 import SecondaryButtonSample from './component/molecule/button/sample.secondary-button.js';
 import DividerSample, { FRAME as DividerFrame } from './component/atom/divider/sample.js';
@@ -63,8 +61,6 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ButtonSkeleton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ButtonSkeletonSample }),
   Object.freeze({ name: 'ComboButton', family: 'Button', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ComboButtonSample }),
   Object.freeze({ name: 'DangerButton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: DangerButtonSample }),
-  Object.freeze({ name: 'preview__ChatButton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: preview__ChatButtonSample }),
-  Object.freeze({ name: 'preview__ChatButtonSkeleton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: preview__ChatButtonSkeletonSample }),
   Object.freeze({ name: 'PrimaryButton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: PrimaryButtonSample }),
   Object.freeze({ name: 'SecondaryButton', family: 'Button', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SecondaryButtonSample }),
   Object.freeze({ name: 'Divider', family: 'Divider', tier: 'atom', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: DividerFrame, sample: DividerSample }),

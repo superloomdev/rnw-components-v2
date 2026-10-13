@@ -1,6 +1,6 @@
-// Info: SkeletonPlaceholder atom. A box in the skeleton container colour
+// Info: SkeletonPlaceholder atom. A box in the skeleton container color
 // whose full-cover shimmer sweeps left to right and back on the skeleton
-// cycle, in the skeleton shimmer colour.
+// cycle, in the skeleton shimmer color.
 //
 // Behavior: reduced motion. When the platform asks for reduced motion the
 // shimmer does not animate: it rests at the same full cover a static

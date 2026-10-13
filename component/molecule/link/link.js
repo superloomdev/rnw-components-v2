@@ -1,4 +1,4 @@
-// Info: Link molecule. A pressable run of text in the theme's link colours
+// Info: Link molecule. A pressable run of text in the theme's link colors
 // for rest, hover, press, visited and disabled, underlined while hovered,
 // focused or pressed and always when inline, in three type sizes with an
 // optional trailing icon.
@@ -48,7 +48,7 @@ export default function Link (ctx) {
 
     const size = props.size === 'sm' || props.size === 'lg' ? props.size : 'md';
 
-    // The colour leaf: disabled, then pressed, hovered, visited, rest
+    // The color leaf: disabled, then pressed, hovered, visited, rest
     const leaf = disabled ? 'link_label_disabled'
       : state.pressed === true ? 'link_label_active'
         : state.hovered === true ? 'link_label_hover'

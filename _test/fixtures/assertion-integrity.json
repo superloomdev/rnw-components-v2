@@ -338,8 +338,8 @@
     {
       "id": "button-inline-ghost",
       "file": "component/molecule/button/button.js",
-      "find": "  const INLINE = Object.freeze(['ghost', 'danger_ghost', 'quick_action']);",
-      "replace": "  const INLINE = Object.freeze(['danger_ghost', 'quick_action']);",
+      "find": "  const INLINE = Object.freeze(['ghost', 'danger_ghost']);",
+      "replace": "  const INLINE = Object.freeze(['danger_ghost']);",
       "runner": "node",
       "test": "button.test.js",
       "testName": "carbon / ghost: geometry, fill and label come from the theme",
@@ -802,8 +802,8 @@
       "replace": "backgroundColor: ctx.color('skeleton_container'),",
       "runner": "node",
       "test": "skeleton-placeholder.test.js",
-      "testName": "colours and sweep",
-      "why": "the shimmer must paint in the shimmer colour; drawing it in the container colour must fail the colour assertion"
+      "testName": "colors and sweep",
+      "why": "the shimmer must paint in the shimmer color; drawing it in the container color must fail the color assertion"
     },
     {
       "id": "skeleton-icon-size",
@@ -916,36 +916,6 @@
       "why": "the skeleton must draw at the skeleton button width; another metric must fail the width assertion"
     },
     {
-      "id": "chat-button-pill",
-      "file": "component/molecule/button/preview__chat-button.js",
-      "find": "      pill: true,",
-      "replace": "      pill: props.pill === true,",
-      "runner": "node",
-      "test": "preview__chat-button.test.js",
-      "testName": "draws the pill: the corner is half the button's height at every size",
-      "why": "the chat button must always draw the pill; deferring to the caller's pill must fail the radius assertion"
-    },
-    {
-      "id": "chat-button-quick-action-size",
-      "file": "component/molecule/button/preview__chat-button.js",
-      "find": "    const size = quick ? 'sm' : Utils.inArray(SIZES, props.size) ? props.size : 'lg';",
-      "replace": "    const size = quick ? 'md' : Utils.inArray(SIZES, props.size) ? props.size : 'lg';",
-      "runner": "node",
-      "test": "preview__chat-button.test.js",
-      "testName": "isQuickAction forces the quick-action kind and the small size",
-      "why": "the quick action must force the small size; another size must fail the height assertion"
-    },
-    {
-      "id": "chat-button-skeleton-pill",
-      "file": "component/molecule/button/preview__chat-button-skeleton.js",
-      "find": "      radius: height / 2,",
-      "replace": "      radius: height,",
-      "runner": "node",
-      "test": "preview__chat-button-skeleton.test.js",
-      "testName": "draws the pill: the button's height for the size, half of it as the corner",
-      "why": "the chat button skeleton must draw the pill corner; another radius must fail the corner assertion"
-    },
-    {
       "id": "primary-button-kind",
       "file": "component/molecule/button/primary-button.js",
       "find": "Object.assign({ kind: 'primary' }, props)",
@@ -1004,16 +974,6 @@
       "test": "combo-button.test.js",
       "testName": "pressing the trigger opens the menu against the container's edges",
       "why": "the plain alignments must span the container's width; a natural width must fail the width assertion"
-    },
-    {
-      "id": "button-pill",
-      "file": "component/molecule/button/button.js",
-      "find": "const radius = props.pill === true ? height / 2 : ctx.metric('Button', 'radius');",
-      "replace": "const radius = ctx.metric('Button', 'radius');",
-      "runner": "node",
-      "test": "button.test.js",
-      "testName": "pill draws the corner radius at half the button's height",
-      "why": "a pill button must draw half its height as the corner radius; ignoring pill must fail the radius assertion"
     },
     {
       "id": "icon-button-rotation",

@@ -10,7 +10,6 @@ export default Object.freeze({
     icon: { type: 'string', required: true, description: 'The icon token the button draws.' },
     iconSize: { type: 'number', required: false, description: 'The glyph\'s size; default the icon button member cell. Composing parents pass their own cell (the dialog\'s close icon).' },
     iconColor: { type: 'string', required: false, description: 'The color leaf the glyph draws; default the kind\'s icon cell. Composing parents name their own cell (the notification\'s close icon).' },
-    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
     label: { type: 'string', required: true, description: 'The button\'s accessible name, which its compact tooltip shows.' },
     kind: { type: 'string', required: false, description: 'One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`.' },
     size: { type: 'string', required: false, description: 'One of `sm`, `md`, `lg`: the square\'s side. Default `lg`, the `icon_button` member cell.' },
@@ -19,6 +18,13 @@ export default Object.freeze({
     onPress: { type: 'function', required: false, description: 'Called when the button is pressed.' },
     align: { type: 'string', required: false, description: 'The side the tooltip opens on. Default `top`.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the button.' }
+  }),
+  composition: Object.freeze({
+    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
+    onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },
+    'aria-controls': { type: 'string', required: false, description: 'Composition prop: the id of the layer the trigger controls (the combo button\'s menu).' },
+    'aria-expanded': { type: 'boolean', required: false, description: 'Composition prop: whether the layer the trigger controls is open (the combo button\'s menu).' },
+    'aria-haspopup': { type: 'boolean', required: false, description: 'Composition prop: the trigger opens a popup (the combo button\'s menu).' }
   }),
   kinds: Object.freeze(KINDS),
   variants: Object.freeze([]),

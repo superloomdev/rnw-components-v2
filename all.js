@@ -1,6 +1,6 @@
 // Info: Every component factory, by roster name. A host passes this map (or a
-// subset) to `createSystem`. One line per roster row whose `status` is not
-// `not_applicable`, in roster build order; the docs gate checks the two agree.
+// subset) to `createSystem`. One line per roster row, in roster build order;
+// the docs gate checks the two agree.
 
 export { default as Icon } from './component/atom/icon/icon.js';
 export { default as Text } from './component/atom/text/text.js';
@@ -27,8 +27,6 @@ export { default as ButtonSet } from './component/molecule/button/button-set.js'
 export { default as ButtonSkeleton } from './component/molecule/button/button-skeleton.js';
 export { default as ComboButton } from './component/composite/button/combo-button.js';
 export { default as DangerButton } from './component/molecule/button/danger-button.js';
-export { default as preview__ChatButton } from './component/molecule/button/preview__chat-button.js';
-export { default as preview__ChatButtonSkeleton } from './component/molecule/button/preview__chat-button-skeleton.js';
 export { default as PrimaryButton } from './component/molecule/button/primary-button.js';
 export { default as SecondaryButton } from './component/molecule/button/secondary-button.js';
 export { default as Divider } from './component/atom/divider/divider.js';

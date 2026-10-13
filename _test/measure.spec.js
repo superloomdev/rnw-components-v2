@@ -36,7 +36,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const roster = JSON.parse(readFileSync(join(HERE, '..', 'data', 'roster.json'), 'utf8'));
 const components = await discoverComponents();
 const built = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable';
+  return row.status !== 'pending';
 });
 const byKind = { 'render-web': [], 'parse-rn': [], none: [] };
 for (const row of built) {

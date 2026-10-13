@@ -1,5 +1,5 @@
 // Info: Divider measurement reference. The primary system has no standalone
-// divider (roster `carbon_twin` `none`), so the primary mount draws nothing
+// divider (the roster records no primary twin), so the primary mount draws nothing
 // for every state and the browser gates skip it. The second reference is
 // `md-divider`: its host is a flex row whose `::before` draws the line at
 // `currentColor` inside the host's inset padding - the same row-plus-line

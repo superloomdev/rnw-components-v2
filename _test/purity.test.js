@@ -7,15 +7,15 @@
 //    createPortal, LayoutAnimation, useWindowDimensions, __DEV__, JSX.
 // 2. Every component folder is complete: factory, api, spec, sample, notes;
 //    the factory carries `.spec`; `all.js` exports exactly the discovered
-//    components and only roster rows that are not `not_applicable`.
+//    components, and no sample passes a composition prop.
 // 3. REQUIRED_TOKENS = context tokens + every spec token + every `api.tokens`;
 //    SUPPORTED_TOKENS adds `color.<leaf>` for every `api.colors`; every name
 //    is in the contract; REQUIRED_ICONS names icons the contract carries.
 
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
-import { relative } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join, relative } from 'node:path';
 
 import * as factories from 'rnw-components/all';
 import { REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-components';
@@ -113,7 +113,7 @@ describe('purity: component folders and all.js', function () {
       assert.equal(typeof factories[component.name], 'function', component.name + ' is not exported from all.js');
       assert.equal(factories[component.name].spec, component.spec, component.name + ' factory does not carry its spec sheet');
       assert.ok(rows[component.name], component.name + ' has no roster row');
-      assert.notEqual(rows[component.name].status, 'not_applicable', component.name + ' is not_applicable in the roster');
+      assert.notEqual(rows[component.name].status, 'pending', component.name + ' is pending in the roster');
       assert.equal(rows[component.name].tier, component.tier, component.name + ' tier disagrees with the roster');
       assert.ok(Array.isArray(component.sample) && component.sample.length >= 1, component.name + ' sample.js is empty');
       if (rows[component.name].reference.kind !== 'none') {
@@ -123,6 +123,30 @@ describe('purity: component folders and all.js', function () {
     assert.deepEqual(Object.keys(factories).sort(), components.map(function (component) {
       return component.name;
     }), 'all.js exports and component folders disagree');
+  });
+
+  test('no sample passes a composition prop', async function () {
+    const components = await discoverComponents();
+    const violations = [];
+    for (const component of components) {
+      const keys = Object.keys(component.api.composition || {});
+      if (keys.length === 0) {
+        continue;
+      }
+      const samples = readdirSync(component.dir).filter(function (file) {
+        return /^sample.*\.js$/.test(file);
+      });
+      for (const file of samples) {
+        const source = codeOnly(readFileSync(join(component.dir, file), 'utf8'));
+        for (const key of keys) {
+          const marker = new RegExp('[\'"]?' + key.replace(/[^a-zA-Z0-9_]/g, '\\$&') + '[\'"]?\\s*:');
+          if (marker.test(source)) {
+            violations.push(component.name + ' / ' + file + ' passes composition prop ' + key);
+          }
+        }
+      }
+    }
+    assert.deepEqual(violations, []);
   });
 
 });

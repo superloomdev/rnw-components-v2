@@ -17,8 +17,7 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 - **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` take the ghost paddings and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
 - **Selected.** A button that toggles passes `selected`; while selected it draws the kind's selected fill and label cells, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button (its selected surface with the primary text), the second reference's selected action is its segmented button's selected colors; each template answers the cells, and the selected state has no measurement counterpart.
-- **Quick action is an inline kind.** `quick_action` takes the ghost paddings and sets its icon after the label, as the primary's quick action is a ghost button; its cells are the `button_quick_action_*` set. Its focus ring draws no page-colour line inside the edge: the gap width comes from `control.button_quick_action_focus_gap_width`, not the family's, because the primary's quick action draws a plain inset line. Hovered while focused, the primary swaps that line to `$focus-inset`; v7 has no cell for the combined state and no gate drives it, so ours draws the plain focused ring - `color.button_quick_action_focus_inner_hover` is queued for M4 in `__dev__/CONTRACT-REQUESTS.md`. The quick action is measured through preview__ChatButton, so both references mount nothing for it here.
-- **Composition props.** `pill`, `minWidth`, `maxWidth`, `paddingStart` and `paddingEnd` exist for composing parents only: `pill` draws the corner radius at half the button's height (the chat button's pill); the rest override the computed geometry (the combo button's width window, the fluid set's ghost padding, the chat button's icon-free end).
+- **Composition props.** `labelAlign`, `minWidth`, `maxWidth` and `paddingStart` exist for composing parents only and are listed under `composition` in the api: they override the computed geometry or alignment (the combo button's width window and `space-between` label edge, the fluid set's ghost padding).
 
 ### Platform
 
@@ -69,36 +68,6 @@ The skeleton placeholder drawn in a button's shape: the button's height for the 
 ### Platform
 
 Both. The placeholder and its reduced-motion rule behave the same natively.
-
-## preview__ChatButton
-
-The chat family's pill button: a Button drawn with `pill` in the small, medium or large size, or - with `isQuickAction` - as a small `quick_action` button that fills while `isSelected`.
-
-### Decisions (roster flag `superloom_decision`)
-
-- **The pill is half the height.** The primary's chat button radius is 24/20/16 at lg/md/sm - exactly half each size's height - so the Button's `pill` composition prop draws it and no token is needed; a template whose heights differ keeps the rule.
-- **Sizes normalize to the chat set.** Only `sm`, `md` and `lg` exist upstream; any other `size` draws `lg`.
-- **`isQuickAction` wins over `kind` and `size`.** It forces the `quick_action` kind (the Button's ghost-style kind reading the `button_quick_action_*` cells) and `sm`; `isSelected` maps to the Button's `selected`, and the selected cells hold through hover, press and disabled as the primary's do.
-- **An icon-free chat button ends at the start padding.** The primary draws `padding-inline-end` at the start padding (padding less the border), not the icon slot's end; the wrapper passes that as the Button's `paddingEnd`.
-- **The focus ring is the quick action's own.** It draws no page-colour line (`control.button_quick_action_focus_gap_width` is 0 in the primary); hovered while focused, the primary swaps the ring's inner line to `$focus-inset` - v7 has no cell for that combined state and no gate drives it, so ours draws the plain focused ring and `color.button_quick_action_focus_inner_hover` is queued for M4 in `__dev__/CONTRACT-REQUESTS.md`.
-- **No second system.** It has no chat button; the cells material answers come from its outlined button as a Superloom decision.
-
-### Platform
-
-Both. The Button the wrapper mounts behaves the same natively.
-
-## preview__ChatButtonSkeleton
-
-The skeleton placeholder drawn in the chat button's pill: the button's height for the size, half of it as the corner, at the skeleton button width.
-
-### Decisions (roster flag `superloom_decision`)
-
-- **The corner is the pill's.** Upstream reads `border-radius: 24px` at every size (its chat-button rule keys on classes the skeleton never carries); half the height is the same drawn shape at the large size, and the rule holds the pill at every size a template defines.
-- **No second system.** It has no skeleton; the shape is a Superloom decision.
-
-### Platform
-
-Both.
 
 ## PrimaryButton, SecondaryButton, DangerButton
 
@@ -158,12 +127,6 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
 | `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
 | `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
-| `pill` | `boolean` | no | Composition prop: the corner radius is half the button's height (the chat button's pill). |
-| `labelAlign` | `string` | no | Composition prop: `start` holds the label at the start padding when the button is wider than its content (the combo button's action); any other value centers it. |
-| `minWidth` | `number` | no | Composition prop: overrides the computed minimum width (the combo button's action). |
-| `maxWidth` | `number` | no | Composition prop: caps the computed width (the combo button's action). |
-| `paddingStart` | `number` | no | Composition prop: overrides the computed start padding (the fluid set's ghost items). |
-| `paddingEnd` | `number` | no | Composition prop: overrides the computed end padding (the chat button's icon-free end). |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -211,7 +174,6 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | medium | `{"children":"Medium","size":"md"}` |
 | extra large | `{"children":"Extra large","size":"xl"}` |
 | 2x large | `{"children":"2x large","size":"2xl"}` |
-| quick action | `{"children":"Quick action","kind":"quick_action","size":"sm"}` |
 
 ## ButtonSet
 
@@ -411,7 +373,6 @@ IconButton is a square button that shows one icon token and a tooltip label.
 | `icon` | `string` | yes | The icon token the button draws. |
 | `iconSize` | `number` | no | The glyph's size; default the icon button member cell. Composing parents pass their own cell (the dialog's close icon). |
 | `iconColor` | `string` | no | The color leaf the glyph draws; default the kind's icon cell. Composing parents name their own cell (the notification's close icon). |
-| `iconRotation` | `number` | no | Composition prop: degrees the glyph turns by, transitioning on the web (the combo button's chevron while open). Default 0. |
 | `label` | `string` | yes | The button's accessible name, which its compact tooltip shows. |
 | `kind` | `string` | no | One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`. |
 | `size` | `string` | no | One of `sm`, `md`, `lg`: the square's side. Default `lg`, the `icon_button` member cell. |
@@ -469,11 +430,6 @@ PrimaryButton draws a Button of the primary kind unless it is given another kind
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
 | `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
 | `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
-| `pill` | `boolean` | no | Composition prop: the corner radius is half the button's height (the chat button's pill). |
-| `minWidth` | `number` | no | Composition prop: overrides the computed minimum width (the combo button's action). |
-| `maxWidth` | `number` | no | Composition prop: caps the computed width (the combo button's action). |
-| `paddingStart` | `number` | no | Composition prop: overrides the computed start padding (the fluid set's ghost items). |
-| `paddingEnd` | `number` | no | Composition prop: overrides the computed end padding (the chat button's icon-free end). |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -516,11 +472,6 @@ SecondaryButton draws a Button of the secondary kind unless it is given another 
 | `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
 | `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
 | `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
-| `pill` | `boolean` | no | Composition prop: the corner radius is half the button's height (the chat button's pill). |
-| `minWidth` | `number` | no | Composition prop: overrides the computed minimum width (the combo button's action). |
-| `maxWidth` | `number` | no | Composition prop: caps the computed width (the combo button's action). |
-| `paddingStart` | `number` | no | Composition prop: overrides the computed start padding (the fluid set's ghost items). |
-| `paddingEnd` | `number` | no | Composition prop: overrides the computed end padding (the chat button's icon-free end). |
 | `onPress` | `function` | no | Called on activation (press, Enter, Space). |
 | `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
 | `testID` | `string` | no | Test identifier forwarded to the pressable root. |
@@ -538,88 +489,3 @@ None: every value this component draws is a token named in its props or listed u
 | small | `{"children":"Secondary","size":"sm"}` |
 | disabled | `{"children":"Secondary","disabled":true}` |
 | other kind | `{"children":"Secondary","kind":"tertiary"}` |
-
-## preview__ChatButton
-
-preview__ChatButton draws a pill-shaped Button in the small, medium or large size, or as a quick action: a small outlined button in the quick-action kind that fills while selected; the second system has no chat button, so its values are a Superloom decision.
-
-| | |
-|---|---|
-| Tier | `molecule` |
-| Platform | `both` |
-| Reference | `render-web` (`@carbon/react`) |
-| Enums | `feedback.press` |
-| Behaviors | `press` |
-| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
-
-### Props
-
-| Prop | Type | Required | Description |
-|---|---|---|---|
-| `children` | `string` | yes | The label. It is also the accessible name unless `accessibilityLabel` is given. |
-| `kind` | `string` | no | One of `kinds`. Default `primary`; `isQuickAction` overrides it. |
-| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `lg`; `isQuickAction` draws `sm`. |
-| `isQuickAction` | `boolean` | no | Draws the quick-action button: the `quick_action` kind in the small size. |
-| `isSelected` | `boolean` | no | Draws the selected fill and label while true. |
-| `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
-| `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
-| `onPress` | `function` | no | Called on activation (press, Enter, Space). |
-| `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
-| `testID` | `string` | no | Test identifier forwarded to the pressable root. |
-
-### Metrics
-
-| Metric | Rule |
-|---|---|
-| `startPadding` | subtract of `control.button_padding_start`, `border.width_01` |
-| `inlineStartPadding` | subtract of `control.button_ghost_padding_start`, `border.width_01` |
-
-### States (sample.js)
-
-| State | Props |
-|---|---|
-| default | `{"children":"Chat"}` |
-| secondary | `{"children":"Chat","kind":"secondary"}` |
-| medium | `{"children":"Chat","size":"md"}` |
-| small | `{"children":"Chat","size":"sm"}` |
-| with icon | `{"children":"Chat","icon":"add"}` |
-| quick action | `{"children":"Quick action","isQuickAction":true}` |
-| quick action selected | `{"children":"Quick action","isQuickAction":true,"isSelected":true}` |
-| quick action disabled | `{"children":"Quick action","isQuickAction":true,"disabled":true}` |
-| disabled | `{"children":"Chat","disabled":true}` |
-
-## preview__ChatButtonSkeleton
-
-preview__ChatButtonSkeleton draws the skeleton placeholder in the chat button's pill at the button's height for its size and the skeleton button width; the second system has no skeleton, so its values are a Superloom decision.
-
-| | |
-|---|---|
-| Tier | `molecule` |
-| Platform | `both` |
-| Reference | `render-web` (`@carbon/react`) |
-| Enums | none |
-| Behaviors | `press` |
-| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
-
-### Props
-
-| Prop | Type | Required | Description |
-|---|---|---|---|
-| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `lg`. |
-| `testID` | `string` | no | Test identifier forwarded to the placeholder's root. |
-
-### Metrics
-
-| Metric | Rule |
-|---|---|
-| `width` | `control.button_skeleton_width` |
-| `height` | `control.button_height` |
-| `heightSmall` | `size.size_small` |
-| `heightMedium` | `size.size_medium` |
-
-### States (sample.js)
-
-| State | Props |
-|---|---|
-| default | `{}` |
-| small | `{"size":"sm"}` |

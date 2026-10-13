@@ -18,8 +18,7 @@ const FLAG_TEXT = {
   no_reference: 'no upstream visual reference; gates are structural, accessibility and cross-template',
   web_only: 'renders on web only; the native half renders nothing',
   requires_parent: 'renders only inside its parent',
-  superloom_decision: 'anatomy or a value decided here, not measured from a reference',
-  not_applicable: 'not a rendered component'
+  superloom_decision: 'anatomy or a value decided here, not measured from a reference'
 };
 
 

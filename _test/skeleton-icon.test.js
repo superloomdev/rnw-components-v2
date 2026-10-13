@@ -19,7 +19,7 @@ describe('SkeletonIcon: every sample state under every template', function () {
 
   for (const template of TEMPLATE_NAMES) {
     for (const state of SAMPLE) {
-      test(template + ' / ' + state.label + ': icon size and skeleton colours come from the theme', async function () {
+      test(template + ' / ' + state.label + ': icon size and skeleton colors come from the theme', async function () {
         const t = buildNative(template).tokens;
         const Registry = buildSystem(template, factories);
         const container = await render(React.createElement(Registry.SkeletonIcon, state.props));

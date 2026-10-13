@@ -64,10 +64,6 @@ import comboButtonApi from './composite/button/api.js';
 import comboButtonSpec from './composite/button/spec.js';
 import dangerButtonApi from './molecule/button/api.danger-button.js';
 import dangerButtonSpec from './molecule/button/spec.danger-button.js';
-import chatButtonApi from './molecule/button/api.preview-chat-button.js';
-import chatButtonSpec from './molecule/button/spec.preview-chat-button.js';
-import chatButtonSkeletonApi from './molecule/button/api.preview-chat-button-skeleton.js';
-import chatButtonSkeletonSpec from './molecule/button/spec.preview-chat-button-skeleton.js';
 import primaryButtonApi from './molecule/button/api.primary-button.js';
 import primaryButtonSpec from './molecule/button/spec.primary-button.js';
 import secondaryButtonApi from './molecule/button/api.secondary-button.js';
@@ -148,8 +144,6 @@ const BUTTON_SET_REQUIRED = [].concat(buttonSetApi.tokens, specTokens(buttonSetS
 const BUTTON_SKELETON_REQUIRED = [].concat(buttonSkeletonApi.tokens, specTokens(buttonSkeletonSpec));
 const COMBO_BUTTON_REQUIRED = [].concat(comboButtonApi.tokens, specTokens(comboButtonSpec));
 const DANGER_BUTTON_REQUIRED = [].concat(dangerButtonApi.tokens, specTokens(dangerButtonSpec));
-const CHAT_BUTTON_REQUIRED = [].concat(chatButtonApi.tokens, specTokens(chatButtonSpec));
-const CHAT_BUTTON_SKELETON_REQUIRED = [].concat(chatButtonSkeletonApi.tokens, specTokens(chatButtonSkeletonSpec));
 const PRIMARY_BUTTON_REQUIRED = [].concat(primaryButtonApi.tokens, specTokens(primaryButtonSpec));
 const SECONDARY_BUTTON_REQUIRED = [].concat(secondaryButtonApi.tokens, specTokens(secondaryButtonSpec));
 
@@ -174,7 +168,7 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, CHAT_BUTTON_REQUIRED, CHAT_BUTTON_SKELETON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 

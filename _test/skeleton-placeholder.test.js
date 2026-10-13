@@ -1,7 +1,7 @@
 // Info: SkeletonPlaceholder atom. Every sample state renders under all
 // three templates as an aria-hidden box of the theme's skeleton container
-// colour and radius, with a full-cover shimmer child in the skeleton
-// shimmer colour sweeping on the theme's skeleton cycle; under reduced
+// color and radius, with a full-cover shimmer child in the skeleton
+// shimmer color sweeping on the theme's skeleton cycle; under reduced
 // motion the shimmer rests.
 
 import { afterEach, describe, test } from 'node:test';
@@ -36,7 +36,7 @@ describe('SkeletonPlaceholder: every sample state under every template', functio
 
   for (const template of TEMPLATE_NAMES) {
     for (const state of SAMPLE) {
-      test(template + ' / ' + state.label + ': box, colours and sweep come from the theme', async function () {
+      test(template + ' / ' + state.label + ': box, colors and sweep come from the theme', async function () {
         stubReducedMotion(false);
         const t = buildNative(template).tokens;
         const Registry = buildSystem(template, factories);
@@ -46,7 +46,7 @@ describe('SkeletonPlaceholder: every sample state under every template', functio
         const props = state.props || {};
         const size = t['control.skeleton_placeholder_size'];
 
-        // The box: prop size or the placeholder size, container colour, radius
+        // The box: prop size or the placeholder size, container color, radius
         assert.equal(root.getAttribute('aria-hidden'), 'true');
         assert.equal(root.style.width, (props.width === undefined ? size : props.width) + 'px');
         assert.equal(root.style.height, (props.height === undefined ? size : props.height) + 'px');
@@ -58,7 +58,7 @@ describe('SkeletonPlaceholder: every sample state under every template', functio
         assert.equal(root.style.overflowY, 'hidden');
         assert.equal(root.style.position, 'relative');
 
-        // The shimmer: full cover in the shimmer colour, sweeping on the cycle
+        // The shimmer: full cover in the shimmer color, sweeping on the cycle
         assert.equal(shimmer.style.backgroundColor, cssValue('backgroundColor', t['color.skeleton_shimmer']));
         assert.equal(shimmer.style.position, 'absolute');
         assert.equal(shimmer.style.width, '100%');

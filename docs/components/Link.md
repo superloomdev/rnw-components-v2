@@ -4,13 +4,13 @@
 
 ## Link
 
-Link draws a pressable run of text in the theme's link colours for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon.
+Link draws a pressable run of text in the theme's link colors for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon.
 
 ### Decisions (roster flag `superloom_decision`)
 
-- **No second-system link.** The second system's nearest twin is a 40px pill button, not a link — the roster's `superloom_decision`, and `material_twin` is `none`. That system's link values are its own: the family reads its primary role and label sets.
-- **The ring sits at the edge.** The focus ring draws as a solid outline in the link focus-ring colour at the focus width, offset a constant 0 — the primary's focus outline draws at the edge and no reference states another.
-- **`visited` is a prop, unmeasured.** No page can drive `:visited` — a browser answers it from history — so `visited` is a plain prop, and its state is unmeasured: the reference mount returns null for it.
+- **No second-system link.** The second system's nearest twin is a 40px pill button, not a link - the roster's `superloom_decision`; it records no second twin. That system's link values are its own: the family reads its primary role and label sets.
+- **The ring sits at the edge.** The focus ring draws as a solid outline in the link focus-ring color at the focus width, offset a constant 0 - the primary's focus outline draws at the edge and no reference states another.
+- **`visited` is a prop, unmeasured.** No page can drive `:visited` - a browser answers it from history - so `visited` is a plain prop, and its state is unmeasured: the reference mount returns null for it.
 
 ### Platform
 
@@ -18,7 +18,7 @@ Both platforms. On a native platform a link navigates through `onPress`: `href` 
 
 ## Link
 
-Link draws a pressable run of text in the theme's link colours for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon; the second system has no link, so its values are a Superloom decision.
+Link draws a pressable run of text in the theme's link colors for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon; the second system has no link, so its values are a Superloom decision.
 
 | | |
 |---|---|
@@ -37,8 +37,8 @@ Link draws a pressable run of text in the theme's link colours for rest, hover, 
 | `href` | `string` | no | The destination the anchor carries; omitted while disabled. |
 | `onPress` | `function` | no | Called on activation; on a native platform this is how the link navigates. |
 | `inline` | `boolean` | no | Draw the link inline - underlined at rest, not only while hovered, focused or pressed. |
-| `visited` | `boolean` | no | Draw the visited colour; a page cannot drive the `:visited` pseudo-class itself. |
-| `disabled` | `boolean` | no | Draw the disabled colour; no href and no activation. |
+| `visited` | `boolean` | no | Draw the visited color; a page cannot drive the `:visited` pseudo-class itself. |
+| `disabled` | `boolean` | no | Draw the disabled color; no href and no activation. |
 | `size` | `string` | no | One of `variants`: `sm`, `md` (the default) or `lg` - the label's type set. |
 | `icon` | `string` | no | A semantic icon name drawn after the label, decorative. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |

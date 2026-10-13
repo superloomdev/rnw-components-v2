@@ -1,5 +1,5 @@
 // Info: Divider atom. Every sample state renders under all three templates
-// as a row with a single line child of the theme's divider width and colour,
+// as a row with a single line child of the theme's divider width and color,
 // indented at either end by the theme's divider inset per the flags; the
 // accessibility answer is a separator.
 
@@ -20,7 +20,7 @@ describe('Divider: every sample state under every template', function () {
 
   for (const template of TEMPLATE_NAMES) {
     for (const state of SAMPLE) {
-      test(template + ' / ' + state.label + ': line width, colour and insets come from the theme', async function () {
+      test(template + ' / ' + state.label + ': line width, color and insets come from the theme', async function () {
         const t = buildNative(template).tokens;
         const Registry = buildSystem(template, factories);
         const container = await render(React.createElement(Registry.Divider, state.props));
@@ -37,7 +37,7 @@ describe('Divider: every sample state under every template', function () {
         assert.equal(root.style.paddingLeft, (start ? t['control.divider_inset'] : 0) + 'px');
         assert.equal(root.style.paddingRight, (end ? t['control.divider_inset'] : 0) + 'px');
 
-        // The line: the theme's divider colour and width, filling the unpadded span
+        // The line: the theme's divider color and width, filling the unpadded span
         assert.equal(line.style.backgroundColor, cssValue('backgroundColor', t['color.divider']));
         assert.equal(line.style.height, t['control.divider_width'] + 'px');
         assert.equal(line.style.flexGrow, '1');

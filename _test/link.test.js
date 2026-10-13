@@ -1,6 +1,6 @@
 // Info: Link molecule. Every sample state renders under all three
 // templates as a `role="link"` target over a face whose label reads the
-// theme's link type set and colour leaf, underlined while hovered, focused,
+// theme's link type set and color leaf, underlined while hovered, focused,
 // pressed or inline; the trailing icon draws the icon-size glyph in the
 // size's icon box and tracks the label's leaf; hover, focus and press drive
 // the target through the DOM.
@@ -90,7 +90,7 @@ describe('Link: every sample state under every template', function () {
         assert.equal(target.style.outlineStyle, 'none');
         assert.notEqual(face, target);
 
-        // The label: the size's type set, the state's colour leaf, the
+        // The label: the size's type set, the state's color leaf, the
         // underline only while inline at rest
         const set = t[typeLeaf(props.size)];
         assert.equal(label.style.fontSize, set.fontSize + 'px');

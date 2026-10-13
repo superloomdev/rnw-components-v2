@@ -24,10 +24,10 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const roster = JSON.parse(readFileSync(join(HERE, '..', 'data', 'roster.json'), 'utf8'));
 const GAPS = JSON.parse(readFileSync(join(HERE, 'fixtures', 'expected-gaps.json'), 'utf8')).gaps;
 const withReference = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable' && row.reference.kind !== 'none';
+  return row.status !== 'pending' && row.reference.kind !== 'none';
 });
 const withoutReference = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable' && row.reference.kind === 'none';
+  return row.status !== 'pending' && row.reference.kind === 'none';
 });
 // A row with no primary-system twin draws no primary reference, so its
 // primary pixel comparison is skipped (a second twin is measured inside

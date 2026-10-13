@@ -13,8 +13,7 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 - **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` take the ghost paddings and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
 - **Selected.** A button that toggles passes `selected`; while selected it draws the kind's selected fill and label cells, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button (its selected surface with the primary text), the second reference's selected action is its segmented button's selected colors; each template answers the cells, and the selected state has no measurement counterpart.
-- **Quick action is an inline kind.** `quick_action` takes the ghost paddings and sets its icon after the label, as the primary's quick action is a ghost button; its cells are the `button_quick_action_*` set. Its focus ring draws no page-colour line inside the edge: the gap width comes from `control.button_quick_action_focus_gap_width`, not the family's, because the primary's quick action draws a plain inset line. Hovered while focused, the primary swaps that line to `$focus-inset`; v7 has no cell for the combined state and no gate drives it, so ours draws the plain focused ring - `color.button_quick_action_focus_inner_hover` is queued for M4 in `__dev__/CONTRACT-REQUESTS.md`. The quick action is measured through preview__ChatButton, so both references mount nothing for it here.
-- **Composition props.** `pill`, `minWidth`, `maxWidth`, `paddingStart` and `paddingEnd` exist for composing parents only: `pill` draws the corner radius at half the button's height (the chat button's pill); the rest override the computed geometry (the combo button's width window, the fluid set's ghost padding, the chat button's icon-free end).
+- **Composition props.** `labelAlign`, `minWidth`, `maxWidth` and `paddingStart` exist for composing parents only and are listed under `composition` in the api: they override the computed geometry or alignment (the combo button's width window and `space-between` label edge, the fluid set's ghost padding).
 
 ## Platform
 
@@ -65,36 +64,6 @@ The skeleton placeholder drawn in a button's shape: the button's height for the 
 ## Platform
 
 Both. The placeholder and its reduced-motion rule behave the same natively.
-
-# preview__ChatButton
-
-The chat family's pill button: a Button drawn with `pill` in the small, medium or large size, or - with `isQuickAction` - as a small `quick_action` button that fills while `isSelected`.
-
-## Decisions (roster flag `superloom_decision`)
-
-- **The pill is half the height.** The primary's chat button radius is 24/20/16 at lg/md/sm - exactly half each size's height - so the Button's `pill` composition prop draws it and no token is needed; a template whose heights differ keeps the rule.
-- **Sizes normalize to the chat set.** Only `sm`, `md` and `lg` exist upstream; any other `size` draws `lg`.
-- **`isQuickAction` wins over `kind` and `size`.** It forces the `quick_action` kind (the Button's ghost-style kind reading the `button_quick_action_*` cells) and `sm`; `isSelected` maps to the Button's `selected`, and the selected cells hold through hover, press and disabled as the primary's do.
-- **An icon-free chat button ends at the start padding.** The primary draws `padding-inline-end` at the start padding (padding less the border), not the icon slot's end; the wrapper passes that as the Button's `paddingEnd`.
-- **The focus ring is the quick action's own.** It draws no page-colour line (`control.button_quick_action_focus_gap_width` is 0 in the primary); hovered while focused, the primary swaps the ring's inner line to `$focus-inset` - v7 has no cell for that combined state and no gate drives it, so ours draws the plain focused ring and `color.button_quick_action_focus_inner_hover` is queued for M4 in `__dev__/CONTRACT-REQUESTS.md`.
-- **No second system.** It has no chat button; the cells material answers come from its outlined button as a Superloom decision.
-
-## Platform
-
-Both. The Button the wrapper mounts behaves the same natively.
-
-# preview__ChatButtonSkeleton
-
-The skeleton placeholder drawn in the chat button's pill: the button's height for the size, half of it as the corner, at the skeleton button width.
-
-## Decisions (roster flag `superloom_decision`)
-
-- **The corner is the pill's.** Upstream reads `border-radius: 24px` at every size (its chat-button rule keys on classes the skeleton never carries); half the height is the same drawn shape at the large size, and the rule holds the pill at every size a template defines.
-- **No second system.** It has no skeleton; the shape is a Superloom decision.
-
-## Platform
-
-Both.
 
 # PrimaryButton, SecondaryButton, DangerButton
 

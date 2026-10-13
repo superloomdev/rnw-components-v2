@@ -19,7 +19,7 @@ const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 // How the renderer serializes a transparent fill or border
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 // Kinds that reserve no trailing icon slot: their end padding equals the start padding
-const INLINE = ['ghost', 'danger_ghost', 'quick_action'];
+const INLINE = ['ghost', 'danger_ghost'];
 // The default size is the control role; the other sizes follow the shared size scale
 const HEIGHTS = { xs: 'size.size_xsmall', sm: 'size.size_small', md: 'size.size_medium', lg: 'control.button_height', xl: 'size.size_xlarge', '2xl': 'size.size_2xlarge' };
 
@@ -279,53 +279,16 @@ describe('Button: feedback.press through the DOM', function () {
 
 describe('Button: composition props', function () {
 
-  test('pill draws the corner radius at half the button\'s height', async function () {
-    for (const template of TEMPLATE_NAMES) {
-      const t = buildNative(template).tokens;
-      const pill = await renderButton(registryFor(template), { children: 'P', pill: true });
-      assert.equal(pill.root.style.borderTopLeftRadius, (t['control.button_height'] / 2) + 'px', template);
-      const plain = await renderButton(registryFor(template), { children: 'P' });
-      assert.equal(plain.root.style.borderTopLeftRadius, t['control.button_radius'] + 'px', template);
-    }
-  });
-
-  test('minWidth, maxWidth, paddingStart and paddingEnd override the computed geometry', async function () {
+  test('minWidth, maxWidth and paddingStart override the computed geometry', async function () {
     const t = buildNative('carbon').tokens;
-    const parts = await renderButton(registryFor('carbon'), { children: 'C', minWidth: 111, maxWidth: 239, paddingStart: 9, paddingEnd: 7 });
+    const parts = await renderButton(registryFor('carbon'), { children: 'C', minWidth: 111, maxWidth: 239, paddingStart: 9 });
     assert.equal(parts.root.style.minWidth, '111px');
     assert.equal(parts.root.style.maxWidth, '239px');
     assert.equal(parts.root.style.paddingLeft, '9px');
-    assert.equal(parts.root.style.paddingRight, '7px');
     const plain = await renderButton(registryFor('carbon'), { children: 'C' });
     assert.equal(plain.root.style.minWidth, t['control.button_min_width'] + 'px');
     assert.equal(plain.root.style.maxWidth, '');
     assert.equal(plain.root.style.paddingLeft, (t['control.button_padding_start'] - t['border.width_01']) + 'px');
-  });
-
-  test('the quick action\'s focus ring draws the page-colour line at its own gap width', async function () {
-    for (const template of TEMPLATE_NAMES) {
-      const t = buildNative(template).tokens;
-      const quick = await renderButton(registryFor(template), { children: 'Q', kind: 'quick_action' });
-      await act(async function () {
-        quick.root.focus();
-      });
-      if (t['control.button_focus_offset'] >= 0) {
-        // An outline-ring template draws the same ring as every kind
-        assert.equal(quick.root.style.outlineWidth, t['control.button_focus_width'] + 'px', template);
-        continue;
-      }
-      const inner = Math.max(0, t['control.button_focus_width'] - t['border.width_01']);
-      const gap = t['control.button_quick_action_focus_gap_width'];
-      const layers = inner > 0 ? ['inset 0 0 0 ' + inner + 'px ' + t['color.button_focus_ring']] : [];
-      if (gap > 0) {
-        layers.push('inset 0 0 0 ' + (inner + gap) + 'px ' + t['color.button_focus_gap']);
-      }
-      // The kind's elevation rides beside the ring, as every kind's does
-      const shadow = t['shadow.button_quick_action'];
-      const expected = layers.concat(typeof shadow === 'object' && shadow !== null && typeof shadow.boxShadow === 'string' ? [shadow.boxShadow] : []).join(', ');
-      assert.equal(quick.root.style.boxShadow, expected, template);
-      assert.equal(quick.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']), template);
-    }
   });
 
 });
