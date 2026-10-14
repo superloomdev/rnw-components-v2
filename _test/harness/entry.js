@@ -35,6 +35,9 @@ const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 const only = params.get('component');
 // Measurement mode lays each cell body out as the reference page does
 const measuring = params.get('measure') === '1';
+// Sheet mode keeps the measurement layout but lets a row grow to its cell,
+// so a tall cell's content never draws into the next cell's slot
+const sheeting = params.get('sheet') === '1';
 // A measurement page renders unhosted, as the upstream it is compared
 // with does: its layer is viewport-relative, not confined to a stage
 const hosting = params.get('hosted') !== '0';
@@ -145,7 +148,7 @@ function Showcase () {
     families[family].push(name);
   }
 
-  return React.createElement('div', { id: 'showcase', className: measuring ? 'measure' : undefined, 'data-template': templateName },
+  return React.createElement('div', { id: 'showcase', className: measuring ? (sheeting ? 'measure sheet' : 'measure') : undefined, 'data-template': templateName },
     Object.keys(families).sort().map(function (family) {
       return React.createElement('section', { key: family, className: 'family', 'data-family': family },
         React.createElement('h2', null, family),
@@ -168,12 +171,20 @@ if (Registry) {
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
       document.fonts.ready.then(function () {
-        status.cells = document.querySelectorAll('.cell').length;
+        const cells = document.querySelectorAll('.cell');
+        status.cells = cells.length;
         status.fonts = Array.from(document.fonts).filter(function (face) {
           return face.status === 'loaded';
         }).map(function (face) {
           return face.family.replace(/"/g, '') + ' ' + face.weight;
         });
+        // A sheet row grows to its cell; topping the cell up to a whole
+        // pixel keeps every following row's start on the pixel grid
+        if (sheeting) {
+          for (const cell of cells) {
+            cell.style.minHeight = Math.ceil(cell.getBoundingClientRect().height) + 'px';
+          }
+        }
         // An indeterminate animation pauses at its first frame, so the
         // measured and screenshotted frame is the same every time
         document.documentElement.getAnimations({ subtree: true }).forEach(function (animation) {

@@ -34,7 +34,8 @@ export async function openShowcase (page, template, component, options) {
   });
 
   const query = '?template=' + template + (component ? '&component=' + component : '') +
-    (options && options.measure ? '&measure=1' : '') + (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
+    (options && options.measure ? '&measure=1' : '') + (options && options.sheet ? '&sheet=1' : '') +
+    (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
     (options && options.hosted === false ? '&hosted=0' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {

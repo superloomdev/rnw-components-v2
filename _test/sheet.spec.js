@@ -62,8 +62,9 @@ test('contact sheet: one stacked PNG per family and scheme across the three temp
       const page = await browser.newPage();
       // Measure mode lays every cell out on the frame height the fidelity
       // harness uses; a staged cell hosts its component, so its layer
-      // already covers the body it opened on
-      const opened = await openShowcase(page, template, undefined, { measure: true, scheme: scheme });
+      // already covers the body it opened on. Sheet mode lets a slot grow
+      // to its cell, so a tall cell's content stays inside its own slot
+      const opened = await openShowcase(page, template, undefined, { measure: true, sheet: true, scheme: scheme });
       expect(opened.status.errors).toEqual([]);
       const families = page.locator('section.family');
       const count = await families.count();
