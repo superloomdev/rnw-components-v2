@@ -19,6 +19,13 @@ export default Object.freeze({
     align: { type: 'string', required: false, description: 'The side the tooltip opens on. Default `top`.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the button.' }
   }),
+  composition: Object.freeze({
+    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
+    onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },
+    'aria-controls': { type: 'string', required: false, description: 'Composition prop: the id of the layer the trigger controls (the combo button\'s menu).' },
+    'aria-expanded': { type: 'boolean', required: false, description: 'Composition prop: whether the layer the trigger controls is open (the combo button\'s menu).' },
+    'aria-haspopup': { type: 'boolean', required: false, description: 'Composition prop: the trigger opens a popup (the combo button\'s menu).' }
+  }),
   kinds: Object.freeze(KINDS),
   variants: Object.freeze([]),
   tokens: Object.freeze([
@@ -28,7 +35,7 @@ export default Object.freeze({
     'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
     'feedback.press', 'state.hover_opacity', 'state.pressed_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive'
+    'motion.duration_fast_01', 'motion.duration_fast_02', 'motion.easing_standard_productive'
   ].concat(KINDS.flatMap(function (kind) {
     // Every kind's role cells: fill and label per state, border and elevation per state
     return ['', '_hover', '_active', '_focus', '_disabled', '_selected'].flatMap(function (state) {

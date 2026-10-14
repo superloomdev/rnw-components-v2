@@ -35,10 +35,6 @@ export default function IconButton (ctx) {
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
   const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
 
-  // The interactive target: the platforms' forty-four point minimum, wider
-  // than the smallest sizes' face
-  const TARGET = 44;
-
 
   /********************************************************************
   IconButton component.
@@ -100,8 +96,6 @@ export default function IconButton (ctx) {
     // The button: the face carries the square and all of its paint where it
     // has always sat; the pressable is a transparent layer over its center,
     // no smaller than the platform's minimum interactive target
-    const target = Math.max(TARGET, side);
-    const inset = (target - side) / 2;
     const element = React.createElement(View, {
       style: { alignSelf: 'flex-start', height: side, width: side }
     },
@@ -126,18 +120,30 @@ export default function IconButton (ctx) {
     React.createElement(View, {
       style: [{ borderRadius: radius, bottom: -borderWidth, left: -borderWidth, position: 'absolute', right: -borderWidth, top: -borderWidth }, press.layer]
     }),
-    React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf })),
-    React.createElement(Pressable, Object.assign({}, button.rootProps, {
-      'aria-pressed': props.selected !== undefined ? state.selected : undefined,
-      testID: props.testID,
+    // The glyph's wrapper turns by `iconRotation` degrees; the turn
+    // transitions on the theme's fast-02 duration and standard productive
+    // easing - transition keys a native platform ignores, so the glyph
+    // turns without a transition there, as the press fills' do
+    React.createElement(View, {
       style: {
-        height: target,
-        left: -inset,
-        outlineStyle: 'none',
-        position: 'absolute',
-        top: -inset,
-        width: target
+        transform: [{ rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg' }],
+        transitionDuration: ctx.token('motion.duration_fast_02') + 'ms',
+        transitionProperty: 'transform',
+        transitionTimingFunction: 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')'
       }
+    },
+    React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf }))),
+    React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      // A composing parent's trigger announcements (the combo button's menu)
+      'aria-controls': props['aria-controls'],
+      'aria-expanded': props['aria-expanded'],
+      'aria-haspopup': props['aria-haspopup'],
+      'aria-pressed': props.selected !== undefined ? state.selected : undefined,
+      // A composing parent's mousedown rule (the combo button's trigger
+      // suppresses the press focus)
+      onMouseDown: props.onMouseDown,
+      testID: props.testID,
+      style: ctx.pressTarget({ height: side, width: side })
     })));
 
     // The compact tooltip names the button; a disabled one still shows it

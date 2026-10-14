@@ -12,7 +12,7 @@ const references = new Set(['render-web', 'parse-rn', 'none']);
 const statuses = new Set(['pending', 'built', 'measured', 'frozen']);
 const flagNames = new Set([
   'deferred_gap', 'no_reference', 'web_only', 'requires_parent',
-  'superloom_decision', 'not_applicable'
+  'superloom_decision'
 ]);
 const requiredKeys = [
   'name', 'family', 'tier', 'source', 'description', 'platform', 'enums',
@@ -24,11 +24,13 @@ const failures = [];
 const fail = (message) => failures.push(message);
 const nonEmpty = (value) => typeof value === 'string' && value.length > 0;
 
-if (roster.schema !== 1 || !Array.isArray(roster.rows)) {
+if (roster.schema !== 2 || !Array.isArray(roster.rows)
+    || !Array.isArray(roster.excluded)
+    || typeof roster.rules !== 'object' || roster.rules === null) {
   fail('invalid roster envelope');
 }
-if (roster.rows.length !== candidate.rows.length + 3) {
-  fail(`row count ${roster.rows.length} != candidate ${candidate.rows.length} + 3 substrate rows`);
+if (roster.rows.length + roster.excluded.length !== candidate.rows.length + 3) {
+  fail(`row count ${roster.rows.length} + excluded ${roster.excluded.length} != candidate ${candidate.rows.length} + 3 substrate rows`);
 }
 
 const rosterNames = new Set();
@@ -87,8 +89,7 @@ for (const row of roster.rows) {
     no_reference: 'no upstream visual reference',
     web_only: 'web-only',
     requires_parent: 'must be composed inside',
-    superloom_decision: 'Superloom decision',
-    not_applicable: 'does not render a component'
+    superloom_decision: 'Superloom decision'
   };
   for (const flag of row.flags) {
     if (!row.description.includes(noteTerms[flag])) {
@@ -97,10 +98,40 @@ for (const row of roster.rows) {
   }
 }
 
+// Every excluded entry names a candidate source under a declared rule
+const excludedSources = new Map();
+for (const entry of roster.excluded) {
+  if (JSON.stringify(Object.keys(entry).sort())
+      !== JSON.stringify(['export', 'name', 'package', 'rule'])) {
+    fail(`${entry.name ?? '<unnamed>'}: wrong excluded keys`);
+    continue;
+  }
+  if (!nonEmpty(entry.name) || !nonEmpty(entry.package) || !nonEmpty(entry.export)
+      || !nonEmpty(entry.rule)) {
+    fail(`${entry.name ?? '<unnamed>'}: empty excluded field`);
+    continue;
+  }
+  if (!Object.prototype.hasOwnProperty.call(roster.rules, entry.rule)) {
+    fail(`${entry.name}: rule '${entry.rule}' is not a declared rule`);
+  }
+  const key = `${entry.package}\u001f${entry.export}`;
+  excludedSources.set(key, entry.name);
+}
+
+// Every candidate source is a row source or an excluded source, never both
 for (const row of candidate.rows) {
   const key = `${row.source.package}\u001f${row.source.export}`;
-  if (!sources.has(key)) {
+  const inRows = sources.has(key);
+  const inExcluded = excludedSources.has(key);
+  if (inRows && inExcluded) {
+    fail(`candidate source in both rows and excluded: ${key}`);
+  } else if (!inRows && !inExcluded) {
     fail(`candidate source missing: ${key}`);
+  }
+}
+for (const key of excludedSources.keys()) {
+  if (!candidate.rows.some((row) => `${row.source.package}\u001f${row.source.export}` === key)) {
+    fail(`excluded source is not a candidate source: ${key}`);
   }
 }
 for (const name of ['Icon', 'View', 'OverlayHost']) {
@@ -124,4 +155,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-process.stdout.write(`OK ${roster.rows.length} rows, 0 empty fields, 0 flags without note\n`);
+process.stdout.write(`OK ${roster.rows.length} rows, ${roster.excluded.length} excluded, 0 empty fields, 0 flags without note\n`);

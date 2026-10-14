@@ -260,17 +260,18 @@ async function collect (page, component, reference, side, masks) {
   const parts = side === 'ours' ? Object.assign({}, reference.parts, masks) : reference.parts;
   const origin = reference.origin;
   const originSelector = origin && parts[origin] ? parts[origin][side] : null;
-  const rest = await readParts(page, component.name, parts, side, origin, { extended: true });
+  const pauseAnimations = reference.pauseAnimations === true;
+  const rest = await readParts(page, component.name, parts, side, origin, { extended: true, pauseAnimations: pauseAnimations });
   const states = {};
   const shots = {};
   const originShots = {};
   const shoot = async function (label, key) {
-    shots[key] = await shootCell(page, component.name, label, MARGIN);
+    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations);
     samplePaint(states[key], shots[key]);
     if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
       // No margin: the part's own pixels are compared, without the backdrop
       // that differs under it (a fixed layer's, a top-layered element's)
-      originShots[key] = await shootPart(page, component.name, label, originSelector, 0);
+      originShots[key] = await shootPart(page, component.name, label, originSelector, 0, pauseAnimations);
     }
   };
   for (const label of Object.keys(rest)) {
@@ -294,7 +295,7 @@ async function collect (page, component, reference, side, masks) {
         continue;
       }
       const key = entry.label + ' @' + interaction;
-      const read = await readParts(page, component.name, parts, side, origin, { extended: true, only: entry.label });
+      const read = await readParts(page, component.name, parts, side, origin, { extended: true, only: entry.label, pauseAnimations: pauseAnimations });
       states[key] = read[entry.label];
       await shoot(entry.label, key);
       await leaveInteraction(page);

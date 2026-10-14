@@ -57,8 +57,8 @@ async function render (element) {
 
 describe('Icon: every icon under every template', function () {
 
-  test('data/icons.json names the 84 icons the contract carries', function () {
-    assert.equal(NAMES.length, 84);
+  test('data/icons.json names the 85 icons the contract carries', function () {
+    assert.equal(NAMES.length, 85);
   });
 
   for (const template of TEMPLATE_NAMES) {
@@ -110,6 +110,19 @@ describe('Icon: size, glyph choice, fill', function () {
     const large = (await render(React.createElement(Registry.Icon, { name: 'chevron_down', size: 32 }))).querySelector('svg');
     assert.equal(large.getAttribute('viewBox'), literal.viewBox);
     assert.equal(large.querySelector('path').getAttribute('d'), literal.paths[0].d);
+  });
+
+  test('glyphSize picks the glyph of another size, drawn at size; without it the size glyph is used', async function () {
+    const Registry = buildSystem('carbon', { Icon: factories.Icon });
+    const literal = buildNative('carbon').tokens['icon.chevron_down'];
+    const scaled = (await render(React.createElement(Registry.Icon, { name: 'chevron_down', size: 20, glyphSize: 16 }))).querySelector('svg');
+    assert.equal(scaled.getAttribute('width'), '20');
+    assert.equal(scaled.getAttribute('height'), '20');
+    assert.equal(scaled.getAttribute('viewBox'), literal.sizes['16'].viewBox);
+    assert.equal(scaled.querySelector('path').getAttribute('d'), literal.sizes['16'].paths[0].d);
+    const plain = (await render(React.createElement(Registry.Icon, { name: 'chevron_down', size: 20 }))).querySelector('svg');
+    assert.equal(plain.getAttribute('viewBox'), literal.sizes['20'].viewBox);
+    assert.equal(plain.querySelector('path').getAttribute('d'), literal.sizes['20'].paths[0].d);
   });
 
   test('a color token leaf changes the fill; an unknown one throws', async function () {

@@ -63,8 +63,12 @@ const LAYOUT_CSS = 'body{margin:0;padding:24px;background:#fff;-webkit-font-smoo
   '.cell{display:inline-flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed #ccc;box-sizing:border-box}' +
   '.cell-label{font:11px/16px system-ui;color:#666}.cell-body{display:inline-flex}' +
   // Measurement layout: one cell per row on a fixed row pitch, so every cell
-  // body starts on a whole pixel whatever the fractional sizes before it
+  // body starts on a whole pixel whatever the fractional sizes before it.
+  // The contact sheet needs taller slots instead: a slot grows to its cell,
+  // so a taller cell does not draw into the next cell's slot; entry.js tops
+  // every sheet cell up to a whole pixel, so every slot still starts whole
   '.measure .grid{display:grid;grid-template-columns:max-content;grid-auto-rows:160px}' +
+  '.measure.sheet .grid{grid-auto-rows:minmax(160px,max-content)}' +
   '.measure .cell{border-color:transparent}';
 
 

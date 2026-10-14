@@ -7,6 +7,7 @@
   "gates": [
     { "layer": 1, "spec": "structural.spec.js", "clause": "zero console and page errors", "title": "the showcase renders every component with zero errors" },
     { "layer": 1, "spec": "structural.spec.js", "clause": "no overlapping siblings, no overflow", "title": "every cell has rendered content within its bounds" },
+    { "layer": 1, "spec": "structural.spec.js", "clause": "text stays inside the painted box behind it", "title": "no text overflows the box that paints behind it" },
     { "layer": 1, "spec": "structural.spec.js", "clause": "no clipped text, no unit strings", "title": "no clipped text and no unit string in an inline style" },
     { "layer": 1, "spec": "structural.spec.js", "clause": "target >= 44", "title": "interactive targets are at least 44 points" },
     { "layer": 1, "spec": "structural.spec.js", "clause": "contrast >= 4.5 for text (3.0 large; disabled exempt; listed exceptions reproduce)", "title": "every drawn text run meets the contrast minimum against its backdrop" },

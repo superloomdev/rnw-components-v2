@@ -9,7 +9,7 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { TEMPLATE_NAMES, openShowcase, readA11yTrees, readCells, readControlPaint, readTextContrast } from './harness/page.js';
+import { TEMPLATE_NAMES, openShowcase, readA11yTrees, readCells, readControlPaint, readTextBoxes, readTextContrast } from './harness/page.js';
 
 const INTERACTIVE_ROLES = ['button', 'checkbox', 'combobox', 'link', 'menuitem', 'option', 'radio', 'slider', 'switch', 'tab', 'textbox'];
 const UNIT = /:\s*-?[0-9.]+(rem|em|vw|vh)\b/;
@@ -68,6 +68,7 @@ for (const template of TEMPLATE_NAMES) {
 
     let opened;
     let cells;
+    let texts;
     let runs;
     let paints;
 
@@ -75,6 +76,7 @@ for (const template of TEMPLATE_NAMES) {
       const page = await browser.newPage();
       opened = await openShowcase(page, template);
       cells = await readCells(page);
+      texts = await readTextBoxes(page);
       runs = await readTextContrast(page, DISABLED_CELLS);
       paints = await readControlPaint(page);
       await page.close();
@@ -137,6 +139,35 @@ for (const template of TEMPLATE_NAMES) {
           expect(painted.y + painted.height, id + ' <' + child.tag + '> overflows bottom').toBeLessThanOrEqual(bounds.y + bounds.height + 0.5);
         }
       }
+    });
+
+    test('no text overflows the box that paints behind it', function () {
+      const lines = [];
+      for (const cell of texts) {
+        const id = cell.component + ' / ' + cell.state;
+        for (const run of cell.texts) {
+          // Text with no painted ancestor has no box to overflow
+          if (run.box === null) {
+            continue;
+          }
+          const where = function (side) {
+            return id + ' <' + run.tag + '> "' + run.text + '" overflows ' + side + ' of its <' + run.box.tag + '> box ' + JSON.stringify(run.box) + ' by ' + JSON.stringify(run.rect);
+          };
+          if (run.rect.x < run.box.x - 0.5) {
+            lines.push(where('left'));
+          }
+          if (run.rect.y < run.box.y - 0.5) {
+            lines.push(where('top'));
+          }
+          if (run.rect.x + run.rect.width > run.box.x + run.box.width + 0.5) {
+            lines.push(where('right'));
+          }
+          if (run.rect.y + run.rect.height > run.box.y + run.box.height + 0.5) {
+            lines.push(where('bottom'));
+          }
+        }
+      }
+      expect(lines, 'text overflows the box that paints behind it').toEqual([]);
     });
 
     test('no clipped text and no unit string in an inline style', function () {

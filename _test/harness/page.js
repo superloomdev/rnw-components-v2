@@ -34,7 +34,8 @@ export async function openShowcase (page, template, component, options) {
   });
 
   const query = '?template=' + template + (component ? '&component=' + component : '') +
-    (options && options.measure ? '&measure=1' : '') + (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
+    (options && options.measure ? '&measure=1' : '') + (options && options.sheet ? '&sheet=1' : '') +
+    (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
     (options && options.hosted === false ? '&hosted=0' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
@@ -153,12 +154,68 @@ export async function readParts (page, name, parts, side, origin, options) {
       const alpha = Math.round((channels.length === 4 ? channels[3] : 1) * opacity * 100) / 100;
       return alpha >= 1 ? 'rgb(' + channels.slice(0, 3).join(', ') + ')' : 'rgba(' + channels.slice(0, 3).join(', ') + ', ' + alpha + ')';
     };
+    // An element that lives under the body, walking through slots and
+    // shadow hosts the way opacityOf walks them
+    const insideBody = function (element, body) {
+      let node = element;
+      while (node) {
+        if (node === body) {
+          return true;
+        }
+        node = node.assignedSlot || node.parentNode || node.host || null;
+      }
+      return false;
+    };
+    // A reference that asks for frozen cells reads and shoots a component
+    // that animates forever at frame zero: every infinite animation whose
+    // target is inside the cell body is paused at its start
+    const pauseInfinite = function (body) {
+      // getAnimations' subtree option does not cross a shadow root; the
+      // second reference's arcs animate inside one, so collect those too
+      const animations = Array.from(document.getAnimations({ subtree: true }));
+      const pending = Array.from(body.querySelectorAll('*'));
+      while (pending.length > 0) {
+        const node = pending.pop();
+        const shadow = node.shadowRoot;
+        if (shadow === null || shadow === undefined) {
+          continue;
+        }
+        for (const child of shadow.querySelectorAll('*')) {
+          animations.push.apply(animations, child.getAnimations());
+          pending.push(child);
+        }
+      }
+      for (const animation of animations) {
+        const effect = animation.effect;
+        if (effect === null || effect.target === null || effect.target === undefined || !insideBody(effect.target, body)) {
+          continue;
+        }
+        if (effect.getComputedTiming().iterations === Infinity) {
+          animation.pause();
+          animation.currentTime = 0;
+        }
+      }
+    };
+    // An svg element's ink is the fill of what it draws: a path, circle or
+    // rect may paint its own color while the svg element keeps the page's
+    const svgInk = function (svg) {
+      for (const child of svg.querySelectorAll('path, circle, rect')) {
+        const childStyle = getComputedStyle(child);
+        if (childStyle.fill !== 'none' && parseFloat(childStyle.opacity) > 0) {
+          return childStyle.fill;
+        }
+      }
+      return getComputedStyle(svg).fill;
+    };
     const out = {};
     for (const cell of document.querySelectorAll('.cell[data-component="' + input.name + '"]')) {
       if (input.only && cell.getAttribute('data-state') !== input.only) {
         continue;
       }
       const body = cell.querySelector('[data-part="body"]');
+      if (input.pauseAnimations === true) {
+        pauseInfinite(body);
+      }
       const bodyRect = body.getBoundingClientRect();
       const originElement = input.origin ? query(body, input.parts[input.origin][input.side]) : body;
       const origin = (originElement || body).getBoundingClientRect();
@@ -180,9 +237,20 @@ export async function readParts (page, name, parts, side, origin, options) {
         const styleSource = input.side === 'upstream' && part.styleOf ? query(body, part.styleOf) : element;
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
         const rect = element.getBoundingClientRect();
-        // A positioned pseudo-element sits at its offset plus its margin inside its host
-        const pseudoX = pseudo ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0) : 0;
-        const pseudoY = pseudo ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0) : 0;
+        // A positioned pseudo-element (absolute or fixed) sits at its left/top
+        // offset plus its margin inside the host. An in-flow one (static, or
+        // relative - whose left/top then shifts it) sits inside the host's
+        // padding box plus its margin, so the host's border and padding move it
+        const positioned = pseudo !== null && (style.position === 'absolute' || style.position === 'fixed');
+        const hostStyle = pseudo !== null && !positioned ? getComputedStyle(element) : null;
+        const pseudoX = pseudo === null ? 0 : positioned
+          ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
+          : (parseFloat(hostStyle.borderLeftWidth) || 0) + (parseFloat(hostStyle.paddingLeft) || 0) +
+            (parseFloat(style.marginLeft) || 0) + (style.position === 'relative' ? parseFloat(style.left) || 0 : 0);
+        const pseudoY = pseudo === null ? 0 : positioned
+          ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
+          : (parseFloat(hostStyle.borderTopWidth) || 0) + (parseFloat(hostStyle.paddingTop) || 0) +
+            (parseFloat(style.marginTop) || 0) + (style.position === 'relative' ? parseFloat(style.top) || 0 : 0);
         const stripTop = strip === null ? 0
           : strip === 'borderTop' ? rect.top : rect.bottom - parseFloat(style[strip + 'Width']);
         const measured = {};
@@ -286,7 +354,7 @@ export async function readParts (page, name, parts, side, origin, options) {
             }
           }
           // A drawn path inks with its fill, text with its color
-          const ink = element instanceof SVGElement ? getComputedStyle(element).fill : part.measure === 'box' ? null : style.color;
+          const ink = element instanceof SVGElement ? svgInk(element) : part.measure === 'box' ? null : style.color;
           if (ink !== null) {
             measured.ink = withOpacity(ink, opacity);
           }
@@ -298,7 +366,7 @@ export async function readParts (page, name, parts, side, origin, options) {
       out[cell.getAttribute('data-state')] = state;
     }
     return out;
-  }, { name: name, parts: parts, side: side, origin: origin || null, only: options && options.only ? options.only : null, extended: Boolean(options && options.extended) });
+  }, { name: name, parts: parts, side: side, origin: origin || null, only: options && options.only ? options.only : null, extended: Boolean(options && options.extended), pauseAnimations: options !== undefined && options !== null && options.pauseAnimations === true });
 
 }
 
@@ -454,22 +522,78 @@ export async function restoreLayers (body) {
 
 
 /********************************************************************
-Screenshot one cell's body with a margin, so a focus ring drawn outside
-the element is in the picture. Layers that belong to other cells are
+Freeze a cell body's infinite animations at frame zero. A reference
+that animates forever (a spinner) otherwise measures and draws the
+rotated bounding box of its parts.
+
+@param {Object} body - Locator for a cell's [data-part="body"]
+*********************************************************************/
+export async function pauseCellAnimations (body) {
+
+  await body.evaluate(function (element) {
+    // getAnimations' subtree option does not cross a shadow root; the
+    // second reference's arcs animate inside one, so collect those too
+    const animations = Array.from(document.getAnimations({ subtree: true }));
+    const pending = Array.from(element.querySelectorAll('*'));
+    while (pending.length > 0) {
+      const node = pending.pop();
+      const shadow = node.shadowRoot;
+      if (shadow === null || shadow === undefined) {
+        continue;
+      }
+      for (const child of shadow.querySelectorAll('*')) {
+        animations.push.apply(animations, child.getAnimations());
+        pending.push(child);
+      }
+    }
+    for (const animation of animations) {
+      const effect = animation.effect;
+      if (effect === null || effect.target === null || effect.target === undefined) {
+        continue;
+      }
+      let node = effect.target;
+      let inside = false;
+      while (node) {
+        if (node === element) {
+          inside = true;
+          break;
+        }
+        node = node.assignedSlot || node.parentNode || node.host || null;
+      }
+      if (inside === false || effect.getComputedTiming().iterations !== Infinity) {
+        continue;
+      }
+      animation.pause();
+      animation.currentTime = 0;
+    }
+  });
+
+}
+
+
+/********************************************************************
+Screenshot a cell's body and a margin around it. The layers' chrome is
 hidden first, so a shot carries this cell's own painting only.
 
-@param {Object} page   - Playwright page
-@param {String} name   - Component name
-@param {String} state  - The cell's state label
-@param {Number} margin - Pixels around the body
+@param {Object} page            - Playwright page
+@param {String} name            - Component name
+@param {String} state           - The cell's state label
+@param {Number} margin          - Pixels around the body
+@param {Boolean} pauseAnimations - Freeze the cell's infinite animations
+  at frame zero first (a reference's `pauseAnimations`)
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell is absent
 *********************************************************************/
-export async function shootCell (page, name, state, margin) {
+export async function shootCell (page, name, state, margin, pauseAnimations) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   if (await body.count() === 0) {
     return null;
+  }
+  // A forever-spinning part measures and draws its rotated bounding box;
+  // a reference that asks for frozen cells holds it at frame zero
+  if (pauseAnimations === true) {
+    await pauseCellAnimations(body);
   }
   // Centered in the viewport, so the margin on every side is inside the picture
   await body.evaluate(function (element) {
@@ -500,11 +624,19 @@ that the cell shot cannot hold.
 @param {String} state    - The cell's state label
 @param {String} selector - The part's element (' >>> ' crosses shadow roots)
 @param {Number} margin   - Pixels around the element
+@param {Boolean} pauseAnimations - Freeze the cell's infinite animations
+  at frame zero first (a reference's `pauseAnimations`)
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell or its part is absent
 *********************************************************************/
-export async function shootPart (page, name, state, selector, margin) {
+export async function shootPart (page, name, state, selector, margin, pauseAnimations) {
 
+  if (pauseAnimations === true) {
+    const cellBody = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+    if (await cellBody.count() > 0) {
+      await pauseCellAnimations(cellBody);
+    }
+  }
   const handle = await page.evaluateHandle(function (input) {
     const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.state + '"] [data-part="body"]');
     if (body === null) {
@@ -678,6 +810,91 @@ export async function readCells (page) {
 
 
 /********************************************************************
+Read every rendered text run in each cell and the painted box behind it.
+The box is the nearest ancestor inside the cell body whose computed
+background is not transparent or that draws a border or an inset
+box-shadow outline; a run with no painted ancestor reports no box.
+
+@param {Object} page - Playwright page
+
+@return {Promise<Array>} - [{ component, family, state, texts }]; each
+  text carries the text element's rect and, where a painted ancestor
+  exists, that box's rect and tag
+*********************************************************************/
+export async function readTextBoxes (page) {
+
+  return page.evaluate(function () {
+    return Array.from(document.querySelectorAll('.cell')).map(function (cell) {
+      const body = cell.querySelector('[data-part="body"]');
+      // The same hidden rule readCells applies
+      const isHidden = function (node) {
+        for (let current = node; current !== null && current !== body; current = current.parentElement) {
+          const style = getComputedStyle(current);
+          if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
+            return true;
+          }
+          if (current.getAttribute('aria-hidden') === 'true' && current.getBoundingClientRect().height === 0) {
+            return true;
+          }
+        }
+        return false;
+      };
+      // A node paints a box behind its text when its background is not
+      // transparent or it draws a border or an inset box-shadow outline
+      const paintsBox = function (node) {
+        const style = getComputedStyle(node);
+        return style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.backgroundImage !== 'none' ||
+          style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' ||
+          style.borderBottomWidth !== '0px' || style.borderLeftWidth !== '0px' ||
+          (style.boxShadow !== 'none' && style.boxShadow.indexOf('inset') !== -1);
+      };
+      const texts = [];
+      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+        if (node.textContent.trim() === '') {
+          continue;
+        }
+        const element = node.parentElement;
+        if (element === null || isHidden(element)) {
+          continue;
+        }
+        const rect = element.getBoundingClientRect();
+        // A flex layout can shrink the element below its line box; the
+        // run still stands a line-height tall from the element's top, so
+        // the line box is the element rect grown to the computed
+        // line-height where the element is shorter ('normal' reads NaN)
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+        const lineBox = Number.isNaN(lineHeight) || lineHeight <= rect.height
+          ? rect
+          : { x: rect.x, y: rect.y, width: rect.width, height: lineHeight };
+        let box = null;
+        for (let current = element.parentElement; current !== null && current !== body; current = current.parentElement) {
+          if (paintsBox(current)) {
+            const r = current.getBoundingClientRect();
+            box = { x: r.x, y: r.y, width: r.width, height: r.height, tag: current.tagName.toLowerCase() };
+            break;
+          }
+        }
+        texts.push({
+          text: node.textContent.trim().slice(0, 40),
+          tag: element.tagName.toLowerCase(),
+          rect: { x: lineBox.x, y: lineBox.y, width: lineBox.width, height: lineBox.height },
+          box: box
+        });
+      }
+      return {
+        component: cell.getAttribute('data-component'),
+        family: cell.getAttribute('data-family'),
+        state: cell.getAttribute('data-state'),
+        texts: texts
+      };
+    });
+  });
+
+}
+
+
+/********************************************************************
 Serialize the accessibility tree of every cell body: tag, role, aria-*,
 tabindex, disabled and text per element, svg as a leaf. An id reference
 is serialized as the position of the element it points at (`@3`, or
@@ -726,7 +943,9 @@ export async function readA11yTrees (page) {
           parts.push('text=' + JSON.stringify(text.replace(/\s/g, '')));
         }
         lines.push('  '.repeat(depth) + parts.join(' '));
-        if (node.tagName.toLowerCase() === 'svg') {
+        // An svg or an img-role node is one accessible node; its children
+        // are drawing (ARIA marks an img's descendants presentational)
+        if (node.tagName.toLowerCase() === 'svg' || node.getAttribute('role') === 'img') {
           return;
         }
         for (const child of node.children) {
@@ -899,10 +1118,14 @@ export async function readControlPaint (page) {
       const text = getComputedStyle(textNode || control).color;
       // A border in the fill's own color, or transparent, is not seen
       const border = style.borderTopColor === style.backgroundColor || style.borderTopColor === 'rgba(0, 0, 0, 0)' || parseFloat(style.borderTopWidth) === 0 ? 'none' : style.borderTopColor;
+      // A cell is disabled when the measured control itself is, or an
+      // ancestor of it inside the body - not when a sibling control is (a
+      // mixed cell's enabled control must not read as disabled)
+      const flagged = control.closest('[aria-disabled="true"], [disabled]');
       out.push({
         component: cell.getAttribute('data-component'),
         state: cell.getAttribute('data-state'),
-        disabled: body.querySelector('[aria-disabled="true"], [disabled]') !== null,
+        disabled: flagged !== null && flagged !== body && body.contains(flagged),
         paint: style.backgroundColor + ' | ' + border + ' | ' + text
       });
     }

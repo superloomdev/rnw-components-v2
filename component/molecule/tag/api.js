@@ -14,6 +14,18 @@ export default Object.freeze({
     disabled: { type: 'boolean', required: false, description: 'Draws the disabled colors; a tag is not interactive, so this changes appearance only.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the tag.' }
   }),
+  composition: Object.freeze({
+    containerLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the computed container leaf (the interactive tags).' },
+    labelLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the computed label leaf (the interactive tags).' },
+    iconLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the computed icon leaf (the interactive tags).' },
+    iconHidden: { type: 'boolean', required: false, description: 'Composition prop: the icon seat mounts but draws nothing and takes no space, so the element tree is the same under every theme (the selectable tag\'s hidden selected mark).' },
+    outlineWidth: { type: 'number', required: false, description: 'Composition prop: draws an outline of this width in `outlineLeaf`, replacing the tag\'s own outline (the interactive tags).' },
+    outlineLeaf: { type: 'string', required: false, description: 'Composition prop: the outline\'s color leaf; used only with `outlineWidth`.' },
+    outlineInLayout: { type: 'boolean', required: false, description: 'Composition prop: draws the outline as a real border the box grows by; `false` draws it as the inset shadow the tag\'s own outline uses, moving nothing (the interactive tags, per `anatomy.tag_interactive_outline`).' },
+    height: { type: 'number', required: false, description: 'Composition prop: overrides the size\'s height (the interactive tags\' small height).' },
+    paddingEnd: { type: 'number', required: false, description: 'Composition prop: overrides the computed end padding (the dismissible tag\'s close control sits at the end).' },
+    trailing: { type: 'node', required: false, description: 'Composition prop: rendered after the label, inside the container (the dismissible tag\'s close control).' }
+  }),
   kinds: TYPES,
   variants: Object.freeze(['sm', 'md', 'lg']),
   tokens: Object.freeze([

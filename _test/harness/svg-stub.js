@@ -1,8 +1,9 @@
 // Info: Minimal stand-in for react-native-svg in the Node tests. Renders
-// DOM `svg`, `g` and `path` elements with the props the library passes, so a
-// rendered icon can be inspected for its viewBox, fill and path data in
-// jsdom. Only the surface the library uses exists here; anything else the
-// library reaches for fails loudly, which is the point.
+// DOM `svg`, `g`, `path` and `circle` elements with the props the library
+// passes, so a rendered icon or loading ring can be inspected for its
+// viewBox, fill and path data in jsdom. Only the surface the library uses
+// exists here; anything else the library reaches for fails loudly, which
+// is the point.
 
 import React from 'react';
 
@@ -43,4 +44,5 @@ function element (tag) {
 export const Svg = element('svg');
 export const G = element('g');
 export const Path = element('path');
+export const Circle = element('circle');
 export default Svg;

@@ -2,7 +2,7 @@
 
 ## Type
 
-Component library, ESM, `exports` only (no `main`). Entry `.` exports the named factory `createSystem` and the declared requirement data; `./all` exports one component factory per roster row whose `status` is not `not_applicable`; `./catalog` exports `catalog`, one frozen entry per built component (`name`, `family`, `tier`, `platform`, `flags`, `sample`) in roster order, for hosts that render a showcase or a walker; `./data/roster.json` is the machine-readable roster.
+Component library, ESM, `exports` only (no `main`). Entry `.` exports the named factory `createSystem` and the declared requirement data; `./all` exports one component factory per built roster row; `./catalog` exports `catalog`, one frozen entry per built component (`name`, `family`, `tier`, `platform`, `flags`, `sample`) in roster order, for hosts that render a showcase or a walker; `./data/roster.json` is the machine-readable roster.
 
 ## Peer dependencies
 

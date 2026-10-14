@@ -58,6 +58,8 @@ export default function Button (ctx) {
     const kind = Utils.inArray(KINDS, props.kind) ? props.kind : 'primary';
     const inline = Utils.inArray(INLINE, kind);
     const height = ctx.metric('Button', SIZES[props.size] || 'height');
+    // A composing parent may override the computed geometry (the combo
+    // button's width window, the fluid set's ghost padding)
     const radius = ctx.metric('Button', 'radius');
     const borderWidth = ctx.metric('Button', 'borderWidth');
 
@@ -69,7 +71,9 @@ export default function Button (ctx) {
     const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
 
     // The focus ring; a ring drawn with the border gives way to a pressed border
-    // the kind states apart from its rest border, and keeps the kind's elevation beside it
+    // the kind states apart from its rest border, and keeps the kind's elevation
+    // beside it. The ring draws its own page-color line width (none in the
+    // primary system, where the ring is a plain inset)
     const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
@@ -91,9 +95,11 @@ export default function Button (ctx) {
     const iconSize = ctx.metric('Button', 'iconSize');
     const hasIcon = Utils.isString(props.icon);
     const slot = ctx.metric('Button', 'iconInset') + iconSize + ctx.metric('Button', 'iconGap') - borderWidth;
-    const paddingStart = inline ? ctx.metric('Button', 'ghostPaddingStart') : ctx.metric('Button', 'paddingStart');
+    const paddingStart = Utils.isNumber(props.paddingStart) ? props.paddingStart
+      : inline ? ctx.metric('Button', 'ghostPaddingStart') : ctx.metric('Button', 'paddingStart');
     const paddingEnd = inline ? ctx.metric('Button', 'ghostPaddingEnd')
       : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
+    const minWidth = Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('Button', 'minWidth');
     const iconPlace = inline
       ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
       : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
@@ -114,9 +120,13 @@ export default function Button (ctx) {
           flexBasis: 0,
           flexDirection: 'row',
           flexGrow: 1,
-          // The label stays centered inside a minimum width
-          justifyContent: 'center',
-          minWidth: ctx.metric('Button', 'minWidth'),
+          // The label stays centered inside a minimum width unless the
+          // caller asks for the start edge (the combo action's spacing)
+          justifyContent: props.labelAlign === 'start' ? 'flex-start' : 'center',
+          maxWidth: props.maxWidth,
+          // Fill is stretch-or-taller: the size's height cell is the floor
+          minHeight: height,
+          minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
           paddingEnd: paddingEnd,
@@ -130,9 +140,11 @@ export default function Button (ctx) {
           borderWidth: borderWidth,
           flexDirection: 'row',
           height: height,
-          // The label stays centered inside a minimum width
-          justifyContent: 'center',
-          minWidth: ctx.metric('Button', 'minWidth'),
+          // The label stays centered inside a minimum width unless the
+          // caller asks for the start edge (the combo action's spacing)
+          justifyContent: props.labelAlign === 'start' ? 'flex-start' : 'center',
+          maxWidth: props.maxWidth,
+          minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
           paddingEnd: paddingEnd,

@@ -86,6 +86,16 @@
       "why": "an unlabelled icon must be hidden from assistive technology"
     },
     {
+      "id": "icon-glyph-size",
+      "file": "component/atom/icon/icon.js",
+      "find": "    const glyph = ctx.icon(props.name, glyphSize);",
+      "replace": "    const glyph = ctx.icon(props.name, size);",
+      "runner": "node",
+      "test": "icon.test.js",
+      "testName": "glyphSize picks the glyph of another size, drawn at size; without it the size glyph is used",
+      "why": "glyphSize must choose the glyph the drawn size scales; ignoring it must fail the assertion"
+    },
+    {
       "id": "a11y-identity-across-templates",
       "file": "component/atom/icon/icon.js",
       "find": "      accessibilityLabel: labelled ? props.accessibilityLabel : undefined,",
@@ -438,8 +448,8 @@
     {
       "id": "structural-zero-errors",
       "file": "component/atom/icon/icon.js",
-      "find": "    const glyph = ctx.icon(props.name, size);",
-      "replace": "    const glyph = ctx.icon(props.name + '_planted', size);",
+      "find": "    const glyph = ctx.icon(props.name, glyphSize);",
+      "replace": "    const glyph = ctx.icon(props.name + '_planted', glyphSize);",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "the showcase renders every component with zero errors",
@@ -717,9 +727,9 @@
     },
     {
       "id": "structural-target-size",
-      "file": "component/molecule/button/icon-button.js",
-      "find": "  const TARGET = 44;",
-      "replace": "  const TARGET = 32;",
+      "file": "component/context.js",
+      "find": "  const MIN_TARGET = 44;",
+      "replace": "  const MIN_TARGET = 32;",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "interactive targets are at least 44 points",
@@ -744,6 +754,526 @@
       "test": "measure.spec.js",
       "testName": "TextArea: parts match the second reference",
       "why": "a counter pulled off the row's trailing edge must fail the end-edge comparison even though its left edge may move with its own width"
+    },
+    {
+      "id": "aspect-ratio-ratio",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "aspectRatio: pair[0] / pair[1]",
+      "replace": "aspectRatio: pair[1] / pair[0]",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "the box keeps the ratio",
+      "why": "the box's aspect ratio must be W / H, not H / W"
+    },
+    {
+      "id": "aspect-ratio-unknown-fallback",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "RATIOS[props.ratio] : RATIOS['1x1'];",
+      "replace": "RATIOS[props.ratio] : RATIOS['16x9'];",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "an unknown ratio draws the square default",
+      "why": "an unknown ratio must fall back to the square, not another proportion"
+    },
+    {
+      "id": "aspect-ratio-children-text",
+      "file": "component/molecule/aspect-ratio/aspect-ratio.js",
+      "find": "const children = Utils.isString(props.children)",
+      "replace": "const children = false && Utils.isString(props.children)",
+      "runner": "node",
+      "test": "aspect-ratio.test.js",
+      "testName": "draws through the Text atom",
+      "why": "a string child must render through the Text atom; skipping the composition must fail a state test"
+    },
+    {
+      "id": "divider-inset-start",
+      "file": "component/atom/divider/divider.js",
+      "find": "const start = props.inset === true || props.insetStart === true;",
+      "replace": "const start = props.inset === true;",
+      "runner": "node",
+      "test": "divider.test.js",
+      "testName": "inset start",
+      "why": "insetStart must indent the start end; ignoring the flag must fail the inset-start state"
+    },
+    {
+      "id": "skeleton-shimmer-color",
+      "file": "component/atom/skeleton/skeleton-placeholder.js",
+      "find": "backgroundColor: ctx.color('skeleton_shimmer'),",
+      "replace": "backgroundColor: ctx.color('skeleton_container'),",
+      "runner": "node",
+      "test": "skeleton-placeholder.test.js",
+      "testName": "colors and sweep",
+      "why": "the shimmer must paint in the shimmer color; drawing it in the container color must fail the color assertion"
+    },
+    {
+      "id": "skeleton-icon-size",
+      "file": "component/molecule/skeleton/skeleton-icon.js",
+      "find": "const size = ctx.metric('SkeletonIcon', 'size');",
+      "replace": "const size = ctx.metric('SkeletonIcon', 'size') + 1;",
+      "runner": "node",
+      "test": "skeleton-icon.test.js",
+      "testName": "icon size",
+      "why": "the skeleton icon must draw at the icon size; a size read plus one must fail the size assertion"
+    },
+    {
+      "id": "icon-skeleton-size",
+      "file": "component/molecule/skeleton/icon-skeleton.js",
+      "find": "const size = ctx.metric('IconSkeleton', 'size');",
+      "replace": "const size = ctx.metric('IconSkeleton', 'size') + 1;",
+      "runner": "node",
+      "test": "icon-skeleton.test.js",
+      "testName": "icon size",
+      "why": "the skeleton icon must draw at the icon size; a size read plus one must fail the size assertion"
+    },
+    {
+      "id": "skeleton-text-sequence",
+      "file": "component/molecule/skeleton/skeleton-text.js",
+      "find": "0.15334737213558558, 0.5671034553053769",
+      "replace": "0.5671034553053769, 0.15334737213558558",
+      "runner": "node",
+      "test": "skeleton-text.test.js",
+      "testName": "step back",
+      "why": "the paragraph's line widths follow the fixed sequence; swapping two values must fail the width assertion"
+    },
+    {
+      "id": "link-underline-rest",
+      "file": "component/molecule/link/link.js",
+      "find": "const underline = !disabled && (props.inline === true ||",
+      "replace": "const underline = !disabled && (true || props.inline === true ||",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "underline",
+      "why": "an enabled link must not underline at rest; underlining always must fail the rest-state assertion"
+    },
+    {
+      "id": "link-hover-color",
+      "file": "component/molecule/link/link.js",
+      "find": ": state.hovered === true ? 'link_label_hover'",
+      "replace": ": state.hovered === true ? 'link_label'",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "hover",
+      "why": "hover must read the hover leaf; reading the rest leaf must fail the hover assertion"
+    },
+    {
+      "id": "link-disabled-href",
+      "file": "component/molecule/link/link.js",
+      "find": "href: disabled ? undefined : props.href,",
+      "replace": "href: props.href,",
+      "runner": "node",
+      "test": "link.test.js",
+      "testName": "disabled",
+      "why": "a disabled link must keep no href; keeping it must fail the disabled-state assertion"
+    },
+    {
+      "id": "link-target-size",
+      "file": "component/context.js",
+      "find": "  const MIN_TARGET = 44;",
+      "replace": "  const MIN_TARGET = 0;",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "interactive targets are at least 44 points",
+      "why": "the pressable must be no smaller than the platform minimum target; dropping the floor must fail the structural gate"
+    },
+    {
+      "id": "button-set-separator-color",
+      "file": "component/molecule/button/button-set.js",
+      "find": ": ctx.color('button_set_separator');",
+      "replace": ": ctx.color('button_set_separator_disabled');",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "every seat but the first carries the separator at its leading edge",
+      "why": "the separator must read the separator cell; another cell must fail the color assertion"
+    },
+    {
+      "id": "button-set-fluid-order",
+      "file": "component/molecule/button/button-set.js",
+      "find": "      return stacked ? pb - pa : pa - pb;",
+      "replace": "      return 0;",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "a fluid set orders its items by kind and end-aligns them",
+      "why": "a fluid set must order its items by the kind priorities; keeping the given order must fail the ordering assertion"
+    },
+    {
+      "id": "button-set-focus-seam",
+      "file": "component/molecule/button/button-set.js",
+      "find": "      const separator = focusedIndex === index || focusedIndex === index - 1 ? 'transparent'",
+      "replace": "      const separator = false ? 'transparent'",
+      "runner": "node",
+      "test": "button-set.test.js",
+      "testName": "a focused item suppresses its own separator and the next one's",
+      "why": "a focused item's adjacent separators must be suppressed; ignoring the focused index must fail the suppression assertion"
+    },
+    {
+      "id": "button-skeleton-width",
+      "file": "component/molecule/button/button-skeleton.js",
+      "find": "      width: ctx.metric('ButtonSkeleton', 'width')",
+      "replace": "      width: ctx.metric('ButtonSkeleton', 'height')",
+      "runner": "node",
+      "test": "button-skeleton.test.js",
+      "testName": "renders as the skeleton placeholder at the skeleton width and the button's corner",
+      "why": "the skeleton must draw at the skeleton button width; another metric must fail the width assertion"
+    },
+    {
+      "id": "primary-button-kind",
+      "file": "component/molecule/button/primary-button.js",
+      "find": "Object.assign({ kind: 'primary' }, props)",
+      "replace": "Object.assign({ kind: 'secondary' }, props)",
+      "runner": "node",
+      "test": "primary-button.test.js",
+      "testName": "every sample state renders the Button tree of its resulting kind",
+      "why": "the wrapper must default to the primary kind; another default must fail the kind assertion"
+    },
+    {
+      "id": "secondary-button-kind",
+      "file": "component/molecule/button/secondary-button.js",
+      "find": "Object.assign({ kind: 'secondary' }, props)",
+      "replace": "Object.assign({ kind: 'primary' }, props)",
+      "runner": "node",
+      "test": "secondary-button.test.js",
+      "testName": "every sample state renders the Button tree of its resulting kind",
+      "why": "the wrapper must default to the secondary kind; another default must fail the kind assertion"
+    },
+    {
+      "id": "danger-button-precedence",
+      "file": "component/molecule/button/danger-button.js",
+      "find": "Object.assign({}, props, { kind: 'danger' })",
+      "replace": "Object.assign({ kind: 'danger' }, props)",
+      "runner": "node",
+      "test": "danger-button.test.js",
+      "testName": "every sample state renders the Button tree of the danger kind",
+      "why": "the danger kind must win over the caller's kind; letting the caller's kind win must fail the precedence assertion"
+    },
+    {
+      "id": "combo-button-seam",
+      "file": "component/composite/button/combo-button.js",
+      "find": "style: { alignSelf: 'flex-start', columnGap: seam, flexDirection: 'row' }",
+      "replace": "style: { alignSelf: 'flex-start', columnGap: 0, flexDirection: 'row' }",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "the seats are a row separated by the border-width seam",
+      "why": "the seam must be the border width; another gap must fail the seam assertion"
+    },
+    {
+      "id": "combo-button-chevron-turn",
+      "file": "component/composite/button/combo-button.js",
+      "find": "      iconRotation: open ? 180 : 0,",
+      "replace": "      iconRotation: 0,",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "the chevron turns 180 degrees while the menu is open",
+      "why": "the chevron must turn while the menu is open; a fixed rotation must fail the turn assertion"
+    },
+    {
+      "id": "combo-button-menu-width",
+      "file": "component/composite/button/combo-button.js",
+      "find": "      width: alignment === 'top' || alignment === 'bottom' ? anchor.width : undefined,",
+      "replace": "      width: undefined,",
+      "runner": "node",
+      "test": "combo-button.test.js",
+      "testName": "pressing the trigger opens the menu against the container's edges",
+      "why": "the plain alignments must span the container's width; a natural width must fail the width assertion"
+    },
+    {
+      "id": "icon-button-rotation",
+      "file": "component/molecule/button/icon-button.js",
+      "find": "rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg'",
+      "replace": "rotate: '0deg'",
+      "runner": "node",
+      "test": "icon-button.test.js",
+      "testName": "iconRotation turns the glyph's wrapper by the degrees, transitioning on the theme's fast-02 easing",
+      "why": "the glyph must turn by iconRotation; a fixed rotation must fail the rotation assertion"
+    },
+    {
+      "id": "menu-width",
+      "file": "component/composite/menu/menu.js",
+      "find": "        width: Utils.isNumber(props.width) ? props.width : undefined",
+      "replace": "        width: undefined",
+      "runner": "node",
+      "test": "menu.test.js",
+      "testName": "a width prop fixes the surface's width",
+      "why": "a composing parent's width must fix the surface; ignoring it must fail the width assertion"
+    },
+    {
+      "id": "skeleton-radius",
+      "file": "component/atom/skeleton/skeleton-placeholder.js",
+      "find": "borderRadius: Utils.isNumber(props.radius) ? props.radius : ctx.metric('SkeletonPlaceholder', 'radius'),",
+      "replace": "borderRadius: ctx.metric('SkeletonPlaceholder', 'radius'),",
+      "runner": "node",
+      "test": "skeleton-placeholder.test.js",
+      "testName": "a radius prop overrides the skeleton radius",
+      "why": "a composing parent's radius must win over the skeleton radius; ignoring it must fail the radius assertion"
+    },
+    {
+      "id": "tag-trailing",
+      "file": "component/molecule/tag/tag.js",
+      "find": "    props.trailing === undefined || props.trailing === null ? null : props.trailing);",
+      "replace": "    null);",
+      "runner": "node",
+      "test": "tag.test.js",
+      "testName": "trailing renders after the label",
+      "why": "a composing parent's trailing node must render inside the container; dropping it must fail the trailing assertion"
+    },
+    {
+      "id": "dismissible-tag-close-gap-small",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": "      : (ctx.metric('DismissibleTag', 'height') - ctx.metric('DismissibleTag', 'heightSmall')) / 2);",
+      "replace": "      : 0);",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "carbon / small: the tag and its close control read the theme",
+      "why": "the small size's wider close gap (half the height drop from md) must be asserted"
+    },
+    {
+      "id": "dismissible-tag-hover-typed",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": ": hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)",
+      "replace": ": hovered ? ctx.color('tag_close_container_hover')",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "hover paints the close hover cell for a neutral tag, the hue's hover for a typed one",
+      "why": "a typed tag's close hover reads the hue's cell, not the neutral close cell"
+    },
+    {
+      "id": "operational-tag-hover",
+      "file": "component/molecule/tag/operational-tag.js",
+      "find": "      : live && state.hovered === true ? (type === null ? 'tag_container_hover' : 'tag_hover_' + type)",
+      "replace": "      : live && state.hovered === true ? (type === null ? 'tag_container' : 'tag_background_' + type)",
+      "runner": "node",
+      "test": "operational-tag.test.js",
+      "testName": "a hover paints the hue's hover fill; a press layers the theme's interactive layer",
+      "why": "the hovered operational tag reads the hue's hover cell, not its resting cell"
+    },
+    {
+      "id": "operational-tag-border",
+      "file": "component/molecule/tag/operational-tag.js",
+      "find": "      outlineWidth: ctx.metric('OperationalTag', 'outlineWidth'),",
+      "replace": "      outlineWidth: ctx.metric('OperationalTag', 'outlineWidth') + 1,",
+      "runner": "node",
+      "test": "operational-tag.test.js",
+      "testName": "carbon / default: the hue cells, the outline and the pressable",
+      "why": "the interactive tag's border is the theme's outline width, no more"
+    },
+    {
+      "id": "selectable-tag-selected-fill",
+      "file": "component/molecule/tag/selectable-tag.js",
+      "find": ": 'tag_selectable_container_selected')",
+      "replace": ": 'tag_selectable_container')",
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "uncontrolled: a press selects, reports onChange and fills with the selected cells",
+      "why": "a selected tag fills with the selected cell, not the resting one"
+    },
+    {
+      "id": "selectable-tag-mark",
+      "file": "component/molecule/tag/selectable-tag.js",
+      "find": "    const icon = hiddenSeat || (selected && markShown) ? 'selected_indicator' : props.icon;",
+      "replace": "    const icon = props.icon;",
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "material / selected: the selectable cells, the outline and the mark",
+      "why": "the selected mark shows only where the theme's mark anatomy says so"
+    },
+    {
+      "id": "tag-skeleton-width",
+      "file": "component/molecule/tag/tag-skeleton.js",
+      "find": "      width: ctx.metric('TagSkeleton', 'width')",
+      "replace": "      width: ctx.metric('TagSkeleton', 'height')",
+      "runner": "node",
+      "test": "tag-skeleton.test.js",
+      "testName": "carbon / default: the tag's height and corner at the skeleton width",
+      "why": "the skeleton tag is the theme's skeleton width, not its height"
+    },
+    {
+      "id": "loading-track",
+      "file": "component/atom/loading/loading.js",
+      "find": "      stroke: ctx.color('loading_track'),",
+      "replace": "      stroke: ctx.color('loading_indicator'),",
+      "runner": "node",
+      "test": "loading.test.js",
+      "testName": "carbon / small: the spinner draws the theme's cells",
+      "why": "the small form's track circle reads the track cell, not the indicator's"
+    },
+    {
+      "id": "loading-overlay-default",
+      "file": "component/atom/loading/loading.js",
+      "find": "    const withOverlay = props.withOverlay !== false;",
+      "replace": "    const withOverlay = props.withOverlay === false;",
+      "runner": "node",
+      "test": "loading.test.js",
+      "testName": "carbon / overlay: the spinner draws the theme's cells",
+      "why": "the overlay is the default - only an explicit false drops it"
+    },
+    {
+      "id": "loading-arc-construction",
+      "file": "component/atom/loading/loading.js",
+      "find": "const HALF_ROTATE = { left: '135deg', right: '100deg' };",
+      "replace": "const HALF_ROTATE = { left: '225deg', right: '135deg' };",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Loading / second / light: matches the reference in every state",
+      "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc and must fail the second-reference fidelity"
+    },
+    {
+      "id": "inline-loading-label",
+      "file": "component/molecule/progress/inline-loading.js",
+      "find": "{ color: ctx.color('inline_loading_label') }",
+      "replace": "{ color: ctx.color('progress_step_label') }",
+      "runner": "node",
+      "test": "inline-loading.test.js",
+      "testName": "carbon / active: the mark, the gap and the text come from the theme",
+      "why": "the status text reads the inline-loading label cell"
+    },
+    {
+      "id": "inline-loading-mark",
+      "file": "component/molecule/progress/inline-loading.js",
+      "find": "'inline_loading_' + (status === 'finished' ? 'success' : 'error')",
+      "replace": "'inline_loading_' + (status === 'finished' ? 'error' : 'success')",
+      "runner": "node",
+      "test": "inline-loading.test.js",
+      "testName": "carbon / finished: the mark, the gap and the text come from the theme",
+      "why": "the settled mark reads the status's own cell"
+    },
+    {
+      "id": "progress-step-line",
+      "file": "component/molecule/progress/progress-step.js",
+      "find": "    const lineLeaf = complete || current ? 'progress_step_line_complete' : 'progress_step_line';",
+      "replace": "    const lineLeaf = complete || current ? 'progress_step_line' : 'progress_step_line_complete';",
+      "runner": "node",
+      "test": "progress-step.test.js",
+      "testName": "carbon / complete: the step's glyph, label and line read the cells",
+      "why": "the connector fills with the complete cell once the step is reached"
+    },
+    {
+      "id": "progress-step-minwidth",
+      "file": "component/molecule/progress/progress-step.js",
+      "find": "          minWidth: ctx.metric('ProgressStep', spaceEqually ? 'width' : 'minWidth'),",
+      "replace": "          minWidth: ctx.metric('ProgressStep', spaceEqually ? 'minWidth' : 'width'),",
+      "runner": "node",
+      "test": "progress-step.test.js",
+      "testName": "carbon / first: the step's glyph, label and line read the cells",
+      "why": "the space-equal spread reads the step width; the rest read the minimum"
+    },
+    {
+      "id": "progress-indicator-complete",
+      "file": "component/molecule/progress/progress-indicator.js",
+      "find": "          ? { complete: true }",
+      "replace": "          ? { complete: false }",
+      "runner": "node",
+      "test": "progress-indicator.test.js",
+      "testName": "carbon / default: the index math mounts each step in its state",
+      "why": "steps before the index mount complete - the primary's clone math"
+    },
+    {
+      "id": "progress-indicator-change",
+      "file": "component/molecule/progress/progress-indicator.js",
+      "find": "        onChange(index);",
+      "replace": "        onChange(index + 1);",
+      "runner": "node",
+      "test": "progress-indicator.test.js",
+      "testName": "pressing a step calls onChange with its index; the current step stays unpressable",
+      "why": "a step's press reports its own index"
+    },
+    {
+      "id": "progress-skeleton-icon",
+      "file": "component/molecule/progress/progress-indicator-skeleton.js",
+      "find": "      color: 'progress_step_icon_incomplete',",
+      "replace": "      color: 'progress_step_icon',",
+      "runner": "node",
+      "test": "progress-indicator-skeleton.test.js",
+      "testName": "carbon / default: four stand-in steps on the step's geometry",
+      "why": "the stand-in glyph reads the incomplete cell"
+    },
+    {
+      "id": "progress-skeleton-label",
+      "file": "component/molecule/progress/progress-indicator-skeleton.js",
+      "find": "        width: ctx.metric('ProgressIndicatorSkeleton', 'labelWidth')",
+      "replace": "        width: ctx.metric('ProgressIndicatorSkeleton', 'labelHeight')",
+      "runner": "node",
+      "test": "progress-indicator-skeleton.test.js",
+      "testName": "carbon / default: four stand-in steps on the step's geometry",
+      "why": "the label block reads the skeleton label's own width cell"
+    },
+    {
+      "id": "loading-pause-animations",
+      "file": "component/atom/loading/reference.js",
+      "find": "  pauseAnimations: true,\n  mount: function (React, upstream, props) {",
+      "replace": "  pauseAnimations: false,\n  mount: function (React, upstream, props) {",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Loading / primary / light: matches the reference in every state",
+      "why": "a forever-spinning reference must be read frozen at frame zero; reading it rotating inflates its box and must fail the fidelity gate"
+    },
+    {
+      "id": "svg-ink-reads-path",
+      "file": "_test/harness/page.js",
+      "find": "const ink = element instanceof SVGElement ? svgInk(element) : part.measure === 'box' ? null : style.color;",
+      "replace": "const ink = element instanceof SVGElement ? getComputedStyle(element).fill : part.measure === 'box' ? null : style.color;",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "ProgressStep / primary / light: matches the reference in every state",
+      "why": "an svg element can keep the page fill while its drawn paths paint another color; reading the element must fail the invalid step's ink"
+    },
+    {
+      "id": "tag-root-not-clipping",
+      "file": "component/molecule/tag/tag.js",
+      "find": "        overflow: 'visible',",
+      "replace": "        overflow: 'hidden',",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "DismissibleTag / primary / light: matches the reference in every state",
+      "why": "a clipping tag root becomes a scroll container the close target gets scrolled into view inside; the content shifting on hover must fail the fidelity gate"
+    },
+    {
+      "id": "tag-interactive-outline-inset",
+      "file": "component/molecule/tag/selectable-tag.js",
+      "find": "      outlineInLayout: ctx.enum('anatomy.tag_interactive_outline') === 'border',",
+      "replace": "      outlineInLayout: true,",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "SelectableTag / second / light: matches the reference in every state",
+      "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the second fidelity gate"
+    },
+    {
+      "id": "purity-composition-prop",
+      "file": "component/molecule/button/sample.js",
+      "find": "  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Primary' }) }),",
+      "replace": "  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Primary', labelAlign: 'end' }) }),",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "no sample passes a composition prop",
+      "why": "a sample that passes a composition prop must fail the purity scan"
+    },
+    {
+      "id": "structural-text-in-painted-box",
+      "file": "component/molecule/tag/spec.js",
+      "find": "  heightSmall: 'control.tag_height_small',",
+      "replace": "  heightSmall: { tokens: ['size.icon_01', 'spacing.spacing_01'], operation: 'sum' },",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "no text overflows the box that paints behind it",
+      "why": "restoring the derived small height draws the material small tag's label line taller than the pill that paints behind it; the range-versus-painted-box check must catch it"
+    },
+    {
+      "id": "tooltip-caret-color",
+      "file": "component/molecule/tooltip/tooltip.js",
+      "find": "caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'),",
+      "replace": "caret({ anchor: anchored.anchor, color: ctx.color('interactive'),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Tooltip / primary / dark: matches the reference in every state",
+      "why": "a triangle's every pixel is an anti-aliased edge, so the caret is not paint-sampled: a wrong caret fill must still fail through the backgroundColor property compare"
+    },
+    {
+      "id": "progress-step-shrinks",
+      "file": "component/molecule/progress/progress-step.js",
+      "find": "          flexShrink: 1,",
+      "replace": "          flexShrink: 0,",
+      "runner": "node",
+      "test": "progress-indicator.test.js",
+      "testName": "a horizontal step is a shrinkable flex item floored at the step minimum",
+      "why": "upstream steps are CSS flex items that shrink to a minimum in a narrow row; a React Native default of shrink 0 must fail the step-shrink test"
     }
   ]
 }

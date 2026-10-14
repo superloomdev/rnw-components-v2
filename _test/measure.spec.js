@@ -24,6 +24,7 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import React from 'react';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
@@ -35,12 +36,20 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const roster = JSON.parse(readFileSync(join(HERE, '..', 'data', 'roster.json'), 'utf8'));
 const components = await discoverComponents();
 const built = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable';
+  return row.status !== 'pending';
 });
 const byKind = { 'render-web': [], 'parse-rn': [], none: [] };
 for (const row of built) {
   byKind[row.reference.kind].push(row.name);
 }
+// A built row with no primary-system twin draws no primary reference: its
+// primary mount must answer null for every sample state, so the skip cannot
+// hide a primary that exists
+const noPrimaryTwin = new Set(built.filter(function (row) {
+  return row.carbon_twin === 'none' && row.reference.kind !== 'none';
+}).map(function (row) {
+  return row.name;
+}));
 
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
@@ -100,7 +109,7 @@ async function drawnParts (page, component, reference, side, extended, states) {
       if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
         continue;
       }
-      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label }));
+      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label, pauseAnimations: reference.pauseAnimations === true }));
       await leaveInteraction(page);
     }
   }
@@ -121,7 +130,17 @@ test.describe('measure: reference coverage', function () {
     })) {
       expect(opened.status.components, name + ' is built in the roster but not in all.js').toContain(name);
     }
-    test.info().annotations.push({ type: 'measure', description: 'render-web ' + byKind['render-web'].length + ', parse-rn ' + byKind['parse-rn'].length + ', none (skipped) ' + byKind.none.length });
+    // A row with no primary-system twin must mount nothing for every sample
+    // state; an upstream stub proves the mount never reaches for one
+    for (const name of noPrimaryTwin) {
+      const component = components.find(function (entry) {
+        return entry.name === name;
+      });
+      for (const state of component.sample) {
+        expect(component.reference.mount(React, {}, state.props), name + ' / ' + state.label + ': no primary twin but the primary mount drew something').toBeNull();
+      }
+    }
+    test.info().annotations.push({ type: 'measure', description: 'render-web ' + byKind['render-web'].length + ', parse-rn ' + byKind['parse-rn'].length + ', none (skipped) ' + byKind.none.length + ', no primary twin (skipped) ' + noPrimaryTwin.size });
   });
 
 });
@@ -129,7 +148,9 @@ test.describe('measure: reference coverage', function () {
 
 test.describe('measure: primary reference', function () {
 
-  for (const name of byKind['render-web'].concat(byKind['parse-rn'])) {
+  for (const name of byKind['render-web'].concat(byKind['parse-rn']).filter(function (name) {
+    return !noPrimaryTwin.has(name);
+  })) {
     test(name + ': parts match the rendered upstream', async function ({ page }) {
       const component = components.find(function (entry) {
         return entry.name === name;
@@ -141,14 +162,14 @@ test.describe('measure: primary reference', function () {
       const reference = await openReference(page, name);
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, name, parts, 'upstream');
+      const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
 
       // Ours under the template that shares the reference's values,
       // unhosted as the upstream is
       const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, name, parts, 'ours');
+      const ours = await readParts(page, name, parts, 'ours', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
@@ -218,7 +239,7 @@ test.describe('measure: second reference', function () {
       const reference = await openReference(page, component.name, 'second');
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true });
+      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
 
       // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
@@ -236,7 +257,7 @@ test.describe('measure: second reference', function () {
       expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
       const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true });
+      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const undrawn = Object.keys(parts).filter(function (part) {
         return !upstreamDrawn.has(part);
       });

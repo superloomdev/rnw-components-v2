@@ -183,11 +183,17 @@ export default function createPositioningBehaviors (deps) {
       if (platform === 'web' && typeof anchor.getBoundingClientRect === 'function') {
         const rect = anchor.getBoundingClientRect();
         const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset);
+        // Inside a host the answer a caller composes with is the host's own
+        // space: the window rect shifts back by the host's origin, as the
+        // native branch's measured rect does
+        const current = overlayRef.current;
+        const hosted = current !== null && current.hosted === true;
+        const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
         setState({
           position: computed.position,
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
-          anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
+          anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
         });
         return;
       }

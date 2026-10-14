@@ -23,6 +23,12 @@ const components = (await discoverComponents()).filter(function (component) {
 const BUDGET = Object.fromEntries(getRoster().rows.map(function (row) {
   return [row.name, row.diff_budget];
 }));
+// A row with no primary-system twin runs no primary set (its mount answers null)
+const NO_PRIMARY = new Set(getRoster().rows.filter(function (row) {
+  return row.carbon_twin === 'none';
+}).map(function (row) {
+  return row.name;
+}));
 
 
 test.describe('fidelity census', function () {
@@ -30,7 +36,7 @@ test.describe('fidelity census', function () {
   mkdirSync(OUT, { recursive: true });
 
   for (const component of components) {
-    const sets = component.reference.second ? ['primary', 'second'] : ['primary'];
+    const sets = (NO_PRIMARY.has(component.name) ? [] : ['primary']).concat(component.reference.second ? ['second'] : []);
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme, async function ({ page }) {

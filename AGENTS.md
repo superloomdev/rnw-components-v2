@@ -31,7 +31,6 @@ The CI `enforcement` job runs `git grep` gates (`G1`..`Gn`) written inline in `.
 
 `git config core.hooksPath .githooks` is set in this clone.
 
-- `pre-commit` runs `__dev__/audits/tier-guard.sh`: under `TIER: LOW` in `__dev__/PROGRESS.md` it rejects changes to tests, data, specs, notes, docs, `DECISIONS.md` and plans.
 - `pre-push` refuses a push to `main` unless `.verify-stamp` matches the current content hash, that is, unless a full `npm run verify` has run since the last edit. Pushes to `wip/*` are not gated.
 
 ## Conventional Commits

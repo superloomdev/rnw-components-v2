@@ -61,7 +61,8 @@ describe('docs: generated pages', function () {
     }).map(function (entry) {
       return entry.name + ':' + entry.frame.width;
     }), ['TextInput:320', 'Select:320', 'TextArea:320',
-      'Dropdown:320', 'Menu:400', 'Modal:640', 'ProgressBar:320']);
+      'Dropdown:320', 'Menu:400', 'Modal:640', 'ProgressBar:320',
+      'AspectRatio:320', 'ButtonSet:640', 'Divider:320', 'SkeletonText:320', 'ProgressStep:160']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

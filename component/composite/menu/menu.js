@@ -232,12 +232,16 @@ export default function Menu (ctx) {
         dismiss.rootProps.onBlur(event);
         collection.containerProps.onBlur(event);
       },
+      nativeID: props.id,
       onKeyDown: onKeyDown,
       onMouseDown: dismiss.rootProps.onMouseDown,
       role: 'menu',
       tabIndex: -1,
       style: [list.container, positioned.layerStyle, {
-        minWidth: icons ? ctx.metric('Menu', 'iconMinWidth') : ctx.metric('Menu', 'minWidth')
+        minWidth: icons ? ctx.metric('Menu', 'iconMinWidth') : ctx.metric('Menu', 'minWidth'),
+        // A composing parent fixes the surface's width (the combo button's
+        // container); without one the surface takes its content width
+        width: Utils.isNumber(props.width) ? props.width : undefined
       }],
       testID: props.testID
     }, items.map(function (item, index) {

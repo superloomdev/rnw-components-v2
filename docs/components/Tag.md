@@ -11,12 +11,182 @@ A short, non-interactive label: a pill-shaped container holding an optional deco
 - **A molecule, not an atom.** The tag draws its optional leading icon through the Icon component (`ctx.Registry.Icon`), so it composes a library component - the same rule that makes IconButton a molecule. The icon is decorative; the label names the tag.
 - **`type` picks a hue.** The contract's `color.tag_background_<hue>` and `color.tag_color_<hue>` cells (ten hues, answered by every template) color the container, label and icon. No `type`: the neutral `tag_container` / `tag_label` / `tag_icon` cells. The hue border cells (`tag_border_<hue>`) belong to the interactive tag variants of a later part; a read-only tag draws no hue border in the primary reference.
 - **The outline is an inset shadow, not a border.** A real border would move the text inward and grow the box by two widths; both references draw the tag's outline as an overlay that does neither (`border: 0` on the primary, an absolutely-positioned `.outline` element on the second). The component paints `control.tag_outline_width` of `color.tag_outline` (`_disabled`) as an inset `boxShadow` - zero width under the primary, 1px under the second.
-- **Sizes from the scale.** `md` height is `control.tag_height`; `sm` is the first icon step plus the first spacing step (the primary's 18); `lg` is the small size step (32 in both references). The minimum width is the small size step, matching the primary's `min-inline-size`. The large size widens the inline padding to `spacing.spacing_04`, and an icon shortens the start padding to `control.tag_padding_icon` (`spacing.spacing_03` at `lg`), with the same cell answering the gap after the icon - both references give the icon's start padding and its gap one number.
+- **Sizes from the scale.** `md` height is `control.tag_height`; `sm` is `control.tag_height_small` (the primary's 18; the second's 24 - it has no small chip, so the cell is the smallest box that holds the 20px label line with a block inset); `lg` is the small size step (32 in both references). The minimum width is the small size step, matching the primary's `min-inline-size`. The large size widens the inline padding to `spacing.spacing_04`, and an icon shortens the start padding to `control.tag_padding_icon` (`spacing.spacing_03` at `lg`), with the same cell answering the gap after the icon - both references give the icon's start padding and its gap one number.
 - **No interaction.** A read-only tag takes no focus and answers no pointer state, so it carries no role and no `target` in its measurement reference; `disabled` redraws it in the disabled cells only.
+- **The root does not clip.** A tag holding a press target wider than itself (the dismissible tag's close) must not become a scroll container: `overflow: hidden` on the root let a pointer move or a `focus()` scroll the target into view and shift the content by the overhang. The label clips itself instead (`numberOfLines` and `flexShrink`), so a constrained tag ellipsizes its text.
+
+### DismissibleTag
+
+- **The close anatomy is a theme choice.** `anatomy.tag_close` picks the drawing: `circle` mounts a circular face of the tag's height (the primary's filter tag, whose close button is a square of the tag's own height, `border-radius: 50%`, margin-start `0.125rem`, `tag/_tag.scss` close-icon rule), `inset` mounts the glyph on a layer circle of 4/3 the close icon - the second system's trailing action, whose ripple and focus ring are a centered circle of `calc(4 / 3 * icon-size)` (the second system's `chips/internal/_trailing-icon.scss`). For `inset` the face overhangs the icon by that bleed on both sides, so the gap ahead of it is `control.tag_close_gap` minus the bleed and the face reaches `bleed` past the `control.tag_close_inset` end padding - the action's own paddings (`icon-label-space`, `with-trailing-icon-trailing-space`) minus the circle's overhang.
+- **Small sizes widen the gap.** At `sm` the `circle` gap is the close gap plus half the height drop from `md` (the primary's `0.3125rem`), because the face stays the tag's height while the icon shrinks.
+- **Hover, press and focus.** `circle`: hovered fill is `color.tag_close_container_hover` on a neutral tag and `color.tag_hover_<hue>` on a typed one (the primary hovers the close button with the tag's hover color); focus draws the primary's `inset 0 0 0 <border.width_01>px` shadow in `color.tag_close_focus_ring` (the primary's `:focus` box-shadow). `inset`: hover layers `color.tag_close_container_hover`, press `color.tag_interactive_layer_active` (the theme's pressed layer - the second's action presses on-surface-variant at 0.12 and the cell answers on-surface at 0.12; a near match the theme chose), focus draws the `tag` family's ring on the circle. The pressed and focus layers have no exact upstream cell under the second system: reported as the row's approximate states.
+- **The control is the only target.** The label is not interactive; the pressable is a transparent layer of the platform's minimum target centered on the face (`ctx.pressTarget`), named `title` (default `Dismiss`), shown again in a compact tooltip on hover.
+- **The untyped label reads `color.tag_dismissible_label`.** The second system's input chip labels in its own role where the flat chip's label differs; a typed tag keeps the hue leaf and a disabled one the disabled leaf, so the primary does not move.
+
+### OperationalTag
+
+- **A pressable tag.** The Tag renders inside a pressable overlay of the platform's minimum target (`ctx.pressTarget` over a `ctx.useFaceSize`-measured face); the wrapper takes the focus ring (`control.tag_focus_*`, `color.tag_focus_ring`) and the tag's radius, so the ring sits outside the real border the interactive tag draws and follows its corner, as the primary's `outline` does.
+- **`type` picks a hue; without one the neutral cells answer.** A typed tag reads `tag_background_<hue>`, `tag_color_<hue>` and `tag_border_<hue>` (hover: `tag_hover_<hue>`); an untyped tag reads `tag_container` / `tag_label` / `tag_icon` (hover: `tag_container_hover`) with its outline `color.tag_interactive_outline` - the primary's untyped operational tag draws `1px solid $tag-border-gray` (`tag/_tag.scss:146`), which the neutral cells alias, so the primary does not move. `disabled` reads the tag's disabled cells and `color.tag_interactive_outline_disabled`. The outline is `control.tag_interactive_outline_width` of the leaf, drawn by `anatomy.tag_interactive_outline`: `border` draws a real border the box grows by (the primary's `border: 1px solid $tag-border-*`), `inset` draws the inset shadow the read-only tag uses, moving nothing (the second's overlay `.outline`). The composition's `outlineWidth`/`outlineLeaf`/`outlineInLayout` props carry it.
+- **Small is the interactive height.** At `sm` the tag reads `control.tag_interactive_height_small` (20 in the primary - the small tag's 18 min-height beaten by the label line, the border and the button's own block padding; the second aliases the plain small tag's `control.tag_height_small`, 24) instead of the tag's own `heightSmall`.
+- **Press paints a layer, not a fill swap.** While pressed a layer over the face draws `color.tag_interactive_layer_active` (the primary has no `:active` fill - the cell is transparent there - and the second presses its state layer at 0.12).
+
+### SelectableTag
+
+- **A toggle tag.** `useControllableState` resolves `selected`/`defaultSelected`/`onChange`; the pressable announces `aria-pressed`. Selection fills with `color.tag_selectable_container_selected` and inverts the label to `tag_selectable_label_selected`; the border reads `color.tag_selectable_outline` at `control.tag_interactive_outline_width`, dropping to `control.tag_selectable_outline_width_selected` while selected (the second's selected chip draws no outline; the primary keeps the same border color under its inverted fill). Selected and disabled reads the `tag_selectable_*_selected_disabled` pair - the second's filter chip answers its own container and the selected label color at the disabled opacity, where the plain disabled cells differ.
+- **The ring follows the corner.** The wrapper that takes the focus ring carries the tag's radius, as the primary's `outline` does.
+- **The selected mark's seat mounts under every template.** Where `anatomy.tag_selected_mark` is `shown`, a selected tag's leading icon becomes `selected_indicator` in place of the caller's icon - the second's filter chip swaps in its checkmark. Where it is `hidden` and the caller gave no icon, the seat mounts undrawn (`display: none`, no space) exactly as the list's hidden mark seat does, so the element tree is the same everywhere; the seat does not count as a drawn icon, so the tag keeps its plain padding and the primary's measured geometry does not move.
+- **Pressed paints the selectable layer.** While pressed a layer over the face draws `color.tag_selectable_layer_active` (the primary has no `:active` rule for the selectable tag - the cell is transparent there - and the second's filter chip presses its state layer in on-surface-variant at 0.12).
+
+### TagSkeleton
+
+- **A sized placeholder.** `SkeletonPlaceholder` at `control.tag_skeleton_width` wide, the tag's `control.tag_height` tall (`control.tag_height_small` at `sm`), in the tag's `control.tag_radius` corner - the primary's `.cds--tag.cds--skeleton` draws exactly that (60px wide, the skeleton fill, the pill radius).
+- **No second reference.** No skeleton primitive exists in the second system; the row's values are a Superloom decision, as the roster flag records.
 
 ### Platform
 
-Both. The container, icon and label render on iOS, Android and web.
+Both. The container, icon, label, close control, pressables and the skeleton render on iOS, Android and web; tooltips behave as the Tooltip component's own notes describe.
+
+## DismissibleTag
+
+DismissibleTag draws a Tag with a trailing close seat - a pressable cross in the tag cells that fires onClose - and reports itself as a dismissible control; it is a molecule because it composes Tag and IconButton.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `text` | `string` | yes | The tag's text. |
+| `type` | `string` | no | One of `kinds`, a hue the theme draws the tag and its close control's hover from. Absent: the neutral tag cells. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `icon` | `string` | no | Semantic icon name drawn before the label; decorative, the label names the tag. |
+| `disabled` | `boolean` | no | Disables the close control and draws the disabled colors. |
+| `title` | `string` | no | The close control's accessible name and tooltip label. Default `Dismiss`. |
+| `onClose` | `function` | no | Called when the close control is pressed. |
+| `testID` | `string` | no | Test identifier forwarded to the tag. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.tag_height` |
+| `heightSmall` | `control.tag_height_small` |
+| `heightLarge` | `size.size_small` |
+| `closeGap` | `control.tag_close_gap` |
+| `closeInset` | `control.tag_close_inset` |
+| `closeIconSize` | `control.tag_close_icon_size` |
+| `focusRingWidth` | `border.width_01` |
+
+Color leaves accepted: `tag_hover_red`, `tag_color_red`, `tag_hover_magenta`, `tag_color_magenta`, `tag_hover_purple`, `tag_color_purple`, `tag_hover_blue`, `tag_color_blue`, `tag_hover_cyan`, `tag_color_cyan`, `tag_hover_teal`, `tag_color_teal`, `tag_hover_green`, `tag_color_green`, `tag_hover_gray`, `tag_color_gray`, `tag_hover_cool_gray`, `tag_color_cool_gray`, `tag_hover_warm_gray`, `tag_color_warm_gray`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"text":"Tag content","title":"Dismiss"}` |
+| typed | `{"text":"Tag content","title":"Dismiss","type":"blue"}` |
+| small | `{"size":"sm","text":"Tag content","title":"Dismiss"}` |
+| large | `{"size":"lg","text":"Tag content","title":"Dismiss"}` |
+| icon | `{"icon":"add","text":"Tag content","title":"Dismiss"}` |
+| disabled | `{"disabled":true,"text":"Tag content","title":"Dismiss"}` |
+
+## OperationalTag
+
+OperationalTag draws a Tag as an action - the whole pill is pressable, its text reading the interactive cells and the pressed state the active layer cell, firing onClick; it is a molecule because it composes Tag.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.tag_interactive_outline` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `text` | `string` | yes | The tag's text. |
+| `type` | `string` | no | One of `kinds`, a hue the theme draws from its `tag_*` cells. Absent: the neutral `tag` family cells. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `icon` | `string` | no | Semantic icon name drawn before the label; decorative, the label names the tag. |
+| `disabled` | `boolean` | no | Disables the tag and draws the disabled colors. |
+| `onPress` | `function` | no | Called when the tag is pressed; an operational tag performs an action. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `outlineWidth` | `control.tag_interactive_outline_width` |
+| `interactiveHeightSmall` | `control.tag_interactive_height_small` |
+
+Color leaves accepted: `tag_background_red`, `tag_background_magenta`, `tag_background_purple`, `tag_background_blue`, `tag_background_cyan`, `tag_background_teal`, `tag_background_green`, `tag_background_gray`, `tag_background_cool_gray`, `tag_background_warm_gray`, `tag_hover_red`, `tag_hover_magenta`, `tag_hover_purple`, `tag_hover_blue`, `tag_hover_cyan`, `tag_hover_teal`, `tag_hover_green`, `tag_hover_gray`, `tag_hover_cool_gray`, `tag_hover_warm_gray`, `tag_border_red`, `tag_border_magenta`, `tag_border_purple`, `tag_border_blue`, `tag_border_cyan`, `tag_border_teal`, `tag_border_green`, `tag_border_gray`, `tag_border_cool_gray`, `tag_border_warm_gray`, `tag_color_red`, `tag_color_magenta`, `tag_color_purple`, `tag_color_blue`, `tag_color_cyan`, `tag_color_teal`, `tag_color_green`, `tag_color_gray`, `tag_color_cool_gray`, `tag_color_warm_gray`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"text":"Tag content"}` |
+| typed | `{"text":"Tag content","type":"blue"}` |
+| small | `{"size":"sm","text":"Tag content"}` |
+| large | `{"size":"lg","text":"Tag content"}` |
+| icon | `{"icon":"add","text":"Tag content"}` |
+| disabled | `{"disabled":true,"text":"Tag content"}` |
+
+## SelectableTag
+
+SelectableTag draws a Tag as a toggle - pressable, aria-pressed, with a selected-mark seat mounted under every template that draws the mark only where the theme's selected-mark anatomy shows it, its pressed state reading the selectable active layer; it is a molecule because it composes Tag.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.tag_selected_mark`, `anatomy.tag_interactive_outline` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `text` | `string` | yes | The tag's text. |
+| `selected` | `boolean` | no | Controlled selected state; pairs with `onChange`. Omit for an uncontrolled tag. |
+| `defaultSelected` | `boolean` | no | The uncontrolled initial selected state. |
+| `onChange` | `function` | no | Called with the next selected state when the tag is pressed. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `icon` | `string` | no | Semantic icon name drawn before the label; replaced by the selected mark while selected where the theme shows one. |
+| `disabled` | `boolean` | no | Disables the tag and draws the disabled colors. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `outlineWidth` | `control.tag_interactive_outline_width` |
+| `outlineWidthSelected` | `control.tag_selectable_outline_width_selected` |
+| `interactiveHeightSmall` | `control.tag_interactive_height_small` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"text":"Tag content"}` |
+| selected | `{"selected":true,"text":"Tag content"}` |
+| small | `{"size":"sm","text":"Tag content"}` |
+| large | `{"size":"lg","text":"Tag content"}` |
+| icon | `{"icon":"add","text":"Tag content"}` |
+| disabled | `{"disabled":true,"text":"Tag content"}` |
+| disabled selected | `{"disabled":true,"selected":true,"text":"Tag content"}` |
 
 ## Tag
 
@@ -47,7 +217,7 @@ Tag draws a non-interactive pill holding an optional leading icon and one line o
 | Metric | Rule |
 |---|---|
 | `height` | `control.tag_height` |
-| `heightSmall` | sum of `size.icon_01`, `spacing.spacing_01` |
+| `heightSmall` | `control.tag_height_small` |
 | `heightLarge` | `size.size_small` |
 | `radius` | `control.tag_radius` |
 | `paddingInline` | `control.tag_padding_inline` |
@@ -70,3 +240,39 @@ Color leaves accepted: `tag_background_red`, `tag_color_red`, `tag_background_ma
 | type | `{"children":"Tag","type":"blue"}` |
 | icon | `{"children":"Tag","icon":"checkmark"}` |
 | disabled | `{"children":"Tag","disabled":true}` |
+
+## TagSkeleton
+
+TagSkeleton draws the tag's skeleton form - a pill-sized skeleton block on the tag's height and radius cells - as a stand-in while a tag loads.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `size` | `string` | no | One of `variants`: `sm`, `md`. Default `md`. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `width` | `control.tag_skeleton_width` |
+| `height` | `control.tag_height` |
+| `heightSmall` | `control.tag_height_small` |
+| `radius` | `control.tag_radius` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| small | `{"size":"sm"}` |

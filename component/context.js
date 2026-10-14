@@ -34,6 +34,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   const Utils = Lib.Utils;
   const flat = built.tokens;
 
+  // The interactive target: the platforms' forty-four point minimum, wider
+  // than the smallest sizes' face
+  const MIN_TARGET = 44;
+
 
   /********************************************************************
   Read one token by its full dotted name.
@@ -266,9 +270,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // A button ring drawn inside the edge paints the border, then the rest of
     // its width and the page-color line as inset shadows inside the border.
     // `options.gap === false` draws no separating line - the reference omits
-    // it on a face that draws neither fill nor border
+    // it on a face that draws neither fill nor border; `options.gapWidth`
+    // replaces the family's gap cell (a kind's own answer, the quick action's)
     const inner = Math.max(0, width - (border || 0));
-    const gap = options !== undefined && options.gap === false ? 0 : token('control.' + family + '_focus_gap_width');
+    const gap = options !== undefined && options.gap === false ? 0
+      : options !== undefined && Utils.isNumber(options.gapWidth) ? options.gapWidth
+        : token('control.' + family + '_focus_gap_width');
     const layers = [];
     if (inner > 0) {
       layers.push('inset 0 0 0 ' + inner + 'px ' + ringColor);
@@ -367,6 +374,56 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
+  The pressable style over a painted face: a transparent layer centered on
+  the face and no smaller than the platform's minimum target. A `null`
+  face - before the face's first layout - covers the face exactly.
+
+  @param {Object} face - { width, height }, or null
+
+  @return {Object} - Style fragment
+  *********************************************************************/
+  function pressTarget (face) {
+
+    if (face === null) {
+      return { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 };
+    }
+
+    const width = Math.max(MIN_TARGET, face.width);
+    const height = Math.max(MIN_TARGET, face.height);
+    return {
+      height: height,
+      left: -(width - face.width) / 2,
+      outlineStyle: 'none',
+      position: 'absolute',
+      top: -(height - face.height) / 2,
+      width: width
+    };
+
+  }
+
+
+  /********************************************************************
+  The `onLayout` + state pair for a face whose size is not known up front:
+  the measured size and the handler to hang on the face's layout event,
+  updating only when width or height change.
+
+  @return {Array} - [{ width, height } | null, onLayout]
+  *********************************************************************/
+  function useFaceSize () {
+
+    const [faceSize, setFaceSize] = Lib.React.useState(null);
+    const onLayout = function (event) {
+      const layout = event.nativeEvent.layout;
+      if (faceSize === null || faceSize.width !== layout.width || faceSize.height !== layout.height) {
+        setFaceSize({ width: layout.width, height: layout.height });
+      }
+    };
+    return [faceSize, onLayout];
+
+  }
+
+
+  /********************************************************************
   The list presentation the theme chose: the container and item cells of an
   option or menu list. The container carries the list's fill, corner, block
   padding and shadow; an item is a height, a fill for its state (`hover`,
@@ -406,7 +463,6 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         : state.selected === true ? 'list_item_label_selected'
           : state.hovered === true ? 'list_item_label_hover' : 'list_item_label';
     };
-
     return Object.freeze({
       // 'shown' draws the selected item's mark; 'hidden' mounts the seat undrawn
       mark: mark,
@@ -627,8 +683,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     icon: icon,
     metric: metric,
     pressPresentation: pressPresentation,
+    pressTarget: pressTarget,
     token: token,
-    typeStyle: typeStyle
+    typeStyle: typeStyle,
+    useFaceSize: useFaceSize
   });
 
 }

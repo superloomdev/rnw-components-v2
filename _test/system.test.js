@@ -293,6 +293,19 @@ describe('context: focusRing', function () {
     });
   });
 
+  test('options.gapWidth replaces the family\'s gap cell; options.gap === false still draws no line', function () {
+    const t = buildNative('carbon').tokens;
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const override = ctx.focusRing('button', { focused: true }, 1, { gapWidth: 3 });
+    assert.equal(override.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring'] + ', inset 0 0 0 4px ' + t['color.button_focus_gap']);
+    const zero = ctx.focusRing('button', { focused: true }, 1, { gapWidth: 0 });
+    assert.equal(zero.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+    const none = ctx.focusRing('button', { focused: true }, 1, { gap: false });
+    assert.equal(none.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+    const both = ctx.focusRing('button', { focused: true }, 1, { gap: false, gapWidth: 9 });
+    assert.equal(both.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
+  });
+
 });
 
 
@@ -362,6 +375,32 @@ describe('context: pressPresentation', function () {
     assert.equal(ctx.pressPresentation({ pressed: true }, prefix).layer.backgroundColor, t['color.button_primary_container_active']);
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).container.backgroundColor, t['color.button_primary_container_disabled']);
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).layer.opacity, 0);
+  });
+
+});
+
+
+describe('context: pressTarget', function () {
+
+  test('a null face covers it exactly; a small face centers a 44 target; a wider face keeps its width', function () {
+    const ctx = probeWith({});
+    assert.deepEqual(ctx.pressTarget(null), { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 });
+    assert.deepEqual(ctx.pressTarget({ height: 26, width: 20 }), {
+      height: 44,
+      left: -12,
+      outlineStyle: 'none',
+      position: 'absolute',
+      top: -9,
+      width: 44
+    });
+    assert.deepEqual(ctx.pressTarget({ height: 20, width: 64 }), {
+      height: 44,
+      left: -0,
+      outlineStyle: 'none',
+      position: 'absolute',
+      top: -12,
+      width: 64
+    });
   });
 
 });

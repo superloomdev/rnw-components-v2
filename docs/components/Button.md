@@ -17,6 +17,7 @@ A pressable root holding a one-line label and, optionally, a trailing decorative
 - **Ghost kinds reserve no icon slot.** `ghost` and `danger_ghost` take the ghost paddings and set the icon after the label; every other kind reserves a trailing slot and sets the icon in it.
 - **Composition.** The button composes the `Icon` atom for its trailing glyph, which makes it a molecule.
 - **Selected.** A button that toggles passes `selected`; while selected it draws the kind's selected fill and label cells, and hover and press still apply over it. This is a `superloom_decision`: the primary reference draws selection only on an icon-only button (its selected surface with the primary text), the second reference's selected action is its segmented button's selected colors; each template answers the cells, and the selected state has no measurement counterpart.
+- **Composition props.** `labelAlign`, `minWidth`, `maxWidth` and `paddingStart` exist for composing parents only and are listed under `composition` in the api: they override the computed geometry or alignment (the combo button's width window and `space-between` label edge, the fluid set's ghost padding).
 
 ### Platform
 
@@ -37,6 +38,70 @@ The Button family's icon-only member: a square Pressable holding one icon token 
 ### Second reference
 
 `md-icon-button` (standard -> `ghost`), `md-outlined-icon-button` (`tertiary`), `md-filled-icon-button` (`primary`), `md-filled-tonal-icon-button` (`secondary`). It has no sizes, so `sm` and `md` are unmeasured there, and no rendered tooltip.
+
+## ButtonSet
+
+A row of Buttons built from `items` data, each filling a seat that shares the row up to the set's item width, with the theme's separator line between seats; `stacked` makes it a column and `fluid` a measured, kind-ordered, end-aligned layout that stacks under the items' floor.
+
+### Decisions (roster flag `superloom_decision`)
+
+- **Items, not children.** The set takes each button's props as `items` data (as Menu takes `items`) rather than arbitrary children, so the seats, the ordering and the focus tracking the separators need are the set's own.
+- **The separator is a drawn line, not a shadow.** The primary draws the seam as a `-1px` box-shadow on every button but the first (the top edge in a column); the library draws a `border.width_01` view at each seat's leading edge instead, which reads the same pixel for pixel. Its ink is `color.button_set_separator`, `color.button_set_separator_disabled` beside a disabled item in a row, `color.button_set_separator_stacked_disabled` in a column, and transparent - still mounted - beside a focused item, as the primary's `:focus` rules suppress the same shadow.
+- **The gap is the template's.** `control.button_set_gap` spaces the seats: 0 in the primary (buttons sit adjacent, the separator touching both), a positive gap where a template answers one; the transparent-separator template then leaves a visible gap where a seam would be.
+- **Fluid order and stacking are the reference's rules.** A fluid set sorts its items by kind (ghost, danger ghost, tertiary, other, danger, primary) and reverses that order once stacked - by `stacked` or by its own measured width falling at or under the item count times the fluid floor. In a fluid row every seat is a quarter of the row, floored at `control.button_set_fluid_min_width` and capped at `control.button_set_fluid_max_width`; ghost items grow free of the ceiling with `control.button_set_fluid_ghost_padding_start`. At two items within four floors each takes half with no cap; one item within three floors takes the row. The stacked fluid column switches its ghost padding to `spacing_05`, as the reference's auto-stack does.
+- **No second system.** The second system draws no button set and no seam between buttons; its separator and gap answers are a Superloom decision - the roster's `superloom_decision` flag.
+
+### Platform
+
+Both. The row, the column, the seats and the separator views render identically on iOS, Android and web; the fluid set's measured layout reads the same `onLayout` width natively, with no transition - the seat sizes simply change.
+
+## ButtonSkeleton
+
+The skeleton placeholder drawn in a button's shape: the button's height for the size, the button's corner and the skeleton button width.
+
+### Decisions (roster flag `superloom_decision`)
+
+- **The shape is the button's.** Height follows the button's size scale (`size` xs through 2xl, default lg at `control.button_height`), the corner is `control.button_radius` and the width is `control.button_skeleton_width`; the shimmer is the skeleton family's.
+- **`href` is not carried.** The primary's skeleton can render as an anchor; a placeholder is not a link, so the component takes only `size` and `testID`.
+- **No second system.** It has no skeleton element; the placeholder drawing is a Superloom decision.
+
+### Platform
+
+Both. The placeholder and its reduced-motion rule behave the same natively.
+
+## PrimaryButton, SecondaryButton, DangerButton
+
+Thin kind wrappers over Button: each mounts `ctx.Registry.Button` and fixes the kind - `primary`, `secondary` and `danger` respectively.
+
+### Decisions
+
+- **Kind precedence is the primary's.** PrimaryButton and SecondaryButton set their kind before the caller's props (`Object.assign({ kind }, props)`), so a caller's `kind` wins - the upstream wrappers pass `kind` first the same way. DangerButton sets its kind after (`Object.assign({}, props, { kind: 'danger' })`), so it is always `danger`, as the upstream's is.
+- **No tokens.** The wrappers add and read nothing: the Button molecule owns the whole contract surface, so each spec sheet is empty and `tokens` is `[]`.
+
+### Platform
+
+Both, through the Button they mount.
+
+## ComboButton
+
+A primary action Button joined to a primary IconButton that opens a Menu of further actions: the action takes `label` and `onPress`, the trigger opens the menu over the container and its chevron turns while open.
+
+### Decisions (roster flag `superloom_decision`)
+
+- **The seam is the border width.** `columnGap: border.width_01` separates the two seats, matching the primary's `column-gap: 1px`: whatever shows between them is the surface behind, so a template answers the same seam.
+- **The action's window is the combo's less the seam and the trigger.** The primary styles the action's wrapper `min-width: 160px - 1px - trigger` per size and caps the button at `240px - 1px`; the component computes the same from `control.combo_button_min_width`, `control.combo_button_max_width` and the trigger's side for the size (`size.size_*` for sm/md, `control.icon_button_size` for lg). `xs` draws the `sm` trigger - the icon button has no extra-small size.
+- **The trigger announces its menu.** It is the icon button at kind `primary`, labeled "Additional actions", with `aria-haspopup`, `aria-expanded` while open and `aria-controls` naming the menu's id.
+- **The chevron turns while open.** `iconRotation` is 180 while the menu is open, transitioning over `motion.duration_fast_02` with `motion.easing_standard_productive` on the web; a native platform turns without a transition, as the icon button documents.
+- **Menu placement is edge to edge.** The container is measured through `useAnchoredPosition` and the range handed to `Menu` is its two edges: `bottom` opens the surface at the container's bottom edge, `top` ends it at the top edge, `-start` aligns the surface's start with the container's and `-end` its end. For the plain `top`/`bottom` alignments the surface's `width` is the measured container's, as the primary's menu spans the combo; the `-start`/`-end` alignments take the menu's natural width. The behavior gained the `preferEnd` ordering (`behaviors/menu.js`) so a `-end` or `top` alignment picks the edge-to-edge candidate before the fallback.
+- **The open menu's surface is not a measured part.** The upstream Menu portals to `document.body` and the upstream ComboButton forwards no `target`, so no cell-scoped selector ever reaches it; the surface is covered by the Menu row, and the combo's own menu width and placement by its unit tests.
+- **The action's label holds its start padding.** The primary draws `.cds--btn` content `space-between`, so under the action's width window the label stays at its start padding; the component passes the Button's `labelAlign: 'start'` composition prop, leaving the Button's own centering untouched.
+- **The trigger's press draws no focus ring.** The primary's `handleTriggerMousedown` prevents the mousedown's default, so a pointer press never focuses the trigger; the component forwards the same handler through the IconButton's `onMouseDown`, leaving keyboard focus alone.
+- **No `open` interaction is driven in the gates.** The open menu cannot be compared against the primary's, which portals to `document.body` and never appears in the cell shot; the open menu's width and placement and the chevron's 180-degree turn are covered by the unit tests and the fire rows `combo-button-menu-width` and `combo-button-chevron-turn`.
+- **No second system.** The second system ships no split button; the combo's own metrics are a Superloom decision - the roster's `superloom_decision` flag.
+
+### Platform
+
+Both. The seats, the seam and the open menu render on iOS, Android and web; the container measurement reads the same layout values natively, and the trigger's turn has no transition there.
 
 ## Button
 
@@ -110,6 +175,184 @@ Button draws a pressable label with an optional trailing icon in nine kinds and 
 | extra large | `{"children":"Extra large","size":"xl"}` |
 | 2x large | `{"children":"2x large","size":"2xl"}` |
 
+## ButtonSet
+
+ButtonSet lays out buttons from item data in a row, or a column when stacked, each sharing the row up to the set's item width with the theme's separator line and gap between them; a fluid set orders its buttons by kind and stacks when its container is narrower than its items' floor; the second system has no button set, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The set's buttons, as Button props: `{ children, kind, disabled, icon, onPress }`. |
+| `fluid` | `boolean` | no | End-aligns the buttons at a quarter of the row each, sorted by kind; a row narrower than the items' floor stacks them full-width. |
+| `stacked` | `boolean` | no | Stacks the buttons in a column, each sharing the row's width up to the set's item width. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `itemMaxWidth` | `control.button_set_item_max_width` |
+| `gap` | `control.button_set_gap` |
+| `separatorWidth` | `border.width_01` |
+| `fluidMinWidth` | `control.button_set_fluid_min_width` |
+| `fluidMaxWidth` | `control.button_set_fluid_max_width` |
+| `fluidGhostPaddingStart` | `control.button_set_fluid_ghost_padding_start` |
+| `columnGhostPaddingStart` | `spacing.spacing_05` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"children":"Cancel","kind":"secondary"},{"children":"Save","kind":"primary"}]}` |
+| three | `{"items":[{"children":"Help","kind":"ghost"},{"children":"Cancel","kind":"secondary"},{"children":"Save","kind":"primary"}]}` |
+| stacked | `{"stacked":true,"items":[{"children":"Cancel","kind":"secondary"},{"children":"Save","kind":"primary"}]}` |
+| disabled item | `{"items":[{"children":"Save","kind":"primary","disabled":true},{"children":"Cancel","kind":"secondary"}]}` |
+| fluid | `{"fluid":true,"items":[{"children":"Save","kind":"primary"},{"children":"Cancel","kind":"secondary"},{"children":"Help","kind":"ghost"}]}` |
+
+## ButtonSkeleton
+
+ButtonSkeleton draws the skeleton placeholder at the button's height for its size, in the button's corner and the skeleton button width; the second system has no skeleton, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `press` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
+| `testID` | `string` | no | Test identifier forwarded to the placeholder's root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `width` | `control.button_skeleton_width` |
+| `height` | `control.button_height` |
+| `heightXsmall` | `size.size_xsmall` |
+| `heightSmall` | `size.size_small` |
+| `heightMedium` | `size.size_medium` |
+| `heightXlarge` | `size.size_xlarge` |
+| `height2xlarge` | `size.size_2xlarge` |
+| `radius` | `control.button_radius` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| small | `{"size":"sm"}` |
+| extra large | `{"size":"xl"}` |
+
+## ComboButton
+
+ComboButton joins a primary action Button and an icon button that opens a Menu of further actions, its chevron turning while the menu is open, the action no narrower than the combo floor less the trigger and no wider than the combo ceiling; the second system has no split button, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The primary action's label. It is also the action's accessible name. |
+| `items` | `array` | yes | The menu's entries, as Menu's `items`: `{ label, icon, disabled, danger, selected, shortcut }` or `{ divider: true }`. |
+| `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`. Default `lg`; `xs` draws the small trigger. |
+| `disabled` | `boolean` | no | Disables both seats and announces them as disabled. |
+| `menuAlignment` | `string` | no | `bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the container edge the menu opens against, and the edge `-start`/`-end` aligns to. The plain alignments draw the menu at the container's width. |
+| `onPress` | `function` | no | Called when the primary action is pressed. |
+| `onChange` | `function` | no | Called with the chosen menu item's data. |
+| `accessibilityLabel` | `string` | no | Names the menu the trigger opens. |
+| `testID` | `string` | no | Test identifier forwarded to the container. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `minWidth` | `control.combo_button_min_width` |
+| `maxWidth` | `control.combo_button_max_width` |
+| `seam` | `border.width_01` |
+| `triggerSmall` | `size.size_small` |
+| `triggerMedium` | `size.size_medium` |
+| `triggerLarge` | `control.icon_button_size` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Create","items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Delete","danger":true}]}` |
+| small | `{"label":"Create","items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Delete","danger":true}],"size":"sm"}` |
+| disabled | `{"label":"Create","items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Delete","danger":true}],"disabled":true}` |
+| top | `{"label":"Create","items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Delete","danger":true}],"menuAlignment":"top"}` |
+
+## DangerButton
+
+DangerButton draws a Button of the danger kind whatever kind it is given.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `string` | yes | The label. It is also the accessible name unless `accessibilityLabel` is given. |
+| `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
+| `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
+| `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
+| `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
+| `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
+| `pill` | `boolean` | no | Composition prop: the corner radius is half the button's height (the chat button's pill). |
+| `minWidth` | `number` | no | Composition prop: overrides the computed minimum width (the combo button's action). |
+| `maxWidth` | `number` | no | Composition prop: caps the computed width (the combo button's action). |
+| `paddingStart` | `number` | no | Composition prop: overrides the computed start padding (the fluid set's ghost items). |
+| `paddingEnd` | `number` | no | Composition prop: overrides the computed end padding (the chat button's icon-free end). |
+| `onPress` | `function` | no | Called on activation (press, Enter, Space). |
+| `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable root. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Danger"}` |
+| with icon | `{"children":"Danger","icon":"add"}` |
+| small | `{"children":"Danger","size":"sm"}` |
+| disabled | `{"children":"Danger","disabled":true}` |
+| kind ignored | `{"children":"Danger","kind":"primary"}` |
+
 ## IconButton
 
 IconButton is a square button that shows one icon token and a tooltip label.
@@ -162,3 +405,87 @@ IconButton is a square button that shows one icon token and a tooltip label.
 | disabled | `{"icon":"add","label":"Add","disabled":true}` |
 | small | `{"icon":"add","label":"Add","kind":"ghost","size":"sm"}` |
 | medium | `{"icon":"add","label":"Add","kind":"ghost","size":"md"}` |
+
+## PrimaryButton
+
+PrimaryButton draws a Button of the primary kind unless it is given another kind.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `string` | yes | The label. It is also the accessible name unless `accessibilityLabel` is given. |
+| `kind` | `string` | no | One of `kinds`. Default `primary`. |
+| `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
+| `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
+| `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
+| `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
+| `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
+| `onPress` | `function` | no | Called on activation (press, Enter, Space). |
+| `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable root. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Primary"}` |
+| with icon | `{"children":"Primary","icon":"add"}` |
+| small | `{"children":"Primary","size":"sm"}` |
+| disabled | `{"children":"Primary","disabled":true}` |
+| other kind | `{"children":"Primary","kind":"tertiary"}` |
+
+## SecondaryButton
+
+SecondaryButton draws a Button of the secondary kind unless it is given another kind.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `string` | yes | The label. It is also the accessible name unless `accessibilityLabel` is given. |
+| `kind` | `string` | no | One of `kinds`. Default `secondary`. |
+| `size` | `string` | no | One of `variants`: `xs`, `sm`, `md`, `lg`, `xl`, `2xl`. Default `lg`. |
+| `icon` | `string` | no | Semantic icon name drawn at the trailing edge; decorative, the label names the button. |
+| `disabled` | `boolean` | no | Disables press, hover and focus feedback and announces the button as disabled. |
+| `selected` | `boolean` | no | Draws the selected fill and label of the kind while true, for a button that toggles. |
+| `fill` | `boolean` | no | Stretches the button to fill its seat instead of sizing to its height cell (the dialog's stretched actions). |
+| `onPress` | `function` | no | Called on activation (press, Enter, Space). |
+| `accessibilityLabel` | `string` | no | Accessible name when the label alone does not say what the button does. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable root. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Secondary"}` |
+| with icon | `{"children":"Secondary","icon":"add"}` |
+| small | `{"children":"Secondary","size":"sm"}` |
+| disabled | `{"children":"Secondary","disabled":true}` |
+| other kind | `{"children":"Secondary","kind":"tertiary"}` |

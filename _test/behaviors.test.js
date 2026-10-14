@@ -222,6 +222,32 @@ describe('behaviors: every stateful hook returns { ...propGetters, state } match
 });
 
 
+describe('behaviors: useButton', function () {
+
+  test('onFocus and onBlur are called after the behavior updates its state', async function () {
+    const calls = [];
+    const result = await renderHook(behaviors.useButton, {
+      children: 'Go',
+      onFocus: function (event) {
+        calls.push('focus:' + (event && event.marker === true));
+      },
+      onBlur: function (event) {
+        calls.push('blur:' + (event && event.marker === true));
+      }
+    });
+    await act(async function () {
+      result.rootProps.onFocus({ marker: true });
+    });
+    assert.deepEqual(calls, ['focus:true']);
+    await act(async function () {
+      result.rootProps.onBlur({ marker: true });
+    });
+    assert.deepEqual(calls, ['focus:true', 'blur:true']);
+  });
+
+});
+
+
 describe('behaviors: stateless hooks return the declared kind', function () {
 
   const ARGS = {

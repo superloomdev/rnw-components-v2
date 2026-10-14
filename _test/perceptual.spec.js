@@ -16,7 +16,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { openReference, openShowcase } from './harness/page.js';
+import { discoverComponents } from '../scripts/lib/components.js';
+import { openReference, openShowcase, pauseCellAnimations } from './harness/page.js';
 import { perceptualRatio, ratio } from './harness/perceptual.js';
 import { PNG } from 'pngjs';
 
@@ -24,32 +25,53 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const roster = JSON.parse(readFileSync(join(HERE, '..', 'data', 'roster.json'), 'utf8'));
 const GAPS = JSON.parse(readFileSync(join(HERE, 'fixtures', 'expected-gaps.json'), 'utf8')).gaps;
 const withReference = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable' && row.reference.kind !== 'none';
+  return row.status !== 'pending' && row.reference.kind !== 'none';
 });
 const withoutReference = roster.rows.filter(function (row) {
-  return row.status !== 'pending' && row.status !== 'not_applicable' && row.reference.kind === 'none';
+  return row.status !== 'pending' && row.reference.kind === 'none';
+});
+// A row with no primary-system twin draws no primary reference, so its
+// primary pixel comparison is skipped (a second twin is measured inside
+// the fidelity gate)
+const noPrimaryTwin = withReference.filter(function (row) {
+  return row.carbon_twin === 'none';
+});
+const primaryReference = withReference.filter(function (row) {
+  return row.carbon_twin !== 'none';
 });
 
 // The template whose values the primary reference draws, and the page the pipeline proof uses
 const REFERENCE_TEMPLATE = 'carbon';
 const PROOF_TEMPLATE = 'default';
 
+const components = await discoverComponents();
+const pauseAnimations = function (name) {
+  const component = components.find(function (entry) {
+    return entry.name === name;
+  });
+  return component !== undefined && component.reference.pauseAnimations === true;
+};
+
 
 /********************************************************************
 Screenshot every cell body of one component on the open page.
 
-@param {Object} page - Playwright page
-@param {String} name - Component name
+@param {Object} page    - Playwright page
+@param {String} name    - Component name
+@param {Boolean} frozen - Pause the cells' infinite animations first
 
 @return {Promise<Object>} - state label -> PNG buffer
 *********************************************************************/
-async function shootBodies (page, name) {
+async function shootBodies (page, name, frozen) {
 
   const out = {};
   const cells = page.locator('.cell[data-component="' + name + '"]');
   const count = await cells.count();
   for (let i = 0; i < count; i++) {
     const cell = cells.nth(i);
+    if (frozen === true) {
+      await pauseCellAnimations(cell.locator('[data-part="body"]'));
+    }
     out[await cell.getAttribute('data-state')] = await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' });
   }
 
@@ -89,7 +111,7 @@ test.describe('perceptual', function () {
     }
     expect(stale, 'expected gaps that no longer reproduce').toEqual([]);
     expect(blank, 'cells that rendered nothing visible').toEqual([]);
-    test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + withReference.length + ', without (skipped) ' + withoutReference.length });
+    test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + primaryReference.length + ', without (skipped) ' + withoutReference.length + ', no primary twin (skipped) ' + noPrimaryTwin.length });
   });
 
   // A shot is cropped from the page, so anything the harness itself paints
@@ -131,13 +153,13 @@ test.describe('perceptual', function () {
     expect(found, 'measurement cells painting their own chrome').toEqual([]);
   });
 
-  for (const row of withReference) {
+  for (const row of primaryReference) {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name);
+      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name));
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
-      const ours = await shootBodies(page, row.name);
+      const ours = await shootBodies(page, row.name, pauseAnimations(row.name));
       const ratios = [];
       const over = [];
       for (const state of Object.keys(upstream)) {

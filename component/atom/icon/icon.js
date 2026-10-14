@@ -34,8 +34,12 @@ export default function Icon (ctx) {
     // Init the size: caller's, else the theme's default metric
     const size = Utils.isNumber(props.size) ? props.size : ctx.metric('Icon', 'size');
 
+    // The glyph is picked for `glyphSize` - the set's own glyph at that size
+    // when it draws one - and drawn at `size`; default the drawn size
+    const glyphSize = Utils.isNumber(props.glyphSize) ? props.glyphSize : size;
+
     // Read the glyph and the fill from the theme
-    const glyph = ctx.icon(props.name, size);
+    const glyph = ctx.icon(props.name, glyphSize);
     const fill = ctx.color(Utils.isString(props.color) ? props.color : 'icon_primary');
 
     // A labelled icon is an image; an unlabelled one is decorative and hidden

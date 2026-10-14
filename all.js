@@ -1,6 +1,6 @@
 // Info: Every component factory, by roster name. A host passes this map (or a
-// subset) to `createSystem`. One line per roster row whose `status` is not
-// `not_applicable`, in roster build order; the docs gate checks the two agree.
+// subset) to `createSystem`. One line per roster row, in roster build order;
+// the docs gate checks the two agree.
 
 export { default as Icon } from './component/atom/icon/icon.js';
 export { default as Text } from './component/atom/text/text.js';
@@ -22,3 +22,25 @@ export { default as ToastNotification } from './component/molecule/notification/
 export { default as ProgressBar } from './component/molecule/progress/progress-bar.js';
 export { default as Tooltip } from './component/molecule/tooltip/tooltip.js';
 export { default as OverlayHost } from './component/provider/overlay-host/overlay-host.js';
+export { default as AspectRatio } from './component/molecule/aspect-ratio/aspect-ratio.js';
+export { default as ButtonSet } from './component/molecule/button/button-set.js';
+export { default as ButtonSkeleton } from './component/molecule/button/button-skeleton.js';
+export { default as ComboButton } from './component/composite/button/combo-button.js';
+export { default as DangerButton } from './component/molecule/button/danger-button.js';
+export { default as PrimaryButton } from './component/molecule/button/primary-button.js';
+export { default as SecondaryButton } from './component/molecule/button/secondary-button.js';
+export { default as Divider } from './component/atom/divider/divider.js';
+export { default as IconSkeleton } from './component/molecule/skeleton/icon-skeleton.js';
+export { default as Link } from './component/molecule/link/link.js';
+export { default as SkeletonIcon } from './component/molecule/skeleton/skeleton-icon.js';
+export { default as SkeletonPlaceholder } from './component/atom/skeleton/skeleton-placeholder.js';
+export { default as SkeletonText } from './component/molecule/skeleton/skeleton-text.js';
+export { default as InlineLoading } from './component/molecule/progress/inline-loading.js';
+export { default as Loading } from './component/atom/loading/loading.js';
+export { default as ProgressIndicator } from './component/molecule/progress/progress-indicator.js';
+export { default as ProgressIndicatorSkeleton } from './component/molecule/progress/progress-indicator-skeleton.js';
+export { default as ProgressStep } from './component/molecule/progress/progress-step.js';
+export { default as DismissibleTag } from './component/molecule/tag/dismissible-tag.js';
+export { default as OperationalTag } from './component/molecule/tag/operational-tag.js';
+export { default as SelectableTag } from './component/molecule/tag/selectable-tag.js';
+export { default as TagSkeleton } from './component/molecule/tag/tag-skeleton.js';

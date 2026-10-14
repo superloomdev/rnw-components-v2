@@ -277,6 +277,23 @@ describe('Button: feedback.press through the DOM', function () {
 });
 
 
+describe('Button: composition props', function () {
+
+  test('minWidth, maxWidth and paddingStart override the computed geometry', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderButton(registryFor('carbon'), { children: 'C', minWidth: 111, maxWidth: 239, paddingStart: 9 });
+    assert.equal(parts.root.style.minWidth, '111px');
+    assert.equal(parts.root.style.maxWidth, '239px');
+    assert.equal(parts.root.style.paddingLeft, '9px');
+    const plain = await renderButton(registryFor('carbon'), { children: 'C' });
+    assert.equal(plain.root.style.minWidth, t['control.button_min_width'] + 'px');
+    assert.equal(plain.root.style.maxWidth, '');
+    assert.equal(plain.root.style.paddingLeft, (t['control.button_padding_start'] - t['border.width_01']) + 'px');
+  });
+
+});
+
+
 describe('Button: accessibility', function () {
 
   test('the accessible name is the label, or accessibilityLabel when given', async function () {
