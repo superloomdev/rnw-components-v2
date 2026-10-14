@@ -360,11 +360,6 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured._bodyX = rect.x + pseudoX - bodyRect.x;
           measured._bodyY = (strip === null ? rect.y + pseudoY : stripTop) - bodyRect.y;
         }
-        // A part may ask for its paint sample at its center instead of
-        // inside its top edge
-        if (part.paintAt !== undefined) {
-          measured.paintAt = part.paintAt;
-        }
         state[partName] = measured;
       }
       out[cell.getAttribute('data-state')] = state;

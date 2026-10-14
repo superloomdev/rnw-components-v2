@@ -55,6 +55,17 @@ export default Object.freeze({
   parts: Object.freeze({
     bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['width', 'backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'borderTopLeftRadius'] }),
     label: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] [dir="auto"]', measure: 'text', optional: true, compare: ['color', 'fontFamily', 'fontSize', 'fontWeight', 'height', 'lineHeight', 'letterSpacing', 'width'] }),
-    caret: Object.freeze({ upstream: '.cds--popover-caret', ours: '[role="tooltip"] [aria-hidden="true"]', measure: 'box', optional: true, paintAt: 'center', compare: ['width', 'height', 'backgroundColor'] })
+    // Every pixel a sampler can pick in the small caret triangle is an
+    // anti-aliased edge pixel, so its sampled paint flakes between runs; the
+    // caret's own color is still compared as a property, as with the Modal
+    // scrim
+    caret: Object.freeze({ upstream: '.cds--popover-caret', ours: '[role="tooltip"] [aria-hidden="true"]', measure: 'box', optional: true, compare: ['width', 'height'], except: ['paint'] }),
+    // The caret's fill paints a different element on each side: upstream
+    // clips the `::after` of its caret element into the triangle, ours is
+    // the rotated square inside the clipping box, so the color compare has
+    // to read the painted element on both. The upstream element is
+    // `display: none` while a mounted popover sits closed, which a pseudo
+    // still measures as drawn, so the selector names the open popover
+    caretFill: Object.freeze({ upstream: '.cds--popover[aria-hidden="false"] .cds--popover-caret', pseudo: '::after', ours: '[role="tooltip"] [aria-hidden="true"] > *', measure: 'box', optional: true, compare: ['backgroundColor'], except: ['paint'] })
   })
 });

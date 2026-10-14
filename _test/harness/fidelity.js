@@ -66,13 +66,7 @@ function samplePaint (state, shot) {
     if (part === null || part.visible !== true || part.ink !== undefined || part._bodyX === undefined || part.width < 6 || part.height < 6) {
       continue;
     }
-    // The default sample sits a little inside the top edge; `paintAt:
-    // 'center'` reads the part's center instead - a pointy shape (a
-    // caret) paints an anti-aliased apex at its top edge, whose value
-    // moves with the part's sub-pixel position
-    const inset = part.paintAt === 'center'
-      ? part.height / 2
-      : Math.min(part.height / 2, Math.max(3, (parseFloat(part.borderTopWidth) || 0) + 2));
+    const inset = Math.min(part.height / 2, Math.max(3, (parseFloat(part.borderTopWidth) || 0) + 2));
     const pixel = image.at(MARGIN + part._bodyX + part.width / 2, MARGIN + part._bodyY + inset);
     if (pixel !== null) {
       part.paint = 'rgb(' + pixel.r + ', ' + pixel.g + ', ' + pixel.b + ')';

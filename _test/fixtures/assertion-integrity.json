@@ -1256,14 +1256,14 @@
       "why": "restoring the derived small height draws the material small tag's label line taller than the pill that paints behind it; the range-versus-painted-box check must catch it"
     },
     {
-      "id": "tooltip-caret-paint-center",
+      "id": "tooltip-caret-color",
       "file": "component/molecule/tooltip/tooltip.js",
       "find": "caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'),",
       "replace": "caret({ anchor: anchored.anchor, color: ctx.color('interactive'),",
       "runner": "pw",
       "test": "fidelity.spec.js",
       "testName": "Tooltip / primary / dark: matches the reference in every state",
-      "why": "the caret's paint sample sits at its center, so a wrong caret fill still fails the fidelity compare"
+      "why": "a triangle's every pixel is an anti-aliased edge, so the caret is not paint-sampled: a wrong caret fill must still fail through the backgroundColor property compare"
     },
     {
       "id": "progress-step-shrinks",
