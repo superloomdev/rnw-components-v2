@@ -55,6 +55,9 @@ export default function ProgressIndicatorSkeleton (ctx) {
           : {
             alignSelf: 'flex-start',
             flexDirection: 'row',
+            // Skeleton steps shrink with their row like the real steps'
+            // upstream flex items do
+            flexShrink: 1,
             minWidth: ctx.metric('ProgressIndicatorSkeleton', 'minWidth'),
             width: ctx.metric('ProgressIndicatorSkeleton', 'width')
           }

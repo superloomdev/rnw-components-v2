@@ -9,7 +9,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/progress/sample.progress-indicator.js';
-import { TEMPLATES, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -103,6 +103,28 @@ describe('ProgressIndicator: onChange reaches a step\'s press with its index', f
       pressableOf(2).dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     assert.deepEqual(changes, [0, 2]);
+  });
+
+});
+
+
+describe('ProgressIndicator: steps shrink to their minimum in a narrow host', function () {
+
+  test('a horizontal step is a shrinkable flex item floored at the step minimum', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = buildSystem('carbon', factories);
+    const parts = await renderIndicator(Registry, {
+      items: [{ label: 'First step' }, { label: 'Second step' }, { label: 'Third step' }]
+    });
+    // Upstream steps are CSS flex items - inline-size 128px, min-inline-size
+    // 7rem, the default shrink 1 - so three steps are 112 each in a 336-wide
+    // host and hold 128 in a 400-wide one. jsdom does not lay out; assert the
+    // style contract that produces it.
+    for (const step of parts.steps) {
+      assert.equal(step.style.flexShrink, '1');
+      assert.equal(step.style.width, t['control.progress_step_width'] + 'px');
+      assert.equal(step.style.minWidth, t['control.progress_step_min_width'] + 'px');
+    }
   });
 
 });

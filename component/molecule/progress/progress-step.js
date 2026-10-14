@@ -125,6 +125,9 @@ export default function ProgressStep (ctx) {
         : Object.assign({
           alignSelf: 'flex-start',
           flexDirection: 'row',
+          // A horizontal step is a CSS flex item upstream: it shrinks with
+          // its row down to the min, where React Native defaults shrink 0
+          flexShrink: 1,
           minWidth: ctx.metric('ProgressStep', spaceEqually ? 'width' : 'minWidth'),
           width: ctx.metric('ProgressStep', 'width')
         }, spaceEqually ? { flexGrow: 1 } : {})
