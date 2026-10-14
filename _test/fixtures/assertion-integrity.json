@@ -1244,6 +1244,26 @@
       "test": "purity.test.js",
       "testName": "no sample passes a composition prop",
       "why": "a sample that passes a composition prop must fail the purity scan"
+    },
+    {
+      "id": "structural-text-in-painted-box",
+      "file": "component/molecule/tag/spec.js",
+      "find": "  heightSmall: 'control.tag_height_small',",
+      "replace": "  heightSmall: { tokens: ['size.icon_01', 'spacing.spacing_01'], operation: 'sum' },",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "no text overflows the box that paints behind it",
+      "why": "restoring the derived small height draws the material small tag's label line taller than the pill that paints behind it; the range-versus-painted-box check must catch it"
+    },
+    {
+      "id": "tooltip-caret-paint-center",
+      "file": "component/molecule/tooltip/tooltip.js",
+      "find": "caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'),",
+      "replace": "caret({ anchor: anchored.anchor, color: ctx.color('interactive'),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Tooltip / primary / dark: matches the reference in every state",
+      "why": "the caret's paint sample sits at its center, so a wrong caret fill still fails the fidelity compare"
     }
   ]
 }

@@ -4,7 +4,7 @@
 
 export default Object.freeze({
   height: 'control.tag_height',
-  heightSmall: { tokens: ['size.icon_01', 'spacing.spacing_01'], operation: 'sum' },
+  heightSmall: 'control.tag_height_small',
   heightLarge: 'size.size_small',
   closeGap: 'control.tag_close_gap',
   closeInset: 'control.tag_close_inset',

@@ -4,6 +4,6 @@
 export default Object.freeze({
   width: 'control.tag_skeleton_width',
   height: 'control.tag_height',
-  heightSmall: { tokens: ['size.icon_01', 'spacing.spacing_01'], operation: 'sum' },
+  heightSmall: 'control.tag_height_small',
   radius: 'control.tag_radius'
 });

@@ -24,7 +24,7 @@ describe('TagSkeleton: every sample state under every template', function () {
         const container = await render(React.createElement(Registry.TagSkeleton, state.props));
         const root = container.firstElementChild;
 
-        const height = state.props.size === 'sm' ? t['size.icon_01'] + t['spacing.spacing_01'] : t['control.tag_height'];
+        const height = state.props.size === 'sm' ? t['control.tag_height_small'] : t['control.tag_height'];
         assert.equal(root.style.width, t['control.tag_skeleton_width'] + 'px');
         assert.equal(root.style.height, height + 'px');
         assert.equal(root.style.borderTopLeftRadius, t['control.tag_radius'] + 'px');

@@ -80,7 +80,7 @@ describe('DismissibleTag: every sample state under every template', function () 
         const t = buildNative(template).tokens;
         const props = state.props;
         const small = props.size === 'sm';
-        const height = small ? t['size.icon_01'] + t['spacing.spacing_01'] : props.size === 'lg' ? t['size.size_small'] : t['control.tag_height'];
+        const height = small ? t['control.tag_height_small'] : props.size === 'lg' ? t['size.size_small'] : t['control.tag_height'];
         const parts = await renderDismissible(registryFor(template), props);
 
         // The tag itself keeps the Tag cells
@@ -102,7 +102,7 @@ describe('DismissibleTag: every sample state under every template', function () 
           assert.equal(parts.face.style.marginTop, '');
         }
         const gap = t['control.tag_close_gap'] - (inset ? (faceSide - iconSize) / 2 : 0) +
-          (!inset && small ? (t['control.tag_height'] - (t['size.icon_01'] + t['spacing.spacing_01'])) / 2 : 0);
+          (!inset && small ? (t['control.tag_height'] - (t['control.tag_height_small'])) / 2 : 0);
         assert.equal(parts.face.style.marginLeft, gap + 'px');
         assert.equal(parts.face.style.marginRight, -((faceSide - iconSize) / 2 * (inset ? 1 : 0)) + 'px');
 

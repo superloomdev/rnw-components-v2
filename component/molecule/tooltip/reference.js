@@ -55,6 +55,6 @@ export default Object.freeze({
   parts: Object.freeze({
     bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['width', 'backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'borderTopLeftRadius'] }),
     label: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] [dir="auto"]', measure: 'text', optional: true, compare: ['color', 'fontFamily', 'fontSize', 'fontWeight', 'height', 'lineHeight', 'letterSpacing', 'width'] }),
-    caret: Object.freeze({ upstream: '.cds--popover-caret', ours: '[role="tooltip"] [aria-hidden="true"]', measure: 'box', optional: true, compare: ['width', 'height', 'backgroundColor'] })
+    caret: Object.freeze({ upstream: '.cds--popover-caret', ours: '[role="tooltip"] [aria-hidden="true"]', measure: 'box', optional: true, paintAt: 'center', compare: ['width', 'height', 'backgroundColor'] })
   })
 });

@@ -66,7 +66,7 @@ describe('Tag: every sample state under every template', function () {
 
         const container = disabled ? 'tag_container_disabled' : type === null ? 'tag_container' : 'tag_background_' + type;
         const label = disabled ? 'tag_label_disabled' : type === null ? 'tag_label' : 'tag_color_' + type;
-        const height = props.size === 'sm' ? t['size.icon_01'] + t['spacing.spacing_01'] : props.size === 'lg' ? t['size.size_small'] : t['control.tag_height'];
+        const height = props.size === 'sm' ? t['control.tag_height_small'] : props.size === 'lg' ? t['size.size_small'] : t['control.tag_height'];
         const padding = props.size === 'lg' ? t['spacing.spacing_04'] : t['control.tag_padding_inline'];
 
         // Container geometry and colors; the outline is an inset shadow that neither shifts the text nor grows the box

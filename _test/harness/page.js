@@ -360,6 +360,11 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured._bodyX = rect.x + pseudoX - bodyRect.x;
           measured._bodyY = (strip === null ? rect.y + pseudoY : stripTop) - bodyRect.y;
         }
+        // A part may ask for its paint sample at its center instead of
+        // inside its top edge
+        if (part.paintAt !== undefined) {
+          measured.paintAt = part.paintAt;
+        }
         state[partName] = measured;
       }
       out[cell.getAttribute('data-state')] = state;
@@ -801,6 +806,91 @@ export async function readCells (page) {
         rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
         viewport: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight },
         children: children
+      };
+    });
+  });
+
+}
+
+
+/********************************************************************
+Read every rendered text run in each cell and the painted box behind it.
+The box is the nearest ancestor inside the cell body whose computed
+background is not transparent or that draws a border or an inset
+box-shadow outline; a run with no painted ancestor reports no box.
+
+@param {Object} page - Playwright page
+
+@return {Promise<Array>} - [{ component, family, state, texts }]; each
+  text carries the text element's rect and, where a painted ancestor
+  exists, that box's rect and tag
+*********************************************************************/
+export async function readTextBoxes (page) {
+
+  return page.evaluate(function () {
+    return Array.from(document.querySelectorAll('.cell')).map(function (cell) {
+      const body = cell.querySelector('[data-part="body"]');
+      // The same hidden rule readCells applies
+      const isHidden = function (node) {
+        for (let current = node; current !== null && current !== body; current = current.parentElement) {
+          const style = getComputedStyle(current);
+          if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') {
+            return true;
+          }
+          if (current.getAttribute('aria-hidden') === 'true' && current.getBoundingClientRect().height === 0) {
+            return true;
+          }
+        }
+        return false;
+      };
+      // A node paints a box behind its text when its background is not
+      // transparent or it draws a border or an inset box-shadow outline
+      const paintsBox = function (node) {
+        const style = getComputedStyle(node);
+        return style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.backgroundImage !== 'none' ||
+          style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' ||
+          style.borderBottomWidth !== '0px' || style.borderLeftWidth !== '0px' ||
+          (style.boxShadow !== 'none' && style.boxShadow.indexOf('inset') !== -1);
+      };
+      const texts = [];
+      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+        if (node.textContent.trim() === '') {
+          continue;
+        }
+        const element = node.parentElement;
+        if (element === null || isHidden(element)) {
+          continue;
+        }
+        const rect = element.getBoundingClientRect();
+        // A flex layout can shrink the element below its line box; the
+        // run still stands a line-height tall from the element's top, so
+        // the line box is the element rect grown to the computed
+        // line-height where the element is shorter ('normal' reads NaN)
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+        const lineBox = Number.isNaN(lineHeight) || lineHeight <= rect.height
+          ? rect
+          : { x: rect.x, y: rect.y, width: rect.width, height: lineHeight };
+        let box = null;
+        for (let current = element.parentElement; current !== null && current !== body; current = current.parentElement) {
+          if (paintsBox(current)) {
+            const r = current.getBoundingClientRect();
+            box = { x: r.x, y: r.y, width: r.width, height: r.height, tag: current.tagName.toLowerCase() };
+            break;
+          }
+        }
+        texts.push({
+          text: node.textContent.trim().slice(0, 40),
+          tag: element.tagName.toLowerCase(),
+          rect: { x: lineBox.x, y: lineBox.y, width: lineBox.width, height: lineBox.height },
+          box: box
+        });
+      }
+      return {
+        component: cell.getAttribute('data-component'),
+        family: cell.getAttribute('data-family'),
+        state: cell.getAttribute('data-state'),
+        texts: texts
       };
     });
   });
