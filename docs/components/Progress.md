@@ -20,6 +20,151 @@ A labelled progress bar: a label row, a track with a fill bar or the theme's ind
 
 Both, with one caveat: the indeterminate anatomies use style animations (`animationKeyframes`), which React Native Web compiles to CSS on the web. On iOS and Android the determinate bar and every static state render; an indeterminate bar there is static at its first frame unless the host's RNW build applies the same animation shim.
 
+## InlineLoading
+
+A status mark beside a status text: the small Loading while `active`, a success or error glyph once settled, nothing while `inactive` - upstream mounts its animation block only when a status draws a mark, so the seat mounts only then. A `finished` status calls `onSuccess` once, `successDelay` after it arrives (the upstream default 1500ms is an API constant, not a theme value).
+
+### Decisions
+
+- **A molecule.** The `finished` and `error` marks draw through Icon, and `active` composes Loading itself - two library components it draws, the same rule that makes IconButton a molecule.
+- **The row is a live region.** `aria-live` off while inactive, assertive otherwise, as upstream; the text is the announcement and the mark is named by `iconDescription` (the status word by default, "loading" while active).
+- **No second reference.** The second system has no inline-loading row - the linear bar the roster names has no status-text semantics - the roster's `superloom_decision`: the gap is the shared spacing cell upstream uses (`spacing-03`), the colors map its own semantic roles.
+
+## ProgressIndicator and ProgressStep
+
+The indicator is the ordered list: each `items` entry mounts a ProgressStep with its state from `currentIndex` - before it `complete`, at it `current` unless the entry already passed `complete`, after it incomplete - plus the indicator's `vertical`, `spaceEqually` and `onChange` (as the step's `onPress`, fired with the index). That is upstream's clone math verbatim; `items` is a data prop because samples and native callers pass data, the way Tabs takes `items`.
+
+### Decisions
+
+- **`items`, not `children`.** The catalog's sample states are pure data and cannot pass element children; the indicator mounts `ctx.Registry.ProgressStep` per entry and injects the state - the same composition upstream performs with `cloneElement`. The injected `vertical` and `spaceEqually` are the step's `api.composition` props, so no sample may set them: the indicator's own samples cover the layouts. The roster keeps `requires_parent` on ProgressStep: it is not a standalone component.
+- **The step's pressable is the whole row.** Upstream's `button` wraps the glyph, the text column and the connector line. A step is clickable only with an `onPress` and not while `current` - upstream drops the handler for the current step but keeps the button focusable. A disabled step reports `aria-disabled` and leaves the tab order.
+- **Focus is drawn by hand.** Upstream's ring is `outline: 1px solid $focus` on the label, not the control's ring, so `ctx.focusRing` does not fit. The label draws `control.progress_step_focus_width` of `color.progress_step_label_focus` at offset 0, gated by `feedback.focus_trigger` the way `focusRing` gates (keyboard-only themes require focus-visible); the text takes the focus color while it shows. A press's specificity wins over focus in the reference, so the label's color chain is disabled, then press, then focus, then hover.
+- **The underline is a box-shadow.** Hovered or pressed, a clickable step's label casts `0 1px` of the same cell the text reads (the hover cell on hover, the resting cell on press) - upstream's exact construction, a 1px band under the label box.
+- **The line keeps upstream's border-box math.** The reference's `border: 1px inset transparent` under a `box-sizing: border-box` reset folds a pixel of transparent edge into every side, so the drawn strip is `max(cell, 2)` thick - the vertical connector measures 2 wide although its cell says 1. The line mounts inside the pressable as its last child, as upstream's `span` does. The glyph box rounds to `shape.radius_max` (upstream's `svg { border-radius: 50% }`).
+- **The space-equal text column is plain.** Upstream's `padding: $spacing-01; margin: -$spacing-01` pair exists only so `overflow: hidden` does not clip the label's 1px focus outline; with neither drawn the pair would only push the column past the cell, so the column mounts bare.
+- **The secondary label mounts two ways.** In the row it is absolutely positioned at the amendment cells (`secondary_label_top`, `secondary_label_start`), measured against the step; in the column it flows under the label inside the text column, as upstream's `position: static` override does.
+- **No second reference.** The second system has no step indicator - the roster's `superloom_decision`; the cells the v7 amendment wrote carry its own answers (focus width 3, line widths 4, vertical icon top 1).
+
+## ProgressIndicatorSkeleton
+
+The indicator's stand-in: upstream's fixed four incomplete steps, each the dashed glyph in `progress_step_icon_incomplete`, a `progress_step_skeleton_label` block and the resting connector line on the step's own geometry.
+
+### Decisions
+
+- **The label block shares the glyph's top margin.** Upstream gives the skeleton label `margin-block-start` 10px in the row and 1px in the column - the same values the state glyph's top margin carries - so the block reads `icon_top` / `vertical_icon_top` and both tops align.
+- **Four steps, always.** The count is a drawing constant of the reference's markup, declared in the spec.
+- **No pressable.** Upstream's skeleton step is a `div`, not a button: the stand-in takes no input, so the row mounts a plain View.
+- **No second reference.** As the indicator, a `superloom_decision` for that system's values - it inherits the step cells the amendment wrote.
+
+## Loading
+
+An atom that draws its own svg: beside `Icon`, it is the only component that reaches for `ctx.Svg` - `Icon` holds the semantic-glyph set, while the spinner's circles are its own drawing, not a named glyph. Every color, size, stroke, arc and timing reads the theme's `loading` cells.
+
+- **Spin or composed arc.** `anatomy.loading_motion` picks the drawing: `spin` holds the `control.loading_arc` fraction of a stroked circle and turns the box over `motion.loading_rotation`; `arc` builds the second system's construction - two half-masked bordered circles whose expansion (`motion.loading_arc_cycle`, `motion.loading_arc_easing`) and quarter-turn steps (four cycles of it) compose with a linear box turn, all drawn with Views so it renders natively too. Each half's static rotation and its animated expansion sit on nested Views so the transforms compose about one center.
+- **Stop.** `active` going false ends the drawing over `motion.duration_slow_02` at `motion.easing_exit_productive` - `spin` runs the arc shut, `arc` fades the drawing out (the second system's determinate transition has no closing arc to copy) - then the node renders nothing, the upstream stop rule's end state. Mounted inactive it stands closed for the same duration, then goes. An overlayed spinner hides the whole layer at once, as the upstream overlay's stop rule does.
+- **Still motion.** The keyframe styles are a web mechanism: on a native platform they are ignored and the drawing stands at its frame zero; reduced motion answers the same still drawing.
+- **Overlay.** `withOverlay` (default `true`, as upstream) mounts a `useViewportLayer` scrim in `color.loading_scrim` and `stacking.overlay` order through `useOverlay`, centered, with `useFocusTrap` on a `role="dialog"` seat naming the description. The grid samples pass `withOverlay: false`; the `overlay` sample is unmeasured because upstream fixes its layer to the viewport, outside the cell - the unit test covers the scrim color and role.
+- **Naming.** One `img` seat named by `description` ("loading" by default) carries the drawing under either anatomy - the set draws the picture with different elements, but the accessible node is the same - inside a live region (`aria-live="assertive"` while active, `aria-atomic`), and no `progressbar` role, as upstream.
+
+## InlineLoading
+
+InlineLoading draws a status mark beside a status text - the small Loading while active, a success or error glyph once settled, nothing while inactive - in the inline-loading cells, reporting a finished status through onSuccess after its delay; the second system has no inline loading row, so its values there are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `status` | `string` | no | One of `kinds`: `inactive` (no mark), `active` (the default, the small Loading), `finished` (the success mark; calls `onSuccess` after `successDelay`), `error` (the error mark). |
+| `description` | `string` | no | The status text beside the mark; absent draws no text. |
+| `iconDescription` | `string` | no | The mark's accessible name; the status word by default, "loading" while `active`. |
+| `successDelay` | `number` | no | Milliseconds after `finished` before `onSuccess` fires. Default 1500, as upstream. |
+| `onSuccess` | `function` | no | Called once when `status` is `finished`, `successDelay` after it arrives. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `gap` | `control.inline_loading_gap` |
+| `minHeight` | `size.size_small` |
+| `iconSize` | `size.icon_01` |
+| `successDelay` | constant `1500` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| active | `{"description":"Loading data","status":"active"}` |
+| finished | `{"description":"Data saved","status":"finished"}` |
+| error | `{"description":"Failed to load","status":"error"}` |
+| inactive | `{"description":"Not started","status":"inactive"}` |
+
+## Loading
+
+Loading draws a spinner whose arc turns in the theme's loading_indicator color on the loading size square - the small form with a loading_track circle - and, with the default overlay, mounts it centered on a full-viewport loading_scrim dialog in the overlay order; anatomy.loading_motion picks the turning svg ring or the second system's half-masked bordered-circle arc.
+
+| | |
+|---|---|
+| Tier | `atom` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.loading_motion` |
+| Behaviors | `overlay`, `focus-trap` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `active` | `boolean` | no | Whether the spinner runs. Going `false` closes the arc over the exit duration, then the node renders nothing. Default `true`. |
+| `small` | `boolean` | no | Draws the small spinner: the small size, stroke and arc, with a track circle behind the arc. |
+| `withOverlay` | `boolean` | no | Centers the spinner on a full-viewport scrim in the overlay stacking order, with focus trapped. Default `true`, as upstream. |
+| `description` | `string` | no | The spinner's accessible name and live-region text. Default "loading". |
+| `testID` | `string` | no | Test identifier forwarded to the spinner. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `size` | `control.loading_size` |
+| `sizeSmall` | `control.loading_size_small` |
+| `strokeWidth` | `control.loading_stroke_width` |
+| `strokeWidthSmall` | `control.loading_stroke_width_small` |
+| `arc` | `control.loading_arc` |
+| `arcSmall` | `control.loading_arc_small` |
+| `rotation` | `motion.loading_rotation` |
+| `arcCycle` | `motion.loading_arc_cycle` |
+| `arcEasing` | `motion.loading_arc_easing` |
+| `radiusMax` | `shape.radius_max` |
+| `stopDuration` | `motion.duration_slow_02` |
+| `stopEasing` | `motion.easing_exit_productive` |
+| `stacking` | `stacking.overlay` |
+| `viewBox` | constant `100` (decision) |
+| `radius` | constant `44` (decision) |
+| `radiusSmall` | constant `42` (decision) |
+| `pi` | constant `3.1416` (decision) |
+| `trackOffset` | constant `-22` (decision) |
+| `arcInset` | constant `4` (decision) |
+| `arcCycles` | constant `4` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"withOverlay":false}` |
+| small | `{"small":true,"withOverlay":false}` |
+| inactive | `{"active":false,"withOverlay":false}` |
+| overlay | `{}` |
+
 ## ProgressBar
 
 ProgressBar draws a labeled track with a determinate or indeterminate indicator and a helper or status line, the indeterminate motion chosen by anatomy.progress_indeterminate and every color, height and radius from the theme's progress role cells; it is a molecule because it composes Icon for its status marks.
@@ -74,3 +219,151 @@ ProgressBar draws a labeled track with a determinate or indeterminate indicator 
 | indeterminate | `{"label":"Progress"}` |
 | finished | `{"label":"Progress","status":"finished","helperText":"Done"}` |
 | error | `{"label":"Progress","value":40,"status":"error","helperText":"Failed"}` |
+
+## ProgressIndicator
+
+ProgressIndicator lays its steps out in order as a list, mounting each with its complete or current state from currentIndex and the indicator's vertical, spaceEqually and onChange - the primary's clone math; the second system has no step indicator, so its values there are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The steps, in order: `{ label, secondaryLabel, invalid, disabled, description, complete }` ProgressStep prop objects; each mounts a ProgressStep. |
+| `currentIndex` | `number` | no | The index of the current step. Default 0: steps before it are `complete`, the step at it `current` unless it already passed `complete`, steps after it incomplete - the reference's clone math. |
+| `onChange` | `function` | no | Called with a step's index when it is pressed; each step receives it as `onPress`. |
+| `spaceEqually` | `boolean` | no | Spreads the steps at equal widths (horizontal only, as upstream). |
+| `vertical` | `boolean` | no | Stacks the steps in the column form. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"currentIndex":1,"items":[{"label":"First step"},{"label":"Second step"},{"label":"Third step"}]}` |
+| space equal | `{"currentIndex":1,"items":[{"label":"First step"},{"label":"Second step"},{"label":"Third step"}],"spaceEqually":true}` |
+| vertical | `{"currentIndex":1,"items":[{"label":"First step"},{"label":"Second step"},{"label":"Third step"}],"vertical":true}` |
+| invalid | `{"currentIndex":1,"items":[{"label":"First step"},{"invalid":true,"label":"Invalid step"},{"disabled":true,"label":"Disabled step"}]}` |
+| interactive | `{"currentIndex":1,"items":[{"label":"First step"},{"label":"Second step"},{"label":"Third step"}]}` |
+
+## ProgressIndicatorSkeleton
+
+ProgressIndicatorSkeleton draws the indicator's skeleton form - the primary's fixed four incomplete steps, each the dashed glyph, a label-sized skeleton block and the connector line on the step's geometry; the second system has no skeleton primitives, so its values there are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `vertical` | `boolean` | no | Stacks the skeleton steps in the column form. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `count` | constant `4` (decision) |
+| `width` | `control.progress_step_width` |
+| `minWidth` | `control.progress_step_min_width` |
+| `verticalMinHeight` | `control.progress_step_vertical_min_height` |
+| `iconTop` | `control.progress_step_icon_top` |
+| `iconGap` | `control.progress_step_icon_gap` |
+| `verticalIconTop` | `control.progress_step_vertical_icon_top` |
+| `lineWidth` | `control.progress_step_line_width` |
+| `verticalLineWidth` | `control.progress_step_vertical_line_width` |
+| `labelWidth` | `control.progress_step_skeleton_label_width` |
+| `labelHeight` | `control.progress_step_skeleton_label_height` |
+| `iconSize` | `size.icon_01` |
+| `iconRadius` | `shape.radius_max` |
+| `lineBorder` | constant `1` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| vertical | `{"vertical":true}` |
+
+## ProgressStep
+
+ProgressStep draws one step of a ProgressIndicator - a state glyph beside the label and an optional secondary line over the connector line, the label underlining while a clickable step is hovered or pressed - and must be composed inside ProgressIndicator; the second system has no step part, so its values there are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `press` |
+| Flags | `requires_parent` - renders only inside its parent; `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The step's text; it names the step with the state sentence. |
+| `description` | `string` | no | The state glyph's accessible name. |
+| `current` | `boolean` | no | The step is the current one: the incomplete glyph in the interactive color, the complete line; not pressable. |
+| `complete` | `boolean` | no | The step is done: the checkmark glyph and the complete line. |
+| `invalid` | `boolean` | no | The step is invalid: the warning glyph and the invalid colors, overriding the state. |
+| `secondaryLabel` | `string` | no | A second line under the label, in the secondary-label type and color. |
+| `disabled` | `boolean` | no | Disables the step and draws the disabled colors; not pressable. |
+| `onPress` | `function` | no | Makes the step pressable; ProgressIndicator supplies it from `onChange`. Dropped while `current`, as upstream. |
+| `testID` | `string` | no | Test identifier forwarded to the pressable. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `width` | `control.progress_step_width` |
+| `minWidth` | `control.progress_step_min_width` |
+| `verticalMinHeight` | `control.progress_step_vertical_min_height` |
+| `iconTop` | `control.progress_step_icon_top` |
+| `iconGap` | `control.progress_step_icon_gap` |
+| `verticalIconTop` | `control.progress_step_vertical_icon_top` |
+| `lineWidth` | `control.progress_step_line_width` |
+| `verticalLineWidth` | `control.progress_step_vertical_line_width` |
+| `focusWidth` | `control.progress_step_focus_width` |
+| `labelMaxWidth` | `control.progress_step_label_max_width` |
+| `labelMaxWidthVertical` | `control.progress_step_label_max_width_vertical` |
+| `labelGap` | `control.progress_step_label_gap` |
+| `secondaryTop` | `control.progress_step_secondary_label_top` |
+| `secondaryStart` | `control.progress_step_secondary_label_start` |
+| `labelEndInset` | `spacing.spacing_04` |
+| `iconSize` | `size.icon_01` |
+| `iconRadius` | `shape.radius_max` |
+| `labelDuration` | `motion.duration_fast_02` |
+| `labelEasing` | `motion.easing_standard_productive` |
+| `labelLineHeight` | constant `1.45` (decision) |
+| `lineBorder` | constant `1` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| first | `{"label":"First step"}` |
+| current | `{"current":true,"label":"Current step"}` |
+| complete | `{"complete":true,"label":"Complete step"}` |
+| invalid | `{"invalid":true,"label":"Invalid step"}` |
+| secondary | `{"label":"Second step","secondaryLabel":"Optional info"}` |
+| disabled | `{"disabled":true,"label":"Disabled step"}` |

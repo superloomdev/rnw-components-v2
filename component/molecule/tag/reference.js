@@ -17,7 +17,7 @@ export default Object.freeze({
   },
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--tag', ours: ':scope > div', measure: 'box' }),
-    label: Object.freeze({ upstream: '.cds--tag__label', ours: ':scope > div > [dir="auto"]', measure: 'text' }),
+    label: Object.freeze({ upstream: '.cds--tag__label', ours: ':scope > div > div > [dir="auto"]', measure: 'text' }),
     icon: Object.freeze({ upstream: '.cds--tag__custom-icon svg', ours: ':scope > div > div > svg', measure: 'box' })
   }),
   second: Object.freeze({
@@ -39,7 +39,7 @@ export default Object.freeze({
     },
     parts: Object.freeze({
       root: Object.freeze({ upstream: 'md-assist-chip >>> .container', ours: ':scope > div', measure: 'box' }),
-      label: Object.freeze({ upstream: 'md-assist-chip >>> .label-text', ours: ':scope > div > [dir="auto"]', measure: 'text' }),
+      label: Object.freeze({ upstream: 'md-assist-chip >>> .label-text', ours: ':scope > div > div > [dir="auto"]', measure: 'text' }),
       icon: Object.freeze({ upstream: 'md-assist-chip >>> .leading.icon', ours: ':scope > div > div:has(> svg)', measure: 'box' })
     })
   })

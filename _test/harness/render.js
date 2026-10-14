@@ -123,9 +123,10 @@ export function a11yTree (root) {
       parts.push('text=' + JSON.stringify(ownText.replace(/\s/g, '')));
     }
     lines.push('  '.repeat(depth) + parts.join(' '));
-    // An svg is one accessible node; its paths are drawing, and a set may
-    // draw the same glyph with a different number of them
-    if (node.tagName.toLowerCase() === 'svg') {
+    // An svg or an img-role node is one accessible node; its children are
+    // drawing (ARIA marks an img's descendants presentational), and a set
+    // may draw the same picture with a different number of them
+    if (node.tagName.toLowerCase() === 'svg' || node.getAttribute('role') === 'img') {
       return;
     }
     for (const child of node.children) {

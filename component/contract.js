@@ -68,6 +68,24 @@ import primaryButtonApi from './molecule/button/api.primary-button.js';
 import primaryButtonSpec from './molecule/button/spec.primary-button.js';
 import secondaryButtonApi from './molecule/button/api.secondary-button.js';
 import secondaryButtonSpec from './molecule/button/spec.secondary-button.js';
+import dismissibleTagApi from './molecule/tag/api.dismissible-tag.js';
+import dismissibleTagSpec from './molecule/tag/spec.dismissible-tag.js';
+import operationalTagApi from './molecule/tag/api.operational-tag.js';
+import operationalTagSpec from './molecule/tag/spec.operational-tag.js';
+import selectableTagApi from './molecule/tag/api.selectable-tag.js';
+import selectableTagSpec from './molecule/tag/spec.selectable-tag.js';
+import tagSkeletonApi from './molecule/tag/api.tag-skeleton.js';
+import tagSkeletonSpec from './molecule/tag/spec.tag-skeleton.js';
+import loadingApi from './atom/loading/api.js';
+import loadingSpec from './atom/loading/spec.js';
+import inlineLoadingApi from './molecule/progress/api.inline-loading.js';
+import inlineLoadingSpec from './molecule/progress/spec.inline-loading.js';
+import progressIndicatorApi from './molecule/progress/api.progress-indicator.js';
+import progressIndicatorSpec from './molecule/progress/spec.progress-indicator.js';
+import progressStepApi from './molecule/progress/api.progress-step.js';
+import progressStepSpec from './molecule/progress/spec.progress-step.js';
+import progressIndicatorSkeletonApi from './molecule/progress/api.progress-indicator-skeleton.js';
+import progressIndicatorSkeletonSpec from './molecule/progress/spec.progress-indicator-skeleton.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
@@ -146,9 +164,19 @@ const COMBO_BUTTON_REQUIRED = [].concat(comboButtonApi.tokens, specTokens(comboB
 const DANGER_BUTTON_REQUIRED = [].concat(dangerButtonApi.tokens, specTokens(dangerButtonSpec));
 const PRIMARY_BUTTON_REQUIRED = [].concat(primaryButtonApi.tokens, specTokens(primaryButtonSpec));
 const SECONDARY_BUTTON_REQUIRED = [].concat(secondaryButtonApi.tokens, specTokens(secondaryButtonSpec));
+const DISMISSIBLE_TAG_REQUIRED = [].concat(dismissibleTagApi.tokens, specTokens(dismissibleTagSpec));
+const OPERATIONAL_TAG_REQUIRED = [].concat(operationalTagApi.tokens, specTokens(operationalTagSpec));
+const SELECTABLE_TAG_REQUIRED = [].concat(selectableTagApi.tokens, specTokens(selectableTagSpec));
+const TAG_SKELETON_REQUIRED = [].concat(tagSkeletonApi.tokens, specTokens(tagSkeletonSpec));
+const LOADING_REQUIRED = [].concat(loadingApi.tokens, specTokens(loadingSpec));
+const INLINE_LOADING_REQUIRED = [].concat(inlineLoadingApi.tokens, specTokens(inlineLoadingSpec));
+const PROGRESS_INDICATOR_REQUIRED = [].concat(progressIndicatorApi.tokens, specTokens(progressIndicatorSpec));
+const PROGRESS_STEP_REQUIRED = [].concat(progressStepApi.tokens, specTokens(progressStepSpec));
+const PROGRESS_INDICATOR_SKELETON_REQUIRED = [].concat(progressIndicatorSkeletonApi.tokens, specTokens(progressIndicatorSkeletonSpec));
 
-// The hue cells a Tag `type` reads on demand
-const TAG_SUPPORTED = tagApi.colors.map(function (leaf) {
+// The hue cells a Tag `type` reads on demand - the variants' hover, border
+// and glyph cells ride the same on-demand rule
+const TAG_SUPPORTED = [].concat(tagApi.colors, dismissibleTagApi.colors, operationalTagApi.colors).map(function (leaf) {
   return 'color.' + leaf;
 });
 
@@ -168,8 +196,8 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 
-export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled', 'chevron_down']);
+export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled', 'chevron_down', 'warning', 'incomplete', 'checkmark_outline', 'circle_dash']);

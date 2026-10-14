@@ -1032,7 +1032,7 @@
         "version": "1.115.0",
         "export": "InlineLoading"
       },
-      "description": "InlineLoading is a component in the Progress family.",
+      "description": "InlineLoading draws a status mark beside a status text - the small Loading while active, a success or error glyph once settled, nothing while inactive - in the inline-loading cells, reporting a finished status through onSuccess after its delay; the second system has no inline loading row, so its values there are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1047,8 +1047,10 @@
       "carbon_twin": "InlineLoading",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Loading",
@@ -1059,13 +1061,18 @@
         "version": "1.115.0",
         "export": "Loading"
       },
-      "description": "Loading is a component in the Progress family.",
+      "description": "Loading draws a spinner whose arc turns in the theme's loading_indicator color on the loading size square - the small form with a loading_track circle - and, with the default overlay, mounts it centered on a full-viewport loading_scrim dialog in the overlay order; anatomy.loading_motion picks the turning svg ring or the second system's half-masked bordered-circle arc.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
-      "behaviors": [],
+      "enums": [
+        "anatomy.loading_motion"
+      ],
+      "behaviors": [
+        "overlay",
+        "focus-trap"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1075,7 +1082,7 @@
       "material_twin": "md-circular-progress",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ProgressIndicator",
@@ -1086,7 +1093,7 @@
         "version": "1.115.0",
         "export": "ProgressIndicator"
       },
-      "description": "ProgressIndicator is a component in the Progress family.",
+      "description": "ProgressIndicator lays its steps out in order as a list, mounting each with its complete or current state from currentIndex and the indicator's vertical, spaceEqually and onChange - the primary's clone math; the second system has no step indicator, so its values there are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1101,8 +1108,10 @@
       "carbon_twin": "ProgressIndicator",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "ProgressIndicatorSkeleton",
@@ -1113,7 +1122,7 @@
         "version": "1.115.0",
         "export": "ProgressIndicatorSkeleton"
       },
-      "description": "ProgressIndicatorSkeleton is a component in the Progress family.",
+      "description": "ProgressIndicatorSkeleton draws the indicator's skeleton form - the primary's fixed four incomplete steps, each the dashed glyph, a label-sized skeleton block and the connector line on the step's geometry; the second system has no skeleton primitives, so its values there are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1128,8 +1137,10 @@
       "carbon_twin": "ProgressIndicatorSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "ProgressStep",
@@ -1140,13 +1151,15 @@
         "version": "1.115.0",
         "export": "ProgressStep"
       },
-      "description": "ProgressStep is a component in the Progress family; it must be composed inside ProgressIndicator.",
+      "description": "ProgressStep draws one step of a ProgressIndicator - a state glyph beside the label and an optional secondary line over the connector line, the label underlining while a clickable step is hovered or pressed - and must be composed inside ProgressIndicator; the second system has no step part, so its values there are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [],
+      "behaviors": [
+        "press"
+      ],
       "parent": "ProgressIndicator",
       "reference": {
         "kind": "render-web",
@@ -1156,9 +1169,10 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "superloom_decision"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DismissibleTag",
@@ -1169,13 +1183,15 @@
         "version": "1.115.0",
         "export": "DismissibleTag"
       },
-      "description": "DismissibleTag is a component in the Tag family.",
+      "description": "DismissibleTag draws a Tag with a trailing close seat - a pressable cross in the tag cells that fires onClose - and reports itself as a dismissible control; it is a molecule because it composes Tag and IconButton.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [],
+      "behaviors": [
+        "press"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1185,7 +1201,7 @@
       "material_twin": "md-input-chip",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OperationalTag",
@@ -1196,13 +1212,17 @@
         "version": "1.115.0",
         "export": "OperationalTag"
       },
-      "description": "OperationalTag is a component in the Tag family.",
+      "description": "OperationalTag draws a Tag as an action - the whole pill is pressable, its text reading the interactive cells and the pressed state the active layer cell, firing onClick; it is a molecule because it composes Tag.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
-      "behaviors": [],
+      "enums": [
+        "anatomy.tag_interactive_outline"
+      ],
+      "behaviors": [
+        "press"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1212,7 +1232,7 @@
       "material_twin": "md-assist-chip",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SelectableTag",
@@ -1223,13 +1243,18 @@
         "version": "1.115.0",
         "export": "SelectableTag"
       },
-      "description": "SelectableTag is a component in the Tag family.",
+      "description": "SelectableTag draws a Tag as a toggle - pressable, aria-pressed, with a selected-mark seat mounted under every template that draws the mark only where the theme's selected-mark anatomy shows it, its pressed state reading the selectable active layer; it is a molecule because it composes Tag.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
-      "behaviors": [],
+      "enums": [
+        "anatomy.tag_selected_mark",
+        "anatomy.tag_interactive_outline"
+      ],
+      "behaviors": [
+        "press"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1239,7 +1264,7 @@
       "material_twin": "md-filter-chip",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TagSkeleton",
@@ -1250,7 +1275,7 @@
         "version": "1.115.0",
         "export": "TagSkeleton"
       },
-      "description": "TagSkeleton is a component in the Tag family.",
+      "description": "TagSkeleton draws the tag's skeleton form - a pill-sized skeleton block on the tag's height and radius cells - as a stand-in while a tag loads.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1266,7 +1291,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TagSet",

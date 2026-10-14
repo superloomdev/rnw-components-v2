@@ -111,6 +111,89 @@ describe('Tag: every sample state under every template', function () {
 });
 
 
+describe('Tag: composition props', function () {
+
+  test('trailing renders after the label, inside the container', async function () {
+    const parts = await renderTag(registryFor('carbon'), {
+      children: 'T',
+      trailing: React.createElement('button', { 'data-testid': 'tag-close' }, 'x')
+    });
+    const trailing = parts.root.querySelector('[data-testid="tag-close"]');
+    assert.ok(trailing !== null);
+    assert.equal(trailing.previousElementSibling, parts.label.parentElement);
+  });
+
+  test('the leaf props override the computed container, label and icon leaves', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTag(registryFor('carbon'), {
+      children: 'T',
+      icon: 'checkmark',
+      containerLeaf: 'tag_selectable_container',
+      labelLeaf: 'tag_selectable_label',
+      iconLeaf: 'tag_icon_disabled'
+    });
+    assert.equal(parts.root.style.backgroundColor, cssValue('backgroundColor', t['color.tag_selectable_container']));
+    assert.equal(parts.label.style.color, cssValue('color', t['color.tag_selectable_label']));
+    assert.equal(parts.icon.getAttribute('fill'), t['color.tag_icon_disabled']);
+  });
+
+  test('outlineWidth, outlineLeaf and outlineInLayout draw a real border in place of the outline; paddingEnd overrides the end padding', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTag(registryFor('carbon'), {
+      children: 'T',
+      outlineInLayout: true,
+      outlineLeaf: 'tag_border_blue',
+      outlineWidth: t['control.tag_interactive_outline_width'],
+      paddingEnd: 0
+    });
+    assert.equal(parts.root.style.borderTopWidth, t['control.tag_interactive_outline_width'] + 'px');
+    assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.tag_border_blue']));
+    assert.equal(parts.root.style.boxShadow, '');
+    assert.equal(parts.root.style.paddingRight, '0px');
+    // The real border replaces the inset-shadow outline: under the template
+    // whose outline width is nonzero a plain tag paints the shadow, a
+    // bordered one does not
+    const m = buildNative('material').tokens;
+    const plain = await renderTag(registryFor('material'), { children: 'T' });
+    assert.equal(plain.root.style.boxShadow, cssValue('boxShadow', 'inset 0 0 0 ' + m['control.tag_outline_width'] + 'px ' + m['color.tag_outline']));
+    const bordered = await renderTag(registryFor('material'), { children: 'T', outlineInLayout: true, outlineLeaf: 'tag_border_blue', outlineWidth: 1 });
+    assert.equal(bordered.root.style.boxShadow, '');
+  });
+
+  test('outlineWidth without outlineInLayout draws the outline as the inset shadow, moving nothing', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTag(registryFor('carbon'), {
+      children: 'T',
+      outlineLeaf: 'tag_border_blue',
+      outlineWidth: 1
+    });
+    assert.equal(parts.root.style.borderTopWidth, '');
+    assert.equal(parts.root.style.boxShadow, cssValue('boxShadow', 'inset 0 0 0 1px ' + t['color.tag_border_blue']));
+  });
+
+  test('the root is not a scroll container: no overflow hidden; a hidden icon seat keeps the plain padding', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTag(registryFor('carbon'), {
+      children: 'T',
+      icon: 'checkmark',
+      iconHidden: true
+    });
+    // A press target wider than the tag inside a clipping root would be
+    // scrolled into view by a pointer move or focus(), shifting content
+    assert.notEqual(parts.root.style.overflow, 'hidden');
+    // The mounted-but-undrawn seat does not count as a drawn icon, so the
+    // padding stays the tag's own
+    assert.equal(parts.root.style.paddingLeft, t['control.tag_padding_inline'] + 'px');
+  });
+
+  test('the height composition prop overrides the size', async function () {
+    const sized = await renderTag(registryFor('carbon'), { children: 'T', height: 20, size: 'sm' });
+    assert.equal(sized.root.style.height, '20px');
+  });
+
+});
+
+
 describe('Tag: the hue a type names', function () {
 
   test('every listed type reads its own background and label cells under every template', async function () {

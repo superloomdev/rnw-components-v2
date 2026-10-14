@@ -35,10 +35,6 @@ export default function IconButton (ctx) {
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
   const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
 
-  // The interactive target: the platforms' forty-four point minimum, wider
-  // than the smallest sizes' face
-  const TARGET = 44;
-
 
   /********************************************************************
   IconButton component.
@@ -100,8 +96,6 @@ export default function IconButton (ctx) {
     // The button: the face carries the square and all of its paint where it
     // has always sat; the pressable is a transparent layer over its center,
     // no smaller than the platform's minimum interactive target
-    const target = Math.max(TARGET, side);
-    const inset = (target - side) / 2;
     const element = React.createElement(View, {
       style: { alignSelf: 'flex-start', height: side, width: side }
     },
@@ -149,14 +143,7 @@ export default function IconButton (ctx) {
       // suppresses the press focus)
       onMouseDown: props.onMouseDown,
       testID: props.testID,
-      style: {
-        height: target,
-        left: -inset,
-        outlineStyle: 'none',
-        position: 'absolute',
-        top: -inset,
-        width: target
-      }
+      style: ctx.pressTarget({ height: side, width: side })
     })));
 
     // The compact tooltip names the button; a disabled one still shows it

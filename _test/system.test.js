@@ -380,6 +380,32 @@ describe('context: pressPresentation', function () {
 });
 
 
+describe('context: pressTarget', function () {
+
+  test('a null face covers it exactly; a small face centers a 44 target; a wider face keeps its width', function () {
+    const ctx = probeWith({});
+    assert.deepEqual(ctx.pressTarget(null), { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 });
+    assert.deepEqual(ctx.pressTarget({ height: 26, width: 20 }), {
+      height: 44,
+      left: -12,
+      outlineStyle: 'none',
+      position: 'absolute',
+      top: -9,
+      width: 44
+    });
+    assert.deepEqual(ctx.pressTarget({ height: 20, width: 64 }), {
+      height: 44,
+      left: -0,
+      outlineStyle: 'none',
+      position: 'absolute',
+      top: -12,
+      width: 64
+    });
+  });
+
+});
+
+
 describe('context: fieldPresentation', function () {
 
   const options = { member: 'text_input', height: 40, radius: 4, surface: 'layer_01' };

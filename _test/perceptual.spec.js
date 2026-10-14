@@ -16,7 +16,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { openReference, openShowcase } from './harness/page.js';
+import { discoverComponents } from '../scripts/lib/components.js';
+import { openReference, openShowcase, pauseCellAnimations } from './harness/page.js';
 import { perceptualRatio, ratio } from './harness/perceptual.js';
 import { PNG } from 'pngjs';
 
@@ -43,22 +44,34 @@ const primaryReference = withReference.filter(function (row) {
 const REFERENCE_TEMPLATE = 'carbon';
 const PROOF_TEMPLATE = 'default';
 
+const components = await discoverComponents();
+const pauseAnimations = function (name) {
+  const component = components.find(function (entry) {
+    return entry.name === name;
+  });
+  return component !== undefined && component.reference.pauseAnimations === true;
+};
+
 
 /********************************************************************
 Screenshot every cell body of one component on the open page.
 
-@param {Object} page - Playwright page
-@param {String} name - Component name
+@param {Object} page    - Playwright page
+@param {String} name    - Component name
+@param {Boolean} frozen - Pause the cells' infinite animations first
 
 @return {Promise<Object>} - state label -> PNG buffer
 *********************************************************************/
-async function shootBodies (page, name) {
+async function shootBodies (page, name, frozen) {
 
   const out = {};
   const cells = page.locator('.cell[data-component="' + name + '"]');
   const count = await cells.count();
   for (let i = 0; i < count; i++) {
     const cell = cells.nth(i);
+    if (frozen === true) {
+      await pauseCellAnimations(cell.locator('[data-part="body"]'));
+    }
     out[await cell.getAttribute('data-state')] = await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' });
   }
 
@@ -144,9 +157,9 @@ test.describe('perceptual', function () {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name);
+      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name));
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
-      const ours = await shootBodies(page, row.name);
+      const ours = await shootBodies(page, row.name, pauseAnimations(row.name));
       const ratios = [];
       const over = [];
       for (const state of Object.keys(upstream)) {

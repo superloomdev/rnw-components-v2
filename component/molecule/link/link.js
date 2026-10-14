@@ -29,9 +29,6 @@ export default function Link (ctx) {
   const { Pressable, Text, View } = ctx.ReactNative;
   const { useInteractionState } = ctx.behaviors;
 
-  // The platform's minimum interactive target
-  const TARGET = 44;
-
 
   /********************************************************************
   Link component.
@@ -81,24 +78,7 @@ export default function Link (ctx) {
 
     // The measured face size grows the transparent pressable to the target
     // floor, centered on the face; before the first layout it covers the face
-    const [faceSize, setFaceSize] = React.useState(null);
-    const onLayout = function (event) {
-      const layout = event.nativeEvent.layout;
-      if (faceSize === null || faceSize.width !== layout.width || faceSize.height !== layout.height) {
-        setFaceSize({ width: layout.width, height: layout.height });
-      }
-    };
-
-    const target = faceSize === null
-      ? { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 }
-      : {
-        height: Math.max(TARGET, faceSize.height),
-        left: -(Math.max(TARGET, faceSize.width) - faceSize.width) / 2,
-        outlineStyle: 'none',
-        position: 'absolute',
-        top: -(Math.max(TARGET, faceSize.height) - faceSize.height) / 2,
-        width: Math.max(TARGET, faceSize.width)
-      };
+    const [faceSize, onLayout] = ctx.useFaceSize();
 
     return React.createElement(View, {
       style: { alignSelf: 'flex-start', position: 'relative' }
@@ -120,7 +100,7 @@ export default function Link (ctx) {
       'aria-disabled': disabled ? true : undefined,
       testID: props.testID,
       accessibilityLabel: props.accessibilityLabel !== undefined ? props.accessibilityLabel : props.children,
-      style: target
+      style: ctx.pressTarget(faceSize)
     })));
 
   }

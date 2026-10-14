@@ -109,7 +109,7 @@ async function drawnParts (page, component, reference, side, extended, states) {
       if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
         continue;
       }
-      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label }));
+      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label, pauseAnimations: reference.pauseAnimations === true }));
       await leaveInteraction(page);
     }
   }
@@ -162,14 +162,14 @@ test.describe('measure: primary reference', function () {
       const reference = await openReference(page, name);
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, name, parts, 'upstream');
+      const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
 
       // Ours under the template that shares the reference's values,
       // unhosted as the upstream is
       const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, name, parts, 'ours');
+      const ours = await readParts(page, name, parts, 'ours', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
@@ -239,7 +239,7 @@ test.describe('measure: second reference', function () {
       const reference = await openReference(page, component.name, 'second');
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true });
+      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
 
       // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
@@ -257,7 +257,7 @@ test.describe('measure: second reference', function () {
       expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
       const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true });
+      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const undrawn = Object.keys(parts).filter(function (part) {
         return !upstreamDrawn.has(part);
       });

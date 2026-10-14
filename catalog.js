@@ -34,6 +34,15 @@ import LinkSample from './component/molecule/link/sample.js';
 import SkeletonIconSample from './component/molecule/skeleton/sample.js';
 import SkeletonPlaceholderSample from './component/atom/skeleton/sample.js';
 import SkeletonTextSample, { FRAME as SkeletonTextFrame } from './component/molecule/skeleton/sample.skeleton-text.js';
+import InlineLoadingSample from './component/molecule/progress/sample.inline-loading.js';
+import LoadingSample from './component/atom/loading/sample.js';
+import ProgressIndicatorSample from './component/molecule/progress/sample.progress-indicator.js';
+import ProgressIndicatorSkeletonSample from './component/molecule/progress/sample.progress-indicator-skeleton.js';
+import ProgressStepSample, { FRAME as ProgressStepFrame } from './component/molecule/progress/sample.progress-step.js';
+import DismissibleTagSample from './component/molecule/tag/sample.dismissible-tag.js';
+import OperationalTagSample from './component/molecule/tag/sample.operational-tag.js';
+import SelectableTagSample from './component/molecule/tag/sample.selectable-tag.js';
+import TagSkeletonSample from './component/molecule/tag/sample.tag-skeleton.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -68,5 +77,14 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Link', family: 'Link', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LinkSample }),
   Object.freeze({ name: 'SkeletonIcon', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: SkeletonIconSample }),
   Object.freeze({ name: 'SkeletonPlaceholder', family: 'Skeleton', tier: 'atom', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: SkeletonPlaceholderSample }),
-  Object.freeze({ name: 'SkeletonText', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: SkeletonTextFrame, sample: SkeletonTextSample })
+  Object.freeze({ name: 'SkeletonText', family: 'Skeleton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: SkeletonTextFrame, sample: SkeletonTextSample }),
+  Object.freeze({ name: 'InlineLoading', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: InlineLoadingSample }),
+  Object.freeze({ name: 'Loading', family: 'Progress', tier: 'atom', platform: 'both', flags: Object.freeze([]), frame: null, sample: LoadingSample }),
+  Object.freeze({ name: 'ProgressIndicator', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ProgressIndicatorSample }),
+  Object.freeze({ name: 'ProgressIndicatorSkeleton', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ProgressIndicatorSkeletonSample }),
+  Object.freeze({ name: 'ProgressStep', family: 'Progress', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'superloom_decision']), frame: ProgressStepFrame, sample: ProgressStepSample }),
+  Object.freeze({ name: 'DismissibleTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: DismissibleTagSample }),
+  Object.freeze({ name: 'OperationalTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: OperationalTagSample }),
+  Object.freeze({ name: 'SelectableTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SelectableTagSample }),
+  Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample })
 ]);

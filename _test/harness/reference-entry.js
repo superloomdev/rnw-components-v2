@@ -35,10 +35,13 @@ import '@material/web/tabs/primary-tab.js';
 import '@material/web/tabs/secondary-tab.js';
 import '@material/web/checkbox/checkbox.js';
 import '@material/web/chips/assist-chip.js';
+import '@material/web/chips/input-chip.js';
+import '@material/web/chips/filter-chip.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/select/outlined-select.js';
 import '@material/web/select/select-option.js';
 import '@material/web/progress/linear-progress.js';
+import '@material/web/progress/circular-progress.js';
 import '@material/web/radio/radio.js';
 import '@material/web/switch/switch.js';
 import '@material/web/menu/menu.js';
@@ -234,8 +237,22 @@ requestAnimationFrame(function () {
         if (quiet >= 2) {
           // An indeterminate animation pauses at its first frame, so the
           // measured and screenshotted frame is the same every time; the
-          // subtree walk reaches animations inside shadow roots too
-          document.documentElement.getAnimations({ subtree: true }).forEach(function (animation) {
+          // subtree option does not enter shadow roots, so the second
+          // system's arcs (animated inside one) are collected by hand
+          const animations = Array.from(document.documentElement.getAnimations({ subtree: true }));
+          const pending = Array.from(document.querySelectorAll('*'));
+          while (pending.length > 0) {
+            const node = pending.pop();
+            const shadow = node.shadowRoot;
+            if (shadow === null || shadow === undefined) {
+              continue;
+            }
+            for (const child of shadow.querySelectorAll('*')) {
+              animations.push.apply(animations, child.getAnimations());
+              pending.push(child);
+            }
+          }
+          animations.forEach(function (animation) {
             if (animation.effect.getComputedTiming().iterations === Infinity) {
               animation.currentTime = 0;
               animation.pause();

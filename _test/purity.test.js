@@ -15,7 +15,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { relative } from 'node:path';
 
 import * as factories from 'rnw-components/all';
 import { REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-components';
@@ -133,15 +133,10 @@ describe('purity: component folders and all.js', function () {
       if (keys.length === 0) {
         continue;
       }
-      const samples = readdirSync(component.dir).filter(function (file) {
-        return /^sample.*\.js$/.test(file);
-      });
-      for (const file of samples) {
-        const source = codeOnly(readFileSync(join(component.dir, file), 'utf8'));
+      for (const entry of component.sample) {
         for (const key of keys) {
-          const marker = new RegExp('[\'"]?' + key.replace(/[^a-zA-Z0-9_]/g, '\\$&') + '[\'"]?\\s*:');
-          if (marker.test(source)) {
-            violations.push(component.name + ' / ' + file + ' passes composition prop ' + key);
+          if (entry.props !== null && entry.props !== undefined && Object.prototype.hasOwnProperty.call(entry.props, key)) {
+            violations.push(component.name + ' / ' + entry.label + ' passes composition prop ' + key);
           }
         }
       }
