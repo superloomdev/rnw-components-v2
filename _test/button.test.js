@@ -182,6 +182,11 @@ describe('Button: kinds', function () {
     const restTop = await renderButton(registryFor('default', { 'anatomy.button_label': 'top' }), { children: 'Rest' });
     const restCenter = await renderButton(registryFor('default', { 'anatomy.button_label': 'center' }), { children: 'Rest' });
     assert.equal(restTop.root.style.paddingTop, restCenter.root.style.paddingTop);
+    // The same answer places the label horizontally: the start padding
+    // under `top` (the primary's space-between content), centered under
+    // `center`
+    assert.equal(top.root.style.justifyContent, 'flex-start');
+    assert.equal(center.root.style.justifyContent, 'center');
   });
 
 });

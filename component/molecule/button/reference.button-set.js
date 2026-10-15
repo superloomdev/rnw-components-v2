@@ -25,6 +25,12 @@ const SEAT = function (n) {
   return ':scope > div > div:nth-child(' + n + ') > [role="button"]';
 };
 
+// The n-th seat's label text: where the theme places it inside a seat
+// wider than the label is a measured part, not a pixel-budget answer
+const SEAT_LABEL = function (n) {
+  return Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(' + n + ')', ours: SEAT(n) + ' > [dir="auto"]', measure: 'text' });
+};
+
 
 export default Object.freeze({
   kind: 'render-web',
@@ -52,6 +58,9 @@ export default Object.freeze({
     root: Object.freeze({ upstream: '.cds--btn-set', ours: ':scope > div', measure: 'box' }),
     first: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(1)', ours: SEAT(1), measure: 'box' }),
     second: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(2)', ours: SEAT(2), measure: 'box', optional: true }),
-    third: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(3)', ours: SEAT(3), measure: 'box', optional: true })
+    third: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(3)', ours: SEAT(3), measure: 'box', optional: true }),
+    firstLabel: SEAT_LABEL(1),
+    secondLabel: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(2)', ours: SEAT(2) + ' > [dir="auto"]', measure: 'text', optional: true }),
+    thirdLabel: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(3)', ours: SEAT(3) + ' > [dir="auto"]', measure: 'text', optional: true })
   })
 });

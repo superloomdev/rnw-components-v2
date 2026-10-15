@@ -84,9 +84,13 @@ export default function Button (ctx) {
 
     // The label is centered in the default height; in a taller button the
     // theme's `anatomy.button_label` keeps it where the default height puts
-    // it (`top`) or centers it in the button's own height (`center`)
+    // it (`top`) or centers it in the button's own height (`center`). The
+    // same answer places it horizontally: `top` holds the label at the
+    // start padding in a wider button (the primary's `space-between`
+    // content), `center` centers it
     const labelStyle = ctx.typeStyle('button_label');
-    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;
+    const labelAtStart = ctx.enum('anatomy.button_label') === 'top';
+    const labelBox = labelAtStart ? Math.min(height, ctx.metric('Button', 'height')) : height;
     const labelTop = (labelBox - labelStyle.lineHeight) / 2 - borderWidth;
 
     // Render the icon when one is named: at the trailing edge, or after the label for an inline kind.
@@ -120,9 +124,9 @@ export default function Button (ctx) {
           flexBasis: 0,
           flexDirection: 'row',
           flexGrow: 1,
-          // The label stays centered inside a minimum width unless the
-          // caller asks for the start edge (the combo action's spacing)
-          justifyContent: props.labelAlign === 'start' ? 'flex-start' : 'center',
+          // The theme places the label: the start padding under `top`,
+          // centered under `center`
+          justifyContent: labelAtStart ? 'flex-start' : 'center',
           maxWidth: props.maxWidth,
           // Fill is stretch-or-taller: the size's height cell is the floor
           minHeight: height,
@@ -140,9 +144,9 @@ export default function Button (ctx) {
           borderWidth: borderWidth,
           flexDirection: 'row',
           height: height,
-          // The label stays centered inside a minimum width unless the
-          // caller asks for the start edge (the combo action's spacing)
-          justifyContent: props.labelAlign === 'start' ? 'flex-start' : 'center',
+          // The theme places the label: the start padding under `top`,
+          // centered under `center`
+          justifyContent: labelAtStart ? 'flex-start' : 'center',
           maxWidth: props.maxWidth,
           minWidth: minWidth,
           // The theme's ring is the only focus indicator

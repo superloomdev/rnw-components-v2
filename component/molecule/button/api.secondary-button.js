@@ -18,7 +18,6 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
   composition: Object.freeze({
-    labelAlign: { type: 'string', required: false, description: 'Composition prop: `start` holds the label at the start padding when the button is wider than its content (the combo button\'s action); any other value centers it.' },
     minWidth: { type: 'number', required: false, description: 'Composition prop: overrides the computed minimum width (the combo button\'s action).' },
     maxWidth: { type: 'number', required: false, description: 'Composition prop: caps the computed width (the combo button\'s action).' },
     paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' }

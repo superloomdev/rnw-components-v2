@@ -91,9 +91,9 @@ export default function ComboButton (ctx) {
       children: props.label,
       disabled: disabled,
       kind: 'primary',
-      // The action's label holds its start padding under the width window,
-      // as the primary's `space-between` content rule draws it
-      labelAlign: 'start',
+      // The action's label holds its start padding under the width window:
+      // the theme's `anatomy.button_label` draws it, as the primary's
+      // `space-between` content rule does
       maxWidth: actionMax,
       minWidth: actionMin,
       onPress: props.onPress,

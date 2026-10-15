@@ -488,7 +488,7 @@
     {
       "id": "perceptual-button-label-top",
       "file": "component/molecule/button/button.js",
-      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "find": "    const labelBox = labelAtStart ? Math.min(height, ctx.metric('Button', 'height')) : height;",
       "replace": "    const labelBox = height;",
       "runner": "pw",
       "test": "perceptual.spec.js",
@@ -668,7 +668,7 @@
     {
       "id": "button-label-anatomy",
       "file": "component/molecule/button/button.js",
-      "find": "    const labelBox = ctx.enum('anatomy.button_label') === 'top' ? Math.min(height, ctx.metric('Button', 'height')) : height;",
+      "find": "    const labelBox = labelAtStart ? Math.min(height, ctx.metric('Button', 'height')) : height;",
       "replace": "    const labelBox = Math.min(height, ctx.metric('Button', 'height'));",
       "runner": "node",
       "test": "button.test.js",
@@ -1239,11 +1239,21 @@
       "id": "purity-composition-prop",
       "file": "component/molecule/button/sample.js",
       "find": "  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Primary' }) }),",
-      "replace": "  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Primary', labelAlign: 'end' }) }),",
+      "replace": "  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Primary', minWidth: 200 }) }),",
       "runner": "node",
       "test": "purity.test.js",
       "testName": "no sample passes a composition prop",
       "why": "a sample that passes a composition prop must fail the purity scan"
+    },
+    {
+      "id": "button-label-start",
+      "file": "component/molecule/button/button.js",
+      "find": "          justifyContent: labelAtStart ? 'flex-start' : 'center',",
+      "replace": "          justifyContent: 'center',",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "ButtonSet: parts match the rendered upstream",
+      "why": "a label centered where the theme places it at the start padding must fail the ButtonSet seat-label measurement"
     },
     {
       "id": "structural-text-in-painted-box",
