@@ -110,6 +110,17 @@ function renderComponent (component, row) {
   for (const state of component.sample) {
     out.push('| ' + state.label + ' | `' + JSON.stringify(state.props) + '` |');
   }
+  // A state's `wrappers` are catalog composition, not props: name them in
+  // a note under the table, never in the props column or the public API
+  for (const state of component.sample) {
+    if (Array.isArray(state.wrappers) && state.wrappers.length > 0) {
+      out.push('');
+      const names = state.wrappers.map(function (wrapper) {
+        return wrapper.component;
+      });
+      out.push('`' + state.label + '` mounts inside ' + names.join(' > ') + ' wrapper' + (state.wrappers.length === 1 ? '' : 's') + ' (sample composition, not a prop).');
+    }
+  }
   out.push('');
 
   return out.join('\n');

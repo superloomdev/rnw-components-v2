@@ -1420,7 +1420,7 @@
         "version": "1.115.0",
         "export": "Form"
       },
-      "description": "Form is a component in the Form family.",
+      "description": "Form groups a set of fields into one form.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1436,7 +1436,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FormGroup",
@@ -1447,7 +1447,7 @@
         "version": "1.115.0",
         "export": "FormGroup"
       },
-      "description": "FormGroup is a component in the Form family; it must be composed inside Form.",
+      "description": "FormGroup gathers related fields under a legend, disabled or invalid as one, and must be composed inside Form.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1465,7 +1465,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FormItem",
@@ -1476,7 +1476,7 @@
         "version": "1.115.0",
         "export": "FormItem"
       },
-      "description": "FormItem is a component in the Form family; it must be composed inside Form.",
+      "description": "FormItem stacks one field's parts in a column.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1491,10 +1491,8 @@
       "carbon_twin": "FormItem",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
+      "flags": [],
+      "status": "built"
     },
     {
       "name": "FormLabel",
@@ -1505,7 +1503,7 @@
         "version": "1.115.0",
         "export": "FormLabel"
       },
-      "description": "FormLabel is a component in the Form family; it must be composed inside Form.",
+      "description": "FormLabel draws a field label in the theme's label type and color and must be composed inside Form.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1523,7 +1521,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Heading",
@@ -1534,7 +1532,7 @@
         "version": "1.115.0",
         "export": "Heading"
       },
-      "description": "Heading is a component in the Heading family.",
+      "description": "Heading draws a heading in the theme's type set for its level, one level deeper inside each Section.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1550,7 +1548,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Section",
@@ -1561,7 +1559,7 @@
         "version": "1.115.0",
         "export": "Section"
       },
-      "description": "Section is a component in the Heading family.",
+      "description": "Section raises the heading level of every Heading inside it by one, up to six.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1577,7 +1575,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "NumberInput",
@@ -1919,7 +1917,7 @@
         "version": "1.115.0",
         "export": "HStack"
       },
-      "description": "HStack is a component in the Stack family.",
+      "description": "HStack is a Stack fixed to a row.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1935,7 +1933,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Stack",
@@ -1946,7 +1944,7 @@
         "version": "1.115.0",
         "export": "Stack"
       },
-      "description": "Stack is a component in the Stack family.",
+      "description": "Stack lays its children out in a column or a row with a gap from the theme's spacing scale.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1962,7 +1960,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "VStack",
@@ -1973,7 +1971,7 @@
         "version": "1.115.0",
         "export": "VStack"
       },
-      "description": "VStack is a component in the Stack family.",
+      "description": "VStack is a Stack fixed to a column.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1989,7 +1987,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggleSkeleton",
@@ -2000,19 +1998,13 @@
         "version": "1.115.0",
         "export": "ToggleSkeleton"
       },
-      "description": "ToggleSkeleton is a component in the Switch family.",
+      "description": "ToggleSkeleton draws a circle and a short bar as the toggle's placeholder; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.switch_handle",
-        "feedback.press"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "press"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -2021,8 +2013,10 @@
       "carbon_twin": "ToggleSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "PasswordInput",
@@ -2628,7 +2622,7 @@
         "version": "1.115.0",
         "export": "Layer"
       },
-      "description": "Layer is a component in the Layer family.",
+      "description": "Layer raises the surface level of everything inside it, so the theme's layered surfaces, fields and borders step up one level, and paints the new level's background when asked; the second system has no layer element, so its level values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2643,8 +2637,10 @@
       "carbon_twin": "Layer",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "IconSwitch",

@@ -25,6 +25,7 @@ import createPickersBehaviors from './pickers.js';
 import createPositioningBehaviors from './positioning.js';
 import createPressBehaviors from './press.js';
 import createRovingBehaviors from './roving.js';
+import createScopeBehaviors from './scope.js';
 import createStateBehaviors from './state.js';
 import createUtilitiesBehaviors from './utilities.js';
 
@@ -51,10 +52,17 @@ export default function createBehaviors (deps) {
   }
 
   // Init the state primitives first; local behaviors compose them. The
-  // overlay family is built early: positioning reads its OverlayContext for
-  // the host's layer-root origin
+  // scope and heading contexts are built once here, before the overlay
+  // family, so a hosted layer can re-publish the origin's painted level,
+  // inherited disabled and heading level inside the host's tree
   const state = createStateBehaviors(deps);
-  const overlay = createOverlayBehaviors(deps);
+  const scopes = createScopeBehaviors(deps);
+  const heading = createHeadingBehaviors(deps);
+  const overlay = createOverlayBehaviors(Object.assign({}, deps, {
+    LayerContext: scopes.LayerContext,
+    DisabledContext: scopes.DisabledContext,
+    HeadingLevelContext: heading.HeadingLevelContext
+  }));
 
   // Build every family from the same dependencies
   const families = [
@@ -62,7 +70,7 @@ export default function createBehaviors (deps) {
     createCompoundBehaviors(deps),
     createControlsBehaviors(deps),
     createFocusBehaviors(deps),
-    createHeadingBehaviors(deps),
+    heading,
     createKeyboardBehaviors(deps),
     createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
     createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
@@ -71,6 +79,7 @@ export default function createBehaviors (deps) {
     createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     createPressBehaviors(deps),
     createRovingBehaviors(deps),
+    scopes,
     state,
     createUtilitiesBehaviors(deps)
   ];

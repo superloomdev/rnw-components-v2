@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import * as factories from 'rnw-components/all';
 import { discoverComponents } from '../scripts/lib/components.js';
 import { TEMPLATES, buildSystem } from './harness/system.js';
+import { createSampleElement } from './harness/sample.js';
 import { React, a11yTree, cleanup, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -33,8 +34,7 @@ describe('a11y identity: the accessibility tree is the same under every template
       test(component.name + ' / ' + state.label, async function () {
         const trees = {};
         for (const template of TEMPLATE_NAMES) {
-          const Component = registries[template][component.name];
-          const container = await render(React.createElement(Component, state.props));
+          const container = await render(createSampleElement(React, registries[template], component.name, state));
           trees[template] = a11yTree(container);
           assert.ok(trees[template].length >= 1, component.name + ' rendered nothing under ' + template);
         }

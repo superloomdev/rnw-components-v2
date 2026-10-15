@@ -26,13 +26,21 @@ Build the context every component factory receives.
 @param {Object} contract   - `Themer.getContract()`
 @param {Object} specs      - Component name -> spec sheet (metric -> token rule)
 @param {Object} Registry   - The registry the components are added to
+@param {Object} [options]  - { level, behaviors }: the painted level this
+                             context reads tokens at (default 1) and the
+                             already-built behavior map every level shares
 
 @return {Object} - The frozen context
 *********************************************************************/
-export default function createContext (Lib, config, built, breakpoint, platform, contract, specs, Registry) {
+export default function createContext (Lib, config, built, breakpoint, platform, contract, specs, Registry, options) {
 
   const Utils = Lib.Utils;
   const flat = built.tokens;
+
+  // The level-bound token maps the built theme carries, and this context's
+  // own painted level; an absent `levels` field reads as an empty map
+  const leveled = built.levels;
+  const level = options === undefined || options === null || options.level === undefined ? 1 : options.level;
 
   // The interactive target: the platforms' forty-four point minimum, wider
   // than the smallest sizes' face
@@ -40,21 +48,26 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  Read one token by its full dotted name.
+  Read one token by its full dotted name at a painted level: the level's
+  own reading when the built theme carries one for it, else the base map.
+  The fallback is only between a contextual override and its base value,
+  never between token names.
 
-  @param {String} name - e.g. 'spacing.spacing_05'
+  @param {Number} readLevel - Painted level (1 reads the base map)
+  @param {String} name      - e.g. 'spacing.spacing_05'
 
   @return {*} - The emitted value
   *********************************************************************/
-  function token (name) {
+  function tokenAt (readLevel, name) {
 
     // Validate the name is a string
     if (!Utils.isString(name)) {
-      throw new TypeError('ctx.token requires a token name string');
+      throw new TypeError('ctx.tokenAt requires a token name string');
     }
 
-    // Read the value
-    const value = flat[name];
+    // Read the level's own value when the theme carries one
+    const scoped = leveled === undefined || leveled === null ? undefined : leveled[readLevel];
+    const value = scoped === undefined || scoped === null || scoped[name] === undefined ? flat[name] : scoped[name];
 
     // A missing token is a defect, never a fallback
     if (value === undefined) {
@@ -68,7 +81,36 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  Read a color token by its leaf name.
+  Read one token by its full dotted name at this context's fixed level.
+
+  @param {String} name - e.g. 'spacing.spacing_05'
+
+  @return {*} - The emitted value
+  *********************************************************************/
+  function token (name) {
+
+    return tokenAt(level, name);
+
+  }
+
+
+  /********************************************************************
+  Read a color token by its leaf name at a painted level.
+
+  @param {Number} readLevel - Painted level (1 reads the base map)
+  @param {String} name      - e.g. 'interactive'
+
+  @return {String} - The color
+  *********************************************************************/
+  function colorAt (readLevel, name) {
+
+    return tokenAt(readLevel, 'color.' + name);
+
+  }
+
+
+  /********************************************************************
+  Read a color token by its leaf name at this context's fixed level.
 
   @param {String} name - e.g. 'interactive'
 
@@ -76,7 +118,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   *********************************************************************/
   function color (name) {
 
-    return token('color.' + name);
+    return colorAt(level, name);
 
   }
 
@@ -102,6 +144,32 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       letterSpacing: set.letterSpacing,
       lineHeight: set.lineHeight
     };
+
+  }
+
+
+  /********************************************************************
+  Turn a type style into the platform's final text presentation. Web
+  renders lineHeight as the unitless CSS ratio, which keeps fractional
+  products on the subpixel grid; native keeps the absolute number. The
+  source style is not changed.
+
+  @param {Object} style - A typeStyle result
+
+  @return {Object} - A fresh style for the text element
+  *********************************************************************/
+  function textPresentation (style) {
+
+    if (Utils.isNullOrUndefined(style) || !Utils.isNumber(style.lineHeight) || !Utils.isNumber(style.fontSize) || style.fontSize === 0) {
+      throw new TypeError('ctx.textPresentation requires a style with numeric fontSize and lineHeight');
+    }
+
+    return Object.assign({}, style, {
+      lineHeight: platform.split({
+        web: String(style.lineHeight / style.fontSize),
+        native: style.lineHeight
+      })
+    });
 
   }
 
@@ -654,14 +722,18 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
 
-  // Behaviors are built once per system from the same dependencies
-  const behaviors = createBehaviors({
-    React: Lib.React,
-    ReactNative: Lib.ReactNative,
-    Utils: Utils,
-    Debug: Lib.Debug,
-    platform: platform
-  });
+  // Behaviors are built once per system from the same dependencies; the
+  // level-2 and level-3 contexts reuse the level-1 map, contexts and all,
+  // so a behavior's identity never depends on the painted level
+  const behaviors = options === undefined || options === null || options.behaviors === undefined
+    ? createBehaviors({
+      React: Lib.React,
+      ReactNative: Lib.ReactNative,
+      Utils: Utils,
+      Debug: Lib.Debug,
+      platform: platform
+    })
+    : options.behaviors;
 
 
   return Object.freeze({
@@ -675,7 +747,11 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     breakpoint: breakpoint,
     config: Object.freeze(Object.assign({}, config)),
     platform: platform,
+    level: level,
+    LayerContext: behaviors.LayerContext,
+    DisabledContext: behaviors.DisabledContext,
     color: color,
+    colorAt: colorAt,
     enum: enumValue,
     fieldPresentation: fieldPresentation,
     focusRing: focusRing,
@@ -684,7 +760,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     metric: metric,
     pressPresentation: pressPresentation,
     pressTarget: pressTarget,
+    textPresentation: textPresentation,
     token: token,
+    tokenAt: tokenAt,
     typeStyle: typeStyle,
     useFaceSize: useFaceSize
   });

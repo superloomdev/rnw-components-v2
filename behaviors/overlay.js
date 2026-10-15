@@ -13,7 +13,10 @@
 /********************************************************************
 Build the overlay behaviors for one component system.
 
-@param {Object} deps - { Utils, React, Debug, platform }
+@param {Object} deps - { Utils, React, Debug, platform,
+        LayerContext?, DisabledContext?, HeadingLevelContext? }:
+        the structural contexts a hosted layer re-publishes, wired by
+        the composer; absent, local defaults are created once below
 
 @return {Object} - { OverlayContext, useOverlayHost, useOverlay }
 *********************************************************************/
@@ -23,6 +26,15 @@ export default function createOverlayBehaviors (deps) {
   const React = deps.React;
   const Debug = deps.Debug;
   const platform = deps.platform;
+
+  // The structural contexts a hosted layer re-publishes inside the host's
+  // tree: a hosted overlay renders outside its origin's providers, so the
+  // layer view wraps the latest content in the values the origin read. A
+  // standalone caller that never wires them gets local defaults, created
+  // once here - never during a hook.
+  const LayerContext = deps.LayerContext === undefined ? React.createContext(1) : deps.LayerContext;
+  const DisabledContext = deps.DisabledContext === undefined ? React.createContext(false) : deps.DisabledContext;
+  const HeadingLevelContext = deps.HeadingLevelContext === undefined ? React.createContext(1) : deps.HeadingLevelContext;
 
   // The component names already warned about a native overlay outside a host
   const warned = new Set();
@@ -123,7 +135,15 @@ export default function createOverlayBehaviors (deps) {
       props.store.getVersion
     );
 
-    return props.optionsRef.current.render();
+    // Re-publish the origin's structural contexts inside the host's tree:
+    // the latest options ref carries the values the overlay read on its
+    // last render, so the hosted content stays in its layer level,
+    // inherited disabled and heading level after the parent returned
+    const options = props.optionsRef.current;
+    return React.createElement(LayerContext.Provider, { value: options.layerLevel },
+      React.createElement(DisabledContext.Provider, { value: options.inheritedDisabled },
+        React.createElement(HeadingLevelContext.Provider, { value: options.headingLevel },
+          options.render())));
 
   }
 
@@ -158,6 +178,12 @@ export default function createOverlayBehaviors (deps) {
     const unregister = ctx.unregister;
     const layers = ctx.layers;
 
+    // The origin's structural values, re-read on every render so the
+    // hosted layer follows the origin's providers
+    const layerLevel = React.useContext(LayerContext);
+    const inheritedDisabled = React.useContext(DisabledContext);
+    const headingLevel = React.useContext(HeadingLevelContext);
+
     const layerIdRef = React.useRef(null);
 
     // Latest-value box updated every render: the host always reads the
@@ -166,7 +192,10 @@ export default function createOverlayBehaviors (deps) {
     optionsRef.current = {
       trap: options.trap,
       onClose: options.onClose,
-      render: options.render
+      render: options.render,
+      layerLevel: layerLevel,
+      inheritedDisabled: inheritedDisabled,
+      headingLevel: headingLevel
     };
 
     // Version store each mounted layer view subscribes to. Bumped after

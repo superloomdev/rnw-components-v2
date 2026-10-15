@@ -42,7 +42,9 @@ describe('Text: every sample state under every template', function () {
         const set = t['type.' + (state.props.type || 'body_compact_02')];
         const element = await renderText(template, state.props);
         assert.equal(element.style.fontSize, set.fontSize + 'px');
-        assert.equal(element.style.lineHeight, set.lineHeight + 'px');
+        // The web presentation is the unitless ratio: the absolute product
+        // would serialize to a rounded px and lose the subpixel box
+        assert.equal(element.style.lineHeight, String(set.lineHeight / set.fontSize));
         assert.equal(element.style.fontWeight, set.fontWeight);
         assert.equal(element.style.fontFamily, cssValue('fontFamily', t['font.family.' + set.fontFamily]));
         assert.equal(element.style.color, cssValue('color', t['color.' + (state.props.color || 'text_primary')]));
@@ -77,5 +79,18 @@ describe('Text: break mode and failures', function () {
     const element = await renderText('default', { text: 'Title', accessibilityRole: 'header' });
     assert.equal(element.getAttribute('role'), 'heading');
   });
+
+  test('id forwards to the text element for legend and label relationships', async function () {
+    const element = await renderText('default', { text: 'Label', id: 'field-label-x' });
+    assert.equal(element.id, 'field-label-x');
+  });
+
+  for (const level of [1, 3, 6]) {
+    test('a header role with headingLevel ' + level + ' renders the level-' + level + ' heading element', async function () {
+      const element = await renderText('default', { text: 'Title', accessibilityRole: 'header', headingLevel: level });
+      assert.equal(element.tagName, 'H' + level);
+      assert.equal(element.getAttribute('aria-level'), String(level));
+    });
+  }
 
 });

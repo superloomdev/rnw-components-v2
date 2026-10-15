@@ -37,7 +37,7 @@ const behaviors = createBehaviors({ React: React, ReactNative: ReactNative, Util
 
 // Every name the composer must expose. Adding a behavior means adding it here.
 const EXPECTED_NAMES = [
-  'HeadingLevelContext', 'HeadingLevelProvider', 'OverlayContext',
+  'DisabledContext', 'HeadingLevelContext', 'HeadingLevelProvider', 'LayerContext', 'OverlayContext',
   'createCompoundContext',
   'getA11yLive', 'getA11yPosition', 'getA11yRelation', 'getA11yState', 'getA11yValue',
   'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets',
@@ -290,8 +290,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds the fifteen behavior files plus the composer', function () {
-    assert.equal(files.length, 16);
+  test('the directory holds the sixteen behavior files plus the composer', function () {
+    assert.equal(files.length, 17);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {

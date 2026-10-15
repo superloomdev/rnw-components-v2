@@ -58,7 +58,7 @@ const FONT_CSS = FACES.map(function (face) {
 // A measurement cell keeps its border's width but paints none of it: a
 // cell taller than its row pitch would otherwise carry its own edge into the shot
 const LAYOUT_CSS = 'body{margin:0;padding:24px;background:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}' +
-  'h2{margin:0 0 12px;font:600 16px/24px system-ui}' +
+  '.family > h2{margin:0 0 12px;font:600 16px/24px system-ui}' +
   '.family{margin:0 0 32px}.grid{display:flex;flex-wrap:wrap;gap:24px}' +
   '.cell{display:inline-flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed #ccc;box-sizing:border-box}' +
   '.cell-label{font:11px/16px system-ui;color:#666}.cell-body{display:inline-flex}' +

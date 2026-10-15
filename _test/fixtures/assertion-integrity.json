@@ -178,8 +178,8 @@
     {
       "id": "text-default-type",
       "file": "component/atom/text/text.js",
-      "find": ": 'body_compact_02');",
-      "replace": ": 'body_compact_01');",
+      "find": "props.type : 'body_compact_02'))",
+      "replace": "props.type : 'body_compact_01'))",
       "runner": "node",
       "test": "text.test.js",
       "testName": "default / default: type set and color come from the theme",
@@ -1284,6 +1284,156 @@
       "test": "progress-indicator.test.js",
       "testName": "a horizontal step is a shrinkable flex item floored at the step minimum",
       "why": "upstream steps are CSS flex items that shrink to a minimum in a narrow row; a React Native default of shrink 0 must fail the step-shrink test"
+    },
+    {
+      "id": "layer-seam-level",
+      "file": "components.js",
+      "find": "    const impl = impls[level - 1];",
+      "replace": "    const impl = impls[0];",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "default: level 1 paints color.field_02",
+      "why": "a registry member that ignores the painted level and always dispatches the level-1 implementation must fail the level-2 read"
+    },
+    {
+      "id": "layer-background-level",
+      "file": "component/provider/layer/layer.js",
+      "find": "backgroundColor: ctx.colorAt(1, 'layer_background_0' + childLevel)",
+      "replace": "backgroundColor: ctx.colorAt(1, 'layer_background_01')",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "level 1 paints color.layer_background_02",
+      "why": "a Layer background pinned to the first surface token must fail the level-2 background read"
+    },
+    {
+      "id": "layer-overlay-scope",
+      "file": "behaviors/overlay.js",
+      "find": "React.createElement(LayerContext.Provider, { value: options.layerLevel },",
+      "replace": "React.createElement(LayerContext.Provider, { value: 1 },",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a Modal inside a Layer paints its hosted field at the origin level and follows updates",
+      "why": "a hosted overlay that publishes level 1 instead of the origin's captured level must fail the hosted-field read"
+    },
+    {
+      "id": "form-group-disabled",
+      "file": "component/molecule/form/form-group.js",
+      "find": "React.createElement(DisabledContext.Provider, { value: disabled },",
+      "replace": "React.createElement(DisabledContext.Provider, { value: false },",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a disabled group disables its fields, including disabled:false children and a nested group",
+      "why": "a group that never publishes its disabled state must fail the nested-controls-disabled test"
+    },
+    {
+      "id": "heading-level-semantics",
+      "file": "component/molecule/heading/heading.js",
+      "find": "      headingLevel: level,",
+      "replace": "      headingLevel: undefined,",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a Heading inside 0 Sections draws heading06 at semantic level 1",
+      "why": "a heading that drops its semantic level loses the aria-level the host puts on the heading element"
+    },
+    {
+      "id": "stack-gap-step",
+      "file": "component/molecule/stack/stack.js",
+      "find": "    return ctx.metric('Stack', 'gap' + (gap < 10 ? '0' + gap : String(gap)));",
+      "replace": "    return ctx.metric('Stack', 'gap01');",
+      "runner": "node",
+      "test": "stack.test.js",
+      "testName": "default: gap 5 reads spacing.spacing_05",
+      "why": "a gap that reads a fixed metric instead of the named step must fail the scale read"
+    },
+    {
+      "id": "stack-horizontal-shrinkwrap",
+      "file": "component/molecule/stack/stack.js",
+      "find": "        alignSelf: horizontal ? 'flex-start' : undefined,",
+      "replace": "        alignSelf: undefined,",
+      "runner": "node",
+      "test": "stack.test.js",
+      "testName": "horizontal lays a shrink-wrapped row",
+      "why": "a horizontal stack that stretches instead of wrapping its content must fail the shrink-wrap assertion"
+    },
+    {
+      "id": "heading-level-type",
+      "file": "component/molecule/heading/heading.js",
+      "find": "      type: 'heading0' + (7 - level)",
+      "replace": "      type: 'heading01'",
+      "runner": "node",
+      "test": "heading.test.js",
+      "testName": "default: 0 Sections deep is level 1 in type.heading06",
+      "why": "a heading pinned to one type set instead of the level's set must fail the level-1 type read"
+    },
+    {
+      "id": "section-clamps-six",
+      "file": "behaviors/heading.js",
+      "find": "    return Math.min(level, 6);",
+      "replace": "    return Math.min(level, 5);",
+      "runner": "node",
+      "test": "heading.test.js",
+      "testName": "seven Sections clamp to level 6",
+      "why": "the section level clamp is the one boundary the test asserts: a clamp bound one level shallower must fail the six-deep read"
+    },
+    {
+      "id": "form-group-legend-gap",
+      "file": "component/molecule/form/form-group.js",
+      "find": "        style: { marginBottom: ctx.metric('FormGroup', 'legendGap') },",
+      "replace": "        style: { marginBottom: undefined },",
+      "runner": "node",
+      "test": "form.test.js",
+      "testName": "default: legend paints the label cells a spacing step above the fields",
+      "why": "a legend that drops its spacing-step gap must fail the legend-gap read"
+    },
+    {
+      "id": "form-label-disabled",
+      "file": "component/molecule/form/form-label.js",
+      "find": "      color: props.disabled === true ? 'field_label_disabled' : 'field_label',",
+      "replace": "      color: 'field_label',",
+      "runner": "node",
+      "test": "form.test.js",
+      "testName": "default / disabled: label type and color from the theme",
+      "why": "a label that ignores its disabled prop and keeps the enabled color must fail the disabled read"
+    },
+    {
+      "id": "toggle-skeleton-bar",
+      "file": "component/molecule/switch/toggle-skeleton.js",
+      "find": "      width: ctx.metric('ToggleSkeleton', 'barWidth')",
+      "replace": "      width: ctx.metric('ToggleSkeleton', 'circleSize')",
+      "runner": "node",
+      "test": "toggle-skeleton.test.js",
+      "testName": "default: 18-point circle, bar a spacing step later",
+      "why": "a bar sized by the circle's control cell instead of the bar cell must fail the bar geometry read"
+    },
+    {
+      "id": "harness-h2-scope",
+      "file": "_test/harness/serve.js",
+      "find": "'.family > h2{margin:0 0 12px;font:600 16px/24px system-ui}'",
+      "replace": "'h2{margin:0 0 12px;font:600 16px/24px system-ui}'",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Heading / primary / light: matches the reference in every state",
+      "why": "a title rule that escapes .family reaches a real h2 heading and must fail the Heading fidelity read"
+    },
+    {
+      "id": "sample-wrappers-dropped",
+      "file": "_test/harness/sample.js",
+      "find": "  for (let i = wrappers.length - 1; i >= 0; i = i - 1) {",
+      "replace": "  for (let i = -1; i >= 0; i = i - 1) {",
+      "runner": "node",
+      "test": "sample.test.js",
+      "testName": "Heading / level 2 mounts at h2",
+      "why": "a sample mounter that drops the wrappers must fail the level-2 catalog read"
+    },
+    {
+      "id": "text-presentation-absolute",
+      "file": "component/context.js",
+      "find": "        web: String(style.lineHeight / style.fontSize),",
+      "replace": "        web: style.lineHeight,",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Heading / primary / light: matches the reference in every state",
+      "why": "a web text presentation that emits the absolute line height must fail the Heading fidelity read"
     }
   ]
 }

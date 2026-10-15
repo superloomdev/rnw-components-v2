@@ -139,11 +139,32 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
   }
   const Registry = {};
 
-  // Build the context, then every component; a factory may read the
-  // registry lazily at render time, so build order does not matter
-  const ctx = createContext(Lib, config, built, breakpoint, platform, contract, specs, Registry);
+  // Build the contexts for the three painted levels. The first call builds
+  // the behavior map; the deeper levels reuse that exact object, contexts
+  // and all, so one system holds one set of structural contexts. A factory
+  // may read the registry lazily at render time, so build order does not
+  // matter
+  const context1 = createContext(Lib, config, built, breakpoint, platform, contract, specs, Registry);
+  const contexts = [context1];
+  for (const level of [2, 3]) {
+    contexts.push(createContext(Lib, config, built, breakpoint, platform, contract, specs, Registry, { level: level, behaviors: context1.behaviors }));
+  }
+
+  const LayerContext = context1.behaviors.LayerContext;
+  const DisabledContext = context1.behaviors.DisabledContext;
+
+  // Build each factory's three level-bound implementations once, then wrap
+  // them in the stable registry function every consumer sees
   for (const name of names) {
-    Registry[name] = factories[name](ctx);
+    const impls = contexts.map(function (context) {
+      return factories[name](context);
+    });
+    for (const impl of impls) {
+      if (!Utils.isFunction(impl)) {
+        throw new TypeError('factory "' + name + '" must return a function component');
+      }
+    }
+    Registry[name] = registryComponent(name, impls, factories[name], Lib, LayerContext, DisabledContext);
   }
 
   // Report the unsupported-token count at debug level; warnings are informational
@@ -152,5 +173,64 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
 
   // Return the frozen registry
   return Object.freeze(Registry);
+
+}
+
+
+/********************************************************************
+The one registry member a component name resolves to. It reads the painted
+layer level and the inherited disabled flag unconditionally, selects the
+already-built implementation for that level and invokes it with the props
+in the same fiber, so hook order never depends on the level: every level's
+implementation is the same factory code. An enclosing disabled group wins
+over a child's own `disabled: false`.
+
+@param {String} name             - Component name, for error messages
+@param {Array}  impls            - The level-1, -2 and -3 implementations
+@param {Object} factory          - The component factory (carries `.spec`)
+@param {Object} Lib              - The injected libraries
+@param {Object} LayerContext     - The system's painted-level context
+@param {Object} DisabledContext  - The system's inherited-disabled context
+
+@return {Function} - The registry component
+*********************************************************************/
+function registryComponent (name, impls, factory, Lib, LayerContext, DisabledContext) {
+
+  const impl1 = impls[0];
+
+
+  /********************************************************************
+  Registry component: dispatch to the painted level's implementation.
+
+  @param {Object} props - The component's props
+
+  @return {Object} - React element
+  *********************************************************************/
+  function RegistryComponent (props) {
+
+    const level = Lib.React.useContext(LayerContext);
+    const inheritedDisabled = Lib.React.useContext(DisabledContext);
+    const impl = impls[level - 1];
+    if (!Lib.Utils.isFunction(impl)) {
+      throw new TypeError(name + ': painted level ' + JSON.stringify(level) + ' has no implementation');
+    }
+
+    return impl(inheritedDisabled === true
+      ? Object.assign({}, props, { disabled: true })
+      : props);
+
+  }
+
+  // Carry the level-1 implementation's own statics over, then the
+  // factory's spec sheet: a registry member looks like the component it
+  // dispatches to
+  for (const key of Object.keys(impl1)) {
+    RegistryComponent[key] = impl1[key];
+  }
+  if (RegistryComponent.spec === undefined && factory.spec !== undefined) {
+    RegistryComponent.spec = factory.spec;
+  }
+
+  return RegistryComponent;
 
 }

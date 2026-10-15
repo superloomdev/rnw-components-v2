@@ -75,6 +75,12 @@ live on `::before` skins whose sizes are percentages, so the track
 compares as a pseudo by color and the handle as its element by geometry;
 each handle fill is left to the pixel comparison.
 
+## ToggleSkeleton
+
+### Decisions (roster flag `superloom_decision`)
+
+The toggle's loading shape: the handle's own circle (`control.switch_handle_size`, full radius) and a short bar (`control.toggle_skeleton_bar_width` x `_height`) `spacing.spacing_03` after it, both `SkeletonPlaceholder`, in a row centered to its content - the upstream skeleton draws exactly this pair, not the track's pill. The second system has no skeleton - the roster's `superloom_decision` - so the pair's values are the switch's own cells.
+
 ## Toggle
 
 Toggle draws a labeled switch: a track and a sliding handle whose size follows anatomy.switch_handle, an optional checked mark and state text as anatomy.switch_state_text says, and every track, handle, outline, layer and focus color from the theme's switch role cells.
@@ -135,3 +141,38 @@ Toggle draws a labeled switch: a track and a sliding handle whose size follows a
 | small checked | `{"label":"Toggle element label","size":"sm","checked":true,"offText":"Off","onText":"On"}` |
 | disabled | `{"label":"Toggle element label","disabled":true,"offText":"Off","onText":"On"}` |
 | disabled checked | `{"label":"Toggle element label","checked":true,"disabled":true,"offText":"Off","onText":"On"}` |
+
+## ToggleSkeleton
+
+ToggleSkeleton draws a circle and a short bar as the toggle's placeholder; the second system has no skeleton, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `circleSize` | `control.toggle_skeleton_circle_size` |
+| `circleRadius` | `shape.radius_max` |
+| `barWidth` | `control.toggle_skeleton_bar_width` |
+| `barHeight` | `control.toggle_skeleton_bar_height` |
+| `barGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |

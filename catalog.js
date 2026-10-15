@@ -43,6 +43,17 @@ import DismissibleTagSample from './component/molecule/tag/sample.dismissible-ta
 import OperationalTagSample from './component/molecule/tag/sample.operational-tag.js';
 import SelectableTagSample from './component/molecule/tag/sample.selectable-tag.js';
 import TagSkeletonSample from './component/molecule/tag/sample.tag-skeleton.js';
+import FormSample from './component/molecule/form/sample.js';
+import FormGroupSample from './component/molecule/form/sample.form-group.js';
+import FormItemSample from './component/molecule/form/sample.form-item.js';
+import FormLabelSample from './component/molecule/form/sample.form-label.js';
+import HeadingSample from './component/molecule/heading/sample.js';
+import SectionSample from './component/molecule/heading/sample.section.js';
+import HStackSample from './component/molecule/stack/sample.hstack.js';
+import StackSample from './component/molecule/stack/sample.js';
+import VStackSample from './component/molecule/stack/sample.vstack.js';
+import ToggleSkeletonSample from './component/molecule/switch/sample.toggle-skeleton.js';
+import LayerSample from './component/provider/layer/sample.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -86,5 +97,16 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'DismissibleTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: DismissibleTagSample }),
   Object.freeze({ name: 'OperationalTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: OperationalTagSample }),
   Object.freeze({ name: 'SelectableTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SelectableTagSample }),
-  Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample })
+  Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample }),
+  Object.freeze({ name: 'Form', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormSample }),
+  Object.freeze({ name: 'FormGroup', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: FormGroupSample }),
+  Object.freeze({ name: 'FormItem', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormItemSample }),
+  Object.freeze({ name: 'FormLabel', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: FormLabelSample }),
+  Object.freeze({ name: 'Heading', family: 'Heading', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: HeadingSample }),
+  Object.freeze({ name: 'Section', family: 'Heading', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SectionSample }),
+  Object.freeze({ name: 'HStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: HStackSample }),
+  Object.freeze({ name: 'Stack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: StackSample }),
+  Object.freeze({ name: 'VStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: VStackSample }),
+  Object.freeze({ name: 'ToggleSkeleton', family: 'Switch', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ToggleSkeletonSample }),
+  Object.freeze({ name: 'Layer', family: 'Layer', tier: 'provider', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LayerSample })
 ]);

@@ -224,6 +224,58 @@ describe('context: icon', function () {
 });
 
 
+describe('context: textPresentation', function () {
+
+  const NativeLib = function (os) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: os } })
+    });
+  };
+
+  test('typeStyle stays numeric; web presents the exact unitless ratio', function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    const set = buildNative('default').tokens['type.body01'];
+    const style = ctx.typeStyle('body01');
+    assert.equal(style.lineHeight, set.lineHeight);
+    assert.equal(typeof style.lineHeight, 'number');
+    const presented = ctx.textPresentation(style);
+    assert.equal(presented.lineHeight, String(set.lineHeight / set.fontSize));
+    assert.equal(presented.fontSize, set.fontSize);
+    // The source style is not changed
+    assert.equal(style.lineHeight, set.lineHeight);
+    assert.notEqual(presented, style);
+  });
+
+  for (const os of ['ios', 'android']) {
+    test(os + ' presents the numeric absolute line height', function () {
+      const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os) }).Probe.ctx;
+      const set = buildNative('default').tokens['type.body01'];
+      const presented = ctx.textPresentation(ctx.typeStyle('body01'));
+      assert.equal(presented.lineHeight, set.lineHeight);
+      assert.equal(typeof presented.lineHeight, 'number');
+    });
+  }
+
+  test('a brand-overridden type set presents ' + "'1.5'" + ' on web and 15 on native', function () {
+    const layers = [{ name: 'brand', tokens: {
+      'type.body01': { type_set: true, font_family: 'sans', font_size: 10, weight: 400, letter_spacing: 0, line_height_px: 15 }
+    } }];
+    const web = buildSystem('default', { Probe: Probe }, { layers: layers }).Probe.ctx;
+    assert.equal(web.textPresentation(web.typeStyle('body01')).lineHeight, '1.5');
+    const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios') }).Probe.ctx;
+    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15);
+  });
+
+  test('a style without numeric fontSize and lineHeight throws', function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    assert.throws(function () {
+      ctx.textPresentation({ fontSize: 14 });
+    }, TypeError);
+  });
+
+});
+
+
 describe('context: metric through the spec sheet', function () {
 
   test('token, subtract, sum and constant entries resolve', function () {

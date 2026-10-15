@@ -86,6 +86,28 @@ import progressStepApi from './molecule/progress/api.progress-step.js';
 import progressStepSpec from './molecule/progress/spec.progress-step.js';
 import progressIndicatorSkeletonApi from './molecule/progress/api.progress-indicator-skeleton.js';
 import progressIndicatorSkeletonSpec from './molecule/progress/spec.progress-indicator-skeleton.js';
+import formApi from './molecule/form/api.js';
+import formSpec from './molecule/form/spec.js';
+import formGroupApi from './molecule/form/api.form-group.js';
+import formGroupSpec from './molecule/form/spec.form-group.js';
+import formItemApi from './molecule/form/api.form-item.js';
+import formItemSpec from './molecule/form/spec.form-item.js';
+import formLabelApi from './molecule/form/api.form-label.js';
+import formLabelSpec from './molecule/form/spec.form-label.js';
+import headingApi from './molecule/heading/api.js';
+import headingSpec from './molecule/heading/spec.js';
+import sectionApi from './molecule/heading/api.section.js';
+import sectionSpec from './molecule/heading/spec.section.js';
+import hstackApi from './molecule/stack/api.hstack.js';
+import hstackSpec from './molecule/stack/spec.hstack.js';
+import stackApi from './molecule/stack/api.js';
+import stackSpec from './molecule/stack/spec.js';
+import vstackApi from './molecule/stack/api.vstack.js';
+import vstackSpec from './molecule/stack/spec.vstack.js';
+import toggleSkeletonApi from './molecule/switch/api.toggle-skeleton.js';
+import toggleSkeletonSpec from './molecule/switch/spec.toggle-skeleton.js';
+import layerApi from './provider/layer/api.js';
+import layerSpec from './provider/layer/spec.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
@@ -173,6 +195,17 @@ const INLINE_LOADING_REQUIRED = [].concat(inlineLoadingApi.tokens, specTokens(in
 const PROGRESS_INDICATOR_REQUIRED = [].concat(progressIndicatorApi.tokens, specTokens(progressIndicatorSpec));
 const PROGRESS_STEP_REQUIRED = [].concat(progressStepApi.tokens, specTokens(progressStepSpec));
 const PROGRESS_INDICATOR_SKELETON_REQUIRED = [].concat(progressIndicatorSkeletonApi.tokens, specTokens(progressIndicatorSkeletonSpec));
+const FORM_REQUIRED = [].concat(formApi.tokens, specTokens(formSpec));
+const FORM_GROUP_REQUIRED = [].concat(formGroupApi.tokens, specTokens(formGroupSpec));
+const FORM_ITEM_REQUIRED = [].concat(formItemApi.tokens, specTokens(formItemSpec));
+const FORM_LABEL_REQUIRED = [].concat(formLabelApi.tokens, specTokens(formLabelSpec));
+const HEADING_REQUIRED = [].concat(headingApi.tokens, specTokens(headingSpec));
+const SECTION_REQUIRED = [].concat(sectionApi.tokens, specTokens(sectionSpec));
+const HSTACK_REQUIRED = [].concat(hstackApi.tokens, specTokens(hstackSpec));
+const STACK_REQUIRED = [].concat(stackApi.tokens, specTokens(stackSpec));
+const VSTACK_REQUIRED = [].concat(vstackApi.tokens, specTokens(vstackSpec));
+const TOGGLE_SKELETON_REQUIRED = [].concat(toggleSkeletonApi.tokens, specTokens(toggleSkeletonSpec));
+const LAYER_REQUIRED = [].concat(layerApi.tokens, specTokens(layerSpec));
 
 // The hue cells a Tag `type` reads on demand - the variants' hover, border
 // and glyph cells ride the same on-demand rule
@@ -196,7 +229,7 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED, FORM_REQUIRED, FORM_GROUP_REQUIRED, FORM_ITEM_REQUIRED, FORM_LABEL_REQUIRED, HEADING_REQUIRED, SECTION_REQUIRED, HSTACK_REQUIRED, STACK_REQUIRED, VSTACK_REQUIRED, TOGGLE_SKELETON_REQUIRED, LAYER_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 
