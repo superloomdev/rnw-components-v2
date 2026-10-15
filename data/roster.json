@@ -1315,7 +1315,7 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "TagSet",
-      "material_twin": "md-chip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1347,7 +1347,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "CheckboxGroup",
-      "material_twin": "md-checkbox",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1379,7 +1379,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "CheckboxSkeleton",
-      "material_twin": "md-checkbox",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1405,7 +1405,7 @@
         "kind": "render-web",
         "package": "@material/web"
       },
-      "carbon_twin": "BottomToolbarPrimaryAction",
+      "carbon_twin": "none",
       "material_twin": "md-fab",
       "diff_budget": 2,
       "flags": [],
@@ -1634,7 +1634,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "NumberInputSkeleton",
-      "material_twin": "md-outlined-text-field",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1726,7 +1726,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioButtonGroup",
-      "material_twin": "md-radio",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1756,7 +1756,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioButtonSkeleton",
-      "material_twin": "md-radio",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1785,7 +1785,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ExpandableSearch",
-      "material_twin": "md-search",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1814,7 +1814,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Search",
-      "material_twin": "md-search",
+      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1843,7 +1843,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SearchSkeleton",
-      "material_twin": "md-search",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -1905,7 +1905,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SliderSkeleton",
-      "material_twin": "md-slider",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2019,7 +2019,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggleSkeleton",
-      "material_twin": "md-switch",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2083,7 +2083,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextAreaSkeleton",
-      "material_twin": "md-outlined-text-field",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2115,7 +2115,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextInputSkeleton",
-      "material_twin": "md-outlined-text-field",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2147,7 +2147,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TimePicker",
-      "material_twin": "md-outlined-text-field",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "deferred_gap"
@@ -2181,7 +2181,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TimePickerSelect",
-      "material_twin": "md-outlined-text-field",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "deferred_gap"
@@ -2213,7 +2213,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DefinitionTooltip",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2243,7 +2243,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Toggletip",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2273,7 +2273,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipActions",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2305,7 +2305,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipButton",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2337,7 +2337,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipContent",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2369,7 +2369,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipLabel",
-      "material_twin": "md-plain-tooltip",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2405,7 +2405,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ComboBox",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2439,7 +2439,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DropdownSkeleton",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2473,7 +2473,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FilterableMultiSelect",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2507,7 +2507,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MultiSelect",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -2541,7 +2541,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectItem",
-      "material_twin": "md-outlined-select",
+      "material_twin": "md-select-option",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2557,7 +2557,7 @@
         "version": "1.115.0",
         "export": "SelectItemGroup"
       },
-      "description": "SelectItemGroup is a component in the Select family; it must be composed inside Select.",
+      "description": "SelectItemGroup groups SelectItems under a group label inside Select; it must be composed inside Select; neither reference system draws an option group header, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2577,10 +2577,11 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectItemGroup",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "superloom_decision"
       ],
       "status": "pending"
     },
@@ -2613,7 +2614,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectSkeleton",
-      "material_twin": "md-outlined-select",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
