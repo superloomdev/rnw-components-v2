@@ -173,6 +173,23 @@ describe('Checkbox: state through the DOM', function () {
     assert.deepEqual(calls, [true, false]);
   });
 
+  test('defaultChecked seeds the uncontrolled answer; a controlled checked ignores it', async function () {
+    const calls = [];
+    const parts = await renderCheckbox(registryFor('carbon'), { label: 'L', defaultChecked: true, onChange: function (next) { calls.push(next); } });
+    assert.equal(parts.root.getAttribute('aria-checked'), 'true');
+    await act(async function () {
+      parts.root.click();
+    });
+    assert.equal(parts.root.getAttribute('aria-checked'), 'false');
+    assert.deepEqual(calls, [false]);
+    const controlled = await renderCheckbox(registryFor('carbon'), { label: 'L', checked: false, defaultChecked: true });
+    assert.equal(controlled.root.getAttribute('aria-checked'), 'false');
+    await act(async function () {
+      controlled.root.click();
+    });
+    assert.equal(controlled.root.getAttribute('aria-checked'), 'false', 'a controlled false stays false');
+  });
+
   test('the state layer: the disc centered on the box shows the theme\'s layer for the selection and the state', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderCheckbox(registryFor('material'), { label: 'L' });

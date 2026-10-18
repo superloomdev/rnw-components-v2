@@ -7,7 +7,9 @@
 
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { REPO_ROOT } from '../scripts/lib/components.js';
@@ -16,6 +18,30 @@ const MANIFEST = JSON.parse(readFileSync(join(REPO_ROOT, '_test', 'fixtures', 'a
 
 
 describe('fire manifest', function () {
+
+  test('help and invalid arguments never start mutation rows', function () {
+    const sandbox = mkdtempSync(join(tmpdir(), 'rnw-fire-cli-'));
+    try {
+      copyFileSync(join(REPO_ROOT, '_test', 'fire.js'), join(sandbox, 'fire.mjs'));
+      mkdirSync(join(sandbox, 'fixtures'));
+      writeFileSync(join(sandbox, 'fixtures', 'assertion-integrity.json'), JSON.stringify({ rows: [] }));
+      // Even a regressed parser can only see this empty sandbox manifest.
+      for (const [args, status] of [[['--help'], 0], [['--invalid'], 2], [['--only'], 2], [['--only', 'not-a-real-row'], 2]]) {
+        const run = spawnSync(process.execPath, ['fire.mjs'].concat(args), {
+          cwd: sandbox,
+          encoding: 'utf8',
+          timeout: 2000
+        });
+        assert.equal(run.status, status, JSON.stringify(args) + ': ' + run.stderr);
+        if (args[0] === '--help') {
+          assert.match(run.stdout, /^usage: node fire\.js/);
+        }
+        assert.doesNotMatch(run.stdout, /FIRED|NOT-FIRED|BROKEN/);
+      }
+    } finally {
+      rmSync(sandbox, { recursive: true, force: true });
+    }
+  });
 
   test('ids are unique', function () {
     const ids = MANIFEST.rows.map(function (row) {

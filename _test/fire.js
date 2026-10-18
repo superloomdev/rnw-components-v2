@@ -16,8 +16,21 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..');
 const manifest = JSON.parse(readFileSync(join(HERE, 'fixtures', 'assertion-integrity.json'), 'utf8'));
-const onlyIndex = process.argv.indexOf('--only');
-const only = onlyIndex === -1 ? null : process.argv[onlyIndex + 1];
+const args = process.argv.slice(2);
+const usage = 'usage: node fire.js [--only <id>] [--help]\n';
+if (args.length === 1 && args[0] === '--help') {
+  process.stdout.write(usage);
+  process.exit(0);
+}
+if (args.length !== 0 && (args.length !== 2 || args[0] !== '--only' || !args[1])) {
+  process.stderr.write(usage);
+  process.exit(2);
+}
+const only = args.length === 0 ? null : args[1];
+if (only !== null && !manifest.rows.some(function (row) { return row.id === only; })) {
+  process.stderr.write('unknown fire row: ' + only + '\n');
+  process.exit(2);
+}
 
 
 /********************************************************************

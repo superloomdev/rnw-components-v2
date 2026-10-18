@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
 
-import { compareProfiles, cropTo, maskOmitted, profileOf } from './harness/fidelity.js';
+import { compareProfiles, cropTo, maskOmitted, profileOf, samplePaint } from './harness/fidelity.js';
 
 
 function image (width, height) {
@@ -73,4 +73,35 @@ test('a proven omission excludes its own profile pixels but not the focus ring',
     'the real, unmasked focus-ring defect must remain visible');
   const hidden = compareProfiles(profileOf(face, PNG.sync.write(ours), [{ ...icon, visible: false }]), source);
   assert.ok(hidden.some(function (line) { return line.startsWith('left '); }));
+});
+
+test('a center-painted part samples its core rather than an inset focus gap', function () {
+  const png = image(60, 60);
+  paint(png, 27, 23, [240, 240, 240]);
+  paint(png, 27, 27, [15, 98, 254]);
+  const state = { thumb: { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true, _paintCenter: true } };
+  samplePaint(state, PNG.sync.write(png));
+  assert.equal(state.thumb.paint, 'rgb(15, 98, 254)');
+});
+
+test('a proven omitted surface does not become the underlying part paint', function () {
+  const png = image(60, 60);
+  paint(png, 27, 23, [230, 224, 233]);
+  const state = { host: { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true } };
+  const cover = { _bodyX: 0, _bodyY: 0, width: 14, height: 5, visible: true };
+  samplePaint(state, PNG.sync.write(png), [cover]);
+  assert.equal(state.host.paint, undefined);
+  samplePaint(state, PNG.sync.write(png), [{ ...cover, visible: false }]);
+  assert.equal(state.host.paint, 'rgb(230, 224, 233)');
+});
+
+test('a deeper focus profile still detects a wrong inner color', function () {
+  const a = image(60, 60);
+  const b = image(60, 60);
+  paint(a, 27, 25, [255, 0, 0]);
+  const face = { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true, _profileDepth: 5 };
+  const ours = profileOf(face, PNG.sync.write(a));
+  const upstream = profileOf(face, PNG.sync.write(b));
+  assert.equal(ours.inside.length, 5);
+  assert.ok(compareProfiles(ours, upstream).some(function (line) { return line.startsWith('inside 5px:'); }));
 });

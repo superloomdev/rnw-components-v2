@@ -43,6 +43,8 @@ import DismissibleTagSample from './component/molecule/tag/sample.dismissible-ta
 import OperationalTagSample from './component/molecule/tag/sample.operational-tag.js';
 import SelectableTagSample from './component/molecule/tag/sample.selectable-tag.js';
 import TagSkeletonSample from './component/molecule/tag/sample.tag-skeleton.js';
+import CheckboxGroupSample, { FRAME as CheckboxGroupFrame } from './component/molecule/checkbox/sample.checkbox-group.js';
+import CheckboxSkeletonSample, { FRAME as CheckboxSkeletonFrame } from './component/molecule/checkbox/sample.checkbox-skeleton.js';
 import FormSample from './component/molecule/form/sample.js';
 import FormGroupSample from './component/molecule/form/sample.form-group.js';
 import FormItemSample from './component/molecule/form/sample.form-item.js';
@@ -51,9 +53,13 @@ import HeadingSample from './component/molecule/heading/sample.js';
 import SectionSample from './component/molecule/heading/sample.section.js';
 import NumberInputSample, { FRAME as NumberInputFrame } from './component/molecule/number-input/sample.js';
 import NumberInputSkeletonSample, { FRAME as NumberInputSkeletonFrame } from './component/molecule/number-input/sample.number-input-skeleton.js';
+import RadioButtonGroupSample, { FRAME as RadioButtonGroupFrame } from './component/molecule/radio-button/sample.radio-button-group.js';
+import RadioButtonSkeletonSample, { FRAME as RadioButtonSkeletonFrame } from './component/molecule/radio-button/sample.radio-button-skeleton.js';
 import ExpandableSearchSample, { FRAME as ExpandableSearchFrame } from './component/molecule/search/sample.expandable-search.js';
 import SearchSample, { FRAME as SearchFrame } from './component/molecule/search/sample.js';
 import SearchSkeletonSample, { FRAME as SearchSkeletonFrame } from './component/molecule/search/sample.search-skeleton.js';
+import SliderSample, { FRAME as SliderFrame } from './component/molecule/slider/sample.js';
+import SliderSkeletonSample, { FRAME as SliderSkeletonFrame } from './component/molecule/slider/sample.slider-skeleton.js';
 import HStackSample from './component/molecule/stack/sample.hstack.js';
 import StackSample from './component/molecule/stack/sample.js';
 import VStackSample from './component/molecule/stack/sample.vstack.js';
@@ -108,6 +114,8 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'OperationalTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: OperationalTagSample }),
   Object.freeze({ name: 'SelectableTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SelectableTagSample }),
   Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample }),
+  Object.freeze({ name: 'CheckboxGroup', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: CheckboxGroupFrame, sample: CheckboxGroupSample }),
+  Object.freeze({ name: 'CheckboxSkeleton', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: CheckboxSkeletonFrame, sample: CheckboxSkeletonSample }),
   Object.freeze({ name: 'Form', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormSample }),
   Object.freeze({ name: 'FormGroup', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: FormGroupSample }),
   Object.freeze({ name: 'FormItem', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormItemSample }),
@@ -116,9 +124,13 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Section', family: 'Heading', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SectionSample }),
   Object.freeze({ name: 'NumberInput', family: 'NumberInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: NumberInputFrame, sample: NumberInputSample }),
   Object.freeze({ name: 'NumberInputSkeleton', family: 'NumberInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: NumberInputSkeletonFrame, sample: NumberInputSkeletonSample }),
+  Object.freeze({ name: 'RadioButtonGroup', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: RadioButtonGroupFrame, sample: RadioButtonGroupSample }),
+  Object.freeze({ name: 'RadioButtonSkeleton', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: RadioButtonSkeletonFrame, sample: RadioButtonSkeletonSample }),
   Object.freeze({ name: 'ExpandableSearch', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: ExpandableSearchFrame, sample: ExpandableSearchSample }),
   Object.freeze({ name: 'Search', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SearchFrame, sample: SearchSample }),
   Object.freeze({ name: 'SearchSkeleton', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: SearchSkeletonFrame, sample: SearchSkeletonSample }),
+  Object.freeze({ name: 'Slider', family: 'Slider', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SliderFrame, sample: SliderSample }),
+  Object.freeze({ name: 'SliderSkeleton', family: 'Slider', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SliderSkeletonFrame, sample: SliderSkeletonSample }),
   Object.freeze({ name: 'HStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: HStackSample }),
   Object.freeze({ name: 'Stack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: StackSample }),
   Object.freeze({ name: 'VStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: VStackSample }),

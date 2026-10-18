@@ -194,7 +194,7 @@ export default function Tooltip (ctx) {
         backgroundColor: ctx.color('tooltip_container'),
         borderRadius: ctx.metric('Tooltip', 'radius'),
         maxWidth: ctx.metric('Tooltip', 'maxWidth'),
-        paddingHorizontal: ctx.metric('Tooltip', 'paddingInline'),
+        paddingHorizontal: Utils.isNumber(props.paddingInline) ? props.paddingInline : ctx.metric('Tooltip', 'paddingInline'),
         paddingVertical: paddingBlock
       }]
     },

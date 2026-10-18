@@ -1744,6 +1744,266 @@
       "test": "anatomy.spec.js",
       "testName": "intrinsically sized selections retain complete labels after fonts load",
       "why": "rounded-down fractional text widths must fail the no-truncation assertion even when native-select parity passes under another template"
+    },
+    {
+      "id": "checkbox-skeleton-label-width",
+      "file": "component/molecule/checkbox/checkbox-skeleton.js",
+      "find": "width: ctx.metric('CheckboxSkeleton', 'width')",
+      "replace": "width: ctx.metric('CheckboxSkeleton', 'height')",
+      "runner": "node",
+      "test": "checkbox-skeleton.test.js",
+      "testName": "carbon: one bar of the label cell, inset where the text would start",
+      "why": "a bar reading the height cell instead of the label-width cell must fail the geometry assertion"
+    },
+    {
+      "id": "radio-skeleton-label-height",
+      "file": "component/molecule/radio-button/radio-button-skeleton.js",
+      "find": "height: ctx.metric('RadioButtonSkeleton', 'height')",
+      "replace": "height: ctx.metric('RadioButtonSkeleton', 'width')",
+      "runner": "node",
+      "test": "radio-button-skeleton.test.js",
+      "testName": "carbon: one bar of the label cell at the row height, no circle",
+      "why": "a bar reading the label-width cell instead of the dedicated height cell must fail the geometry assertion"
+    },
+    {
+      "id": "checkbox-default-checked",
+      "file": "behaviors/controls.js",
+      "find": "    const [internalChecked, setInternalChecked] = useState(props.defaultChecked === true);",
+      "replace": "    const [internalChecked, setInternalChecked] = useState(false);",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "defaultChecked seeds the uncontrolled answer; a controlled checked ignores it",
+      "why": "defaultChecked must initialize the shared checkbox behavior without overriding a controlled checked answer"
+    },
+    {
+      "id": "checkbox-group-member-state",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "          defaultChecked: item.defaultChecked,",
+      "replace": "          defaultChecked: false,",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "an id of __proto__ behaves like any stable id",
+      "why": "the group must preserve its member's initial state and stable identity, including ids that collide with object prototype names"
+    },
+    {
+      "id": "radio-group-selection-guard",
+      "file": "behaviors/radio-group.js",
+      "find": "      if (live.disabled || member === undefined || member.disabled === true || next === live.value) {",
+      "replace": "      if (next === live.value) {",
+      "runner": "node",
+      "test": "behaviors.test.js",
+      "testName": "the mutation boundary guards disabled, removed and unchecked callbacks",
+      "why": "headless radio callbacks must reject disabled or removed members at the selection boundary, not depend on rendered child guards"
+    },
+    {
+      "id": "radio-group-typed-keys",
+      "file": "component/molecule/radio-button/radio-button-group.js",
+      "find": "        const memberKey = typeof item.value + ':' + String(item.value);",
+      "replace": "        const memberKey = String(item.value);",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "typed member values keep distinct keys, generated ids and callback types through a reorder",
+      "why": "numeric zero and string zero must remain distinct React members with stable focus and callback value types after reordering"
+    },
+    {
+      "id": "checkbox-group-gap",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "    const rowGap = ctx.metric('CheckboxGroup', 'rowGap');",
+      "replace": "    const rowGap = ctx.token('spacing.spacing_01');",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "a brand layer overriding the group gap changes the row spacing only",
+      "why": "the group's own gap token must reach every member instead of a coincidentally similar global spacing value"
+    },
+    {
+      "id": "checkbox-group-inherited-disable",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "    return React.createElement(DisabledContext.Provider, { value: disabled },",
+      "replace": "    return React.createElement(DisabledContext.Provider, { value: false },",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "a disabled group suppresses every item callback, even an item passing disabled: false",
+      "why": "a disabled group must force inherited disabling onto each member, even when the item explicitly passes false"
+    },
+    {
+      "id": "radio-group-disabled-skip",
+      "file": "behaviors/radio-group.js",
+      "find": "      if (items[index].disabled !== true) {",
+      "replace": "      if (true) {",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "all four arrows move selection and focus, skipping disabled members and wrapping",
+      "why": "arrow navigation must skip disabled members rather than merely reject selection after focusing the wrong member"
+    },
+    {
+      "id": "radio-group-focus-ref",
+      "file": "behaviors/radio-group.js",
+      "find": "        ref.current.focus();",
+      "replace": "        void ref.current;",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "all four arrows move selection and focus, skipping disabled members and wrapping",
+      "why": "keyboard selection and actual DOM focus must move together"
+    },
+    {
+      "id": "radio-group-vertical-geometry",
+      "file": "component/molecule/radio-button/radio-button-group.js",
+      "find": "          groupVertical: vertical",
+      "replace": "          groupVertical: false",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "carbon / vertical: legend, members and message come from the theme",
+      "why": "vertical composition must select the member's shorter row geometry without changing standalone or horizontal radio layout"
+    },
+    {
+      "id": "slider-decimal-grid",
+      "file": "behaviors/slider.js",
+      "find": "    const places = Math.max(decimalsOf(min), decimalsOf(step));",
+      "replace": "    const places = 0;",
+      "runner": "node",
+      "test": "slider-behavior.test.js",
+      "testName": "the grid scale ignores binary request noise",
+      "why": "min-anchored decimal requests must canonicalize to their grid points rather than retain multiplication artifacts"
+    },
+    {
+      "id": "slider-controlled-drag-release",
+      "file": "behaviors/slider.js",
+      "find": "        live.onRelease(lastRequested);",
+      "replace": "        live.onRelease(baseRef.current);",
+      "runner": "node",
+      "test": "slider-behavior.test.js",
+      "testName": "a controlled drag across real renders releases with its last requested number",
+      "why": "interleaved React renders must not replace the drag's release value with an unchanged controlled prop"
+    },
+    {
+      "id": "slider-disabled-group-alpha",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "        hexByte(255 * part.a / opacity);",
+      "replace": "        hexByte(255 * part.a);",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "mixed alphas factor the largest; children keep their share",
+      "why": "maximum-alpha children must become opaque inside the shared disabled opacity, not be faded twice"
+    },
+    {
+      "id": "slider-own-focus-width",
+      "file": "component/molecule/slider/spec.js",
+      "find": "  focusWidth: 'control.slider_focus_width',",
+      "replace": "  focusWidth: 'control.selection_focus_width',",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "custom track and handle insets, focus widths and sizes reach their paint nodes",
+      "why": "the slider focus width must follow its own brand-overridable role, never a selection-family coincidence"
+    },
+    {
+      "id": "slider-skeleton-full-track",
+      "file": "component/molecule/slider/slider-skeleton.js",
+      "find": "      percent: true,",
+      "replace": "      percent: false,",
+      "runner": "node",
+      "test": "slider-skeleton.test.js",
+      "testName": "carbon / default: label, endpoint and track placeholders, shared paint, no roles",
+      "why": "a loading track remains fully filled with a separately centered inert nub, not the live zero-width geometry"
+    },
+    {
+      "id": "slider-source-paint-coverage",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "    const fillWidth = ratio >= 1 ? paintedWidth\n      : Math.min(Math.max(handleCenter - trackInset, 0), paintedWidth);",
+      "replace": "    const fillWidth = 0;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "fill coverage and disabled overlap match the actual source pixels",
+      "why": "actual source pixels must detect missing fill even where a clipped upstream pseudo's DOM width is not a painted bound"
+    },
+    {
+      "id": "slider-pseudo-translation",
+      "file": "_test/harness/page.js",
+      "find": "          pseudoX += transform.e;",
+      "replace": "          pseudoX += 0;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the part reader applies declared pseudo translations before comparing slider ticks",
+      "why": "the pseudo reader must include a declared translation instead of reporting the unpainted CSS left offset"
+    },
+    {
+      "id": "slider-point-cleanup",
+      "file": "_test/harness/page.js",
+      "find": "  const releaseFirst = options && options.releaseBeforeMove === true;",
+      "replace": "  const releaseFirst = false;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the slider point driver reaches a covered input and releases before moving away",
+      "why": "cleanup of a held slider must not drag its value to the page edge while moving the pointer away"
+    },
+    {
+      "id": "slider-painted-signature",
+      "file": "_test/harness/page.js",
+      "find": "      const face = control.getAttribute('role') === 'slider'\n        ? body.querySelector('[data-testid=\"slider-thumb-face\"]') : control;",
+      "replace": "      const face = control;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "structural paint reads a slider face rather than its transparent press target",
+      "why": "the enabled/disabled gate must read the real slider face and its effective ancestor opacity"
+    },
+    {
+      "id": "slider-disabled-composition",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "    const grouped = disabled && ctx.enum('anatomy.slider_disabled_paint') === 'grouped';",
+      "replace": "    const grouped = disabled;",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "independent disabled paints retain separate alpha layers",
+      "why": "a theme selecting independent disabled layers must not be silently changed into a single group opacity"
+    },
+    {
+      "id": "slider-scaled-radius",
+      "file": "_test/harness/page.js",
+      "find": "            measured.borderTopLeftRadius = (parseFloat(style.borderTopLeftRadius) * scaleX) + 'px';",
+      "replace": "            measured.borderTopLeftRadius = style.borderTopLeftRadius;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the part reader compares a uniformly scaled radius in painted coordinates",
+      "why": "a circle scaled to twice its size must compare its painted radius rather than its unscaled CSS radius"
+    },
+    {
+      "id": "fidelity-center-paint",
+      "file": "_test/harness/fidelity.js",
+      "find": "    const inset = part._paintCenter === true ? part.height / 2",
+      "replace": "    const inset = false ? part.height / 2",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a center-painted part samples its core rather than an inset focus gap",
+      "why": "a circular control's interior paint sample must not mistake its decorative focus gap for its core color"
+    },
+    {
+      "id": "fidelity-omitted-paint",
+      "file": "_test/harness/fidelity.js",
+      "find": "        x >= area._bodyX && x <= area._bodyX + area.width &&",
+      "replace": "        false && x >= area._bodyX && x <= area._bodyX + area.width &&",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a proven omitted surface does not become the underlying part paint",
+      "why": "an explicitly absent counterpart's overlay must not be measured as the paint of the real part behind it"
+    },
+    {
+      "id": "fidelity-deep-focus-profile",
+      "file": "_test/harness/fidelity.js",
+      "find": "    ? Array.from({ length: part._profileDepth }, function (_, index) { return index + 1; }) : INSIDE;",
+      "replace": "    ? INSIDE : INSIDE;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a deeper focus profile still detects a wrong inner color",
+      "why": "the declared deeper profile must actually sample its fifth pixel and detect a wrong inner color"
+    },
+    {
+      "id": "slider-pressed-inset-ring",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "          display: insetPressed ? undefined : 'none',",
+      "replace": "          display: 'none',",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "pressed inset focus paints a second ring over the scaled face",
+      "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
     }
   ]
 }

@@ -243,14 +243,22 @@ export async function readParts (page, name, parts, side, origin, options) {
         // padding box plus its margin, so the host's border and padding move it
         const positioned = pseudo !== null && (style.position === 'absolute' || style.position === 'fixed');
         const hostStyle = pseudo !== null && !positioned ? getComputedStyle(element) : null;
-        const pseudoX = pseudo === null ? 0 : positioned
+        let pseudoX = pseudo === null ? 0 : positioned
           ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
           : (parseFloat(hostStyle.borderLeftWidth) || 0) + (parseFloat(hostStyle.paddingLeft) || 0) +
             (parseFloat(style.marginLeft) || 0) + (style.position === 'relative' ? parseFloat(style.left) || 0 : 0);
-        const pseudoY = pseudo === null ? 0 : positioned
+        let pseudoY = pseudo === null ? 0 : positioned
           ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
           : (parseFloat(hostStyle.borderTopWidth) || 0) + (parseFloat(hostStyle.paddingTop) || 0) +
             (parseFloat(style.marginTop) || 0) + (style.position === 'relative' ? parseFloat(style.top) || 0 : 0);
+        if (pseudo !== null && part.translate === true && style.transform !== 'none') {
+          const transform = new DOMMatrixReadOnly(style.transform);
+          if (transform.a !== 1 || transform.b !== 0 || transform.c !== 0 || transform.d !== 1) {
+            throw new Error('A translated pseudo part must use a translation-only transform');
+          }
+          pseudoX += transform.e;
+          pseudoY += transform.f;
+        }
         const stripTop = strip === null ? 0
           : strip === 'borderTop' ? rect.top : rect.bottom - parseFloat(style[strip + 'Width']);
         const measured = {};
@@ -261,6 +269,15 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured.height = strip === null ? (pseudo ? parseFloat(style.height) : rect.height) : parseFloat(style[strip + 'Width']);
           for (const property of BOX) {
             measured[property] = style[property];
+          }
+          if (part.scaleRadius === true && pseudo === null &&
+              /px$/.test(style.borderTopLeftRadius) && element.offsetWidth > 0 && element.offsetHeight > 0) {
+            const transform = new DOMMatrixReadOnly(style.transform === 'none' ? undefined : style.transform);
+            const scaleX = Math.abs(transform.a);
+            if (transform.b !== 0 || transform.c !== 0 || scaleX !== Math.abs(transform.d)) {
+              throw new Error('A scaled-radius part must use uniform scaling');
+            }
+            measured.borderTopLeftRadius = (parseFloat(style.borderTopLeftRadius) * scaleX) + 'px';
           }
           for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
             if (Array.isArray(part.compare) && part.compare.includes(property)) {
@@ -344,6 +361,10 @@ export async function readParts (page, name, parts, side, origin, options) {
           : pseudo !== null || (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
         measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && opacity > 0 && drawn;
         if (input.extended) {
+          measured._paintCenter = part.paintCenter === true;
+          if (Number.isInteger(part.profileDepth) && part.profileDepth > 0) {
+            measured._profileDepth = part.profileDepth;
+          }
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
             // A box drawn at an opacity paints its colors at that opacity, as an rgba color does
@@ -388,7 +409,7 @@ pointer down on it. Wait for transitions and state layers to settle.
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
 *********************************************************************/
-export async function enterInteraction (page, name, state, selector, interaction) {
+export async function enterInteraction (page, name, state, selector, interaction, options) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   let target;
@@ -452,7 +473,15 @@ export async function enterInteraction (page, name, state, selector, interaction
       await page.keyboard.press('ArrowRight');
     }
   } else {
-    await target.hover();
+    if (options && options.point === true) {
+      const box = await target.boundingBox();
+      if (box === null || box.width <= 0 || box.height <= 0) {
+        return false;
+      }
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    } else {
+      await target.hover();
+    }
     if (interaction === 'pressed') {
       await page.mouse.down();
     }
@@ -483,8 +512,14 @@ focus leaves, and an opened popup is dismissed.
 *********************************************************************/
 export async function leaveInteraction (page, options) {
 
+  const releaseFirst = options && options.releaseBeforeMove === true;
+  if (releaseFirst) {
+    await page.mouse.up();
+  }
   await page.mouse.move(0, 0);
-  await page.mouse.up();
+  if (!releaseFirst) {
+    await page.mouse.up();
+  }
   if (options === undefined || options === null || options.escape !== false) {
     await page.keyboard.press('Escape');
   }
@@ -1157,7 +1192,12 @@ export async function readControlPaint (page) {
       if (control === undefined) {
         continue;
       }
-      const style = getComputedStyle(control);
+      const face = control.getAttribute('role') === 'slider'
+        ? body.querySelector('[data-testid="slider-thumb-face"]') : control;
+      if (face === null) {
+        throw new Error('A slider paint signature requires its painted thumb face');
+      }
+      const style = getComputedStyle(face);
       // The first drawn text inside the control, or the control's own color
       const textNode = Array.from(control.querySelectorAll('*')).find(function (node) {
         return Array.from(node.childNodes).some(function (child) {
@@ -1171,11 +1211,15 @@ export async function readControlPaint (page) {
       // ancestor of it inside the body - not when a sibling control is (a
       // mixed cell's enabled control must not read as disabled)
       const flagged = control.closest('[aria-disabled="true"], [disabled]');
+      let opacity = 1;
+      for (let node = face; node !== null && node !== body; node = node.parentElement) {
+        opacity *= parseFloat(getComputedStyle(node).opacity);
+      }
       out.push({
         component: cell.getAttribute('data-component'),
         state: cell.getAttribute('data-state'),
         disabled: flagged !== null && flagged !== body && body.contains(flagged),
-        paint: style.backgroundColor + ' | ' + border + ' | ' + text
+        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity
       });
     }
     return out;

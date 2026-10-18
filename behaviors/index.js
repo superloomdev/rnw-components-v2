@@ -25,8 +25,10 @@ import createOverlayBehaviors from './overlay.js';
 import createPickersBehaviors from './pickers.js';
 import createPositioningBehaviors from './positioning.js';
 import createPressBehaviors from './press.js';
+import createRadioGroupBehaviors from './radio-group.js';
 import createRovingBehaviors from './roving.js';
 import createScopeBehaviors from './scope.js';
+import createSliderBehaviors from './slider.js';
 import createStateBehaviors from './state.js';
 import createUtilitiesBehaviors from './utilities.js';
 
@@ -60,6 +62,7 @@ export default function createBehaviors (deps) {
   const scopes = createScopeBehaviors(deps);
   const heading = createHeadingBehaviors(deps);
   const controls = createControlsBehaviors(deps);
+  const local = createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState }));
   const overlay = createOverlayBehaviors(Object.assign({}, deps, {
     LayerContext: scopes.LayerContext,
     DisabledContext: scopes.DisabledContext,
@@ -74,7 +77,7 @@ export default function createBehaviors (deps) {
     createFocusBehaviors(deps),
     heading,
     createKeyboardBehaviors(deps),
-    createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
+    local,
     createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     createNumberInputBehaviors(Object.assign({}, deps, {
       useControllableState: state.useControllableState,
@@ -84,8 +87,13 @@ export default function createBehaviors (deps) {
     createPickersBehaviors(deps),
     createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     createPressBehaviors(deps),
+    createRadioGroupBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
     createRovingBehaviors(deps),
     scopes,
+    createSliderBehaviors(Object.assign({}, deps, {
+      useControllableState: state.useControllableState,
+      useInteractionState: local.useInteractionState
+    })),
     state,
     createUtilitiesBehaviors(deps)
   ];

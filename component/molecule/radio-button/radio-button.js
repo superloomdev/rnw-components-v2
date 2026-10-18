@@ -36,6 +36,10 @@ export default function RadioButton (ctx) {
     // Init the state: checked is controllable, the rest is interaction
     const disabled = props.disabled === true;
     const invalid = props.invalid === true && !disabled;
+    // A group seats the row vertically: the ring loses its own top and
+    // bottom insets and the row picks up the top padding, so the member is
+    // the vertical row height with the ring one inset lower
+    const groupVertical = props.groupVertical === true;
     const [checked, setChecked] = useControllableState({ value: props.checked, defaultValue: false, onChange: props.onChange });
     const selected = checked === true;
 
@@ -45,7 +49,7 @@ export default function RadioButton (ctx) {
         setChecked(true);
       }
     };
-    const interaction = useInteractionState({ disabled: disabled, onPress: select });
+    const interaction = useInteractionState({ disabled: disabled, onPress: select, onFocus: props.onGroupFocus });
     const state = interaction.state;
 
     // Read the geometry through the spec sheet
@@ -76,6 +80,8 @@ export default function RadioButton (ctx) {
     return React.createElement(Pressable, Object.assign({}, interaction.rootProps, getA11yState({ checked: selected, disabled: disabled || undefined, invalid: invalid || undefined }), getA11yRelation({ labelledby: labelId }), {
       accessibilityRole: 'radio',
       disabled: disabled,
+      // A group receives the member's root to move DOM focus on arrows
+      ref: props.rootRef,
       // Pressable owns the tab order and honors tabIndex only, so the group's
       // roving answer arrives as tabIndex, not the `focusable` prop
       tabIndex: props.focusable === false ? -1 : undefined,
@@ -90,16 +96,18 @@ export default function RadioButton (ctx) {
       },
       testID: props.testID,
       // The focus ring is drawn on the ring, so the row itself shows none
-      style: { alignItems: 'center', flexDirection: 'row', outlineStyle: 'none' }
+      style: groupVertical
+        ? { alignItems: 'center', flexDirection: 'row', outlineStyle: 'none', paddingTop: ctx.metric('RadioButton', 'ringInsetBottom') }
+        : { alignItems: 'center', flexDirection: 'row', outlineStyle: 'none' }
     }),
     React.createElement(View, {
       style: {
         flexShrink: 0,
         height: ringSize,
-        marginBottom: ctx.metric('RadioButton', 'ringInsetBottom'),
+        marginBottom: groupVertical ? 0 : ctx.metric('RadioButton', 'ringInsetBottom'),
         marginEnd: ctx.metric('RadioButton', 'labelGap'),
         marginStart: ctx.metric('RadioButton', 'ringInsetStart'),
-        marginTop: ctx.metric('RadioButton', 'ringInsetTop'),
+        marginTop: groupVertical ? 0 : ctx.metric('RadioButton', 'ringInsetTop'),
         width: ringSize
       }
     },

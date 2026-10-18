@@ -46,8 +46,8 @@ const EXPECTED_NAMES = [
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
   'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useNumberInput', 'useOverlay', 'useOverlayHost',
-  'usePopoverDismiss', 'usePressKeys', 'useReducedMotion', 'useResponsiveStack',
-  'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useTabsState', 'useTextField',
+  'usePopoverDismiss', 'usePressKeys', 'useRadioGroup', 'useReducedMotion', 'useResponsiveStack',
+  'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useSlider', 'useTabsState', 'useTextField',
   'useTimePickerDraft', 'useTimedFlag', 'useViewportLayer', 'useViewportSize'
 ];
 
@@ -91,7 +91,9 @@ const STATEFUL_PROPS = {
   useTabsState: {},
   useDatePickerCalendar: {},
   useTimePickerDraft: {},
-  useNumberInput: {}
+  useNumberInput: {},
+  useRadioGroup: { items: [{ value: 'a', label: 'A' }] },
+  useSlider: {}
 };
 
 const BEHAVIOR_FORBIDDEN = [
@@ -478,6 +480,300 @@ describe('behaviors: useNumberInput', function () {
 });
 
 
+describe('behaviors: useRadioGroup', function () {
+
+  const ITEMS = [{ value: 'a' }, { value: 'b' }, { value: 'c' }];
+
+
+  /********************************************************************
+  Render a probe that calls useRadioGroup with rerenderable options and
+  hands its result back. `current` always holds the last render's return,
+  since a hook's closures and state are rebuilt every render.
+
+  @param {Object} options - Initial useRadioGroup options
+
+  @return {Promise<Object>} - { current, render }
+  *********************************************************************/
+  async function renderGroup (options) {
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+
+    const box = { current: undefined };
+    function Probe (props) {
+      box.current = behaviors.useRadioGroup(props);
+      return null;
+    }
+
+    await act(async function () {
+      root.render(React.createElement(Probe, options));
+    });
+
+    box.render = async function (next) {
+      await act(async function () {
+        root.render(React.createElement(Probe, next));
+      });
+    };
+    return box;
+
+  }
+
+
+  /********************************************************************
+  Fire the group's root keydown handler with a fake event.
+
+  @param {Object} group - The probe's { current } box
+  @param {String} key   - Event key
+
+  @return {Object} - The fake event after dispatch
+  *********************************************************************/
+  async function keydown (group, key) {
+
+    const event = {
+      key: key,
+      prevented: false,
+      preventDefault: function () {
+        this.prevented = true;
+      }
+    };
+    await act(async function () {
+      group.current.containerProps.onKeyDown(event);
+    });
+    return event;
+
+  }
+
+
+  test('uncontrolled selection through item onChange; the checked member is a no-op', async function () {
+    const calls = [];
+    const group = await renderGroup({ items: ITEMS, defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    assert.equal(group.current.state.value, 'a');
+    assert.equal(group.current.state.selectedIndex, 0);
+    await act(async function () {
+      group.current.getItemProps(1).onChange(true);
+    });
+    assert.deepEqual(calls, ['b']);
+    assert.equal(group.current.state.value, 'b');
+    assert.equal(group.current.state.selectedIndex, 1);
+    await act(async function () {
+      group.current.getItemProps(1).onChange(true);
+    });
+    assert.deepEqual(calls, ['b'], 'selecting the checked member is a no-op');
+  });
+
+  test('controlled reports the next value without mutating the selection', async function () {
+    const calls = [];
+    const group = await renderGroup({ items: ITEMS, value: 'a', onChange: function (next) { calls.push(next); } });
+    await act(async function () {
+      group.current.getItemProps(2).onChange(true);
+    });
+    assert.deepEqual(calls, ['c']);
+    assert.equal(group.current.state.value, 'a', 'the controlled selection does not move itself');
+    assert.equal(group.current.state.selectedIndex, 0);
+  });
+
+  test('one enabled member is focusable: the selected, else the first enabled', async function () {
+    const selected = await renderGroup({ items: ITEMS, defaultValue: 'b' });
+    assert.deepEqual([0, 1, 2].map(function (index) {
+      return selected.current.getItemProps(index).focusable;
+    }), [false, true, false]);
+    const unselected = await renderGroup({ items: ITEMS });
+    assert.deepEqual([0, 1, 2].map(function (index) {
+      return unselected.current.getItemProps(index).focusable;
+    }), [true, false, false]);
+    // A disabled selected member hands the tab stop to the first enabled
+    const items = [{ value: 'a' }, { value: 'b', disabled: true }, { value: 'c' }];
+    const fallback = await renderGroup({ items: items, defaultValue: 'b' });
+    assert.deepEqual([0, 1, 2].map(function (index) {
+      return fallback.current.getItemProps(index).focusable;
+    }), [true, false, false]);
+  });
+
+  test('item props carry the group answers and the member records focus without selecting', async function () {
+    const group = await renderGroup({ items: ITEMS, defaultValue: 'a' });
+    const props = group.current.getItemProps(2);
+    assert.equal(props.checked, false);
+    assert.equal(props.disabled, false);
+    assert.equal(typeof props.onChange, 'function');
+    assert.equal(typeof props.onGroupFocus, 'function');
+    assert.ok(props.rootRef !== null && typeof props.rootRef === 'object');
+    await act(async function () {
+      props.onGroupFocus();
+    });
+    assert.equal(group.current.state.activeIndex, 2);
+    assert.equal(group.current.state.value, 'a', 'focus alone never selects');
+    // getItemProps keeps one stable ref object per member value
+    assert.equal(group.current.getItemProps(2).rootRef, props.rootRef);
+  });
+
+  test('arrows move selection and focus together, skipping disabled members and wrapping; Home and End jump', async function () {
+    const calls = [];
+    const focused = [];
+    const items = [{ value: 'a' }, { value: 'b', disabled: true }, { value: 'c' }, { value: 'd' }];
+    const group = await renderGroup({ items: items, defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    // Seat a fake focusable element in each member's ref; a real focus
+    // event records the member through onGroupFocus, so the fake does too
+    for (let index = 0; index < items.length; index = index + 1) {
+      const memberIndex = index;
+      group.current.getItemProps(memberIndex).rootRef.current = { focus: function () {
+        focused.push(items[memberIndex].value);
+        group.current.getItemProps(memberIndex).onGroupFocus();
+      } };
+    }
+    // Focus a member first so movement starts from it
+    await act(async function () {
+      group.current.getItemProps(0).onGroupFocus();
+    });
+    // ArrowDown skips disabled b and lands on c, selecting and focusing it
+    let event = await keydown(group, 'ArrowDown');
+    assert.equal(event.prevented, true);
+    assert.equal(group.current.state.value, 'c');
+    assert.deepEqual(focused, ['c']);
+    // ArrowRight from c goes to d, then wraps past the end to a
+    event = await keydown(group, 'ArrowRight');
+    assert.equal(group.current.state.value, 'd');
+    event = await keydown(group, 'ArrowRight');
+    assert.equal(group.current.state.value, 'a', 'right wraps past the end');
+    // ArrowUp from a wraps to d
+    event = await keydown(group, 'ArrowUp');
+    assert.equal(group.current.state.value, 'd');
+    // ArrowLeft from d goes to c
+    event = await keydown(group, 'ArrowLeft');
+    assert.equal(group.current.state.value, 'c');
+    // Home and End choose the first and last enabled members
+    event = await keydown(group, 'Home');
+    assert.equal(group.current.state.value, 'a');
+    event = await keydown(group, 'End');
+    assert.equal(group.current.state.value, 'd');
+    assert.deepEqual(calls, ['c', 'd', 'a', 'd', 'c', 'a', 'd']);
+    assert.deepEqual(focused, ['c', 'd', 'a', 'd', 'c', 'a', 'd'], 'focus followed every move');
+    // An unhandled key is left alone
+    event = await keydown(group, 'x');
+    assert.equal(event.prevented, false);
+  });
+
+  test('a disabled group navigates nothing and selects nothing', async function () {
+    const calls = [];
+    const group = await renderGroup({ items: ITEMS, disabled: true, defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    assert.equal(group.current.state.disabled, true);
+    for (let index = 0; index < ITEMS.length; index = index + 1) {
+      assert.equal(group.current.getItemProps(index).focusable, false);
+      assert.equal(group.current.getItemProps(index).disabled, true);
+    }
+    const event = await keydown(group, 'ArrowRight');
+    assert.equal(event.prevented, false);
+    await act(async function () {
+      group.current.getItemProps(1).onChange(true);
+    });
+    assert.deepEqual(calls, []);
+    assert.equal(group.current.state.value, 'a');
+  });
+
+  test('an empty group has no selection, no tab stop and no-op navigation', async function () {
+    const group = await renderGroup({ items: [] });
+    assert.equal(group.current.state.selectedIndex, -1);
+    const event = await keydown(group, 'ArrowDown');
+    assert.equal(event.prevented, false);
+    const home = await keydown(group, 'Home');
+    assert.equal(home.prevented, false);
+  });
+
+  test('an all-disabled set has no tab stop and no movement', async function () {
+    const items = ITEMS.map(function (item) {
+      return Object.assign({}, item, { disabled: true });
+    });
+    const group = await renderGroup({ items: items });
+    for (let index = 0; index < items.length; index = index + 1) {
+      assert.equal(group.current.getItemProps(index).focusable, false);
+    }
+    const event = await keydown(group, 'ArrowDown');
+    assert.equal(event.prevented, false);
+  });
+
+  test('the mutation boundary guards disabled, removed and unchecked callbacks', async function () {
+    const calls = [];
+    const items = [{ value: 'a' }, { value: 'b', disabled: true }, { value: 'c' }];
+    const group = await renderGroup({ items: items, defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    // A disabled member's onChange is dead at the hook, not only in the
+    // rendered child
+    const disabledMember = group.current.getItemProps(1);
+    await act(async function () {
+      disabledMember.onChange(true);
+    });
+    assert.deepEqual(calls, []);
+    assert.equal(group.current.state.value, 'a');
+    // onChange(false) never selects - unchecking is not a selection
+    await act(async function () {
+      group.current.getItemProps(2).onChange(false);
+    });
+    assert.deepEqual(calls, []);
+    assert.equal(group.current.state.value, 'a');
+    // A callback retained from a removed member is dead
+    const removedCallback = group.current.getItemProps(2).onChange;
+    await group.render({ items: items.slice(0, 2), defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    await act(async function () {
+      removedCallback(true);
+    });
+    assert.deepEqual(calls, []);
+    assert.equal(group.current.state.value, 'a');
+    // A disabled member cannot take the recorded focus
+    await act(async function () {
+      group.current.getItemProps(1).onGroupFocus();
+    });
+    assert.equal(group.current.state.activeIndex, -1, 'the disabled member never becomes active');
+    // An enabled member still focuses and selects normally
+    await act(async function () {
+      group.current.getItemProps(0).onGroupFocus();
+      group.current.getItemProps(0).onChange(true);
+    });
+    assert.equal(group.current.state.activeIndex, 0);
+    assert.equal(group.current.state.value, 'a', 'selecting the checked member stays a no-op');
+    assert.deepEqual(calls, []);
+    await act(async function () {
+      group.current.getItemProps(0).onChange(true);
+      // c is removed in this render; re-render with it back
+    });
+    await group.render({ items: items, defaultValue: 'a', onChange: function (next) { calls.push(next); } });
+    await act(async function () {
+      group.current.getItemProps(2).onChange(true);
+    });
+    assert.deepEqual(calls, ['c'], 'a live enabled member still reports');
+  });
+
+  test('a disabled group never activates a member focus', async function () {
+    const group = await renderGroup({ items: ITEMS, disabled: true });
+    await act(async function () {
+      group.current.getItemProps(0).onGroupFocus();
+    });
+    assert.equal(group.current.state.activeIndex, -1);
+  });
+
+  test('reordering and removing items recomputes selection and focusability by value', async function () {
+    const group = await renderGroup({ items: ITEMS, defaultValue: 'b' });
+    assert.equal(group.current.state.selectedIndex, 1);
+    // Reorder: b's index and tab stop move with its value, not its ordinal
+    await group.render({ items: [ITEMS[2], ITEMS[0], ITEMS[1]], defaultValue: 'b' });
+    assert.equal(group.current.state.selectedIndex, 2);
+    assert.equal(group.current.getItemProps(2).focusable, true);
+    assert.equal(group.current.getItemProps(0).focusable, false);
+    // Remove the selected member: nothing checks and the tab stop falls back
+    await group.render({ items: [ITEMS[0], ITEMS[2]], defaultValue: 'b' });
+    assert.equal(group.current.state.selectedIndex, -1);
+    assert.equal(group.current.getItemProps(0).focusable, true);
+  });
+
+  test('bad or duplicate values throw a useful TypeError', async function () {
+    await assert.rejects(renderHook(behaviors.useRadioGroup, { items: [{ value: 'a' }, { value: 'a' }] }), /duplicate/);
+    await assert.rejects(renderHook(behaviors.useRadioGroup, { items: [{}] }), /value/);
+    await assert.rejects(renderHook(behaviors.useRadioGroup, { items: [{ value: NaN }] }), /value/);
+    await assert.rejects(renderHook(behaviors.useRadioGroup, { items: [{ value: Infinity }] }), /value/);
+  });
+
+});
+
+
 describe('behaviors: stateless hooks return the declared kind', function () {
 
   const ARGS = {
@@ -520,8 +816,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds the seventeen behavior files plus the composer', function () {
-    assert.equal(files.length, 18);
+  test('the directory holds the eighteen behavior files plus the composer', function () {
+    assert.equal(files.length, 20);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {

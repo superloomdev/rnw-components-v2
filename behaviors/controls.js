@@ -254,13 +254,13 @@ export default function createControlsBehaviors (deps) {
   /********************************************************************
   Checkbox behavior: checked, indeterminate, and the interaction states.
 
-  @param {Object} props - { checked, indeterminate, disabled, label, onChange }
+  @param {Object} props - { checked, defaultChecked, indeterminate, disabled, label, onChange }
 
   @return {Object} - { rootProps, inputProps, labelProps, state }
   *********************************************************************/
   function useCheckbox (props) {
 
-    const [internalChecked, setInternalChecked] = useState(false);
+    const [internalChecked, setInternalChecked] = useState(props.defaultChecked === true);
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);

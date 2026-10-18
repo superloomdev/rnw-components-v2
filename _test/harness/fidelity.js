@@ -36,8 +36,8 @@ const INSIDE = Object.freeze([1, 2, 3]);
 const BELOW = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]);
 // The part a focus ring is drawn around and a shadow falls from, per component,
 // and the parts whose borders may draw a ring (their border CSS is left to the pixels while focused)
-const ANCHOR = Object.freeze({ Button: 'root', IconButton: 'root', Checkbox: 'box', TextInput: 'frame', TextArea: 'frame', Select: 'frame', PasswordInput: 'frame', NumberInput: 'frame', Search: 'frame', ExpandableSearch: 'frame', TimePicker: 'frame' });
-const RING_PARTS = Object.freeze({ Button: ['root'], IconButton: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], TextArea: ['frame', 'edge'], Select: ['frame', 'edge'], PasswordInput: ['frame', 'edge', 'toggleFace'], NumberInput: ['frame', 'edge', 'decrementFace', 'incrementFace'], Search: ['frame', 'edge', 'clearFace'], ExpandableSearch: ['frame', 'triggerFace', 'clearFace'], TimePicker: ['frame', 'edge'] });
+const ANCHOR = Object.freeze({ Button: 'root', IconButton: 'root', Checkbox: 'box', TextInput: 'frame', TextArea: 'frame', Select: 'frame', PasswordInput: 'frame', NumberInput: 'frame', Search: 'frame', ExpandableSearch: 'frame', TimePicker: 'frame', Slider: 'thumb' });
+const RING_PARTS = Object.freeze({ Button: ['root'], IconButton: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], TextArea: ['frame', 'edge'], Select: ['frame', 'edge'], PasswordInput: ['frame', 'edge', 'toggleFace'], NumberInput: ['frame', 'edge', 'decrementFace', 'incrementFace'], Search: ['frame', 'edge', 'clearFace'], ExpandableSearch: ['frame', 'triggerFace', 'clearFace'], TimePicker: ['frame', 'edge'], Slider: ['thumb', 'frame'] });
 // How far outside the cell body a pixel is compared (the cell chrome lies beyond)
 const OUTSIDE = 12;
 // Properties the pixels answer instead of the CSS that draws them
@@ -55,7 +55,7 @@ border, above any centered text).
 
 @return {void}
 *********************************************************************/
-function samplePaint (state, shot) {
+export function samplePaint (state, shot, omitted) {
 
   if (!shot) {
     return;
@@ -66,8 +66,19 @@ function samplePaint (state, shot) {
     if (part === null || part.visible !== true || part.ink !== undefined || part._bodyX === undefined || part.width < 6 || part.height < 6) {
       continue;
     }
-    const inset = Math.min(part.height / 2, Math.max(3, (parseFloat(part.borderTopWidth) || 0) + 2));
-    const pixel = image.at(MARGIN + part._bodyX + part.width / 2, MARGIN + part._bodyY + inset);
+    delete part.paint;
+    const inset = part._paintCenter === true ? part.height / 2
+      : Math.min(part.height / 2, Math.max(3, (parseFloat(part.borderTopWidth) || 0) + 2));
+    const x = part._bodyX + part.width / 2;
+    const y = part._bodyY + inset;
+    if ((omitted || []).some(function (area) {
+      return area && area.visible === true && area._bodyX !== undefined &&
+        x >= area._bodyX && x <= area._bodyX + area.width &&
+        y >= area._bodyY && y <= area._bodyY + area.height;
+    })) {
+      continue;
+    }
+    const pixel = image.at(MARGIN + x, MARGIN + y);
     if (pixel !== null) {
       part.paint = 'rgb(' + pixel.r + ', ' + pixel.g + ', ' + pixel.b + ')';
     }
@@ -106,9 +117,11 @@ export function profileOf (part, shot, omitted) {
   };
   const centerX = MARGIN + part._bodyX + part.width / 2;
   const centerY = MARGIN + part._bodyY + part.height / 2;
+  const inside = Number.isInteger(part._profileDepth) && part._profileDepth > 0
+    ? Array.from({ length: part._profileDepth }, function (_, index) { return index + 1; }) : INSIDE;
 
   return {
-    inside: INSIDE.map(function (offset) {
+    inside: inside.map(function (offset) {
       return sample(centerX, MARGIN + part._bodyY + offset);
     }),
     left: LEFT.map(function (offset) {
@@ -141,7 +154,11 @@ export function compareProfiles (ours, upstream) {
     return [];
   }
   const out = [];
-  const bands = { inside: INSIDE, left: LEFT, below: BELOW };
+  const bands = {
+    inside: Array.from({ length: ours.inside.length }, function (_, index) { return index + 1; }),
+    left: LEFT,
+    below: BELOW
+  };
   for (const band of Object.keys(bands)) {
     for (let i = 0; i < bands[band].length; i++) {
       const a = ours[band][i];
@@ -279,7 +296,9 @@ async function collect (page, component, reference, side, masks) {
   const failures = [];
   const shoot = async function (label, key) {
     shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations);
-    samplePaint(states[key], shots[key]);
+    samplePaint(states[key], shots[key], Object.keys(masks || {}).map(function (name) {
+      return states[key][name];
+    }));
     if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
       // No margin: the part's own pixels are compared, without the backdrop
       // that differs under it (a fixed layer's, a top-layered element's)
@@ -299,7 +318,10 @@ async function collect (page, component, reference, side, masks) {
   // A reference where Escape is the component's own action skips only that
   // key on leave; pointer release, blur and the settle wait stay
   const leave = function () {
-    return leaveInteraction(page, { escape: reference.escapeOnLeave !== false });
+    return leaveInteraction(page, {
+      escape: reference.escapeOnLeave !== false,
+      releaseBeforeMove: reference.releaseBeforeMove === true
+    });
   };
   if (reference.target) {
     for (const entry of enabled) {
@@ -308,7 +330,7 @@ async function collect (page, component, reference, side, masks) {
         const key = entry.label + ' @' + interaction;
         // A declared main target missing on an enabled, mounted state is a
         // failure, as a missing additional target is - not a silent skip
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true })) {
           failures.push(key + ': target not found on ' + side);
           continue;
         }

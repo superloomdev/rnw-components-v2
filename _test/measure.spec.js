@@ -108,7 +108,10 @@ async function drawnParts (page, component, reference, side, extended, states) {
   // A reference where Escape is the component's own action skips only that
   // key on leave; pointer release, blur and the settle wait stay
   const leave = function () {
-    return leaveInteraction(page, { escape: reference.escapeOnLeave !== false });
+    return leaveInteraction(page, {
+      escape: reference.escapeOnLeave !== false,
+      releaseBeforeMove: reference.releaseBeforeMove === true
+    });
   };
   const read = async function (label) {
     collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true }));
@@ -120,7 +123,7 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: target.point === true })) {
           failures.push(entry.label + ' @' + interaction + ': target not found on ' + side);
           continue;
         }

@@ -14,6 +14,10 @@ import buttonApi from './molecule/button/api.js';
 import buttonSpec from './molecule/button/spec.js';
 import checkboxApi from './molecule/checkbox/api.js';
 import checkboxSpec from './molecule/checkbox/spec.js';
+import checkboxSkeletonApi from './molecule/checkbox/api.checkbox-skeleton.js';
+import checkboxSkeletonSpec from './molecule/checkbox/spec.checkbox-skeleton.js';
+import checkboxGroupApi from './molecule/checkbox/api.checkbox-group.js';
+import checkboxGroupSpec from './molecule/checkbox/spec.checkbox-group.js';
 import textInputApi from './molecule/text-input/api.js';
 import textInputSpec from './molecule/text-input/spec.js';
 import textAreaApi from './molecule/text-input/api.text-area.js';
@@ -38,6 +42,10 @@ import expandableSearchApi from './molecule/search/api.expandable-search.js';
 import expandableSearchSpec from './molecule/search/spec.expandable-search.js';
 import searchSkeletonApi from './molecule/search/api.search-skeleton.js';
 import searchSkeletonSpec from './molecule/search/spec.search-skeleton.js';
+import sliderApi from './molecule/slider/api.js';
+import sliderSpec from './molecule/slider/spec.js';
+import sliderSkeletonApi from './molecule/slider/api.slider-skeleton.js';
+import sliderSkeletonSpec from './molecule/slider/spec.slider-skeleton.js';
 import selectApi from './composite/select/api.js';
 import selectSpec from './composite/select/spec.js';
 import dropdownApi from './composite/select/api.dropdown.js';
@@ -48,6 +56,10 @@ import progressBarApi from './molecule/progress/api.js';
 import progressBarSpec from './molecule/progress/spec.js';
 import radioButtonApi from './molecule/radio-button/api.js';
 import radioButtonSpec from './molecule/radio-button/spec.js';
+import radioButtonSkeletonApi from './molecule/radio-button/api.radio-button-skeleton.js';
+import radioButtonSkeletonSpec from './molecule/radio-button/spec.radio-button-skeleton.js';
+import radioButtonGroupApi from './molecule/radio-button/api.radio-button-group.js';
+import radioButtonGroupSpec from './molecule/radio-button/spec.radio-button-group.js';
 import toggleApi from './molecule/switch/api.js';
 import toggleSpec from './molecule/switch/spec.js';
 import tooltipApi from './molecule/tooltip/api.js';
@@ -236,6 +248,12 @@ const NUMBER_INPUT_SKELETON_REQUIRED = [].concat(numberInputSkeletonApi.tokens, 
 const SEARCH_REQUIRED = [].concat(searchApi.tokens, specTokens(searchSpec));
 const EXPANDABLE_SEARCH_REQUIRED = [].concat(expandableSearchApi.tokens, specTokens(expandableSearchSpec));
 const SEARCH_SKELETON_REQUIRED = [].concat(searchSkeletonApi.tokens, specTokens(searchSkeletonSpec));
+const CHECKBOX_SKELETON_REQUIRED = [].concat(checkboxSkeletonApi.tokens, specTokens(checkboxSkeletonSpec));
+const RADIO_BUTTON_SKELETON_REQUIRED = [].concat(radioButtonSkeletonApi.tokens, specTokens(radioButtonSkeletonSpec));
+const CHECKBOX_GROUP_REQUIRED = [].concat(checkboxGroupApi.tokens, specTokens(checkboxGroupSpec));
+const RADIO_BUTTON_GROUP_REQUIRED = [].concat(radioButtonGroupApi.tokens, specTokens(radioButtonGroupSpec));
+const SLIDER_REQUIRED = [].concat(sliderApi.tokens, specTokens(sliderSpec));
+const SLIDER_SKELETON_REQUIRED = [].concat(sliderSkeletonApi.tokens, specTokens(sliderSkeletonSpec));
 
 // The hue cells a Tag `type` reads on demand - the variants' hover, border
 // and glyph cells ride the same on-demand rule
@@ -259,7 +277,7 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED, FORM_REQUIRED, FORM_GROUP_REQUIRED, FORM_ITEM_REQUIRED, FORM_LABEL_REQUIRED, HEADING_REQUIRED, SECTION_REQUIRED, HSTACK_REQUIRED, STACK_REQUIRED, VSTACK_REQUIRED, TOGGLE_SKELETON_REQUIRED, LAYER_REQUIRED, PASSWORD_INPUT_REQUIRED, TEXT_INPUT_SKELETON_REQUIRED, TEXT_AREA_SKELETON_REQUIRED, TIME_PICKER_REQUIRED, TIME_PICKER_SELECT_REQUIRED, NUMBER_INPUT_REQUIRED, NUMBER_INPUT_SKELETON_REQUIRED, SEARCH_REQUIRED, EXPANDABLE_SEARCH_REQUIRED, SEARCH_SKELETON_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED, FORM_REQUIRED, FORM_GROUP_REQUIRED, FORM_ITEM_REQUIRED, FORM_LABEL_REQUIRED, HEADING_REQUIRED, SECTION_REQUIRED, HSTACK_REQUIRED, STACK_REQUIRED, VSTACK_REQUIRED, TOGGLE_SKELETON_REQUIRED, LAYER_REQUIRED, PASSWORD_INPUT_REQUIRED, TEXT_INPUT_SKELETON_REQUIRED, TEXT_AREA_SKELETON_REQUIRED, TIME_PICKER_REQUIRED, TIME_PICKER_SELECT_REQUIRED, NUMBER_INPUT_REQUIRED, NUMBER_INPUT_SKELETON_REQUIRED, SEARCH_REQUIRED, EXPANDABLE_SEARCH_REQUIRED, SEARCH_SKELETON_REQUIRED, CHECKBOX_SKELETON_REQUIRED, RADIO_BUTTON_SKELETON_REQUIRED, CHECKBOX_GROUP_REQUIRED, RADIO_BUTTON_GROUP_REQUIRED, SLIDER_REQUIRED, SLIDER_SKELETON_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 

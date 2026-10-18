@@ -1329,14 +1329,12 @@
         "version": "1.115.0",
         "export": "CheckboxGroup"
       },
-      "description": "CheckboxGroup is a component in the Checkbox family.",
+      "description": "CheckboxGroup gathers checkboxes under a legend in a vertical stack, drawing the group's invalid edge on every member and the helper or error message below while a disabled group disables every member; the second system has no checkbox group, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "press"
@@ -1349,8 +1347,10 @@
       "carbon_twin": "CheckboxGroup",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "CheckboxSkeleton",
@@ -1361,18 +1361,13 @@
         "version": "1.115.0",
         "export": "CheckboxSkeleton"
       },
-      "description": "CheckboxSkeleton is a component in the Checkbox family.",
+      "description": "A label-only loading bar with the checkbox row's empty box inset.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "feedback.press"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "press"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1382,7 +1377,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FloatingActionButton",
@@ -1713,7 +1708,7 @@
         "version": "1.115.0",
         "export": "RadioButtonGroup"
       },
-      "description": "RadioButtonGroup is a component in the RadioButton family.",
+      "description": "RadioButtonGroup gathers radio buttons under a legend in a row or a stack, sharing one selection with a single roving tab stop and arrow navigation, and drawing the helper or error message below; the second system has no radio group, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -1721,7 +1716,7 @@
       "enums": [],
       "behaviors": [
         "controllable-state",
-        "roving-tab-index"
+        "radio-group"
       ],
       "parent": null,
       "reference": {
@@ -1731,8 +1726,10 @@
       "carbon_twin": "RadioButtonGroup",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "RadioButtonSkeleton",
@@ -1743,16 +1740,13 @@
         "version": "1.115.0",
         "export": "RadioButtonSkeleton"
       },
-      "description": "RadioButtonSkeleton is a component in the RadioButton family.",
+      "description": "A label-only loading bar at the radio row's height, with no circle.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1762,7 +1756,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ExpandableSearch",
@@ -1869,16 +1863,18 @@
         "version": "1.115.0",
         "export": "Slider"
       },
-      "description": "Slider is a component in the Slider family.",
+      "description": "A bounded numeric value adjusted by a draggable handle, keyboard controls or its optional number field.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
-        "anatomy.slider_handle"
+        "anatomy.slider_focus",
+        "anatomy.slider_disabled_paint"
       ],
       "behaviors": [
-        "controllable-state"
+        "controllable-state",
+        "slider"
       ],
       "parent": null,
       "reference": {
@@ -1889,7 +1885,7 @@
       "material_twin": "md-slider",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SliderSkeleton",
@@ -1900,17 +1896,13 @@
         "version": "1.115.0",
         "export": "SliderSkeleton"
       },
-      "description": "SliderSkeleton is a component in the Slider family.",
+      "description": "A non-interactive placeholder for a slider label, endpoints and track.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.slider_handle"
-      ],
-      "behaviors": [
-        "controllable-state"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1920,7 +1912,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HStack",

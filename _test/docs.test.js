@@ -63,8 +63,9 @@ describe('docs: generated pages', function () {
     }), ['TextInput:320', 'Select:320', 'TextArea:320',
       'Dropdown:320', 'Menu:400', 'Modal:640', 'ProgressBar:320',
       'AspectRatio:320', 'ButtonSet:640', 'Divider:320', 'SkeletonText:320', 'ProgressStep:160',
-      'NumberInput:320', 'NumberInputSkeleton:320', 'ExpandableSearch:320', 'Search:320',
-      'SearchSkeleton:320', 'PasswordInput:320', 'TextAreaSkeleton:320', 'TextInputSkeleton:320',
+      'CheckboxGroup:320', 'CheckboxSkeleton:320', 'NumberInput:320', 'NumberInputSkeleton:320',
+      'RadioButtonGroup:320', 'RadioButtonSkeleton:320', 'ExpandableSearch:320', 'Search:320',
+      'SearchSkeleton:320', 'Slider:640', 'SliderSkeleton:640', 'PasswordInput:320', 'TextAreaSkeleton:320', 'TextInputSkeleton:320',
       'TimePicker:320', 'TimePickerSelect:320']);
   });
 

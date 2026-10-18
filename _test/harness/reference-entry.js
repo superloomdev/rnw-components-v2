@@ -49,6 +49,7 @@ import '@material/web/menu/menu.js';
 import '@material/web/menu/menu-item.js';
 import '@material/web/divider/divider.js';
 import '@material/web/dialog/dialog.js';
+import '@material/web/slider/slider.js';
 import utils from 'helper-utils';
 import debug from 'helper-debug';
 import themer from 'helper-themer';

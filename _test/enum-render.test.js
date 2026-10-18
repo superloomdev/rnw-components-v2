@@ -1,17 +1,14 @@
-// Info: Enum coverage. For every built component whose roster row lists enum
-// tokens, each value the contract lists for that token produces a different
-// render of the component's sample states (an enum may govern only some of
-// them, such as a tall size); a value that changes nothing in any state
-// means the component ignores the theme's choice. The set of components
-// under test is computed from the roster and all.js, never typed here.
-
+// Info: Enum coverage across supported templates. Each contract value must
+// change the combined render of the component's sample states somewhere:
+// a disabled-compositing choice is legitimately indistinguishable with
+// opaque colors, but must be observable with a translucent template.
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import * as factories from 'rnw-components/all';
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
 import { createSampleElement } from './harness/sample.js';
-import { Lib, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const contract = Lib.Themer.getContract();
@@ -24,31 +21,18 @@ for (const row of roster.rows) {
 const withEnums = components.filter(function (component) {
   return rowsByName[component.name].enums.length > 0;
 });
+const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 
 afterEach(cleanup);
 
-
-/********************************************************************
-Build a default-template system whose built tokens carry one override.
-
-@param {String} token - Token name
-@param {String} value - Enum value
-
-@return {Object} - Registry
-*********************************************************************/
-function systemWith (token, value) {
-
-  const built = buildNative('default');
+function systemWith (template, token, value) {
+  const built = buildNative(template);
   const tokens = Object.assign({}, built.tokens);
   tokens[token] = value;
-
-  return buildSystem('default', factories, { built: Object.assign({}, built, { tokens: tokens }) });
-
+  return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
 }
 
-
 describe('enum render: every listed enum value changes the render', function () {
-
   test('every roster enum on a built component is a contract enum token', function () {
     for (const component of withEnums) {
       for (const token of rowsByName[component.name].enums) {
@@ -67,18 +51,23 @@ describe('enum render: every listed enum value changes the render', function () 
         const values = contract.tokens[token].values;
         const renders = {};
         for (const value of values) {
-          const Registry = systemWith(token, value);
-          const container = await render(React.createElement(React.Fragment, null, component.sample.map(function (state, index) {
-            return React.createElement(React.Fragment, { key: index }, createSampleElement(React, Registry, component.name, state));
-          })));
-          // Generated ids differ on every render; only the render the enum drives may differ
-          renders[value] = container.innerHTML.replace(/(id|aria-labelledby|aria-describedby|aria-controls)="[^"]*"/g, '$1="*"');
+          const profiles = [];
+          for (const template of TEMPLATE_NAMES) {
+            const Registry = systemWith(template, token, value);
+            const container = await render(React.createElement(React.Fragment, null, component.sample.map(function (state, index) {
+              return React.createElement(React.Fragment, { key: index }, createSampleElement(React, Registry, component.name, state));
+            })));
+            profiles.push({
+              template: template,
+              html: container.innerHTML.replace(/(id|aria-labelledby|aria-describedby|aria-controls)="[^"]*"/g, '$1="*"')
+            });
+          }
+          renders[value] = JSON.stringify(profiles);
         }
         const distinct = new Set(Object.values(renders));
         assert.equal(distinct.size, values.length,
-          component.name + ' renders identically for two values of ' + token + ': ' + JSON.stringify(renders));
+          component.name + ' renders identically across all templates for two values of ' + token);
       });
     }
   }
-
 });
