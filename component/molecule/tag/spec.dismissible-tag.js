@@ -9,5 +9,6 @@ export default Object.freeze({
   closeGap: 'control.tag_close_gap',
   closeInset: 'control.tag_close_inset',
   closeIconSize: 'control.tag_close_icon_size',
+  focusOffset: 'control.tag_close_focus_offset',
   focusRingWidth: 'border.width_01'
 });

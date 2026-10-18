@@ -267,7 +267,7 @@
     },
     {
       "id": "text-input-unlabelled-placeholder",
-      "file": "component/molecule/text-input/text-input.js",
+      "file": "component/molecule/text-input/field-parts.js",
       "find": "          placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,",
       "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
       "runner": "node",
@@ -417,7 +417,7 @@
     },
     {
       "id": "text-input-no-zero-basis",
-      "file": "component/molecule/text-input/text-input.js",
+      "file": "component/molecule/text-input/field-parts.js",
       "find": "            flexBasis: 'auto',\n            flexGrow: 1,\n            flexShrink: 1,\n",
       "replace": "            flex: 1,\n",
       "runner": "node",
@@ -508,8 +508,8 @@
     {
       "id": "anatomy-ripple-pressed",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "anatomy.spec.js",
       "testName": "a held press paints the state layer over a button",
@@ -618,7 +618,7 @@
     {
       "id": "context-field-disabled-outline-border",
       "file": "component/context.js",
-      "find": "    const outline = disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
+      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
       "replace": "    const outline = cell('field_outline');",
       "runner": "node",
       "test": "select.test.js",
@@ -678,8 +678,8 @@
     {
       "id": "fidelity-state-cells",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "fidelity.spec.js",
       "testName": "Button / second / light: matches the reference in every state",
@@ -1434,6 +1434,316 @@
       "test": "fidelity.spec.js",
       "testName": "Heading / primary / light: matches the reference in every state",
       "why": "a web text presentation that emits the absolute line height must fail the Heading fidelity read"
+    },
+    {
+      "id": "context-press-separate-hover",
+      "file": "component/context.js",
+      "find": "opacity: live && state.hovered === true ? 1 : 0",
+      "replace": "opacity: live && state.hovered === true && state.pressed !== true ? 1 : 0",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "separateLayers: ripple mounts the hover and the active fills as two layers",
+      "why": "a hover layer that yields while a press is in flight must fail the simultaneous-layers assertion"
+    },
+    {
+      "id": "context-press-colors-every-phase",
+      "file": "component/context.js",
+      "find": "        if (!(key in map)) {",
+      "replace": "        if (false && !(key in map)) {",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "colors: an explicit map replaces the prefix convention; every phase key must be present",
+      "why": "an explicit press color map missing a phase key must throw rather than fall back silently"
+    },
+    {
+      "id": "context-target-inline-expansion",
+      "file": "component/context.js",
+      "find": "      style.start = expansion === 'start' ? face.width - width : 0;",
+      "replace": "      style.start = 0;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "inlineExpansion pushes the minimum out through the named logical edge, so adjacent faces share a boundary without overlap",
+      "why": "a named-edge expansion that centers instead must fail - the two NumberInput targets would overlap"
+    },
+    {
+      "id": "search-clear-hidden-empty",
+      "file": "component/molecule/search/search.js",
+      "find": "      hidden: !state.populated,",
+      "replace": "      hidden: false,",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "carbon / default: searchbox in a search landmark with the clear action",
+      "why": "the clear action must be hidden and untabbable while the field is empty"
+    },
+    {
+      "id": "search-escape-populated-clear",
+      "file": "behaviors/keyboard.js",
+      "find": "      if (options.populated === true) {",
+      "replace": "      if (false && options.populated === true) {",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "Escape clears a populated field; on an empty field it asks the owner to collapse",
+      "why": "Escape on a populated search clears it instead of collapsing the owner"
+    },
+    {
+      "id": "search-submit-reports",
+      "file": "behaviors/keyboard.js",
+      "find": "      if (typeof options.onSubmit === 'function') {",
+      "replace": "      if (false && typeof options.onSubmit === 'function') {",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "submission reports the current text",
+      "why": "submission must report the current text through onSubmit"
+    },
+    {
+      "id": "number-input-min-clamp",
+      "file": "behaviors/number-input.js",
+      "find": "      if (!isNullOrUndefined(min) && next < min) {",
+      "replace": "      if (false && !isNullOrUndefined(min) && next < min) {",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "a stepper at the bound reports nothing; the value never passes it",
+      "why": "a stepper press must clamp at the bound and stay silent when the clamp is a no-op"
+    },
+    {
+      "id": "number-input-finite-report",
+      "file": "behaviors/number-input.js",
+      "find": "      if (parsed !== undefined) {\n        props.onChange(parsed);",
+      "replace": "      if (true || parsed !== undefined) {\n        props.onChange(parsed);",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "typing keeps the raw text and reports the finite value",
+      "why": "onChange must report only finite parses; a non-finite edit reports nothing"
+    },
+    {
+      "id": "number-input-spinbutton-role",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "        accessibilityRole: 'spinbutton',",
+      "replace": "        accessibilityRole: 'text',",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "carbon / default: spinbutton, steppers and bounds from the theme",
+      "why": "the numeric input is a spinbutton in the accessibility tree"
+    },
+    {
+      "id": "number-input-min-width",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "      rootStyle: { minWidth: ctx.metric('NumberInput', 'minWidth') },",
+      "replace": "      rootStyle: {},",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "the field never narrows below the theme minimum width",
+      "why": "the number field keeps the theme's minimum width so the steppers never crowd the text"
+    },
+    {
+      "id": "number-input-center-divider",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "    divider('center', geometry.slotWidth - dividerWidth / 2, !downLive && !upLive));",
+      "replace": "    divider('center', geometry.slotWidth, !downLive && !upLive));",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "the painted divider centers between the two action seats",
+      "why": "the one-point divider rule centers exactly on the boundary between the two action seats"
+    },
+    {
+      "id": "password-masked-input",
+      "file": "component/molecule/text-input/password-input.js",
+      "find": "      inputProps: { secureTextEntry: !visible },",
+      "replace": "      inputProps: { secureTextEntry: true },",
+      "runner": "node",
+      "test": "password-input.test.js",
+      "testName": "the value is masked until the reveal action turns it readable, and pressing again masks it",
+      "why": "the reveal action must switch the input between password and readable text"
+    },
+    {
+      "id": "time-picker-invalid-width",
+      "file": "component/molecule/text-input/time-picker.js",
+      "find": "          width: invalid ? ctx.metric('TimePicker', 'widthInvalid') : ctx.metric('TimePicker', 'width')",
+      "replace": "          width: ctx.metric('TimePicker', 'widthInvalid')",
+      "runner": "node",
+      "test": "time-picker.test.js",
+      "testName": "carbon / default: label, row and message at the theme metrics",
+      "why": "the field takes the wider invalid width only while invalid; the resting width is the theme's fixed time width"
+    },
+    {
+      "id": "time-picker-select-gap",
+      "file": "component/molecule/text-input/time-picker.js",
+      "find": "          gap: ctx.metric('TimePicker', 'selectGap'),",
+      "replace": "          gap: 0,",
+      "runner": "node",
+      "test": "time-picker.test.js",
+      "testName": "material / default: label, row and message at the theme metrics",
+      "why": "the row spaces its members by the theme's select gap"
+    },
+    {
+      "id": "time-picker-select-provider",
+      "file": "component/molecule/text-input/time-picker-select.js",
+      "find": "    const parent = Compound.useContext();",
+      "replace": "    const parent = { disabled: false, size: undefined };",
+      "runner": "node",
+      "test": "time-picker-select.test.js",
+      "testName": "standalone it fails loudly, naming the missing parent",
+      "why": "the member reads its parent context; rendering it standalone must throw"
+    },
+    {
+      "id": "skeleton-area-height",
+      "file": "component/molecule/text-input/text-area-skeleton.js",
+      "find": "      height: ctx.metric('TextAreaSkeleton', 'height'),",
+      "replace": "      height: ctx.metric('TextAreaSkeleton', 'labelHeight'),",
+      "runner": "node",
+      "test": "text-area-skeleton.test.js",
+      "testName": "carbon / default: label placeholder over the text-area height",
+      "why": "the text area placeholder draws the theme's text-area height, not the label's"
+    },
+    {
+      "id": "expandable-escape-collapse",
+      "file": "component/molecule/search/expandable-search.js",
+      "find": "      onCollapseRequest: disclosure.close,",
+      "replace": "      onCollapseRequest: undefined,",
+      "runner": "node",
+      "test": "expandable-search.test.js",
+      "testName": "Escape on the empty expanded field collapses and returns focus to the trigger",
+      "why": "Escape on the empty field must ask the disclosure to close"
+    },
+    {
+      "id": "search-landmark-role",
+      "file": "component/molecule/search/search.js",
+      "find": "      role: 'search',\n      style: [{ alignSelf: 'stretch'",
+      "replace": "      role: 'none',\n      style: [{ alignSelf: 'stretch'",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "carbon / default: searchbox in a search landmark with the clear action",
+      "why": "the search field lives in a search landmark"
+    },
+    {
+      "id": "dismissible-tag-close-active-layer",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": "        backgroundColor: pressed ? ctx.color('tag_close_layer_active') : 'transparent',",
+      "replace": "        backgroundColor: pressed ? ctx.color('tag_interactive_layer_active') : 'transparent',",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "a press keeps the hover fill and layers the close's own active cell below the glyph",
+      "why": "the close's pressed layer reads its own cell, not the assist chip's; under the second system the two differ"
+    },
+    {
+      "id": "selectable-tag-unselected-active-layer",
+      "file": "component/molecule/tag/selectable-tag.js",
+      "find": "          ? ctx.color(selected ? 'tag_selectable_layer_active' : 'tag_selectable_layer_unselected_active') : undefined,",
+      "replace": "          ? ctx.color('tag_selectable_layer_active') : undefined,",
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "a press layers the unselected active cell while unselected, the selected one while selected",
+      "why": "the unselected press reads the unselected layer cell; the second system's filter chip presses a different role unselected"
+    },
+    {
+      "id": "fidelity-additional-target-phases",
+      "file": "_test/harness/fidelity.js",
+      "find": "  const additional = Array.isArray(reference.additionalTargets) ? reference.additionalTargets : [];",
+      "replace": "  const additional = [];",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the fidelity driver exercises every declared field-action phase",
+      "why": "a driver that drops the declared additional-target list must fail, not shrink the coverage"
+    },
+    {
+      "id": "fidelity-mask-origin",
+      "file": "_test/harness/fidelity.js",
+      "find": "  const dy = origin && origin._bodyY !== undefined ? -origin._bodyY : 0;",
+      "replace": "  const dy = 0;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "omitted pixels are copied only after the two frame origins align",
+      "why": "a part mask must be located in the compared frame, not an unaligned cell body"
+    },
+    {
+      "id": "fidelity-mask-anchor-node",
+      "file": "_test/harness/fidelity.js",
+      "find": "    if (core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
+      "replace": "    if (false && core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "an omission cannot mask the entire compared anchor",
+      "why": "the comparison must reject any omission hiding the whole reference anchor"
+    },
+    {
+      "id": "fidelity-profile-omission",
+      "file": "_test/harness/fidelity.js",
+      "find": "    if ((omitted || []).some(function (area) {",
+      "replace": "    if ([].some(function (area) {",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a proven omission excludes its own profile pixels but not the focus ring",
+      "why": "profiles must exclude the same proven no-counterpart parts as the screenshot without hiding real ring defects"
+    },
+    {
+      "id": "part-reader-declared-padding",
+      "file": "_test/harness/page.js",
+      "find": "            if (Array.isArray(part.compare) && part.compare.includes(property)) {",
+      "replace": "            if (false && Array.isArray(part.compare) && part.compare.includes(property)) {",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the part reader rejects zero-area and transparent-ancestor seats but keeps hairlines",
+      "why": "explicitly compared padding must be measured instead of passing as undefined on both sides"
+    },
+    {
+      "id": "numeric-focus-selection",
+      "file": "_test/harness/page.js",
+      "find": "    if (numberInput) {",
+      "replace": "    if (false && numberInput) {",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "keyboard focus collapses numeric selection without changing its value",
+      "why": "the keyboard-focus fixture collapses native number-input selection without changing or stepping the value"
+    },
+    {
+      "id": "fidelity-shadow-target-unresolved",
+      "file": "_test/harness/page.js",
+      "find": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = scope.querySelector(segments[i]);",
+      "replace": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = null;",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the fidelity driver exercises declared shadow-target phases",
+      "why": "a shadow-root target that resolves to nothing must be a reported failure, not a silent skip"
+    },
+    {
+      "id": "password-compact-tooltip",
+      "file": "component/molecule/text-input/password-input.js",
+      "find": "      compact: true,\n",
+      "replace": "      compact: false,\n",
+      "runner": "node",
+      "test": "password-input.test.js",
+      "testName": "the reveal action names itself through the compact tooltip, not the full bubble",
+      "why": "the icon tooltip must read the compact member cells, not the full tooltip's padding"
+    },
+    {
+      "id": "context-focus-offset-override",
+      "file": "component/context.js",
+      "find": "    const offset = options !== undefined && Utils.isNumber(options.offset) ? options.offset : token('control.' + family + '_focus_offset');",
+      "replace": "    const offset = token('control.' + family + '_focus_offset');",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "options.offset overrides the family offset, including zero",
+      "why": "a member's own focus offset must reach the ring, including a member cell of zero"
+    },
+    {
+      "id": "dismissible-close-focus-offset",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": "offset: ctx.metric('DismissibleTag', 'focusOffset')",
+      "replace": "offset: ctx.token('control.tag_focus_offset')",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "the inset close uses its own zero focus offset",
+      "why": "the close ring must use the close member cell, not the generic tag focus offset"
+    },
+    {
+      "id": "compact-select-fractional-width",
+      "file": "component/composite/select/select.js",
+      "find": "    const sizerWidth = intrinsic.anchor === null ? undefined : Math.ceil(intrinsic.anchor.width);",
+      "replace": "    const sizerWidth = intrinsic.anchor === null ? undefined : Math.floor(intrinsic.anchor.width);",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "intrinsically sized selections retain complete labels after fonts load",
+      "why": "rounded-down fractional text widths must fail the no-truncation assertion even when native-select parity passes under another template"
     }
   ]
 }

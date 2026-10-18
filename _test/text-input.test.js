@@ -113,15 +113,16 @@ describe('TextInput: every sample state under every template', function () {
         // Input text and value
         assert.equal(parts.input.style.fontSize, t['type.field_value'].fontSize + 'px');
         assert.equal(parts.input.style.color, cssValue('color', t['color.field_value' + (disabled ? '_disabled' : '')]));
-        assert.equal(parts.input.value, props.value || '');
+        const populated = typeof props.value === 'string' || typeof props.defaultValue === 'string';
+        assert.equal(parts.input.value, typeof props.value === 'string' ? props.value : (props.defaultValue || ''));
 
         // Placeholder: shown unless a floating label is resting over the field
-        const resting = t['anatomy.label'] === 'floating' && Boolean(props.label) && typeof props.value !== 'string';
+        const resting = t['anatomy.label'] === 'floating' && Boolean(props.label) && !populated;
         assert.equal(parts.input.getAttribute('placeholder'), props.placeholder && !resting ? props.placeholder : null);
 
         // Label: placement by the theme's enum
         if (props.label) {
-          const raised = t['anatomy.label'] === 'floating' && typeof props.value === 'string';
+          const raised = t['anatomy.label'] === 'floating' && populated;
           const set = raised ? t['type.field_label_raised'] : t['type.field_label'];
           assert.equal(parts.label.textContent, props.label);
           assert.equal(parts.label.style.fontSize, set.fontSize + 'px');

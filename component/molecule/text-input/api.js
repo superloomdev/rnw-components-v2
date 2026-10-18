@@ -8,7 +8,8 @@ export default Object.freeze({
   props: Object.freeze({
     label: { type: 'string', required: false, description: 'Visible label; it names the field. Without it, pass `accessibilityLabel`.' },
     placeholder: { type: 'string', required: false, description: 'Hint shown in the empty field. Under a floating label it shows once the label has risen.' },
-    value: { type: 'string', required: false, description: 'Controlled value. Absent: the field keeps its own value, starting empty.' },
+    value: { type: 'string', required: false, description: 'Controlled value. Absent: the field keeps its own value, starting at `defaultValue` or empty.' },
+    defaultValue: { type: 'string', required: false, description: 'Initial uncontrolled value; applied once.' },
     onChangeText: { type: 'function', required: false, description: 'Called with the next text on every change.' },
     size: { type: 'string', required: false, description: 'One of `variants`: `sm`, `md`, `lg`. Default `md`.' },
     disabled: { type: 'boolean', required: false, description: 'Makes the field read-only, draws the disabled colors and announces it as disabled.' },

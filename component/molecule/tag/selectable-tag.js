@@ -103,7 +103,8 @@ export default function SelectableTag (ctx) {
     }),
     React.createElement(View, {
       style: {
-        backgroundColor: live && state.pressed === true ? ctx.color('tag_selectable_layer_active') : undefined,
+        backgroundColor: live && state.pressed === true
+          ? ctx.color(selected ? 'tag_selectable_layer_active' : 'tag_selectable_layer_unselected_active') : undefined,
         borderRadius: ctx.metric('Tag', 'radius'),
         bottom: 0,
         left: 0,

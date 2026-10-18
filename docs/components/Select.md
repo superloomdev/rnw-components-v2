@@ -141,6 +141,7 @@ Select draws the field frame it shares with TextInput around a trigger that open
 | `heightLarge` | `size.size_large` |
 | `radius` | `control.field_radius` |
 | `iconSize` | `control.field_icon_size` |
+| `compactIconGap` | `spacing.spacing_05` |
 | `itemHeight` | `control.list_item_height` |
 | `itemPaddingInline` | `control.list_item_padding_inline` |
 | `itemDividerWidth` | `control.list_item_divider_width` |

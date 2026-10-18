@@ -262,6 +262,11 @@ export async function readParts (page, name, parts, side, origin, options) {
           for (const property of BOX) {
             measured[property] = style[property];
           }
+          for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
+            if (Array.isArray(part.compare) && part.compare.includes(property)) {
+              measured[property] = style[property];
+            }
+          }
           // The strip reads its edge's color as its own fill
           if (strip !== null) {
             measured.backgroundColor = style[strip + 'Color'];
@@ -328,20 +333,17 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured[property] = style[property];
         }
         // A visually hidden part (a 1px clip in both dimensions), an undisplayed,
-        // transparent or visibility-hidden one draws nothing; a hairline a pixel
+        // transparent or visibility-hidden one draws nothing, and neither does a
+        // rect with no width or no height (a collapsed input); a hairline a pixel
         // tall but a layout wide draws, and an edge strip draws only where its
-        // edge is painted
+        // edge is painted. A part under a fully transparent ancestor paints
+        // nothing in either read
+        const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo !== null ? parseFloat(style.opacity) : 1);
         const drawn = strip !== null
           ? parseFloat(style[strip + 'Width']) > 0 && style[strip + 'Color'] !== 'rgba(0, 0, 0, 0)'
-          : pseudo !== null || rect.width > 1 || rect.height > 1;
-        measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && parseFloat(style.opacity) > 0 && drawn;
+          : pseudo !== null || (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
+        measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && opacity > 0 && drawn;
         if (input.extended) {
-          // Text styled by another element is painted at that element's opacity,
-          // and a pseudo is painted at its own: it is not an element, so the
-          // ancestor walk cannot see it
-          const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo ? parseFloat(style.opacity) : 1);
-          // A part under a transparent ancestor draws nothing
-          measured.visible = measured.visible && opacity > 0;
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
             // A box drawn at an opacity paints its colors at that opacity, as an rgba color does
@@ -380,7 +382,8 @@ pointer down on it. Wait for transitions and state layers to settle.
 @param {Object} page        - Playwright page
 @param {String} name        - Component name
 @param {String} state       - The cell's state label
-@param {String} selector    - The interactive element, relative to the cell body (' >>> ' not used here)
+@param {String} selector    - The interactive element, relative to the cell body;
+                             ' >>> ' crosses shadow roots (resolved by hand)
 @param {String} interaction - 'hover' | 'focus' | 'pressed' | 'open'
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
@@ -388,9 +391,39 @@ pointer down on it. Wait for transitions and state layers to settle.
 export async function enterInteraction (page, name, state, selector, interaction) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
-  const target = body.locator(selector).first();
-  if (await target.count() === 0) {
-    return false;
+  let target;
+  let targetHandle;
+  if (selector.indexOf('>>>') !== -1) {
+    // A shadow-crossing selector resolves like the part reader's: each
+    // segment inside the previous match's shadow root
+    const handle = await body.evaluateHandle(function (element, input) {
+      for (const alternative of input.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+        let current = element;
+        const segments = alternative.split(' >>> ');
+        for (let i = 0; i < segments.length; i++) {
+          if (current === null || current === undefined) {
+            break;
+          }
+          const scope = i === 0 ? current : (current.shadowRoot || current);
+          current = scope.querySelector(segments[i]);
+        }
+        if (current !== null && current !== undefined) {
+          return current;
+        }
+      }
+      return null;
+    }, selector);
+    targetHandle = handle;
+    target = handle.asElement();
+    if (target === null) {
+      await handle.dispose();
+      return false;
+    }
+  } else {
+    target = body.locator(selector).first();
+    if (await target.count() === 0) {
+      return false;
+    }
   }
   // Center the cell first, where its screenshot is taken, so nothing scrolls out from under the pointer
   await body.evaluate(function (element) {
@@ -403,7 +436,7 @@ export async function enterInteraction (page, name, state, selector, interaction
     await page.keyboard.press('Shift');
     await target.focus();
     // A focused text field shows its frame, not a selection: collapse any selection focusing made
-    await page.evaluate(function () {
+    const numberInput = await page.evaluate(function () {
       let active = document.activeElement;
       while (active && active.shadowRoot && active.shadowRoot.activeElement) {
         active = active.shadowRoot.activeElement;
@@ -411,7 +444,13 @@ export async function enterInteraction (page, name, state, selector, interaction
       if (active && typeof active.setSelectionRange === 'function' && typeof active.value === 'string' && (active.tagName === 'TEXTAREA' || ['text', 'search', 'email', 'tel', 'url', 'password', ''].includes(active.getAttribute('type') || ''))) {
         active.setSelectionRange(active.value.length, active.value.length);
       }
+      return active && active.tagName === 'INPUT' && active.type === 'number';
     });
+    // Number inputs reject setSelectionRange; a horizontal caret movement
+    // collapses their browser selection without stepping or changing value.
+    if (numberInput) {
+      await page.keyboard.press('ArrowRight');
+    }
   } else {
     await target.hover();
     if (interaction === 'pressed') {
@@ -419,6 +458,10 @@ export async function enterInteraction (page, name, state, selector, interaction
     }
   }
   await page.waitForTimeout(400);
+
+  if (targetHandle !== undefined) {
+    await targetHandle.dispose();
+  }
 
   return true;
 
@@ -430,15 +473,21 @@ Leave an interaction state without completing a click: the pointer moves
 off the element before it is released (so nothing toggles or opens),
 focus leaves, and an opened popup is dismissed.
 
-@param {Object} page - Playwright page
+@param {Object} page        - Playwright page
+@param {Object} [options]   - { escape }: false skips the Escape key alone,
+                              for a reference where Escape is the
+                              component's own action, not fixture reset;
+                              pointer release, blur and the settle wait stay
 
 @return {Promise<void>}
 *********************************************************************/
-export async function leaveInteraction (page) {
+export async function leaveInteraction (page, options) {
 
   await page.mouse.move(0, 0);
   await page.mouse.up();
-  await page.keyboard.press('Escape');
+  if (options === undefined || options === null || options.escape !== false) {
+    await page.keyboard.press('Escape');
+  }
   await page.evaluate(function () {
     let active = document.activeElement;
     while (active && active.shadowRoot && active.shadowRoot.activeElement) {

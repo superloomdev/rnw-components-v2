@@ -18,6 +18,26 @@ import textInputApi from './molecule/text-input/api.js';
 import textInputSpec from './molecule/text-input/spec.js';
 import textAreaApi from './molecule/text-input/api.text-area.js';
 import textAreaSpec from './molecule/text-input/spec.text-area.js';
+import passwordInputApi from './molecule/text-input/api.password-input.js';
+import passwordInputSpec from './molecule/text-input/spec.password-input.js';
+import textInputSkeletonApi from './molecule/text-input/api.text-input-skeleton.js';
+import textInputSkeletonSpec from './molecule/text-input/spec.text-input-skeleton.js';
+import textAreaSkeletonApi from './molecule/text-input/api.text-area-skeleton.js';
+import textAreaSkeletonSpec from './molecule/text-input/spec.text-area-skeleton.js';
+import timePickerApi from './molecule/text-input/api.time-picker.js';
+import timePickerSpec from './molecule/text-input/spec.time-picker.js';
+import timePickerSelectApi from './molecule/text-input/api.time-picker-select.js';
+import timePickerSelectSpec from './molecule/text-input/spec.time-picker-select.js';
+import numberInputApi from './molecule/number-input/api.js';
+import numberInputSpec from './molecule/number-input/spec.js';
+import numberInputSkeletonApi from './molecule/number-input/api.number-input-skeleton.js';
+import numberInputSkeletonSpec from './molecule/number-input/spec.number-input-skeleton.js';
+import searchApi from './molecule/search/api.js';
+import searchSpec from './molecule/search/spec.js';
+import expandableSearchApi from './molecule/search/api.expandable-search.js';
+import expandableSearchSpec from './molecule/search/spec.expandable-search.js';
+import searchSkeletonApi from './molecule/search/api.search-skeleton.js';
+import searchSkeletonSpec from './molecule/search/spec.search-skeleton.js';
 import selectApi from './composite/select/api.js';
 import selectSpec from './composite/select/spec.js';
 import dropdownApi from './composite/select/api.dropdown.js';
@@ -206,6 +226,16 @@ const STACK_REQUIRED = [].concat(stackApi.tokens, specTokens(stackSpec));
 const VSTACK_REQUIRED = [].concat(vstackApi.tokens, specTokens(vstackSpec));
 const TOGGLE_SKELETON_REQUIRED = [].concat(toggleSkeletonApi.tokens, specTokens(toggleSkeletonSpec));
 const LAYER_REQUIRED = [].concat(layerApi.tokens, specTokens(layerSpec));
+const PASSWORD_INPUT_REQUIRED = [].concat(passwordInputApi.tokens, specTokens(passwordInputSpec));
+const TEXT_INPUT_SKELETON_REQUIRED = [].concat(textInputSkeletonApi.tokens, specTokens(textInputSkeletonSpec));
+const TEXT_AREA_SKELETON_REQUIRED = [].concat(textAreaSkeletonApi.tokens, specTokens(textAreaSkeletonSpec));
+const TIME_PICKER_REQUIRED = [].concat(timePickerApi.tokens, specTokens(timePickerSpec));
+const TIME_PICKER_SELECT_REQUIRED = [].concat(timePickerSelectApi.tokens, specTokens(timePickerSelectSpec));
+const NUMBER_INPUT_REQUIRED = [].concat(numberInputApi.tokens, specTokens(numberInputSpec));
+const NUMBER_INPUT_SKELETON_REQUIRED = [].concat(numberInputSkeletonApi.tokens, specTokens(numberInputSkeletonSpec));
+const SEARCH_REQUIRED = [].concat(searchApi.tokens, specTokens(searchSpec));
+const EXPANDABLE_SEARCH_REQUIRED = [].concat(expandableSearchApi.tokens, specTokens(expandableSearchSpec));
+const SEARCH_SKELETON_REQUIRED = [].concat(searchSkeletonApi.tokens, specTokens(searchSkeletonSpec));
 
 // The hue cells a Tag `type` reads on demand - the variants' hover, border
 // and glyph cells ride the same on-demand rule
@@ -229,8 +259,8 @@ function join (...lists) {
 }
 
 
-export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED, FORM_REQUIRED, FORM_GROUP_REQUIRED, FORM_ITEM_REQUIRED, FORM_LABEL_REQUIRED, HEADING_REQUIRED, SECTION_REQUIRED, HSTACK_REQUIRED, STACK_REQUIRED, VSTACK_REQUIRED, TOGGLE_SKELETON_REQUIRED, LAYER_REQUIRED);
+export const REQUIRED_TOKENS = join(CONTEXT_TOKENS, ICON_REQUIRED, TEXT_REQUIRED, BUTTON_REQUIRED, CHECKBOX_REQUIRED, TEXT_INPUT_REQUIRED, TEXT_AREA_REQUIRED, SELECT_REQUIRED, DROPDOWN_REQUIRED, TAG_REQUIRED, PROGRESS_BAR_REQUIRED, RADIO_BUTTON_REQUIRED, TOGGLE_REQUIRED, TOOLTIP_REQUIRED, ICON_BUTTON_REQUIRED, TABS_REQUIRED, MENU_REQUIRED, MODAL_REQUIRED, TOAST_NOTIFICATION_REQUIRED, ASPECT_RATIO_REQUIRED, DIVIDER_REQUIRED, ICON_SKELETON_REQUIRED, LINK_REQUIRED, SKELETON_ICON_REQUIRED, SKELETON_PLACEHOLDER_REQUIRED, SKELETON_TEXT_REQUIRED, BUTTON_SET_REQUIRED, BUTTON_SKELETON_REQUIRED, COMBO_BUTTON_REQUIRED, DANGER_BUTTON_REQUIRED, PRIMARY_BUTTON_REQUIRED, SECONDARY_BUTTON_REQUIRED, DISMISSIBLE_TAG_REQUIRED, OPERATIONAL_TAG_REQUIRED, SELECTABLE_TAG_REQUIRED, TAG_SKELETON_REQUIRED, LOADING_REQUIRED, INLINE_LOADING_REQUIRED, PROGRESS_INDICATOR_REQUIRED, PROGRESS_STEP_REQUIRED, PROGRESS_INDICATOR_SKELETON_REQUIRED, FORM_REQUIRED, FORM_GROUP_REQUIRED, FORM_ITEM_REQUIRED, FORM_LABEL_REQUIRED, HEADING_REQUIRED, SECTION_REQUIRED, HSTACK_REQUIRED, STACK_REQUIRED, VSTACK_REQUIRED, TOGGLE_SKELETON_REQUIRED, LAYER_REQUIRED, PASSWORD_INPUT_REQUIRED, TEXT_INPUT_SKELETON_REQUIRED, TEXT_AREA_SKELETON_REQUIRED, TIME_PICKER_REQUIRED, TIME_PICKER_SELECT_REQUIRED, NUMBER_INPUT_REQUIRED, NUMBER_INPUT_SKELETON_REQUIRED, SEARCH_REQUIRED, EXPANDABLE_SEARCH_REQUIRED, SEARCH_SKELETON_REQUIRED);
 
 export const SUPPORTED_TOKENS = join(REQUIRED_TOKENS, ICON_SUPPORTED, TEXT_SUPPORTED, VIEW_SUPPORTED, FIELD_SURFACES, TAG_SUPPORTED);
 
-export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled', 'chevron_down', 'warning', 'incomplete', 'checkmark_outline', 'circle_dash']);
+export const REQUIRED_ICONS = Object.freeze(['checked_indicator', 'mixed_indicator', 'invalid', 'dropdown_indicator', 'checkmark_filled', 'error_filled', 'switch_checked_indicator', 'selected_indicator', 'close', 'information_filled', 'warning_filled', 'chevron_down', 'warning', 'incomplete', 'checkmark_outline', 'circle_dash', 'search', 'subtract', 'add', 'visibility_on', 'visibility_off']);

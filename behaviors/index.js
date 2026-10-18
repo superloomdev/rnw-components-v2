@@ -20,6 +20,7 @@ import createHeadingBehaviors from './heading.js';
 import createKeyboardBehaviors from './keyboard.js';
 import createLocalBehaviors from './local.js';
 import createMenuBehaviors from './menu.js';
+import createNumberInputBehaviors from './number-input.js';
 import createOverlayBehaviors from './overlay.js';
 import createPickersBehaviors from './pickers.js';
 import createPositioningBehaviors from './positioning.js';
@@ -58,6 +59,7 @@ export default function createBehaviors (deps) {
   const state = createStateBehaviors(deps);
   const scopes = createScopeBehaviors(deps);
   const heading = createHeadingBehaviors(deps);
+  const controls = createControlsBehaviors(deps);
   const overlay = createOverlayBehaviors(Object.assign({}, deps, {
     LayerContext: scopes.LayerContext,
     DisabledContext: scopes.DisabledContext,
@@ -68,12 +70,16 @@ export default function createBehaviors (deps) {
   const families = [
     createA11yBehaviors(deps),
     createCompoundBehaviors(deps),
-    createControlsBehaviors(deps),
+    controls,
     createFocusBehaviors(deps),
     heading,
     createKeyboardBehaviors(deps),
     createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
     createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
+    createNumberInputBehaviors(Object.assign({}, deps, {
+      useControllableState: state.useControllableState,
+      useButton: controls.useButton
+    })),
     overlay,
     createPickersBehaviors(deps),
     createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),

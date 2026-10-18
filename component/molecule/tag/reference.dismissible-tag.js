@@ -26,7 +26,8 @@ export default Object.freeze({
     root: Object.freeze({ upstream: '.cds--tag--filter', ours: ':scope > div', measure: 'box' }),
     label: Object.freeze({ upstream: '.cds--tag__label', ours: ':scope > div > div > [dir="auto"]', measure: 'text' }),
     close: Object.freeze({ upstream: '.cds--tag__close-icon', ours: '[data-testid="tag-close-face"]', measure: 'box' }),
-    icon: Object.freeze({ upstream: '.cds--tag__close-icon svg', ours: '[data-testid="tag-close-face"] svg', measure: 'box' })
+    icon: Object.freeze({ upstream: '.cds--tag__close-icon svg', ours: '[data-testid="tag-close-face"] svg', measure: 'box' }),
+    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
   }),
   second: Object.freeze({
     origin: 'root',
@@ -47,14 +48,17 @@ export default Object.freeze({
     parts: Object.freeze({
       // The chip paints its container on .container::before; the element
       // itself is transparent in every state
-      root: Object.freeze({ upstream: 'md-input-chip >>> .container', pseudo: '::before', ours: ':scope > div', measure: 'box' }),
+      root: Object.freeze({ upstream: 'md-input-chip >>> .container', pseudo: '::before', ours: ':scope > div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'borderBottomColor', 'outline'] }),
       label: Object.freeze({ upstream: 'md-input-chip >>> .label-text', ours: ':scope > div > div > [dir="auto"]', measure: 'text' }),
       // The painted layer is the centered circle, not the action's own box
       // (the action box includes the trailing padding; the layer does not).
       // The second's disabled chip drops its remove affordance entirely,
       // where the primary's disabled filter tag keeps the glyph
-      close: Object.freeze({ upstream: 'md-input-chip >>> .trailing.action md-ripple', ours: '[data-testid="tag-close-face"]', measure: 'box', optional: true }),
+      close: Object.freeze({ upstream: 'md-input-chip >>> .trailing.action md-ripple', ours: '[data-testid="tag-close-face"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'borderBottomColor', 'outline'] }),
       icon: Object.freeze({ upstream: 'md-input-chip >>> .trailing.action .trailing.icon', ours: '[data-testid="tag-close-face"] svg', measure: 'box' })
+    }),
+    omit: Object.freeze({
+      bubble: Object.freeze({ reason: 'the second input-chip mounts no tooltip; the close action is named directly', upstream: 'md-input-chip [role="tooltip"], md-input-chip >>> [role="tooltip"]', mask: true })
     })
   })
 });

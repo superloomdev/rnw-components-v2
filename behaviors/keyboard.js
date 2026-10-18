@@ -12,12 +12,14 @@ Build the keyboard behaviors for one component system.
 
 @param {Object} deps - { Utils, React }
 
-@return {Object} - { useEscapeKey }
+@return {Object} - { useEscapeKey, getSearchHandlers }
 *********************************************************************/
 export default function createKeyboardBehaviors (deps) {
 
   const Utils = deps.Utils;
   const React = deps.React;
+
+  const { isNullOrUndefined } = Utils;
 
 
   /********************************************************************
@@ -77,8 +79,100 @@ export default function createKeyboardBehaviors (deps) {
   }
 
 
+  /********************************************************************
+  Wire the shared search keyboard contract as pure event handlers: the
+  clear action empties the field and returns focus to the input, Escape
+  clears a populated field or asks a collapsed owner to close, and
+  submitting reports the current text. A disabled field answers none
+  of them.
+
+  @param {Object}   options                  - Search wiring
+  @param {Boolean}  options.populated        - The field holds text
+  @param {Boolean}  options.disabled         - The field is disabled
+  @param {Function} [options.onChangeText]   - Text setter
+  @param {Function} [options.onClear]        - Clear notification
+  @param {Function} [options.onCollapseRequest] - Empty-Escape request
+  @param {Function} [options.onSubmit]       - Submission callback
+  @param {String}   [options.value]          - Current text
+  @param {Object}   [options.inputRef]       - Input host ref
+
+  @return {Object} - { clear, onKeyPress, onSubmitEditing }
+  *********************************************************************/
+  function getSearchHandlers (options) {
+
+    if (isNullOrUndefined(options)) {
+      throw new TypeError('getSearchHandlers requires options');
+    }
+
+    const disabled = options.disabled === true;
+
+    const focusInput = function () {
+      const ref = options.inputRef;
+      const input = isNullOrUndefined(ref) ? undefined : ref.current;
+      if (!isNullOrUndefined(input) && typeof input.focus === 'function') {
+        input.focus();
+      }
+    };
+
+    const clear = function () {
+      if (disabled) {
+        return;
+      }
+      if (typeof options.onChangeText === 'function') {
+        options.onChangeText('');
+      }
+      if (typeof options.onClear === 'function') {
+        options.onClear();
+      }
+      focusInput();
+    };
+
+    const onKeyPress = function (event) {
+      if (disabled) {
+        return;
+      }
+      const key = isNullOrUndefined(event)
+        ? undefined
+        : (event.key !== undefined ? event.key
+          : (isNullOrUndefined(event.nativeEvent) ? undefined : event.nativeEvent.key));
+      if (key !== 'Escape') {
+        return;
+      }
+      // Escape is claimed by the search contract: populated clears, an
+      // empty field asks its expandable owner to collapse
+      if (typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
+      if (options.populated === true) {
+        clear();
+        return;
+      }
+      if (typeof options.onCollapseRequest === 'function') {
+        options.onCollapseRequest();
+      }
+    };
+
+    const onSubmitEditing = function () {
+      if (disabled) {
+        return;
+      }
+      if (typeof options.onSubmit === 'function') {
+        options.onSubmit(options.value);
+      }
+    };
+
+    return {
+      clear: clear,
+      onKeyPress: onKeyPress,
+      onSubmitEditing: onSubmitEditing
+    };
+
+  }
+
+
   return {
-    useEscapeKey: useEscapeKey
+    useEscapeKey: useEscapeKey,
+    getSearchHandlers: getSearchHandlers
   };
 
 }

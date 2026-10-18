@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 
 import * as factories from 'rnw-components/all';
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
+import { createSampleElement } from './harness/sample.js';
 import { Lib, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
@@ -68,7 +69,7 @@ describe('enum render: every listed enum value changes the render', function () 
         for (const value of values) {
           const Registry = systemWith(token, value);
           const container = await render(React.createElement(React.Fragment, null, component.sample.map(function (state, index) {
-            return React.createElement(Registry[component.name], Object.assign({ key: index }, state.props));
+            return React.createElement(React.Fragment, { key: index }, createSampleElement(React, Registry, component.name, state));
           })));
           // Generated ids differ on every render; only the render the enum drives may differ
           renders[value] = container.innerHTML.replace(/(id|aria-labelledby|aria-describedby|aria-controls)="[^"]*"/g, '$1="*"');

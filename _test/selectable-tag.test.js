@@ -37,7 +37,7 @@ Render one SelectableTag and return its parts.
 @param {Object} Registry - Registry
 @param {Object} props    - Props
 
-@return {Promise<Object>} - { container, root, tag, label, pressable, icon }
+@return {Promise<Object>} - { container, root, tag, label, layer, pressable, icon }
 *********************************************************************/
 async function renderSelectable (Registry, props) {
 
@@ -49,6 +49,7 @@ async function renderSelectable (Registry, props) {
     root: root,
     tag: root.children[0],
     label: root.querySelector('[dir="auto"]'),
+    layer: root.children[1],
     pressable: root.querySelector('[role="button"]'),
     icon: root.children[0].querySelector('svg')
   };
@@ -148,6 +149,21 @@ describe('SelectableTag: press toggles the selection', function () {
     await fire(parts.pressable, new MouseEvent('click', { bubbles: true }));
     assert.deepEqual(changes, [true]);
     assert.equal(parts.pressable.getAttribute('aria-pressed'), 'false');
+  });
+
+  test('a press layers the unselected active cell while unselected, the selected one while selected', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const t = buildNative(template).tokens;
+      const unselected = await renderSelectable(registryFor(template), { text: 'T' });
+      await fire(unselected.pressable, new MouseEvent('mousedown', { bubbles: true }));
+      assert.equal(unselected.layer.style.backgroundColor, cssValue('backgroundColor', t['color.tag_selectable_layer_unselected_active']));
+      // Release the press before the next instance's, or the responder stays held
+      await fire(unselected.pressable, new MouseEvent('mouseup', { bubbles: true }));
+      const selected = await renderSelectable(registryFor(template), { selected: true, text: 'T' });
+      await fire(selected.pressable, new MouseEvent('mousedown', { bubbles: true }));
+      assert.equal(selected.layer.style.backgroundColor, cssValue('backgroundColor', t['color.tag_selectable_layer_active']), template + ' selected');
+      await fire(selected.pressable, new MouseEvent('mouseup', { bubbles: true }));
+    }
   });
 
   test('hover swaps to the hover cell', async function () {

@@ -1586,12 +1586,16 @@
         "version": "1.115.0",
         "export": "NumberInput"
       },
-      "description": "NumberInput is a component in the NumberInput family.",
+      "description": "NumberInput edits numeric text with bounded step actions; the second reference has no custom steppers, so their geometry is a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
+      "enums": [
+        "anatomy.label",
+        "anatomy.field_action",
+        "feedback.field"
+      ],
       "behaviors": [
         "controllable-state",
         "press"
@@ -1604,8 +1608,10 @@
       "carbon_twin": "NumberInput",
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "NumberInputSkeleton",
@@ -1616,16 +1622,13 @@
         "version": "1.115.0",
         "export": "NumberInputSkeleton"
       },
-      "description": "NumberInputSkeleton is a component in the NumberInput family.",
+      "description": "NumberInputSkeleton composes the field skeleton at the number field's minimum width; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "press"
-      ],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1634,8 +1637,10 @@
       "carbon_twin": "NumberInputSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Popover",
@@ -1768,14 +1773,17 @@
         "version": "1.115.0",
         "export": "ExpandableSearch"
       },
-      "description": "ExpandableSearch is a component in the Search family.",
+      "description": "ExpandableSearch opens a search field from an icon action; the second system has no expandable search element, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
+      "enums": [
+        "anatomy.field_action"
+      ],
       "behaviors": [
-        "controllable-state"
+        "controllable-state",
+        "press"
       ],
       "parent": null,
       "reference": {
@@ -1785,8 +1793,10 @@
       "carbon_twin": "ExpandableSearch",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Search",
@@ -1797,14 +1807,18 @@
         "version": "1.115.0",
         "export": "Search"
       },
-      "description": "Search is a component in the Search family.",
+      "description": "Search is an accessibly named search field with a magnifier and a clear action.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [],
+      "enums": [
+        "anatomy.field_action"
+      ],
       "behaviors": [
-        "controllable-state"
+        "controllable-state",
+        "press",
+        "keyboard"
       ],
       "parent": null,
       "reference": {
@@ -1815,7 +1829,7 @@
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SearchSkeleton",
@@ -1826,15 +1840,13 @@
         "version": "1.115.0",
         "export": "SearchSkeleton"
       },
-      "description": "SearchSkeleton is a component in the Search family.",
+      "description": "SearchSkeleton draws the search field's placeholder; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [
-        "controllable-state"
-      ],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -1843,8 +1855,10 @@
       "carbon_twin": "SearchSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Slider",
@@ -2027,17 +2041,19 @@
         "version": "1.115.0",
         "export": "PasswordInput"
       },
-      "description": "PasswordInput is a component in the TextInput family.",
+      "description": "PasswordInput is a text field with an action that reveals or hides its value without changing its label or validation.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
+        "anatomy.field_action",
         "feedback.field"
       ],
       "behaviors": [
-        "controllable-state"
+        "controllable-state",
+        "press"
       ],
       "parent": null,
       "reference": {
@@ -2048,7 +2064,7 @@
       "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TextAreaSkeleton",
@@ -2059,18 +2075,13 @@
         "version": "1.115.0",
         "export": "TextAreaSkeleton"
       },
-      "description": "TextAreaSkeleton is a component in the TextInput family.",
+      "description": "TextAreaSkeleton draws a label placeholder and a fixed-height text-area placeholder; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
-      "behaviors": [
-        "controllable-state"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -2079,8 +2090,10 @@
       "carbon_twin": "TextAreaSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "TextInputSkeleton",
@@ -2091,18 +2104,13 @@
         "version": "1.115.0",
         "export": "TextInputSkeleton"
       },
-      "description": "TextInputSkeleton is a component in the TextInput family.",
+      "description": "TextInputSkeleton draws a label placeholder and a field-sized placeholder; the second system has no skeleton, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
-      "behaviors": [
-        "controllable-state"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -2111,8 +2119,10 @@
       "carbon_twin": "TextInputSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "TimePicker",
@@ -2123,7 +2133,7 @@
         "version": "1.115.0",
         "export": "TimePicker"
       },
-      "description": "TimePicker is a component in the TextInput family; its Material dialog anatomy is explicitly deferred.",
+      "description": "TimePicker arranges a text time field and optional compact selects; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2144,9 +2154,10 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "superloom_decision",
         "deferred_gap"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TimePickerSelect",
@@ -2157,7 +2168,7 @@
         "version": "1.115.0",
         "export": "TimePickerSelect"
       },
-      "description": "TimePickerSelect is a component in the TextInput family; its Material dialog anatomy is explicitly deferred.",
+      "description": "TimePickerSelect draws one compact time option selector and must be composed inside TimePicker; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2169,7 +2180,7 @@
       "behaviors": [
         "controllable-state"
       ],
-      "parent": null,
+      "parent": "TimePicker",
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
@@ -2178,9 +2189,11 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "requires_parent",
+        "superloom_decision",
         "deferred_gap"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DefinitionTooltip",

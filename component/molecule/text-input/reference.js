@@ -16,6 +16,7 @@ export default Object.freeze({
       hideLabel: typeof props.label !== 'string',
       placeholder: props.placeholder,
       value: props.value,
+      defaultValue: props.defaultValue,
       onChange: function () {
         return undefined;
       },
@@ -51,7 +52,7 @@ export default Object.freeze({
         label: props.label,
         'aria-label': typeof props.label === 'string' ? undefined : props.accessibilityLabel,
         placeholder: props.placeholder,
-        value: props.value || '',
+        value: props.value !== undefined ? props.value : (props.defaultValue || ''),
         disabled: props.disabled === true,
         error: props.invalid === true,
         errorText: props.invalidText,

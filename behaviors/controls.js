@@ -98,7 +98,9 @@ export default function createControlsBehaviors (deps) {
 
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
-    const [internalValue, setInternalValue] = useState('');
+    // An uncontrolled field starts at its defaultValue, once; a controlled
+    // value always wins
+    const [internalValue, setInternalValue] = useState(props.defaultValue === undefined ? '' : props.defaultValue);
 
     const labelId = useId();
     const value = effective(props.value, internalValue);
@@ -503,7 +505,9 @@ export default function createControlsBehaviors (deps) {
       rootProps: {},
       triggerProps: {
         accessibilityRole: 'combobox',
-        'aria-labelledby': labelId,
+        // A labelless select names itself through its own label prop; an
+        // absent label leaves no element for the relation to name
+        'aria-labelledby': props.label ? labelId : undefined,
         'aria-expanded': open,
         'aria-controls': listId,
         'aria-disabled': disabled ? true : undefined,

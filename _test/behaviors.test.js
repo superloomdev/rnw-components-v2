@@ -38,14 +38,14 @@ const behaviors = createBehaviors({ React: React, ReactNative: ReactNative, Util
 // Every name the composer must expose. Adding a behavior means adding it here.
 const EXPECTED_NAMES = [
   'DisabledContext', 'HeadingLevelContext', 'HeadingLevelProvider', 'LayerContext', 'OverlayContext',
-  'createCompoundContext',
+  'createCompoundContext', 'getCompoundContext',
   'getA11yLive', 'getA11yPosition', 'getA11yRelation', 'getA11yState', 'getA11yValue',
-  'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets',
+  'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets', 'getSearchHandlers',
   'isLabelMatch', 'isRtl',
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
-  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useOverlay', 'useOverlayHost',
+  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useNumberInput', 'useOverlay', 'useOverlayHost',
   'usePopoverDismiss', 'usePressKeys', 'useReducedMotion', 'useResponsiveStack',
   'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useTabsState', 'useTextField',
   'useTimePickerDraft', 'useTimedFlag', 'useViewportLayer', 'useViewportSize'
@@ -90,7 +90,8 @@ const STATEFUL_PROPS = {
   useAccordionItemState: {},
   useTabsState: {},
   useDatePickerCalendar: {},
-  useTimePickerDraft: {}
+  useTimePickerDraft: {},
+  useNumberInput: {}
 };
 
 const BEHAVIOR_FORBIDDEN = [
@@ -248,6 +249,235 @@ describe('behaviors: useButton', function () {
 });
 
 
+describe('behaviors: getSearchHandlers', function () {
+
+  const wire = function (overrides) {
+    const calls = [];
+    const inputRef = { current: { focus: function () {
+      calls.push('focus');
+    } } };
+    const handlers = behaviors.getSearchHandlers(Object.assign({
+      populated: true,
+      disabled: false,
+      inputRef: inputRef,
+      onChangeText: function (text) {
+        calls.push('text:' + text);
+      },
+      onClear: function () {
+        calls.push('clear');
+      },
+      onCollapseRequest: function () {
+        calls.push('collapse');
+      },
+      onSubmit: function (text) {
+        calls.push('submit:' + text);
+      },
+      value: 'abc'
+    }, overrides || {}));
+    return { calls: calls, handlers: handlers };
+  };
+
+  test('returns the clear, key-press and submit handlers', function () {
+    const { handlers } = wire();
+    assert.deepEqual(Object.keys(handlers).sort(), ['clear', 'onKeyPress', 'onSubmitEditing']);
+  });
+
+  test('clear empties the text, notifies and returns focus to the input', function () {
+    const { calls, handlers } = wire();
+    handlers.clear();
+    assert.deepEqual(calls, ['text:', 'clear', 'focus']);
+  });
+
+  test('a disabled field answers nothing', function () {
+    const { calls, handlers } = wire({ disabled: true });
+    handlers.clear();
+    handlers.onKeyPress({ key: 'Escape', preventDefault: function () {
+      calls.push('prevent');
+    } });
+    handlers.onSubmitEditing();
+    assert.deepEqual(calls, []);
+  });
+
+  test('Escape on a populated field prevents default and clears', function () {
+    const { calls, handlers } = wire();
+    handlers.onKeyPress({ key: 'Escape', preventDefault: function () {
+      calls.push('prevent');
+    } });
+    assert.deepEqual(calls, ['prevent', 'text:', 'clear', 'focus']);
+  });
+
+  test('Escape on an empty field requests collapse; a non-Escape key is ignored', function () {
+    const { calls, handlers } = wire({ populated: false });
+    handlers.onKeyPress({ key: 'a' });
+    handlers.onKeyPress({ key: 'Escape', preventDefault: function () {
+      calls.push('prevent');
+    } });
+    assert.deepEqual(calls, ['prevent', 'collapse']);
+  });
+
+  test('submission reports the current text', function () {
+    const { calls, handlers } = wire({ value: 'report me' });
+    handlers.onSubmitEditing();
+    assert.deepEqual(calls, ['submit:report me']);
+  });
+
+});
+
+
+describe('behaviors: getCompoundContext', function () {
+
+  test('the same name reuses one context inside one system; names and systems isolate', function () {
+    const one = behaviors.getCompoundContext('ProbeCompound');
+    const again = behaviors.getCompoundContext('ProbeCompound');
+    const other = behaviors.getCompoundContext('OtherCompound');
+    assert.equal(one, again);
+    assert.notEqual(one, other);
+    assert.ok(one.Provider !== null && one.Provider !== undefined);
+    assert.equal(typeof one.useContext, 'function');
+    const fresh = createBehaviors({ React: React, ReactNative: ReactNative, Utils: Utils, Debug: Debug, platform: platform });
+    assert.notEqual(fresh.getCompoundContext('ProbeCompound'), one);
+    // The fresh-triple factory stays untouched: it never returns a cached pair
+    assert.notEqual(behaviors.createCompoundContext('ProbeCompound'), one);
+  });
+
+  test('__proto__ and toString are ordinary names, not inherited members', function () {
+    const proto = behaviors.getCompoundContext('__proto__');
+    const string_ = behaviors.getCompoundContext('toString');
+    assert.equal(typeof proto.useContext, 'function');
+    assert.notEqual(proto, string_);
+    assert.notEqual(proto, Object.prototype);
+    assert.equal(behaviors.getCompoundContext('__proto__'), proto);
+  });
+
+  test('a member read outside the provider throws a named error', async function () {
+    const Compound = behaviors.getCompoundContext('OrphanProbe');
+    await assert.rejects(renderHook(function () {
+      Compound.useContext();
+      return null;
+    }), /OrphanProbe/);
+  });
+
+});
+
+
+describe('behaviors: useNumberInput', function () {
+
+  /********************************************************************
+  Render the hook and keep a box of its latest result, so an assertion
+  reads the state a later `act` produced, not the first render's.
+
+  @param {Object} props - Hook props
+
+  @return {Promise<{ current: Object }>}
+  *********************************************************************/
+  async function renderNumberInput (props) {
+
+    const box = { current: null };
+    await renderHook(function (hookProps) {
+      box.current = behaviors.useNumberInput(hookProps);
+      return box.current;
+    }, props);
+    return box;
+
+  }
+
+  test('editing text is preserved verbatim; the number callback reports only finite parses or an allowed empty', async function () {
+    const reports = [];
+    const box = await renderNumberInput({
+      allowEmpty: true,
+      onChangeText: function (text) {
+        reports.push('text:' + text);
+      },
+      onChange: function (value) {
+        reports.push('num:' + value);
+      }
+    });
+    await act(async function () {
+      box.current.setText('1.20');
+    });
+    assert.equal(box.current.state.value, '1.20');
+    assert.equal(box.current.state.number, 1.2);
+    await act(async function () {
+      box.current.setText('-');
+    });
+    assert.equal(box.current.state.value, '-');
+    assert.equal(box.current.state.number, undefined);
+    await act(async function () {
+      box.current.setText('');
+    });
+    assert.equal(box.current.state.value, '');
+    assert.deepEqual(reports, ['text:1.20', 'num:1.2', 'text:-', 'text:', 'num:']);
+  });
+
+  test('an empty edit is not allowed by default and becomes the step start', async function () {
+    const reports = [];
+    const box = await renderNumberInput({
+      onChangeText: function (text) {
+        reports.push(text);
+      }
+    });
+    assert.equal(box.current.state.value, '0');
+    await act(async function () {
+      box.current.setText('');
+    });
+    assert.equal(box.current.state.value, '0');
+    assert.deepEqual(reports, ['0']);
+  });
+
+  test('a value outside the bounds marks the field invalid', async function () {
+    const outside = await renderNumberInput({ value: '15', min: 0, max: 10 });
+    assert.equal(outside.current.state.invalid, true);
+    const inside = await renderNumberInput({ value: '5', min: 0, max: 10 });
+    assert.equal(inside.current.state.invalid, false);
+  });
+
+  test('the steppers clamp to the bounds and emit nothing on a clamped no-op', async function () {
+    const reports = [];
+    const box = await renderNumberInput({
+      defaultValue: '9',
+      max: 10,
+      onChangeText: function (text) {
+        reports.push(text);
+      }
+    });
+    await act(async function () {
+      box.current.actions.increment.rootProps.onPress();
+    });
+    assert.equal(box.current.state.value, '10');
+    await act(async function () {
+      box.current.actions.increment.rootProps.onPress();
+    });
+    assert.equal(box.current.state.value, '10');
+    assert.deepEqual(reports, ['10']);
+  });
+
+  test('the arrows step through onKeyPress', async function () {
+    const reports = [];
+    const box = await renderNumberInput({
+      defaultValue: '5',
+      onChangeText: function (text) {
+        reports.push(text);
+      }
+    });
+    await act(async function () {
+      box.current.onKeyPress({ key: 'ArrowUp', preventDefault: function () {} });
+    });
+    assert.equal(box.current.state.value, '6');
+    await act(async function () {
+      box.current.onKeyPress({ key: 'ArrowDown', preventDefault: function () {} });
+    });
+    assert.equal(box.current.state.value, '5');
+    assert.deepEqual(reports, ['6', '5']);
+  });
+
+  test('a non-finite bound or step throws', async function () {
+    await assert.rejects(renderNumberInput({ min: 'x' }), /min must be a finite number/);
+    await assert.rejects(renderNumberInput({ step: 0 }), /step must be a finite number greater than 0/);
+  });
+
+});
+
+
 describe('behaviors: stateless hooks return the declared kind', function () {
 
   const ARGS = {
@@ -290,8 +520,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds the sixteen behavior files plus the composer', function () {
-    assert.equal(files.length, 17);
+  test('the directory holds the seventeen behavior files plus the composer', function () {
+    assert.equal(files.length, 18);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {

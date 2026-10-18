@@ -186,9 +186,15 @@ One reference cell.
 function Cell (props) {
 
   const reference = set === 'second' ? references[props.name].second : references[props.name];
+  // `referenceProps` are fixture metadata for this adapter alone - the
+  // upstream prop names where ours differ (labelText versus label). Real
+  // consumers keep `props`; nothing here is a component prop
+  const mountProps = props.state.referenceProps === undefined
+    ? props.state.props
+    : Object.assign({}, props.state.props, props.state.referenceProps);
   let element = set === 'second'
-    ? reference.mount(React, MATERIAL_TOKENS, props.state.props)
-    : reference.mount(React, UPSTREAM[reference.kind], props.state.props);
+    ? reference.mount(React, MATERIAL_TOKENS, mountProps)
+    : reference.mount(React, UPSTREAM[reference.kind], mountProps);
   // A state's `wrappers` ask for the same composition the showcase gives
   // the component, mounted through the upstream's own factories so the
   // element sits at the same depth, first entry outermost
@@ -201,7 +207,10 @@ function Cell (props) {
       if (factory === undefined) {
         throw new TypeError('sample wrapper "' + (descriptor && descriptor.component) + '" of ' + props.name + ' / ' + props.state.label + ' has no upstream factory');
       }
-      element = React.createElement(factory, descriptor.props || {}, element);
+      const wrapperProps = descriptor.referenceProps === undefined
+        ? (descriptor.props || {})
+        : Object.assign({}, descriptor.props, descriptor.referenceProps);
+      element = React.createElement(factory, wrapperProps, element);
     }
   }
   if (element === null) {

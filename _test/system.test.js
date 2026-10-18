@@ -358,6 +358,19 @@ describe('context: focusRing', function () {
     assert.equal(both.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
   });
 
+  test('options.offset overrides the family offset, including zero', function () {
+    const t = buildNative('material').tokens;
+    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+    for (const offset of [0, 4]) {
+      const ring = ctx.focusRing('tag', { focused: true, focusVisible: true }, undefined, { offset: offset });
+      assert.equal(ring.outlineOffset, offset, 'offset ' + offset);
+      assert.equal(ring.outlineWidth, t['control.tag_focus_width']);
+      assert.equal(ring.outlineColor, t['color.tag_focus_ring']);
+    }
+    const plain = ctx.focusRing('tag', { focused: true, focusVisible: true });
+    assert.equal(plain.outlineOffset, t['control.tag_focus_offset'], 'no options reads the family cell');
+  });
+
 });
 
 
@@ -429,6 +442,64 @@ describe('context: pressPresentation', function () {
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).layer.opacity, 0);
   });
 
+  test('colors: an explicit map replaces the prefix convention; every phase key must be present', function () {
+    const ctx = probeWith({});
+    const palette = {
+      '': null,
+      _active: 'button_primary_container_active',
+      _disabled: null,
+      _focus: null,
+      _hover: 'button_primary_container_hover',
+      _selected: null
+    };
+    const rest = ctx.pressPresentation({}, '', { colors: palette });
+    assert.equal(rest.container.backgroundColor, 'transparent');
+    assert.equal(ctx.pressPresentation({ hovered: true }, '', { colors: palette }).container.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(ctx.pressPresentation({ pressed: true }, '', { colors: palette }).container.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, '', { colors: palette }).container.backgroundColor, 'transparent');
+    const missing = Object.assign({}, palette);
+    delete missing._active;
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: missing });
+    }, /colors must map every phase/);
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: 'not-a-map' });
+    }, /colors must be an object/);
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: Object.assign({}, palette, { _hover: 42 }) });
+    }, /must name a color leaf or null/);
+    assert.throws(function () {
+      ctx.pressPresentation({ hovered: true }, '', { colors: Object.assign({}, palette, { _hover: 'no_such_leaf' }) });
+    }, /token "color\.no_such_leaf" is not in the theme/);
+  });
+
+  test('separateLayers: ripple mounts the hover and the active fills as two layers', function () {
+    const ctx = probeWith({ 'feedback.press': 'ripple' });
+    const palette = {
+      '': null,
+      _active: 'button_primary_container_active',
+      _disabled: null,
+      _focus: null,
+      _hover: 'button_primary_container_hover',
+      _selected: null
+    };
+    const rest = ctx.pressPresentation({}, '', { colors: palette, separateLayers: true });
+    assert.equal(rest.container.backgroundColor, 'transparent');
+    assert.equal(rest.layer.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(rest.layer.opacity, 0);
+    assert.equal(rest.hoverLayer.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(rest.hoverLayer.opacity, 0);
+    const hovered = ctx.pressPresentation({ hovered: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(hovered.hoverLayer.opacity, 1);
+    assert.equal(hovered.layer.opacity, 0);
+    const pressed = ctx.pressPresentation({ hovered: true, pressed: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(pressed.layer.opacity, 1);
+    assert.equal(pressed.hoverLayer.opacity, 1, 'the hover layer survives a press in flight');
+    const disabled = ctx.pressPresentation({ pressed: true, disabled: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(disabled.layer.opacity, 0);
+    assert.equal(disabled.hoverLayer.opacity, 0);
+  });
+
 });
 
 
@@ -453,6 +524,43 @@ describe('context: pressTarget', function () {
       top: -12,
       width: 64
     });
+  });
+
+  test('inlineExpansion pushes the minimum out through the named logical edge, so adjacent faces share a boundary without overlap', function () {
+    const ctx = probeWith({});
+    // A 40-point face: centered leaves two points of overhang on each side
+    assert.deepEqual(ctx.pressTarget({ height: 40, width: 40 }), {
+      height: 44, left: -2, outlineStyle: 'none', position: 'absolute', top: -2, width: 44
+    });
+    // 'start' pushes the same four points out through the leading edge: the
+    // target ends flush with the face's end edge
+    const start = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'start' });
+    assert.equal(start.width, 44);
+    assert.equal(start.start, -4);
+    assert.equal(start.start + start.width, 40);
+    // 'end' pushes them through the trailing edge: it starts flush with the
+    // face's start edge
+    const end = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'end' });
+    assert.equal(end.width, 44);
+    assert.equal(end.start, 0);
+    // Two adjacent 40 faces, the first 'start' and the second 'end': the first
+    // target stops at 40, exactly where the second target begins - they meet
+    // without overlap
+    assert.equal(start.start + start.width, end.start + 40);
+    // A 32-point sided face (the small field action) keeps both axes at the
+    // minimum and pushes the whole twelve-point overhang through one edge
+    const smallStart = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'start' });
+    assert.equal(smallStart.width, 44);
+    assert.equal(smallStart.height, 44);
+    assert.equal(smallStart.start, -12);
+    assert.equal(smallStart.start + smallStart.width, 32);
+    const smallEnd = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'end' });
+    assert.equal(smallEnd.start, 0);
+    assert.equal(smallEnd.width, 44);
+    assert.equal(smallEnd.height, 44);
+    assert.throws(function () {
+      ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'up' });
+    }, /inlineExpansion must be "center", "start" or "end"/);
   });
 
 });

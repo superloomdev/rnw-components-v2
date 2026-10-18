@@ -78,19 +78,18 @@ export default function DismissibleTag (ctx) {
     // The face fill: `circle` paints its hover cell - the hue's for a typed
     // tag, the close cell for a neutral one - and its primary draws no
     // pressed fill, so the hover stays through a press; `inset` layers the
-    // close hover cell while hovered and the theme's interactive layer
-    // while pressed, as the second's trailing action does
+    // close hover cell while hovered, and the separate active layer below
+    // paints the close's own pressed cell over it while pressed
     const fill = !live ? undefined
-      : pressed && inset ? ctx.color('tag_interactive_layer_active')
-        : hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)
-          : undefined;
+      : hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)
+        : undefined;
 
     // The ring: `circle` draws the primary's inset shadow in the close
     // focus ring color on any focus; `inset` draws the tag family's outline
     // ring on the action circle, as the second's focus ring does
     const ring = focused
       ? (inset
-        ? ctx.focusRing('tag', { focused: true, focusVisible: state.focusVisible })
+        ? ctx.focusRing('tag', { focused: true, focusVisible: state.focusVisible }, undefined, { offset: ctx.metric('DismissibleTag', 'focusOffset') })
         : { boxShadow: 'inset 0 0 0 ' + ctx.metric('DismissibleTag', 'focusRingWidth') + 'px ' + ctx.color('tag_close_focus_ring') })
       : {};
 
@@ -115,6 +114,20 @@ export default function DismissibleTag (ctx) {
         width: faceSide
       }, ring)]
     },
+    React.createElement(View, {
+      // The active layer: the close's own pressed cell, mounted in every
+      // theme - transparent where the theme draws no pressed fill - under
+      // the glyph and over the hover fill the face keeps through a press
+      style: {
+        backgroundColor: pressed ? ctx.color('tag_close_layer_active') : 'transparent',
+        borderRadius: faceSide / 2,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0
+      }
+    }),
     React.createElement(ctx.Registry.Icon, {
       color: glyphLeaf,
       name: 'close',

@@ -22,7 +22,8 @@ export default Object.freeze({
     'color.tag_selectable_container_selected', 'color.tag_selectable_container_selected_hover',
     'color.tag_selectable_container_selected_disabled',
     'color.tag_selectable_label', 'color.tag_selectable_label_selected', 'color.tag_selectable_label_selected_disabled',
-    'color.tag_selectable_outline', 'color.tag_selectable_layer_active', 'color.tag_interactive_outline_disabled',
+    'color.tag_selectable_outline', 'color.tag_selectable_layer_active', 'color.tag_selectable_layer_unselected_active',
+    'color.tag_interactive_outline_disabled',
     'color.tag_container_disabled', 'color.tag_label_disabled',
     'control.tag_focus_width', 'control.tag_focus_offset', 'feedback.focus_trigger', 'color.tag_focus_ring',
     'anatomy.tag_selected_mark', 'anatomy.tag_interactive_outline'
