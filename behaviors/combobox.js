@@ -537,6 +537,9 @@ export default function createComboboxBehaviors (deps) {
       // The caret is not a tab stop; the input is
       toggleProps: {
         accessibilityRole: 'button',
+        accessible: false,
+        focusable: false,
+        'aria-hidden': true,
         'aria-disabled': disabled ? true : undefined,
         disabled: disabled,
         tabIndex: -1,

@@ -921,4 +921,38 @@ describe('behaviors: useCombobox draft and selection', function () {
     assert.equal(box.current.state.open, false);
   });
 
+  test('the decorative caret is hidden from AT and tab focus; the primary stays exposed', async function () {
+    const box = await renderCombobox({ items: ITEMS, label: 'Pick' });
+    const toggle = box.current.toggleProps;
+    assert.equal(toggle.accessible, false, 'caret hidden from assistive tech');
+    assert.equal(toggle.focusable, false, 'caret not focusable');
+    assert.equal(toggle['aria-hidden'], true, 'caret aria-hidden');
+    assert.equal(toggle.tabIndex, -1, 'caret stays out of tab order');
+    assert.equal(typeof toggle.onPress, 'function', 'caret keeps its press');
+
+    // The primary combobox keeps its name, role and expanded wiring
+    const input = box.current.inputProps;
+    assert.equal(input.accessibilityRole, 'combobox');
+    assert.notEqual(input['aria-labelledby'], undefined, 'primary stays named');
+    assert.equal(input.accessible, undefined, 'primary is not hidden');
+    assert.equal(input['aria-hidden'], undefined, 'primary is not aria-hidden');
+    assert.equal(input.focusable, undefined, 'primary stays focusable');
+    assert.equal(input['aria-expanded'], false);
+
+    // The retained caret action still opens and closes the list
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, true);
+    assert.equal(box.current.inputProps['aria-expanded'], true);
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, false);
+    assert.equal(box.current.inputProps['aria-expanded'], false);
+
+    // Disabled: the caret stays hidden and its press is inert
+    await box.render({ items: ITEMS, label: 'Pick', disabled: true });
+    assert.equal(box.current.toggleProps['aria-hidden'], true);
+    assert.equal(box.current.toggleProps.disabled, true);
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, false);
+  });
+
 });

@@ -1042,4 +1042,49 @@ describe('behaviors: useMultiSelect', function () {
     assert.equal(focused, 1, 'a disabled control focuses nothing');
   });
 
+  test('the decorative caret is hidden from AT and tab focus; the primary and count clear stay exposed', async function () {
+    const box = await renderMultiSelect({ items: ITEMS, label: 'Pick', filterable: true });
+    const toggle = box.current.toggleProps;
+    assert.equal(toggle.accessible, false, 'caret hidden from assistive tech');
+    assert.equal(toggle.focusable, false, 'caret not focusable');
+    assert.equal(toggle['aria-hidden'], true, 'caret aria-hidden');
+    assert.equal(toggle.tabIndex, -1, 'caret stays out of tab order');
+    assert.equal(typeof toggle.onPress, 'function', 'caret keeps its press');
+
+    // The filterable input is the named, expanded combobox
+    const input = box.current.inputProps;
+    assert.equal(input.accessibilityRole, 'combobox');
+    assert.notEqual(input['aria-labelledby'], undefined, 'primary stays named');
+    assert.equal(input.accessible, undefined, 'primary is not hidden');
+    assert.equal(input['aria-hidden'], undefined, 'primary is not aria-hidden');
+    assert.equal(input.focusable, undefined, 'primary stays focusable');
+    assert.equal(input['aria-expanded'], false);
+
+    // The nonfilterable primary trigger keeps its own exposure too
+    const plain = await renderMultiSelect({ items: ITEMS, label: 'Pick' });
+    assert.equal(plain.current.triggerProps['aria-hidden'], undefined, 'trigger is not aria-hidden');
+    assert.equal(plain.current.triggerProps.accessible, undefined, 'trigger is not hidden');
+
+    // The count-chip clear is a real accessible control, never hidden
+    const clear = box.current.clearProps;
+    assert.equal(clear.accessible, undefined, 'clear is not hidden');
+    assert.equal(clear['aria-hidden'], undefined, 'clear is not aria-hidden');
+    assert.notEqual(clear.accessibilityLabel, undefined, 'clear stays named');
+
+    // The retained caret action still opens and closes the list
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, true);
+    assert.equal(box.current.inputProps['aria-expanded'], true);
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, false);
+    assert.equal(box.current.inputProps['aria-expanded'], false);
+
+    // Disabled: the caret stays hidden and its press is inert
+    await box.render({ items: ITEMS, label: 'Pick', filterable: true, disabled: true });
+    assert.equal(box.current.toggleProps['aria-hidden'], true);
+    assert.equal(box.current.toggleProps.disabled, true);
+    await act(async function () { box.current.toggleProps.onPress(); });
+    assert.equal(box.current.state.open, false);
+  });
+
 });
