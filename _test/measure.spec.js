@@ -28,6 +28,7 @@ import React from 'react';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
+import { targetInteractions } from './harness/fidelity.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts } from './harness/page.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
@@ -75,12 +76,16 @@ first open cell covers the parts the rest read left hidden.
 @param {Boolean} extended - Read ink, shadows and body-relative boxes too
 @param {Object} states    - The resting read: state label -> part -> measurement
 
-@return {Promise<Set>} - The names of the parts drawn in some state
+@return {Promise<Object>} - { drawn }: the names of the parts drawn in some
+  state; { failures }: the declared targets missing on an enabled, mounted
+  state (a main or additional target that resolves to nothing is reported,
+  never silently skipped, as the fidelity gate reports them)
 *********************************************************************/
 async function drawnParts (page, component, reference, side, extended, states) {
 
   const parts = reference.parts;
   const drawn = new Set();
+  const failures = [];
   const collect = function (map) {
     for (const state of Object.keys(map)) {
       for (const part of Object.keys(map[state] || {})) {
@@ -94,27 +99,66 @@ async function drawnParts (page, component, reference, side, extended, states) {
 
   const target = reference.target;
   const interactions = Array.isArray(reference.interactions) ? reference.interactions : [];
-  if (!target || interactions.length === 0) {
-    return drawn;
+  const additional = Array.isArray(reference.additionalTargets) ? reference.additionalTargets : [];
+  if ((!target && additional.length === 0) || interactions.length === 0) {
+    return { drawn: drawn, failures: failures };
   }
   const enabled = component.sample.filter(function (entry) {
     return !(entry.props && entry.props.disabled === true) && states[entry.label] !== undefined;
   });
-  for (const entry of enabled) {
-    for (const interaction of interactions) {
-      if (drawn.size === Object.keys(parts).length) {
-        return drawn;
+  // A reference where Escape is the component's own action skips only that
+  // key on leave; pointer release, blur and the settle wait stay
+  const leave = function () {
+    return leaveInteraction(page, {
+      escape: reference.escapeOnLeave !== false,
+      releaseBeforeMove: reference.releaseBeforeMove === true,
+      clickOutside: reference.clickOutsideOnLeave === true
+    });
+  };
+  const read = async function (label) {
+    collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true }));
+  };
+  if (target) {
+    for (const entry of enabled) {
+      for (const interaction of interactions) {
+        if (drawn.size === Object.keys(parts).length) {
+          return { drawn: drawn, failures: failures };
+        }
+        const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: target.point === true })) {
+          failures.push(entry.label + ' @' + interaction + ': target not found on ' + side);
+          continue;
+        }
+        await read(entry.label);
+        await leave();
       }
-      const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
-      if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
-        continue;
+    }
+  }
+  // The main target never exercises an action button, so every declared
+  // additional target is driven over the enabled states its own list keeps
+  for (const extra of additional) {
+    const list = Array.isArray(extra.states)
+      ? enabled.filter(function (entry) {
+        return extra.states.indexOf(entry.label) !== -1;
+      })
+      : enabled;
+    for (const entry of list) {
+      for (const interaction of targetInteractions(extra, interactions)) {
+        if (drawn.size === Object.keys(parts).length) {
+          return { drawn: drawn, failures: failures };
+        }
+        const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
+          failures.push(entry.label + ' @' + extra.name + ' ' + interaction + ': additional target "' + extra.name + '" not found on ' + side);
+          continue;
+        }
+        await read(entry.label);
+        await leave();
       }
-      collect(await readParts(page, component.name, parts, side, reference.origin, { extended: extended, only: entry.label, pauseAnimations: reference.pauseAnimations === true }));
-      await leaveInteraction(page);
     }
   }
 
-  return drawn;
+  return { drawn: drawn, failures: failures };
 
 }
 
@@ -164,6 +208,7 @@ test.describe('measure: primary reference', function () {
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
+      expect(upstreamDrawn.failures, name + ': declared targets missing upstream').toEqual([]);
 
       // Ours under the template that shares the reference's values,
       // unhosted as the upstream is
@@ -173,7 +218,7 @@ test.describe('measure: primary reference', function () {
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
-        return !upstreamDrawn.has(part);
+        return !upstreamDrawn.drawn.has(part);
       });
       expect(undrawn, name + ': parts the upstream never draws (a selector matches nothing)').toEqual([]);
 
@@ -241,6 +286,7 @@ test.describe('measure: second reference', function () {
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
+      expect(upstreamDrawn.failures, component.name + ': declared targets missing upstream').toEqual([]);
 
       // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
       const omit = component.reference.second.omit || {};
@@ -259,7 +305,7 @@ test.describe('measure: second reference', function () {
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
       const undrawn = Object.keys(parts).filter(function (part) {
-        return !upstreamDrawn.has(part);
+        return !upstreamDrawn.drawn.has(part);
       });
       expect(undrawn, component.name + ': parts the second reference never draws').toEqual([]);
       test.info().annotations.push({ type: 'measure', description: component.name + ' (second): ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });

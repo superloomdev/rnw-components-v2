@@ -70,3 +70,9 @@ variant (those samples are not mounted there). Its track and handle colors
 live on `::before` skins whose sizes are percentages, so the track
 compares as a pseudo by color and the handle as its element by geometry;
 each handle fill is left to the pixel comparison.
+
+# ToggleSkeleton
+
+## Decisions (roster flag `superloom_decision`)
+
+The toggle's loading shape: the handle's own circle (`control.switch_handle_size`, full radius) and a short bar (`control.toggle_skeleton_bar_width` x `_height`) `spacing.spacing_03` after it, both `SkeletonPlaceholder`, in a row centered to its content - the upstream skeleton draws exactly this pair, not the track's pill. The second system has no skeleton - the roster's `superloom_decision` - so the pair's values are the switch's own cells.

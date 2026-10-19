@@ -10,7 +10,9 @@
 import { expect, test } from '@playwright/test';
 import { PNG } from 'pngjs';
 
-import { openShowcase } from './harness/page.js';
+import { discoverComponents } from '../scripts/lib/components.js';
+import { runFidelity } from './harness/fidelity.js';
+import { enterInteraction, leaveInteraction, openShowcase, readParts } from './harness/page.js';
 
 // The template whose field floats its label over an outline, and whose press is a ripple
 const FLOATING_OUTLINE_TEMPLATE = 'material';
@@ -135,4 +137,163 @@ test.describe('anatomy: ripple state layer', function () {
     test.info().annotations.push({ type: 'anatomy', description: 'ripple: ' + changed + ' pixels changed under press' });
   });
 
+});
+
+
+test.describe('anatomy: declared field-action phases', function () {
+
+  test('the fidelity driver exercises every declared field-action phase', async function ({ page }) {
+    test.setTimeout(300000);
+    const source = (await discoverComponents()).find(function (entry) {
+      return entry.name === 'PasswordInput';
+    });
+    expect(source).toBeTruthy();
+    const component = Object.assign({}, source, {
+      sample: source.sample.filter(function (entry) {
+        return entry.label === 'default';
+      })
+    });
+    const run = await runFidelity(page, component, 'primary', 'light');
+    expect(run.errors).toEqual([]);
+    // A fixed contract, not the descriptor's own additionalTargets list: a
+    // driver that drops that list must fail this test rather than shrink it
+    for (const side of ['ours', 'upstream']) {
+      for (const phase of ['hover', 'focus', 'pressed']) {
+        expect(run[side]['default @toggle ' + phase], side + ' is missing default @toggle ' + phase).toBeTruthy();
+      }
+    }
+    // The toggle's tooltip opens beside the field-high action slot, never
+    // across the face: on either side the painted face and the bubble share
+    // not one pixel
+    for (const side of ['ours', 'upstream']) {
+      const parts = run[side]['default @toggle hover'];
+      const face = parts.toggleFace;
+      const bubble = parts.bubble;
+      expect(face !== null && face.visible === true, side + ' toggleFace is not visible at default @toggle hover').toBe(true);
+      expect(bubble !== null && bubble !== undefined && bubble.visible === true, side + ' bubble is not visible at default @toggle hover').toBe(true);
+      const overlapX = Math.max(0, Math.min(face.x + face.width, bubble.x + bubble.width) - Math.max(face.x, bubble.x));
+      const overlapY = Math.max(0, Math.min(face.y + face.height, bubble.y + bubble.height) - Math.max(face.y, bubble.y));
+      expect(overlapX * overlapY, side + ' toggleFace and bubble overlap').toBe(0);
+    }
+  });
+
+});
+
+
+test.describe('anatomy: declared shadow-target phases', function () {
+
+  test('the fidelity driver exercises declared shadow-target phases', async function ({ page }) {
+    test.setTimeout(300000);
+    const source = (await discoverComponents()).find(function (entry) {
+      return entry.name === 'OperationalTag';
+    });
+    expect(source).toBeTruthy();
+    const component = Object.assign({}, source, {
+      sample: source.sample.filter(function (entry) {
+        return entry.label === 'default';
+      })
+    });
+    // The second system's chip button lives inside a shadow root: a driver
+    // that resolves it to nothing must fail, never silently skip
+    const run = await runFidelity(page, component, 'second', 'light');
+    expect(run.errors).toEqual([]);
+    for (const side of ['ours', 'upstream']) {
+      for (const phase of ['hover', 'focus', 'pressed']) {
+        expect(run[side]['default @' + phase], side + ' is missing default @' + phase).toBeTruthy();
+      }
+    }
+  });
+
+});
+
+
+test.describe('anatomy: part visibility', function () {
+
+  test('the part reader rejects zero-area and transparent-ancestor seats but keeps hairlines', async function ({ page }) {
+    await page.setContent(
+      '<div class="cell" data-component="VisibilityProbe" data-state="default"><div data-part="body">' +
+      '<input id="zero" style="width:0;height:40px;border:0;padding:0">' +
+      '<div id="hairline" style="width:1px;height:16px"></div>' +
+      '<div id="clipped" style="width:1px;height:1px;overflow:hidden"></div>' +
+      '<div style="opacity:0"><div id="faded" style="width:10px;height:10px"></div></div>' +
+      '<div id="padded" style="padding:3px 5px 7px 11px">Padding</div>' +
+      '</div></div>'
+    );
+    const parts = {
+      zero: { ours: '#zero', measure: 'box' },
+      hairline: { ours: '#hairline', measure: 'box' },
+      clipped: { ours: '#clipped', measure: 'box' },
+      faded: { ours: '#faded', measure: 'box' },
+      padded: { ours: '#padded', measure: 'box', compare: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] }
+    };
+    for (const extended of [false, true]) {
+      const read = await readParts(page, 'VisibilityProbe', parts, 'ours', null, { extended: extended });
+      const state = read.default;
+      expect(state.zero.visible, 'zero area is not drawn (extended=' + extended + ')').toBe(false);
+      expect(state.hairline.visible, 'a real hairline is drawn (extended=' + extended + ')').toBe(true);
+      expect(state.clipped.visible, 'a 1x1 clip is not drawn (extended=' + extended + ')').toBe(false);
+      expect(state.faded.visible, 'a transparent ancestor is not drawn (extended=' + extended + ')').toBe(false);
+      expect([state.padded.paddingTop, state.padded.paddingRight, state.padded.paddingBottom, state.padded.paddingLeft]).toEqual(['3px', '5px', '7px', '11px']);
+    }
+  });
+
+});
+
+
+test('keyboard focus collapses numeric selection without changing its value', async function ({ page }) {
+  await page.setContent(
+    '<div class="cell" data-component="FocusProbe" data-state="default"><div data-part="body">' +
+    '<input type="number" value="2"></div></div>'
+  );
+  await page.evaluate(function () {
+    window.focusKeys = [];
+    document.querySelector('input').addEventListener('keydown', function (event) {
+      window.focusKeys.push(event.key);
+    });
+  });
+  expect(await enterInteraction(page, 'FocusProbe', 'default', 'input', 'focus')).toBe(true);
+  expect(await page.locator('input').inputValue()).toBe('2');
+  expect(await page.evaluate(function () { return window.focusKeys; })).toEqual(['ArrowRight']);
+  await leaveInteraction(page);
+});
+
+
+test('intrinsically sized selections retain complete labels after fonts load', async function ({ page }) {
+  test.setTimeout(120000);
+  for (const template of ['default', 'carbon', 'material']) {
+    for (const scheme of ['light', 'dark']) {
+      for (const component of ['TimePicker', 'TimePickerSelect']) {
+        await openShowcase(page, template, component, { measure: true, sheet: true, scheme: scheme, hosted: false });
+        const read = async function () {
+          return page.evaluate(function (name) {
+            const rows = [];
+            for (const cell of document.querySelectorAll('.cell[data-component="' + name + '"]')) {
+              for (const trigger of cell.querySelectorAll('[role="combobox"]')) {
+                const label = trigger.querySelector('[dir="auto"]');
+                if (label === null || label.textContent === '') {
+                  continue;
+                }
+                const range = document.createRange();
+                range.selectNodeContents(label);
+                rows.push({
+                  state: cell.getAttribute('data-state'),
+                  label: label.textContent,
+                  textWidth: range.getBoundingClientRect().width,
+                  seatWidth: label.getBoundingClientRect().width
+                });
+              }
+            }
+            return rows;
+          }, component);
+        };
+        // Wait for the font-induced intrinsic-layout update as well as font loading.
+        await expect.poll(async function () {
+          return (await read()).filter(function (row) { return row.textWidth > row.seatWidth; });
+        }, { message: template + '/' + scheme + '/' + component + ': a complete option label is ellipsized' }).toEqual([]);
+        const rows = await read();
+        expect(rows.length, 'the sizing assertion must see actual selected labels').toBeGreaterThan(0);
+        expect(rows.some(function (row) { return row.label === 'AM'; }), 'the short period label must be exercised').toBe(true);
+      }
+    }
+  }
 });

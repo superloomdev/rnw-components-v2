@@ -51,7 +51,7 @@ describe('AspectRatio: every sample state under every template', function () {
         // The string child renders through the Text atom: its type set and color
         const text = root.firstChild;
         assert.equal(text.style.fontSize, set.fontSize + 'px');
-        assert.equal(text.style.lineHeight, set.lineHeight + 'px');
+        assert.equal(text.style.lineHeight, String(set.lineHeight / set.fontSize));
         assert.equal(text.style.fontWeight, set.fontWeight);
         assert.equal(text.style.letterSpacing, set.letterSpacing + 'px');
         assert.equal(text.style.color, cssValue('color', t['color.text_primary']));

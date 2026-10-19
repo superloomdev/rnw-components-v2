@@ -32,11 +32,26 @@ export default function Checkbox (ctx) {
   *********************************************************************/
   function CheckboxComponent (props) {
 
-    // Init the behavior and its state
+    // Init the behavior and its state. A presentation-only member keeps the
+    // controlled paint but carries no interaction of its own: the host's own
+    // row answers input, and `disabled` stays a paint state, not a stand-in
+    // for inertness
     const checkbox = useCheckbox(props);
     const state = checkbox.state;
     const invalid = props.invalid === true && !state.disabled;
     const marked = state.checked || state.indeterminate;
+    const rootProps = props.presentationOnly === true
+      ? {
+        accessibilityRole: checkbox.rootProps.accessibilityRole,
+        'aria-checked': checkbox.rootProps['aria-checked'],
+        'aria-disabled': checkbox.rootProps['aria-disabled'],
+        'aria-labelledby': checkbox.rootProps['aria-labelledby'],
+        accessible: false,
+        disabled: checkbox.rootProps.disabled,
+        focusable: false,
+        tabIndex: -1
+      }
+      : checkbox.rootProps;
 
     // Read the geometry through the spec sheet
     const boxSize = ctx.metric('Checkbox', 'boxSize');
@@ -80,7 +95,7 @@ export default function Checkbox (ctx) {
 
     // Render the root, the row, the box with its state layer, the label and the message
     return React.createElement(View, null,
-      React.createElement(Pressable, Object.assign({}, checkbox.rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
+      React.createElement(Pressable, Object.assign({}, rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
         testID: props.testID,
         // The focus ring is drawn on the box, so the row itself shows none
         style: { alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }

@@ -24,6 +24,7 @@ export default Object.freeze({
     outlineInLayout: { type: 'boolean', required: false, description: 'Composition prop: draws the outline as a real border the box grows by; `false` draws it as the inset shadow the tag\'s own outline uses, moving nothing (the interactive tags, per `anatomy.tag_interactive_outline`).' },
     height: { type: 'number', required: false, description: 'Composition prop: overrides the size\'s height (the interactive tags\' small height).' },
     paddingEnd: { type: 'number', required: false, description: 'Composition prop: overrides the computed end padding (the dismissible tag\'s close control sits at the end).' },
+    paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding, icon and size logic aside (a host member\'s legacy leading edge).' },
     trailing: { type: 'node', required: false, description: 'Composition prop: rendered after the label, inside the container (the dismissible tag\'s close control).' }
   }),
   kinds: TYPES,

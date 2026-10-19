@@ -92,6 +92,7 @@
     "user": { "carbon": "user", "material": "person" },
     "visibility": { "carbon": "view", "material": "visibility" },
     "visibility_off": { "carbon": "view--off", "material": "visibility_off" },
+    "visibility_on": { "carbon": "view", "material": "visibility" },
     "warning": { "carbon": "warning", "material": "warning" },
     "warning_alt_filled": { "carbon": "warning--alt--filled", "material": "warning" },
     "warning_alt_inverted_filled": { "carbon": "warning--alt-inverted--filled", "material": "warning" },

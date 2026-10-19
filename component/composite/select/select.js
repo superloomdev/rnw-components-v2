@@ -36,12 +36,20 @@ export default function Select (ctx) {
   *********************************************************************/
   function SelectComponent (props) {
 
-    // Init the behavior and its state
-    const select = useSelect(props);
+    // Init the behavior and its state. A compact member draws no label
+    // element, so the label prop must not mint an id nothing renders; it
+    // keeps its own accessible name instead
+    const compact = props.compact === true;
+    const select = useSelect(compact === true
+      ? Object.assign({}, props, { label: undefined })
+      : props);
     const state = select.state;
     const items = Utils.isArray(props.items) ? props.items : [];
+    const sizerRef = React.useRef(null);
+    const intrinsic = useAnchoredPosition({ anchor: sizerRef, offset: 0, placement: 'bottom-start', flip: false });
+    const sizerWidth = intrinsic.anchor === null ? undefined : Math.ceil(intrinsic.anchor.width);
     const invalid = props.invalid === true && !state.disabled;
-    const labelled = Utils.isString(props.label) && !Utils.isEmptyString(props.label);
+    const labelled = !compact && Utils.isString(props.label) && !Utils.isEmptyString(props.label);
     const selected = state.selectedIndex >= 0 ? items[state.selectedIndex] : null;
 
     // Read the geometry and the theme's field presentation
@@ -62,7 +70,7 @@ export default function Select (ctx) {
       surface: surface,
       trailing: true
     });
-    const iconGap = presentation.iconGap;
+    const iconGap = compact ? ctx.metric('Select', 'compactIconGap') : presentation.iconGap;
     const list = ctx.listPresentation({
       itemHeight: ctx.metric('Select', 'itemHeight'),
       paddingInline: ctx.metric('Select', 'itemPaddingInline'),
@@ -158,43 +166,72 @@ export default function Select (ctx) {
     // Size the trigger to its widest text, as a platform select sizes to its
     // widest option, so the frame does not change width with the selection;
     // the sizer takes no height and is hidden from assistive technology
-    const bodyStyle = presentation.value;
+    let bodyStyle = presentation.value;
+    if (compact === true) {
+      // The compact value is one content-height line vertically centered in
+      // the frame's content box: the padding is what the frame's actual
+      // borders leave of the height minus the line. An outline frame has no
+      // per-side border widths, so read its uniform border instead
+      const borderTop = Utils.isNumber(presentation.frame.borderTopWidth) ? presentation.frame.borderTopWidth
+        : Utils.isNumber(presentation.frame.borderWidth) ? presentation.frame.borderWidth : 0;
+      const borderBottom = Utils.isNumber(presentation.frame.borderBottomWidth) ? presentation.frame.borderBottomWidth
+        : Utils.isNumber(presentation.frame.borderWidth) ? presentation.frame.borderWidth : 0;
+      const contentHeight = height - borderTop - borderBottom;
+      bodyStyle = Object.assign({}, presentation.value, {
+        lineHeight: bodyStyle.fontSize,
+        minHeight: contentHeight,
+        paddingTop: (contentHeight - bodyStyle.fontSize) / 2
+      });
+    }
     const placeholder = Utils.isString(props.placeholder) ? props.placeholder : '';
-    const sizer = React.createElement(View, { 'aria-hidden': true, style: { height: 0, overflow: 'hidden' } },
-      [placeholder].concat(items.map(function (item) {
-        return item.label;
-      })).map(function (text, index) {
-        return React.createElement(Text, { key: index, numberOfLines: 1, style: bodyStyle }, text);
-      }));
+    const sizer = React.createElement(View, {
+      'aria-hidden': true,
+      ref: sizerRef,
+      // The layout event's width arrives already rounded, so ceil cannot
+      // recover a fraction the event lost; the positioner reads the sizer's
+      // true fractional box instead, and the seat rounds up to match it
+      onLayout: compact === true ? intrinsic.measure : undefined,
+      style: { alignSelf: 'flex-start', height: 0, overflow: 'hidden', position: 'absolute' }
+    },
+    [placeholder].concat(items.map(function (item) {
+      return item.label;
+    })).map(function (text, index) {
+      return React.createElement(Text, { key: index, numberOfLines: 1, style: bodyStyle }, text);
+    }));
 
     // Render the root, the label, the frame with the trigger and the list, and the message
-    return React.createElement(View, Object.assign({}, select.rootProps, { style: [{ position: 'relative' }, presentation.root] }),
-      labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-      React.createElement(View, { ref: frameRef, style: presentation.frame },
-        React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
-          accessibilityLabel: props.accessibilityLabel,
-          testID: props.testID,
-          // The focus ring is drawn on the frame, so the trigger itself shows none.
-          // The trigger grows from its content (the sizer), not from zero: native
-          // layout gives `flex: 1` a zero basis, which collapses the trigger
-          // inside a container that sizes to its content
-          style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
-        }),
-        React.createElement(View, { style: { flexGrow: 1 } },
-          React.createElement(Text, {
-            numberOfLines: 1,
-            // A list box's placeholder is its label, drawn in the field's own
-            // ink; under a floating label it stays in the tree, undrawn
-            style: [bodyStyle, {
-              opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
-            }]
-          }, selected === null ? placeholder : selected.label),
-          sizer),
-        icon,
-        caret),
-        overlay.hosted === true ? null : listElement
-      ),
-      message === null ? null : React.createElement(Text, { style: presentation.message }, message)
+    return React.createElement(View, Object.assign({}, select.rootProps, {
+      // A compact member draws no label and takes no floating reserve
+      style: [{ position: 'relative' }, presentation.root, compact === true ? { paddingTop: 0 } : null]
+    }),
+    labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
+    React.createElement(View, { ref: frameRef, style: presentation.frame },
+      React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
+        accessibilityLabel: props.accessibilityLabel,
+        testID: props.testID,
+        // The focus ring is drawn on the frame, so the trigger itself shows none.
+        // The trigger grows from its content (the sizer), not from zero: native
+        // layout gives `flex: 1` a zero basis, which collapses the trigger
+        // inside a container that sizes to its content
+        style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
+      }),
+      React.createElement(View, {
+        style: { flexGrow: 1, width: compact === true && sizerWidth !== undefined ? sizerWidth : undefined }
+      },
+      React.createElement(Text, {
+        numberOfLines: 1,
+        // A list box's placeholder is its label, drawn in the field's own
+        // ink; under a floating label it stays in the tree, undrawn
+        style: [bodyStyle, {
+          opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
+        }]
+      }, selected === null ? placeholder : selected.label),
+      sizer),
+      icon,
+      caret),
+      overlay.hosted === true ? null : listElement
+    ),
+    message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );
 
   }

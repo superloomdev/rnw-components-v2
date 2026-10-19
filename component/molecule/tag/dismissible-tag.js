@@ -71,32 +71,45 @@ export default function DismissibleTag (ctx) {
     // hangs the icon by the bleed on both sides, so the gap narrows by the
     // bleed and the face reaches that far past the inset padding
     const bleed = inset ? (faceSide - iconSize) / 2 : 0;
-    const gap = ctx.metric('DismissibleTag', 'closeGap') - bleed + (inset || props.size !== 'sm'
-      ? 0
-      : (ctx.metric('DismissibleTag', 'height') - ctx.metric('DismissibleTag', 'heightSmall')) / 2);
+    // A host's `closeGap` is the raw gap ahead of the control, narrowed
+    // only by the face bleed; without it the default keeps the theme cell
+    // and the standalone small's half-height adjustment
+    const gap = Utils.isNumber(props.closeGap)
+      ? props.closeGap - bleed
+      : ctx.metric('DismissibleTag', 'closeGap') - bleed + (inset || props.size !== 'sm'
+        ? 0
+        : (ctx.metric('DismissibleTag', 'height') - ctx.metric('DismissibleTag', 'heightSmall')) / 2);
 
     // The face fill: `circle` paints its hover cell - the hue's for a typed
     // tag, the close cell for a neutral one - and its primary draws no
     // pressed fill, so the hover stays through a press; `inset` layers the
-    // close hover cell while hovered and the theme's interactive layer
-    // while pressed, as the second's trailing action does
+    // close hover cell while hovered, and the separate active layer below
+    // paints the close's own pressed cell over it while pressed. A host's
+    // override leaf answers for its own member's surface
     const fill = !live ? undefined
-      : pressed && inset ? ctx.color('tag_interactive_layer_active')
-        : hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)
-          : undefined;
+      : hovered ? ctx.color(Utils.isString(props.closeHoverLeaf) ? props.closeHoverLeaf
+        : inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)
+        : undefined;
 
     // The ring: `circle` draws the primary's inset shadow in the close
     // focus ring color on any focus; `inset` draws the tag family's outline
-    // ring on the action circle, as the second's focus ring does
+    // ring on the action circle, as the second's focus ring does. A host's
+    // override leaf recolors the same drawing - the outline's color under
+    // `inset`, the shadow's under `circle`
     const ring = focused
       ? (inset
-        ? ctx.focusRing('tag', { focused: true, focusVisible: state.focusVisible })
-        : { boxShadow: 'inset 0 0 0 ' + ctx.metric('DismissibleTag', 'focusRingWidth') + 'px ' + ctx.color('tag_close_focus_ring') })
+        ? Object.assign(
+          ctx.focusRing('tag', { focused: true, focusVisible: state.focusVisible }, undefined, { offset: ctx.metric('DismissibleTag', 'focusOffset') }),
+          Utils.isString(props.closeFocusLeaf) ? { outlineColor: ctx.color(props.closeFocusLeaf) } : {})
+        : { boxShadow: 'inset 0 0 0 ' + ctx.metric('DismissibleTag', 'focusRingWidth') + 'px ' +
+            ctx.color(Utils.isString(props.closeFocusLeaf) ? props.closeFocusLeaf : 'tag_close_focus_ring') })
       : {};
 
     // The glyph: the close icon at the theme's close icon size, in the
-    // disabled icon leaf or the label's own (the hue's for a typed tag)
-    const glyphLeaf = disabled ? 'tag_icon_disabled' : type === null ? 'tag_label' : 'tag_color_' + type;
+    // host's leaf or the disabled icon leaf or the label's own (the hue's
+    // for a typed tag)
+    const glyphLeaf = Utils.isString(props.iconLeaf) ? props.iconLeaf
+      : disabled ? 'tag_icon_disabled' : type === null ? 'tag_label' : 'tag_color_' + type;
 
     // Render the control: the painted circle face, its glyph and the
     // transparent pressable the target rule asks for, wrapped in the
@@ -115,6 +128,20 @@ export default function DismissibleTag (ctx) {
         width: faceSide
       }, ring)]
     },
+    React.createElement(View, {
+      // The active layer: the close's own pressed cell, mounted in every
+      // theme - transparent where the theme draws no pressed fill - under
+      // the glyph and over the hover fill the face keeps through a press
+      style: {
+        backgroundColor: pressed ? ctx.color('tag_close_layer_active') : 'transparent',
+        borderRadius: faceSide / 2,
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0
+      }
+    }),
     React.createElement(ctx.Registry.Icon, {
       color: glyphLeaf,
       name: 'close',
@@ -124,20 +151,28 @@ export default function DismissibleTag (ctx) {
       style: ctx.pressTarget({ height: faceSide, width: faceSide })
     })));
 
+    // A host that already names the control may draw it bare; `title`
+    // still is its accessible name
+    const trailing = props.tooltip === false ? control : React.createElement(ctx.Registry.Tooltip, {
+      align: 'bottom',
+      compact: true,
+      label: title,
+      leaveDelayMs: 0
+    }, control);
+
     return React.createElement(ctx.Registry.Tag, {
       children: text,
+      containerLeaf: props.containerLeaf,
       disabled: disabled,
       icon: props.icon,
-      labelLeaf: type === null && !disabled ? 'tag_dismissible_label' : undefined,
+      iconLeaf: props.iconLeaf,
+      labelLeaf: Utils.isString(props.labelLeaf) ? props.labelLeaf
+        : type === null && !disabled ? 'tag_dismissible_label' : undefined,
       paddingEnd: inset ? ctx.metric('DismissibleTag', 'closeInset') : 0,
+      paddingStart: props.paddingStart,
       size: props.size,
       testID: props.testID,
-      trailing: React.createElement(ctx.Registry.Tooltip, {
-        align: 'bottom',
-        compact: true,
-        label: title,
-        leaveDelayMs: 0
-      }, control),
+      trailing: trailing,
       type: type === null ? undefined : type
     });
 

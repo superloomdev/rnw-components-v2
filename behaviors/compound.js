@@ -15,11 +15,17 @@ Build the compound behaviors for one component system.
 
 @param {Object} deps - { React }
 
-@return {Object} - { createCompoundContext }
+@return {Object} - { createCompoundContext, getCompoundContext }
 *********************************************************************/
 export default function createCompoundBehaviors (deps) {
 
   const React = deps.React;
+
+  // Named contexts are cached per system: the same name always returns the
+  // same { Provider, useContext, Context } triple within this instance. A
+  // Map keeps '__proto__' and 'toString' ordinary names, not inherited
+  // dictionary members
+  const compoundContexts = new Map();
 
 
   /********************************************************************
@@ -60,8 +66,30 @@ export default function createCompoundBehaviors (deps) {
   }
 
 
+  /********************************************************************
+  Return the named compound context for this system, building it on
+  first use. The same name reuses one context inside one system; a
+  different name or a different system returns an isolated triple. A
+  fresh triple remains available through createCompoundContext.
+
+  @param {String} displayName - Human-readable name for error messages
+
+  @return {Object} - { Provider, useContext, Context }
+  *********************************************************************/
+  function getCompoundContext (displayName) {
+
+    if (!compoundContexts.has(displayName)) {
+      compoundContexts.set(displayName, createCompoundContext(displayName));
+    }
+
+    return compoundContexts.get(displayName);
+
+  }
+
+
   return {
-    createCompoundContext: createCompoundContext
+    createCompoundContext: createCompoundContext,
+    getCompoundContext: getCompoundContext
   };
 
 }

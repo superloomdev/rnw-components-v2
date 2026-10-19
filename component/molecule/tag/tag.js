@@ -67,9 +67,10 @@ export default function Tag (ctx) {
     // A hidden icon seat mounts the tree but takes no space, so the icon
     // padding answers a drawn icon, not a mounted one (the selectable
     // tag's hidden selected mark)
-    const paddingStart = Utils.isString(props.icon) && props.iconHidden !== true
-      ? ctx.metric('Tag', large ? 'paddingInlineLargeIcon' : 'paddingInlineIcon')
-      : ctx.metric('Tag', large ? 'paddingInlineLarge' : 'paddingInline');
+    const paddingStart = Utils.isNumber(props.paddingStart) ? props.paddingStart
+      : Utils.isString(props.icon) && props.iconHidden !== true
+        ? ctx.metric('Tag', large ? 'paddingInlineLargeIcon' : 'paddingInlineIcon')
+        : ctx.metric('Tag', large ? 'paddingInlineLarge' : 'paddingInline');
 
     // A composing parent's outline (the interactive tags): `outlineInLayout`
     // draws it as a real border the box grows by, as the primary's

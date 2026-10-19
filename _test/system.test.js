@@ -224,6 +224,147 @@ describe('context: icon', function () {
 });
 
 
+describe('context: textPresentation', function () {
+
+  const NativeLib = function (os, roundToNearestPixel) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+      })
+    });
+  };
+
+  test('typeStyle stays numeric; web presents the exact unitless ratio', function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    const set = buildNative('default').tokens['type.body01'];
+    const style = ctx.typeStyle('body01');
+    assert.equal(style.lineHeight, set.lineHeight);
+    assert.equal(typeof style.lineHeight, 'number');
+    const presented = ctx.textPresentation(style);
+    assert.equal(presented.lineHeight, String(set.lineHeight / set.fontSize));
+    assert.equal(presented.fontSize, set.fontSize);
+    // The source style is not changed
+    assert.equal(style.lineHeight, set.lineHeight);
+    assert.notEqual(presented, style);
+  });
+
+  for (const os of ['ios', 'android']) {
+    test(os + ' presents the numeric absolute line height', function () {
+      const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os, Math.round) }).Probe.ctx;
+      const set = buildNative('default').tokens['type.body01'];
+      const presented = ctx.textPresentation(ctx.typeStyle('body01'));
+      assert.equal(presented.lineHeight, set.lineHeight);
+      assert.equal(typeof presented.lineHeight, 'number');
+    });
+  }
+
+  test('a brand-overridden type set presents ' + "'1.5'" + ' on web and 15 on native', function () {
+    const layers = [{ name: 'brand', tokens: {
+      'type.body01': { type_set: true, font_family: 'sans', font_size: 10, weight: 400, letter_spacing: 0, line_height_px: 15 }
+    } }];
+    const web = buildSystem('default', { Probe: Probe }, { layers: layers }).Probe.ctx;
+    assert.equal(web.textPresentation(web.typeStyle('body01')).lineHeight, '1.5');
+    const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios', Math.round) }).Probe.ctx;
+    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15);
+  });
+
+  test('a style without numeric fontSize and lineHeight throws', function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    assert.throws(function () {
+      ctx.textPresentation({ fontSize: 14 });
+    }, TypeError);
+  });
+
+});
+
+
+describe('context: native lineHeight on the physical pixel grid', function () {
+
+  const NativeGridLib = function (os, roundToNearestPixel) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+      })
+    });
+  };
+
+  test('mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008', function () {
+    const set = buildNative('carbon').tokens['type.body_compact_01'];
+    assert.equal(set.lineHeight, 18.00008, 'fixture: carbon body_compact_01 must carry the fractional lineHeight');
+    for (const os of ['ios', 'android']) {
+      const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib(os, Math.round) }).Probe.ctx;
+      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, 18);
+    }
+    assert.equal(buildNative('carbon').tokens['type.body_compact_01'].lineHeight, 18.00008);
+    assert.equal(buildSystem('carbon', { Probe: Probe }).Probe.ctx.token('type.body_compact_01').lineHeight, 18.00008);
+  });
+
+  test('the host grid resolves, not a constant density: grid2 18.25 -> 18.5, grid3 -> its third', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 18.25 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const grid2 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return Math.round(v * 2) / 2; }) }).Probe.ctx;
+    assert.equal(grid2.typeStyle('body01').lineHeight, 18.5);
+    const grid3 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return Math.round(v * 3) / 3; }) }).Probe.ctx;
+    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3);
+    assert.notEqual(grid3.typeStyle('body01').lineHeight, 18);
+  });
+
+  test('web never invokes the pixel grid and keeps the exact raw number', function () {
+    let calls = 0;
+    const counting = function (v) { calls += 1; return Math.round(v); };
+    const webLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { PixelRatio: { roundToNearestPixel: counting } })
+    });
+    const ctx = buildSystem('carbon', { Probe: Probe }, { lib: webLib }).Probe.ctx;
+    const set = buildNative('carbon').tokens['type.body_compact_01'];
+    const style = ctx.typeStyle('body_compact_01');
+    assert.equal(style.lineHeight, 18.00008);
+    assert.equal(calls, 0);
+    assert.equal(ctx.textPresentation(style).lineHeight, String(set.lineHeight / set.fontSize));
+  });
+
+  test('an integer lineHeight is unchanged; a missing or bad PixelRatio throws on native only', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 20 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const native = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', Math.round) }).Probe.ctx;
+    assert.equal(native.typeStyle('body01').lineHeight, 20);
+    const noGrid = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' }, PixelRatio: undefined })
+    });
+    assert.throws(function () {
+      buildSystem('default', { Probe: Probe }, { lib: noGrid }).Probe.ctx.typeStyle('body01');
+    }, /PixelRatio\.roundToNearestPixel/);
+    const bad = buildSystem('default', { Probe: Probe }, { lib: NativeGridLib('android', function () { return 'oops'; }) }).Probe.ctx;
+    assert.throws(function () {
+      bad.typeStyle('body01');
+    }, TypeError);
+    // Web does not need the grid at all
+    const webLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { PixelRatio: undefined })
+    });
+    assert.equal(buildSystem('default', { Probe: Probe }, { lib: webLib }).Probe.ctx.typeStyle('body01').lineHeight, buildNative('default').tokens['type.body01'].lineHeight);
+  });
+
+  test('three carbon text lines in a group predict 54, not the ceiled 57', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib('android', Math.round) }).Probe.ctx;
+    const lines = ctx.typeStyle('body_compact_01').lineHeight
+      + ctx.typeStyle('heading_compact_01').lineHeight
+      + ctx.typeStyle('helper_text_02').lineHeight;
+    assert.equal(lines, 54);
+    assert.notEqual(lines, 57);
+  });
+
+});
+
+
 describe('context: metric through the spec sheet', function () {
 
   test('token, subtract, sum and constant entries resolve', function () {
@@ -306,6 +447,19 @@ describe('context: focusRing', function () {
     assert.equal(both.boxShadow, 'inset 0 0 0 1px ' + t['color.button_focus_ring']);
   });
 
+  test('options.offset overrides the family offset, including zero', function () {
+    const t = buildNative('material').tokens;
+    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+    for (const offset of [0, 4]) {
+      const ring = ctx.focusRing('tag', { focused: true, focusVisible: true }, undefined, { offset: offset });
+      assert.equal(ring.outlineOffset, offset, 'offset ' + offset);
+      assert.equal(ring.outlineWidth, t['control.tag_focus_width']);
+      assert.equal(ring.outlineColor, t['color.tag_focus_ring']);
+    }
+    const plain = ctx.focusRing('tag', { focused: true, focusVisible: true });
+    assert.equal(plain.outlineOffset, t['control.tag_focus_offset'], 'no options reads the family cell');
+  });
+
 });
 
 
@@ -377,6 +531,64 @@ describe('context: pressPresentation', function () {
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).layer.opacity, 0);
   });
 
+  test('colors: an explicit map replaces the prefix convention; every phase key must be present', function () {
+    const ctx = probeWith({});
+    const palette = {
+      '': null,
+      _active: 'button_primary_container_active',
+      _disabled: null,
+      _focus: null,
+      _hover: 'button_primary_container_hover',
+      _selected: null
+    };
+    const rest = ctx.pressPresentation({}, '', { colors: palette });
+    assert.equal(rest.container.backgroundColor, 'transparent');
+    assert.equal(ctx.pressPresentation({ hovered: true }, '', { colors: palette }).container.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(ctx.pressPresentation({ pressed: true }, '', { colors: palette }).container.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, '', { colors: palette }).container.backgroundColor, 'transparent');
+    const missing = Object.assign({}, palette);
+    delete missing._active;
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: missing });
+    }, /colors must map every phase/);
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: 'not-a-map' });
+    }, /colors must be an object/);
+    assert.throws(function () {
+      ctx.pressPresentation({}, '', { colors: Object.assign({}, palette, { _hover: 42 }) });
+    }, /must name a color leaf or null/);
+    assert.throws(function () {
+      ctx.pressPresentation({ hovered: true }, '', { colors: Object.assign({}, palette, { _hover: 'no_such_leaf' }) });
+    }, /token "color\.no_such_leaf" is not in the theme/);
+  });
+
+  test('separateLayers: ripple mounts the hover and the active fills as two layers', function () {
+    const ctx = probeWith({ 'feedback.press': 'ripple' });
+    const palette = {
+      '': null,
+      _active: 'button_primary_container_active',
+      _disabled: null,
+      _focus: null,
+      _hover: 'button_primary_container_hover',
+      _selected: null
+    };
+    const rest = ctx.pressPresentation({}, '', { colors: palette, separateLayers: true });
+    assert.equal(rest.container.backgroundColor, 'transparent');
+    assert.equal(rest.layer.backgroundColor, t['color.button_primary_container_active']);
+    assert.equal(rest.layer.opacity, 0);
+    assert.equal(rest.hoverLayer.backgroundColor, t['color.button_primary_container_hover']);
+    assert.equal(rest.hoverLayer.opacity, 0);
+    const hovered = ctx.pressPresentation({ hovered: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(hovered.hoverLayer.opacity, 1);
+    assert.equal(hovered.layer.opacity, 0);
+    const pressed = ctx.pressPresentation({ hovered: true, pressed: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(pressed.layer.opacity, 1);
+    assert.equal(pressed.hoverLayer.opacity, 1, 'the hover layer survives a press in flight');
+    const disabled = ctx.pressPresentation({ pressed: true, disabled: true }, '', { colors: palette, separateLayers: true });
+    assert.equal(disabled.layer.opacity, 0);
+    assert.equal(disabled.hoverLayer.opacity, 0);
+  });
+
 });
 
 
@@ -401,6 +613,43 @@ describe('context: pressTarget', function () {
       top: -12,
       width: 64
     });
+  });
+
+  test('inlineExpansion pushes the minimum out through the named logical edge, so adjacent faces share a boundary without overlap', function () {
+    const ctx = probeWith({});
+    // A 40-point face: centered leaves two points of overhang on each side
+    assert.deepEqual(ctx.pressTarget({ height: 40, width: 40 }), {
+      height: 44, left: -2, outlineStyle: 'none', position: 'absolute', top: -2, width: 44
+    });
+    // 'start' pushes the same four points out through the leading edge: the
+    // target ends flush with the face's end edge
+    const start = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'start' });
+    assert.equal(start.width, 44);
+    assert.equal(start.start, -4);
+    assert.equal(start.start + start.width, 40);
+    // 'end' pushes them through the trailing edge: it starts flush with the
+    // face's start edge
+    const end = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'end' });
+    assert.equal(end.width, 44);
+    assert.equal(end.start, 0);
+    // Two adjacent 40 faces, the first 'start' and the second 'end': the first
+    // target stops at 40, exactly where the second target begins - they meet
+    // without overlap
+    assert.equal(start.start + start.width, end.start + 40);
+    // A 32-point sided face (the small field action) keeps both axes at the
+    // minimum and pushes the whole twelve-point overhang through one edge
+    const smallStart = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'start' });
+    assert.equal(smallStart.width, 44);
+    assert.equal(smallStart.height, 44);
+    assert.equal(smallStart.start, -12);
+    assert.equal(smallStart.start + smallStart.width, 32);
+    const smallEnd = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'end' });
+    assert.equal(smallEnd.start, 0);
+    assert.equal(smallEnd.width, 44);
+    assert.equal(smallEnd.height, 44);
+    assert.throws(function () {
+      ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'up' });
+    }, /inlineExpansion must be "center", "start" or "end"/);
   });
 
 });

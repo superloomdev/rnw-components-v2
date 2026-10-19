@@ -31,3 +31,21 @@ A multi-line field, the same family frame grown to `rows` value lines: a label r
 ## Platform
 
 Both. The input renders on iOS, Android and web; hover feedback appears only where a pointer exists.
+
+# PasswordInput
+
+The shared field with a trailing reveal action: the value stays masked until the action turns it readable, and the action's name and tooltip say what it does next - `Show password` while hidden, `Hide password` while visible.
+
+# TimePicker
+
+A labelled row: the time textbox at the theme's fixed time width (widened while invalid for the error icon), then `TimePickerSelect` members at the theme's select gap, with the message below the whole row.
+
+## Decisions
+
+- **No second system.** The second system has no time-picker row, so its values are a Superloom decision - the roster's `superloom_decision` flag.
+- **Text only.** The field is plain text entry with a `hh:mm` hint and a five-character bound; the second system's clock-dial picker is not carried - the roster's `deferred_gap` flag.
+- **Parent.** `TimePickerSelect` mounts only inside a `TimePicker` - the roster's `requires_parent` flag; a standalone render throws naming the parent. The parent publishes its label id, size and disabled state; the member reads them and keeps its own `disabled` on top.
+
+# TextInputSkeleton / TextAreaSkeleton
+
+Appearance-only placeholders drawn from the skeleton color roles: an optional label bar over a field-height bar, the text area's bar at the theme's `control.text_area_skeleton_height`. The second system has no skeletons, so their values are a Superloom decision - the roster's `superloom_decision` flag.

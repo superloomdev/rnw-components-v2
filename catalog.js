@@ -43,6 +43,37 @@ import DismissibleTagSample from './component/molecule/tag/sample.dismissible-ta
 import OperationalTagSample from './component/molecule/tag/sample.operational-tag.js';
 import SelectableTagSample from './component/molecule/tag/sample.selectable-tag.js';
 import TagSkeletonSample from './component/molecule/tag/sample.tag-skeleton.js';
+import CheckboxGroupSample, { FRAME as CheckboxGroupFrame } from './component/molecule/checkbox/sample.checkbox-group.js';
+import CheckboxSkeletonSample, { FRAME as CheckboxSkeletonFrame } from './component/molecule/checkbox/sample.checkbox-skeleton.js';
+import FormSample from './component/molecule/form/sample.js';
+import FormGroupSample from './component/molecule/form/sample.form-group.js';
+import FormItemSample from './component/molecule/form/sample.form-item.js';
+import FormLabelSample from './component/molecule/form/sample.form-label.js';
+import HeadingSample from './component/molecule/heading/sample.js';
+import SectionSample from './component/molecule/heading/sample.section.js';
+import NumberInputSample, { FRAME as NumberInputFrame } from './component/molecule/number-input/sample.js';
+import NumberInputSkeletonSample, { FRAME as NumberInputSkeletonFrame } from './component/molecule/number-input/sample.number-input-skeleton.js';
+import RadioButtonGroupSample, { FRAME as RadioButtonGroupFrame } from './component/molecule/radio-button/sample.radio-button-group.js';
+import RadioButtonSkeletonSample, { FRAME as RadioButtonSkeletonFrame } from './component/molecule/radio-button/sample.radio-button-skeleton.js';
+import ExpandableSearchSample, { FRAME as ExpandableSearchFrame } from './component/molecule/search/sample.expandable-search.js';
+import SearchSample, { FRAME as SearchFrame } from './component/molecule/search/sample.js';
+import SearchSkeletonSample, { FRAME as SearchSkeletonFrame } from './component/molecule/search/sample.search-skeleton.js';
+import SliderSample, { FRAME as SliderFrame } from './component/molecule/slider/sample.js';
+import SliderSkeletonSample, { FRAME as SliderSkeletonFrame } from './component/molecule/slider/sample.slider-skeleton.js';
+import HStackSample from './component/molecule/stack/sample.hstack.js';
+import StackSample from './component/molecule/stack/sample.js';
+import VStackSample from './component/molecule/stack/sample.vstack.js';
+import ToggleSkeletonSample from './component/molecule/switch/sample.toggle-skeleton.js';
+import PasswordInputSample, { FRAME as PasswordInputFrame } from './component/molecule/text-input/sample.password-input.js';
+import TextAreaSkeletonSample, { FRAME as TextAreaSkeletonFrame } from './component/molecule/text-input/sample.text-area-skeleton.js';
+import TextInputSkeletonSample, { FRAME as TextInputSkeletonFrame } from './component/molecule/text-input/sample.text-input-skeleton.js';
+import TimePickerSample, { FRAME as TimePickerFrame } from './component/molecule/text-input/sample.time-picker.js';
+import TimePickerSelectSample, { FRAME as TimePickerSelectFrame } from './component/molecule/text-input/sample.time-picker-select.js';
+import DropdownSkeletonSample, { FRAME as DropdownSkeletonFrame } from './component/composite/select/sample.dropdown-skeleton.js';
+import SelectSkeletonSample, { FRAME as SelectSkeletonFrame } from './component/composite/select/sample.select-skeleton.js';
+import MultiSelectSample, { FRAME as MultiSelectFrame } from './component/composite/select/sample.multi-select.js';
+import FilterableMultiSelectSample, { FRAME as FilterableMultiSelectFrame } from './component/composite/select/sample.filterable-multi-select.js';
+import LayerSample from './component/provider/layer/sample.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -86,5 +117,36 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'DismissibleTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: DismissibleTagSample }),
   Object.freeze({ name: 'OperationalTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: OperationalTagSample }),
   Object.freeze({ name: 'SelectableTag', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SelectableTagSample }),
-  Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample })
+  Object.freeze({ name: 'TagSkeleton', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: TagSkeletonSample }),
+  Object.freeze({ name: 'CheckboxGroup', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: CheckboxGroupFrame, sample: CheckboxGroupSample }),
+  Object.freeze({ name: 'CheckboxSkeleton', family: 'Checkbox', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: CheckboxSkeletonFrame, sample: CheckboxSkeletonSample }),
+  Object.freeze({ name: 'Form', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormSample }),
+  Object.freeze({ name: 'FormGroup', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: FormGroupSample }),
+  Object.freeze({ name: 'FormItem', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: FormItemSample }),
+  Object.freeze({ name: 'FormLabel', family: 'Form', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: FormLabelSample }),
+  Object.freeze({ name: 'Heading', family: 'Heading', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: HeadingSample }),
+  Object.freeze({ name: 'Section', family: 'Heading', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: SectionSample }),
+  Object.freeze({ name: 'NumberInput', family: 'NumberInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: NumberInputFrame, sample: NumberInputSample }),
+  Object.freeze({ name: 'NumberInputSkeleton', family: 'NumberInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: NumberInputSkeletonFrame, sample: NumberInputSkeletonSample }),
+  Object.freeze({ name: 'RadioButtonGroup', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: RadioButtonGroupFrame, sample: RadioButtonGroupSample }),
+  Object.freeze({ name: 'RadioButtonSkeleton', family: 'RadioButton', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: RadioButtonSkeletonFrame, sample: RadioButtonSkeletonSample }),
+  Object.freeze({ name: 'ExpandableSearch', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: ExpandableSearchFrame, sample: ExpandableSearchSample }),
+  Object.freeze({ name: 'Search', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SearchFrame, sample: SearchSample }),
+  Object.freeze({ name: 'SearchSkeleton', family: 'Search', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: SearchSkeletonFrame, sample: SearchSkeletonSample }),
+  Object.freeze({ name: 'Slider', family: 'Slider', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SliderFrame, sample: SliderSample }),
+  Object.freeze({ name: 'SliderSkeleton', family: 'Slider', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: SliderSkeletonFrame, sample: SliderSkeletonSample }),
+  Object.freeze({ name: 'HStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: HStackSample }),
+  Object.freeze({ name: 'Stack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: StackSample }),
+  Object.freeze({ name: 'VStack', family: 'Stack', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: VStackSample }),
+  Object.freeze({ name: 'ToggleSkeleton', family: 'Switch', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: ToggleSkeletonSample }),
+  Object.freeze({ name: 'PasswordInput', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: PasswordInputFrame, sample: PasswordInputSample }),
+  Object.freeze({ name: 'TextAreaSkeleton', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: TextAreaSkeletonFrame, sample: TextAreaSkeletonSample }),
+  Object.freeze({ name: 'TextInputSkeleton', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: TextInputSkeletonFrame, sample: TextInputSkeletonSample }),
+  Object.freeze({ name: 'TimePicker', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision', 'deferred_gap']), frame: TimePickerFrame, sample: TimePickerSample }),
+  Object.freeze({ name: 'TimePickerSelect', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'superloom_decision', 'deferred_gap']), frame: TimePickerSelectFrame, sample: TimePickerSelectSample }),
+  Object.freeze({ name: 'DropdownSkeleton', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: DropdownSkeletonFrame, sample: DropdownSkeletonSample }),
+  Object.freeze({ name: 'SelectSkeleton', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectSkeletonFrame, sample: SelectSkeletonSample }),
+  Object.freeze({ name: 'MultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: MultiSelectFrame, sample: MultiSelectSample }),
+  Object.freeze({ name: 'FilterableMultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: FilterableMultiSelectFrame, sample: FilterableMultiSelectSample }),
+  Object.freeze({ name: 'Layer', family: 'Layer', tier: 'provider', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LayerSample })
 ]);

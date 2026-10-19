@@ -81,6 +81,32 @@ export default function createControlsBehaviors (deps) {
 
   }
 
+
+  /********************************************************************
+  The index of the first/last enabled item, or -1 when none qualifies.
+
+  @param {Array} items - Option items
+
+  @return {Number}
+  *********************************************************************/
+  function firstEnabledItem (items) {
+    for (let index = 0; index < items.length; index = index + 1) {
+      if (items[index].disabled !== true) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  function lastEnabledItem (items) {
+    for (let index = items.length - 1; index >= 0; index = index - 1) {
+      if (items[index].disabled !== true) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
   /********************************************************************
   Text field behavior: focus, hover, populated, invalid, disabled, and
   the label relation.
@@ -98,7 +124,9 @@ export default function createControlsBehaviors (deps) {
 
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
-    const [internalValue, setInternalValue] = useState('');
+    // An uncontrolled field starts at its defaultValue, once; a controlled
+    // value always wins
+    const [internalValue, setInternalValue] = useState(props.defaultValue === undefined ? '' : props.defaultValue);
 
     const labelId = useId();
     const value = effective(props.value, internalValue);
@@ -252,13 +280,13 @@ export default function createControlsBehaviors (deps) {
   /********************************************************************
   Checkbox behavior: checked, indeterminate, and the interaction states.
 
-  @param {Object} props - { checked, indeterminate, disabled, label, onChange }
+  @param {Object} props - { checked, defaultChecked, indeterminate, disabled, label, onChange }
 
   @return {Object} - { rootProps, inputProps, labelProps, state }
   *********************************************************************/
   function useCheckbox (props) {
 
-    const [internalChecked, setInternalChecked] = useState(false);
+    const [internalChecked, setInternalChecked] = useState(props.defaultChecked === true);
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);
@@ -345,148 +373,409 @@ export default function createControlsBehaviors (deps) {
   highlight, Enter and Space commit, Escape closes and restores focus to
   the trigger.
 
-  @param {Object} props - { items, value, disabled, label, onChange }
+  Options are addressed by VALUE, not ordinal: an index-only selection
+  silently follows a different item after a reorder, and a retained
+  option callback would commit whatever row now sits at its old index.
+  The stored selection and highlight therefore hold the option's value,
+  and the reported indices are derived from the current items.
 
-  @return {Object} - { rootProps, triggerProps, listProps, getOptionProps, state }
+  @param {Object} props - { items, value, defaultValue, disabled, label,
+                          onChange, onOpenChange, closeOnSelect, onSelect }
+
+  @return {Object} - { rootProps, triggerProps, listProps, labelProps,
+                      setOpen, getOptionProps, items, value, selectValue,
+                      clearSelection, highlightValue, highlightFirst,
+                      highlightLast, state }
   *********************************************************************/
   function useSelect (props) {
 
     const items = Array.isArray(props.items) ? props.items : [];
 
+    // An internal sentinel no valid user value can equal: `undefined`
+    // stays free to mean "no selection" on the returned surface
+    const EMPTY = useMemo(function () {
+      return Symbol('empty');
+    }, []);
+
+    // Options are the identity: each must be a non-null option object with
+    // a defined value, and values must be unique. Map identity is
+    // SameValueZero, so the number 0 and the string '0' stay distinct
+    // while NaN and object references still match themselves.
+    const indexByValue = new Map();
+    for (const item of items) {
+      if (!Utils.isObject(item) || item.value === undefined) {
+        throw new TypeError('useSelect: every item requires a defined value');
+      }
+      if (indexByValue.has(item.value)) {
+        throw new TypeError('useSelect: duplicate item value');
+      }
+      indexByValue.set(item.value, indexByValue.size);
+    }
+
+    const disabled = props.disabled === true;
+    const controlled = props.value !== undefined;
+    const closeOnSelect = props.closeOnSelect !== false;
+
+    // State boxes keep values wrapped so a function used as an opaque
+    // option value is stored, never invoked as an initializer or updater
     const [openState, setOpenState] = useState(false);
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
-    const [highlightedIndex, setHighlightedIndex] = useState(-1);
-    const [internalIndex, setInternalIndex] = useState(-1);
+    const [selectionBox, setSelectionBox] = useState({
+      value: props.defaultValue === undefined ? EMPTY : props.defaultValue
+    });
+    const [highlightBox, setHighlightBox] = useState({ value: EMPTY });
 
     const labelId = useId();
     const listId = useId();
-    const disabled = props.disabled === true;
-    const open = props.open === undefined ? openState : props.open === true;
+    // Option IDs are issued per VALUE through one map and counter, so an
+    // option keeps its id across reorder, filter, removal and re-addition,
+    // and the number 0 and string '0' can never collide the way the old
+    // `key: item.value` did
+    const optionBaseId = useId();
+    const optionIds = useRef(new Map()).current;
+    const optionCounter = useRef(0);
+    const optionId = function (value) {
+      let id = optionIds.get(value);
+      if (id === undefined) {
+        optionCounter.current = optionCounter.current + 1;
+        id = optionBaseId + '-' + optionCounter.current;
+        optionIds.set(value, id);
+      }
+      return id;
+    };
 
-    const selectedIndex = props.value === undefined
-      ? internalIndex
-      : items.findIndex(function (item) {
-        return item.value === props.value;
-      });
+    // The effective open answer: a disabled control is never open, even
+    // when the caller holds open:true; re-enabling resumes whatever the
+    // caller still requests
+    const requestedOpen = props.open === undefined ? openState : props.open === true;
+    const open = requestedOpen && disabled !== true;
+    const storedValue = controlled ? props.value : selectionBox.value;
+    // Removing the selected item leaves an unmatched value whose index is
+    // -1; the value itself is retained, so restoring the item restores the
+    // selection without a callback
+    const selectedIndex = indexByValue.has(storedValue) ? indexByValue.get(storedValue) : -1;
+
+    const highlightIndex = highlightBox.value === EMPTY ? -1 : indexByValue.get(highlightBox.value);
+    const highlighted = highlightIndex >= 0 && items[highlightIndex].disabled !== true ? highlightIndex
+      : open && selectedIndex >= 0 && items[selectedIndex].disabled !== true ? selectedIndex : -1;
+
+    // Everything a stable action needs, latest: props, the current items,
+    // the resolved selection and the open answer
+    const liveRef = useRef(null);
+    liveRef.current = {
+      items: items,
+      indexByValue: indexByValue,
+      controlled: controlled,
+      storedValue: storedValue,
+      selectedIndex: selectedIndex,
+      highlighted: highlighted,
+      open: open,
+      openProp: props.open,
+      disabled: disabled,
+      closeOnSelect: closeOnSelect,
+      onSelect: props.onSelect,
+      onChange: props.onChange,
+      onOpenChange: props.onOpenChange
+    };
+
+    // Handlers retained past unmount do nothing
+    const mountedRef = useRef(false);
+    useEffect(function () {
+      mountedRef.current = true;
+      return function () {
+        mountedRef.current = false;
+      };
+    }, []);
+
+    const firstEnabled = firstEnabledItem;
+    const lastEnabled = lastEnabledItem;
+
+    // The one live boundary every interactive path answers to: mounted and
+    // not currently disabled. Disabled and unmounted paths have no
+    // callbacks, no state changes and no claimed defaults.
+    const canInteract = useCallback(function () {
+      return mountedRef.current === true && liveRef.current !== null && liveRef.current.disabled !== true;
+    }, []);
 
     // Open and close report the next state through onOpenChange, whether the
-    // caller holds `open` or the control keeps it
+    // caller holds `open` or the control keeps it; a request matching the
+    // effective answer emits nothing, the internal fallback moves only for
+    // an uncontrolled `open`, and closing clears the highlight so the next
+    // open starts clean
     const setOpen = useCallback(function (next) {
-      setOpenState(next);
-      if (typeof props.onOpenChange === 'function') {
-        props.onOpenChange(next);
-      }
-    }, [props.onOpenChange]);
-
-    // Opening lands the highlight on the selection; a keyboard open falls to
-    // the first enabled option while a pointer open highlights nothing
-    const openList = useCallback(function (firstOnEmpty) {
-      setOpen(true);
-      setHighlightedIndex(function (current) {
-        if (current >= 0) {
-          return current;
-        }
-        if (selectedIndex >= 0) {
-          return selectedIndex;
-        }
-        if (firstOnEmpty !== true) {
-          return -1;
-        }
-        for (let index = 0; index < items.length; index = index + 1) {
-          const item = items[index];
-          if (item && item.disabled !== true) {
-            return index;
-          }
-        }
-
-        return -1;
-      });
-    }, [setOpen, selectedIndex, items]);
-
-    const commit = useCallback(function (index) {
-      const item = items[index];
-      if (!item || item.disabled === true) {
+      if (canInteract() !== true) {
         return;
       }
-      setInternalIndex(index);
-      setOpen(false);
-      if (props.onChange) {
-        props.onChange(item.value);
+      const live = liveRef.current;
+      const wanted = next === true;
+      if (live.open === wanted) {
+        return;
       }
-    }, [items, props.onChange, setOpen]);
+      if (wanted === false) {
+        live.highlighted = -1;
+        setHighlightBox({ value: EMPTY });
+      } else if (live.highlighted < 0 && live.selectedIndex >= 0 &&
+          live.items[live.selectedIndex].disabled !== true) {
+        // The derived open fallback: an open list carries the highlight on
+        // the selected enabled option when no explicit highlight exists
+        live.highlighted = live.selectedIndex;
+      }
+      if (live.openProp === undefined) {
+        live.open = wanted;
+        setOpenState(wanted);
+      }
+      if (typeof live.onOpenChange === 'function') {
+        live.onOpenChange(wanted);
+      }
+    }, [canInteract]);
 
-    // An open list carries the highlight on the selection when the pointer
-    // has not moved it, matching the reference's opened state; a mounted
-    // `open` lands there without an `openList` call to set it
-    const highlighted = highlightedIndex >= 0 ? highlightedIndex
-      : open && selectedIndex >= 0 ? selectedIndex : -1;
+    // A controlled close skips setOpen, so the highlight reset also runs
+    // when the open answer goes false for any reason
+    useEffect(function () {
+      if (open === false) {
+        setHighlightBox(function (box) {
+          return box.value === EMPTY ? box : { value: EMPTY };
+        });
+      }
+    }, [open]);
+
+    // Disabled suppresses interaction and clears the internal uncontrolled
+    // open, highlight, focus and hover without callbacks, so re-enabling
+    // does not reopen a menu the caller never asked for
+    useEffect(function () {
+      if (disabled === true) {
+        setOpenState(false);
+        setHighlightBox({ value: EMPTY });
+        setFocused(false);
+        setHovered(false);
+      }
+    }, [disabled]);
+
+    // Opening lands the highlight on the selection; a keyboard open falls
+    // to the first enabled option ('down') or the last ('up') while a
+    // pointer open highlights nothing and the derived fallback shows the
+    // selected enabled value
+    const openList = useCallback(function (direction) {
+      if (canInteract() !== true) {
+        return;
+      }
+      setOpen(true);
+      if (direction !== 'down' && direction !== 'up') {
+        return;
+      }
+      const live = liveRef.current;
+      const index = live.selectedIndex >= 0 && live.items[live.selectedIndex].disabled !== true
+        ? live.selectedIndex
+        : direction === 'down' ? firstEnabled(live.items) : lastEnabled(live.items);
+      live.highlighted = index;
+      setHighlightBox({ value: index >= 0 ? live.items[index].value : EMPTY });
+    }, [canInteract, setOpen]);
+
+    const highlightValue = useCallback(function (value) {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      const index = live.indexByValue.get(value);
+      if (index === undefined || live.items[index].disabled === true) {
+        return;
+      }
+      live.highlighted = index;
+      setHighlightBox({ value: value });
+    }, [canInteract]);
+
+    const highlightFirst = useCallback(function () {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      const index = firstEnabled(live.items);
+      live.highlighted = index;
+      setHighlightBox({ value: index >= 0 ? live.items[index].value : EMPTY });
+    }, [canInteract]);
+
+    const highlightLast = useCallback(function () {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      const index = lastEnabled(live.items);
+      live.highlighted = index;
+      setHighlightBox({ value: index >= 0 ? live.items[index].value : EMPTY });
+    }, [canInteract]);
+
+    // Choose a live enabled value: a removed, disabled or control-disabled
+    // target does nothing, so a callback retained by an old row can never
+    // select whatever now sits at its old index. onChange reports a real
+    // value change only; reselecting the current option still closes.
+    const selectValue = useCallback(function (value) {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      const index = live.indexByValue.get(value);
+      if (index === undefined || live.items[index].disabled === true) {
+        return;
+      }
+      // SameValueZero: NaN is the one value not equal to itself
+      const changed = !(live.storedValue === value || (Number.isNaN(live.storedValue) && Number.isNaN(value)));
+      if (changed && !live.controlled) {
+        // The uncontrolled store moves immediately, before the scheduled
+        // state lands, so a same-batch action reads the new answer
+        live.storedValue = value;
+        live.selectedIndex = index;
+        setSelectionBox({ value: value });
+      }
+      // The internal onSelect seam reports every accepted choice -
+      // including a reselect - so a text owner can canonicalize its
+      // draft; onChange still reports real value changes only
+      if (typeof live.onSelect === 'function') {
+        live.onSelect(value);
+      }
+      if (changed && typeof live.onChange === 'function') {
+        live.onChange(value);
+      }
+      if (live.closeOnSelect) {
+        setOpen(false);
+      }
+    }, [canInteract, setOpen]);
+
+    // Empty the stored selection without opening or closing; a control
+    // holding nothing reports nothing
+    const clearSelection = useCallback(function () {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      if (live.storedValue === EMPTY) {
+        return;
+      }
+      if (!live.controlled) {
+        live.storedValue = EMPTY;
+        live.selectedIndex = -1;
+        setSelectionBox({ value: EMPTY });
+      }
+      if (typeof live.onChange === 'function') {
+        live.onChange(undefined);
+      }
+    }, [canInteract, EMPTY]);
+
+    // The composite-facing live open read: a caller's own render snapshot
+    // can never see an eager same-act update, but this always can.
+    // Unmounted (and disabled-suppressed) answers read false
+    const getOpen = useCallback(function () {
+      if (mountedRef.current !== true || liveRef.current === null) {
+        return false;
+      }
+      return liveRef.current.open === true;
+    }, []);
+
+    // Commit the latest highlighted row as a choice: the one canonical
+    // activation path for the base keys and composite handlers. Reports
+    // whether a live enabled row actually accepted
+    const commitHighlighted = useCallback(function () {
+      if (canInteract() !== true) {
+        return false;
+      }
+      const live = liveRef.current;
+      if (live.highlighted < 0 || live.highlighted >= live.items.length) {
+        return false;
+      }
+      const item = live.items[live.highlighted];
+      if (!Utils.isObject(item) || item.disabled === true) {
+        return false;
+      }
+      selectValue(item.value);
+      return true;
+    }, [canInteract, selectValue]);
 
     const move = useCallback(function (delta) {
-      setHighlightedIndex(function (current) {
-        if (Utils.isEmptyArray(items)) {
-          return -1;
-        }
-        let next = current >= 0 ? current : highlighted;
-        for (let steps = 0; steps < items.length; steps = steps + 1) {
-          next = next + delta;
-          if (next < 0) {
-            next = items.length - 1;
-          }
-          if (next >= items.length) {
-            next = 0;
-          }
-          const item = items[next];
-          if (!item || item.disabled !== true) {
-            return next;
-          }
-        }
-
-        return current;
-      });
-    }, [items]);
-
-    const onKeyDown = useCallback(function (event) {
-      const key = event && (event.key || (event.nativeEvent && event.nativeEvent.key));
-      if (disabled) {
+      if (canInteract() !== true) {
         return;
       }
-      if (key === 'ArrowDown') {
-        if (!open) {
-          openList(true);
-
+      const live = liveRef.current;
+      const list = live.items;
+      let next = live.highlighted;
+      for (let steps = 0; steps < list.length; steps = steps + 1) {
+        next = next + delta;
+        if (next < 0) {
+          next = list.length - 1;
+        }
+        if (next >= list.length) {
+          next = 0;
+        }
+        if (list[next].disabled !== true) {
+          live.highlighted = next;
+          setHighlightBox({ value: list[next].value });
           return;
         }
-        move(1);
+      }
+    }, [canInteract]);
 
+    const onKeyDown = useCallback(function (event) {
+      if (canInteract() !== true) {
+        return;
+      }
+      const live = liveRef.current;
+      const key = event && (event.key || (event.nativeEvent && event.nativeEvent.key));
+      const prevent = function () {
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
+      };
+      if (key === 'ArrowDown') {
+        prevent();
+        if (live.open) {
+          move(1);
+        } else {
+          openList('down');
+        }
         return;
       }
       if (key === 'ArrowUp') {
-        if (!open) {
-          openList(true);
-
-          return;
+        prevent();
+        if (live.open) {
+          move(-1);
+        } else {
+          openList('up');
         }
-        move(-1);
-
+        return;
+      }
+      if (key === 'Home' || key === 'End') {
+        if (live.open) {
+          prevent();
+          if (key === 'Home') {
+            highlightFirst();
+          } else {
+            highlightLast();
+          }
+        }
         return;
       }
       if (key === 'Escape') {
-        setOpen(false);
-
+        if (live.open) {
+          prevent();
+          setOpen(false);
+        }
+        return;
+      }
+      if (key === 'Tab') {
+        // Tab closes but never takes the default: focus must still leave
+        if (live.open) {
+          setOpen(false);
+        }
         return;
       }
       if (key === 'Enter' || key === ' ') {
-        if (!open) {
-          openList(true);
-
-          return;
-        }
-        if (highlighted >= 0) {
-          commit(highlighted);
+        prevent();
+        if (!live.open) {
+          openList('down');
+        } else {
+          commitHighlighted();
         }
       }
-    }, [disabled, open, highlighted, move, commit, openList, setOpen]);
+    }, [openList, move, highlightFirst, highlightLast, commitHighlighted, setOpen]);
 
     const state = useMemo(function () {
       return {
@@ -503,14 +792,21 @@ export default function createControlsBehaviors (deps) {
       rootProps: {},
       triggerProps: {
         accessibilityRole: 'combobox',
-        'aria-labelledby': labelId,
+        // A labelless select names itself through its own label prop; an
+        // absent label leaves no element for the relation to name
+        'aria-labelledby': props.label ? labelId : undefined,
         'aria-expanded': open,
         'aria-controls': listId,
+        // A live enabled option only, and only while open
+        'aria-activedescendant': open && highlighted >= 0 ? optionId(items[highlighted].value) : undefined,
         'aria-disabled': disabled ? true : undefined,
         disabled: disabled,
         onKeyDown: onKeyDown,
         onPress: disabled ? undefined : function () {
-          if (open) {
+          if (canInteract() !== true) {
+            return;
+          }
+          if (liveRef.current.open) {
             setOpen(false);
 
             return;
@@ -518,16 +814,24 @@ export default function createControlsBehaviors (deps) {
           openList();
         },
         onPointerEnter: function () {
-          setHovered(true);
+          if (canInteract() === true) {
+            setHovered(true);
+          }
         },
         onPointerLeave: function () {
-          setHovered(false);
+          if (canInteract() === true) {
+            setHovered(false);
+          }
         },
         onFocus: function () {
-          setFocused(true);
+          if (canInteract() === true) {
+            setFocused(true);
+          }
         },
         onBlur: function () {
-          setFocused(false);
+          if (canInteract() === true) {
+            setFocused(false);
+          }
         }
       },
       // `role`, not `accessibilityRole`: the TalkBack enum backs the latter
@@ -538,19 +842,46 @@ export default function createControlsBehaviors (deps) {
       // The open/close channel an overlay host's dismissal uses
       setOpen: setOpen,
       getOptionProps: function (index) {
-        const itemDisabled = items[index] !== undefined && items[index].disabled === true;
+        const item = items[index];
+        if (!Utils.isObject(item)) {
+          // An out-of-range index yields inert disabled props, never a
+          // callback that could select an unrelated row
+          return {
+            role: 'option',
+            'aria-selected': false,
+            'aria-disabled': true,
+            disabled: true
+          };
+        }
+        // The value, not the ordinal, is captured: a later reorder cannot
+        // retarget this row's handlers at another option
+        const value = item.value;
+        const id = optionId(value);
+        const optionDisabled = disabled || item.disabled === true;
         return {
           role: 'option',
           'aria-selected': index === selectedIndex,
-          disabled: itemDisabled ? true : undefined,
-          onPress: itemDisabled ? undefined : function () {
-            commit(index);
+          'aria-disabled': optionDisabled ? true : undefined,
+          disabled: optionDisabled ? true : undefined,
+          nativeID: id,
+          key: id,
+          onPress: optionDisabled ? undefined : function () {
+            selectValue(value);
           },
-          onPointerEnter: itemDisabled ? undefined : function () {
-            setHighlightedIndex(index);
+          onPointerEnter: optionDisabled ? undefined : function () {
+            highlightValue(value);
           }
         };
       },
+      items: items,
+      value: storedValue === EMPTY ? undefined : storedValue,
+      getOpen: getOpen,
+      commitHighlighted: commitHighlighted,
+      selectValue: selectValue,
+      clearSelection: clearSelection,
+      highlightValue: highlightValue,
+      highlightFirst: highlightFirst,
+      highlightLast: highlightLast,
       state: state
     };
 

@@ -13,6 +13,7 @@
 // in the web build without a module-resolution hook.
 
 import createA11yBehaviors from './a11y.js';
+import createComboboxBehaviors from './combobox.js';
 import createCompoundBehaviors from './compound.js';
 import createControlsBehaviors from './controls.js';
 import createFocusBehaviors from './focus.js';
@@ -20,11 +21,16 @@ import createHeadingBehaviors from './heading.js';
 import createKeyboardBehaviors from './keyboard.js';
 import createLocalBehaviors from './local.js';
 import createMenuBehaviors from './menu.js';
+import createMultiSelectBehaviors from './multi-select.js';
+import createNumberInputBehaviors from './number-input.js';
 import createOverlayBehaviors from './overlay.js';
 import createPickersBehaviors from './pickers.js';
 import createPositioningBehaviors from './positioning.js';
 import createPressBehaviors from './press.js';
+import createRadioGroupBehaviors from './radio-group.js';
 import createRovingBehaviors from './roving.js';
+import createScopeBehaviors from './scope.js';
+import createSliderBehaviors from './slider.js';
 import createStateBehaviors from './state.js';
 import createUtilitiesBehaviors from './utilities.js';
 
@@ -51,26 +57,54 @@ export default function createBehaviors (deps) {
   }
 
   // Init the state primitives first; local behaviors compose them. The
-  // overlay family is built early: positioning reads its OverlayContext for
-  // the host's layer-root origin
+  // scope and heading contexts are built once here, before the overlay
+  // family, so a hosted layer can re-publish the origin's painted level,
+  // inherited disabled and heading level inside the host's tree
   const state = createStateBehaviors(deps);
-  const overlay = createOverlayBehaviors(deps);
+  const scopes = createScopeBehaviors(deps);
+  const heading = createHeadingBehaviors(deps);
+  const controls = createControlsBehaviors(deps);
+  const local = createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState }));
+  const overlay = createOverlayBehaviors(Object.assign({}, deps, {
+    LayerContext: scopes.LayerContext,
+    DisabledContext: scopes.DisabledContext,
+    HeadingLevelContext: heading.HeadingLevelContext
+  }));
 
   // Build every family from the same dependencies
   const families = [
     createA11yBehaviors(deps),
+    // The combobox composes the controls layer's select behavior, so it
+    // is built with it once controls exist
+    createComboboxBehaviors(Object.assign({}, deps, { useSelect: controls.useSelect })),
     createCompoundBehaviors(deps),
-    createControlsBehaviors(deps),
+    controls,
     createFocusBehaviors(deps),
-    createHeadingBehaviors(deps),
+    heading,
     createKeyboardBehaviors(deps),
-    createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
+    local,
     createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
+    // The multiselect composes the controls layer's select for
+    // navigation and the state family's resolver for the array
+    createMultiSelectBehaviors(Object.assign({}, deps, {
+      useSelect: controls.useSelect,
+      useControllableState: state.useControllableState
+    })),
+    createNumberInputBehaviors(Object.assign({}, deps, {
+      useControllableState: state.useControllableState,
+      useButton: controls.useButton
+    })),
     overlay,
     createPickersBehaviors(deps),
     createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
     createPressBehaviors(deps),
+    createRadioGroupBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
     createRovingBehaviors(deps),
+    scopes,
+    createSliderBehaviors(Object.assign({}, deps, {
+      useControllableState: state.useControllableState,
+      useInteractionState: local.useInteractionState
+    })),
     state,
     createUtilitiesBehaviors(deps)
   ];

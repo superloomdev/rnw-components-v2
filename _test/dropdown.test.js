@@ -308,6 +308,41 @@ describe('Dropdown: the list through the DOM', function () {
     assert.deepEqual(calls, [false]);
   });
 
+  test('a controlled open:false parent declining the key request mounts no list, and the field keeps its own focus ring', async function () {
+    const t = buildNative('carbon').tokens;
+    const calls = [];
+    const changes = [];
+    const parts = await renderDropdown(registryFor('carbon'), {
+      label: 'Size',
+      placeholder: 'Choose a size',
+      items: ITEMS,
+      open: false,
+      onOpenChange: function (next) { calls.push(next); },
+      onChange: function (value) { changes.push(value); }
+    });
+    await act(async function () {
+      parts.trigger.focus();
+    });
+    // The focused field draws its own ring; the stored keyboard highlight
+    // must not lift it while the declined request keeps the list unmounted
+    const ring = {
+      outlineColor: parts.frame.style.outlineColor,
+      outlineOffset: parts.frame.style.outlineOffset,
+      outlineWidth: parts.frame.style.outlineWidth
+    };
+    assert.equal(ring.outlineWidth, t['control.field_focus_width'] + 'px');
+    assert.equal(ring.outlineColor, cssValue('outlineColor', t['color.field_focus_ring']));
+    await press(parts.trigger, 'ArrowDown');
+    assert.deepEqual(calls, [true]);
+    assert.equal(parts.list(), null);
+    assert.equal(parts.trigger.getAttribute('aria-expanded'), 'false');
+    assert.deepEqual(changes, []);
+    assert.equal(parts.value.textContent, 'Choose a size');
+    assert.equal(parts.frame.style.outlineWidth, ring.outlineWidth);
+    assert.equal(parts.frame.style.outlineColor, ring.outlineColor);
+    assert.equal(parts.frame.style.outlineOffset, ring.outlineOffset);
+  });
+
   test('disabled: neither a press nor a key opens the list', async function () {
     const parts = await renderDropdown(registryFor('carbon'), { label: 'Size', items: ITEMS, disabled: true });
     await act(async function () {

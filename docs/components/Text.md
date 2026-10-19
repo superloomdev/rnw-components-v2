@@ -12,6 +12,8 @@ The text atom. A caller names a type set (`type: 'heading03'`) and a color leaf 
 - **Color is a token, never a value.** `color` takes a color leaf; the default is `text_primary`.
 - **Break mode.** `head`, `middle` and `tail` render a single line with the ellipsis at that position; `wrap` or no break mode wraps freely.
 - **No geometry.** The spec sheet is empty: everything Text draws comes from the type set and the color token.
+- **Final text presentation.** Type styles stay numeric for geometry calculations. At the Text leaf, the web presentation uses the unitless line-height ratio so the CSS parser retains fractional line boxes; native keeps the absolute numeric line height. A ratio is not a unit-bearing length, and no component offset compensates for text rounding.
+- **Semantics.** The public id connects labels and legends to controls. The composition-only headingLevel emits aria-level alongside the header role; it is not an ordinary sample prop.
 
 The row carries no roster flags.
 
@@ -42,6 +44,7 @@ Text draws one run of text in the type set and color token a caller names, and c
 | `color` | `string` | no | Color token leaf under `color.`. Default `text_primary`. |
 | `breakMode` | `string` | no | Where a single line is cut: `head`, `middle` or `tail` render one line with an ellipsis there; `wrap` or absent wraps freely. |
 | `accessibilityRole` | `string` | no | Role forwarded to the text element, for example `header` for a heading. |
+| `id` | `string` | no | Element id forwarded to the text element, for the legend and label relationships a form row wires. |
 | `focusable` | `boolean` | no | Whether the text sits in the tab order; a tooltip gives its bare string anchor a tab stop this way. |
 | `testID` | `string` | no | Test identifier forwarded to the text element. |
 | `style` | `object` | no | Style merged last (layout only; type and color are props). |

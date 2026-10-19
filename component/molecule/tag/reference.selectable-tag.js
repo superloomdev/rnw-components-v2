@@ -47,7 +47,7 @@ export default Object.freeze({
     parts: Object.freeze({
       // The chip paints its container on .container::before; the element
       // itself is transparent in every state
-      root: Object.freeze({ upstream: 'md-filter-chip >>> .container', pseudo: '::before', ours: ':scope > div > div', measure: 'box' }),
+      root: Object.freeze({ upstream: 'md-filter-chip >>> .container', pseudo: '::before', ours: ':scope > div > div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'borderBottomColor', 'outline'] }),
       label: Object.freeze({ upstream: 'md-filter-chip >>> .label-text', ours: ':scope > div > div > div > [dir="auto"]', measure: 'text' }),
       // The chip draws its own checkmark while selected; ours is the
       // selected mark icon at the same slot

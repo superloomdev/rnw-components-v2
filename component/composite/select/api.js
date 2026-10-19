@@ -22,6 +22,9 @@ export default Object.freeze({
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when there is no visible label.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the trigger.' }
   }),
+  composition: Object.freeze({
+    compact: { type: 'boolean', required: false, description: 'Composition prop: the labeled-composite member form a TimePickerSelect uses: no visible label, one content-height value line.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),
   tokens: Object.freeze(FIELD_PRESENTATION_TOKENS.concat(LIST_PRESENTATION_TOKENS, [

@@ -18,6 +18,7 @@
     "@carbon/react": "1.115.0",
     "@carbon/react-native": "9.0.7",
     "@carbon/styles": "1.115.0",
+    "@carbon/type": "11.69.0",
     "@fontsource/roboto": "5.3.0",
     "@ibm/plex-mono": "2.5.0",
     "@ibm/plex-sans": "1.1.0",
@@ -37,7 +38,7 @@
     "pngjs": "7.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-native-svg": "^15.15.0",
+    "react-native-svg": "15.15.4",
     "react-native-web": "^0.21.2",
     "rnw-components": "file:.."
   }

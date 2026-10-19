@@ -20,6 +20,14 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 - `useCheckbox({ checked, indeterminate, disabled, label, onChange })` -> `{ rootProps, inputProps, labelProps, state }` | state: `checked, indeterminate, focused, hovered, pressed, disabled` (`rootProps.onKeyDown` toggles on Space, which the web press responder does not)
 - `useSelect({ items, value, disabled, label, onChange })` -> `{ rootProps, triggerProps, listProps, labelProps, getOptionProps(i), state }` | state: `open, focused, disabled, selectedIndex, highlightedIndex`
 
+## Combobox (`combobox.js`)
+
+- `useCombobox({ items, value, defaultValue, onChange, inputValue, defaultInputValue, onInputChange, shouldFilterItem, open, onOpenChange, disabled, invalid, label, clearLabel })` -> `{ rootProps, labelProps, listProps, inputProps, toggleProps, clearProps, getOptionProps(i), setOpen, dismiss, clearSelection, items, selectedItem, value, inputRef, state }` | state: `open, focused, hovered, disabled, selectedIndex, highlightedIndex, inputValue, query, populated, invalid` (composes `useSelect` over the filtered items; the hook owns only the raw draft text and its dirty flag)
+
+## Multi-select (`multi-select.js`)
+
+- `useMultiSelect({ items, value, defaultValue, onChange, open, onOpenChange, disabled, invalid, label, filterable, inputValue, defaultInputValue, onInputChange, shouldFilterItem, clearLabel, selectionCountLabel, clearAnnouncement })` -> `{ rootProps, triggerProps, inputProps, toggleProps, clearProps, listProps, labelProps, getOptionProps(i), setOpen, toggleValue, clearSelection, setInputValue, inputRef, selectedValues, items, state }` | state: `open, focused, hovered, disabled, highlightedIndex, selectedCount, inputValue, query, invalid, populated, announcement` (composes `useSelect` for navigation/open/focus only, with `closeOnSelect:false` and its `onSelect` seam toggling membership; `useControllableState` owns the selected array; rows partition selected-first by the open-session snapshot)
+
 ## Local state (`local.js`, `state.js`)
 
 - `useDisclosure({ open, defaultOpen, disabled, onOpenChange })` -> `{ open(), close(), toggle(), state }` | state: `open, disabled`

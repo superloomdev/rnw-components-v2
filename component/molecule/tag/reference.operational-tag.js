@@ -46,7 +46,7 @@ export default Object.freeze({
     parts: Object.freeze({
       // The chip paints its container on .container::before; the element
       // itself is transparent in every state
-      root: Object.freeze({ upstream: 'md-assist-chip >>> .container', pseudo: '::before', ours: ':scope > div > div', measure: 'box' }),
+      root: Object.freeze({ upstream: 'md-assist-chip >>> .container', pseudo: '::before', ours: ':scope > div > div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'borderBottomColor', 'outline'] }),
       label: Object.freeze({ upstream: 'md-assist-chip >>> .label-text', ours: ':scope > div > div > div > [dir="auto"]', measure: 'text' }),
       icon: Object.freeze({ upstream: 'md-assist-chip >>> .leading.icon', ours: ':scope > div > div > div:has(> svg)', measure: 'box' })
     })

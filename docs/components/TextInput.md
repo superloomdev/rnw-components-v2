@@ -36,6 +36,93 @@ A multi-line field, the same family frame grown to `rows` value lines: a label r
 
 Both. The input renders on iOS, Android and web; hover feedback appears only where a pointer exists.
 
+## PasswordInput
+
+The shared field with a trailing reveal action: the value stays masked until the action turns it readable, and the action's name and tooltip say what it does next - `Show password` while hidden, `Hide password` while visible.
+
+## TimePicker
+
+A labelled row: the time textbox at the theme's fixed time width (widened while invalid for the error icon), then `TimePickerSelect` members at the theme's select gap, with the message below the whole row.
+
+### Decisions
+
+- **No second system.** The second system has no time-picker row, so its values are a Superloom decision - the roster's `superloom_decision` flag.
+- **Text only.** The field is plain text entry with a `hh:mm` hint and a five-character bound; the second system's clock-dial picker is not carried - the roster's `deferred_gap` flag.
+- **Parent.** `TimePickerSelect` mounts only inside a `TimePicker` - the roster's `requires_parent` flag; a standalone render throws naming the parent. The parent publishes its label id, size and disabled state; the member reads them and keeps its own `disabled` on top.
+
+## TextInputSkeleton / TextAreaSkeleton
+
+Appearance-only placeholders drawn from the skeleton color roles: an optional label bar over a field-height bar, the text area's bar at the theme's `control.text_area_skeleton_height`. The second system has no skeletons, so their values are a Superloom decision - the roster's `superloom_decision` flag.
+
+## PasswordInput
+
+PasswordInput is a text field with an action that reveals or hides its value without changing its label or validation.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `anatomy.field_action`, `feedback.field` |
+| Behaviors | `controllable-state`, `press` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | Visible label; it names the field. Without it, pass `accessibilityLabel`. |
+| `placeholder` | `string` | no | Hint shown in the empty field. Under a floating label it shows once the label has risen. |
+| `value` | `string` | no | Controlled value. Absent: the field keeps its own value, starting at `defaultValue` or empty. |
+| `defaultValue` | `string` | no | Initial uncontrolled value; applied once. |
+| `onChangeText` | `function` | no | Called with the next text on every change. |
+| `visible` | `boolean` | no | Controlled reveal state; the value is readable while true. Absent: the field keeps its own reveal state, starting hidden. |
+| `defaultVisible` | `boolean` | no | Initially visible while uncontrolled. Default `false`. |
+| `onVisibilityChange` | `function` | no | Called with the next visibility on every reveal or hide. |
+| `showPasswordLabel` | `string` | no | Accessible name and tooltip of the reveal action while hidden. Default `Show password`. |
+| `hidePasswordLabel` | `string` | no | Accessible name and tooltip of the hide action while visible. Default `Hide password`. |
+| `tooltipAlign` | `string` | no | The side and alignment the action's tooltip opens on. Default `bottom-end`. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `disabled` | `boolean` | no | Makes the field read-only, draws the disabled colors and announces it as disabled. |
+| `invalid` | `boolean` | no | Draws the error border and icon, shows `invalidText` and announces the field as invalid. |
+| `invalidText` | `string` | no | Message shown below while `invalid`. |
+| `helperText` | `string` | no | Message shown below while not `invalid`. |
+| `surface` | `string` | no | Color leaf of the surface the field sits on; a floating label occludes the border with it. Default: config `FIELD_SURFACE`, else `background`. |
+| `accessibilityLabel` | `string` | no | Accessible name when there is no visible label. |
+| `onFocus` | `function` | no | Called when the input gains focus. |
+| `onBlur` | `function` | no | Called when the input loses focus. |
+| `testID` | `string` | no | Test identifier forwarded to the input. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `actionInset` | `control.field_action_inset` |
+| `actionSize` | `control.field_action_size` |
+| `actionGap` | `control.field_action_gap` |
+| `squareRadius` | `shape.radius_00` |
+| `roundRadius` | `shape.radius_max` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Password","placeholder":"Enter password"}` |
+| filled | `{"label":"Password","value":"secret"}` |
+| visible | `{"label":"Password","value":"secret","visible":true}` |
+| helper | `{"label":"Password","placeholder":"Enter password","helperText":"Use at least 8 characters"}` |
+| invalid | `{"label":"Password","value":"secret","invalid":true,"invalidText":"Passwords do not match"}` |
+| disabled | `{"label":"Password","value":"secret","disabled":true}` |
+| small | `{"label":"Password","value":"secret","size":"sm"}` |
+| large | `{"label":"Password","value":"secret","size":"lg"}` |
+
 ## TextArea
 
 TextArea draws a label, a multi-line field frame of `rows` value lines and a helper or error message, with an optional character counter placed by anatomy.field_counter; the frame is drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells plus the text_area member cells.
@@ -94,6 +181,42 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 | counter | `{"label":"Label","value":"I am","maxCount":100}` |
 | unlabelled | `{"accessibilityLabel":"Notes","placeholder":"Notes"}` |
 
+## TextAreaSkeleton
+
+TextAreaSkeleton draws a label placeholder and a fixed-height text-area placeholder; the second system has no skeleton, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `hideLabel` | `boolean` | no | Skips the label placeholder. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.text_area_skeleton_height` |
+| `labelHeight` | `control.field_skeleton_label_height` |
+| `labelWidth` | `control.field_skeleton_label_width` |
+| `labelGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| no label | `{"hideLabel":true}` |
+
 ## TextInput
 
 TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells.
@@ -113,7 +236,8 @@ TextInput draws a label, a single-line field frame and a helper or error message
 |---|---|---|---|
 | `label` | `string` | no | Visible label; it names the field. Without it, pass `accessibilityLabel`. |
 | `placeholder` | `string` | no | Hint shown in the empty field. Under a floating label it shows once the label has risen. |
-| `value` | `string` | no | Controlled value. Absent: the field keeps its own value, starting empty. |
+| `value` | `string` | no | Controlled value. Absent: the field keeps its own value, starting at `defaultValue` or empty. |
+| `defaultValue` | `string` | no | Initial uncontrolled value; applied once. |
 | `onChangeText` | `function` | no | Called with the next text on every change. |
 | `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
 | `disabled` | `boolean` | no | Makes the field read-only, draws the disabled colors and announces it as disabled. |
@@ -144,9 +268,165 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 |---|---|
 | default | `{"label":"Label","placeholder":"Placeholder"}` |
 | filled | `{"label":"Label","value":"Filled value"}` |
+| initial | `{"label":"Label","defaultValue":"Initial value"}` |
 | helper | `{"label":"Label","placeholder":"Placeholder","helperText":"Helper text"}` |
 | invalid | `{"label":"Label","value":"Wrong value","invalid":true,"invalidText":"Enter a valid value"}` |
 | disabled | `{"label":"Label","value":"Disabled value","disabled":true}` |
 | small | `{"label":"Label","placeholder":"Small","size":"sm"}` |
 | large | `{"label":"Label","placeholder":"Large","size":"lg"}` |
 | unlabelled | `{"accessibilityLabel":"Search","placeholder":"Search"}` |
+
+## TextInputSkeleton
+
+TextInputSkeleton draws a label placeholder and a field-sized placeholder; the second system has no skeleton, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `size` | `string` | no | Field height the box draws: `sm`, `md`, `lg`. Default `md`. |
+| `hideLabel` | `boolean` | no | Skips the label placeholder. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `labelHeight` | `control.field_skeleton_label_height` |
+| `labelWidth` | `control.field_skeleton_label_width` |
+| `labelGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| no label | `{"hideLabel":true}` |
+| small | `{"size":"sm"}` |
+| large | `{"size":"lg"}` |
+
+## TimePicker
+
+TimePicker arranges a text time field and optional compact selects; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference; `deferred_gap` - a shape one reference system has is deferred; the row records the gap |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | Visible label above the field; it names the whole row - the input and every select member. |
+| `accessibilityLabel` | `string` | no | Accessible name when there is no visible label. |
+| `placeholder` | `string` | no | Hint shown in the empty field. Default `hh:mm`. |
+| `value` | `string` | no | Controlled time text. Absent: the field keeps its own text, starting at `defaultValue` or empty. Plain text entry only - no auto-format and no clock popup. |
+| `defaultValue` | `string` | no | Initial uncontrolled text; applied once. |
+| `onChangeText` | `function` | no | Called with the next text on every change. |
+| `maxLength` | `number` | no | Maximum editable length. Default 5. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`; select members inherit it unless they set their own. |
+| `disabled` | `boolean` | no | Disables the field and every select member, draws the disabled colors and announces them as disabled. |
+| `invalid` | `boolean` | no | Widens the field for the error icon, draws the error border and icon, shows `invalidText` and announces the field as invalid. |
+| `invalidText` | `string` | no | Message shown below the whole row while `invalid`. |
+| `helperText` | `string` | no | Message shown below the whole row while not `invalid`. |
+| `surface` | `string` | no | Color leaf of the surface the field sits on; a floating label occludes the border with it. Default: config `FIELD_SURFACE`, else `background`. |
+| `selects` | `array` | no | TimePickerSelect props to compose after the field - the data form of passing members as children. |
+| `children` | `node` | no | TimePickerSelect members, composed after the field. |
+| `onFocus` | `function` | no | Called when the input gains focus. |
+| `onBlur` | `function` | no | Called when the input loses focus. |
+| `testID` | `string` | no | Test identifier forwarded to the input. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `width` | `control.time_picker_input_width` |
+| `widthInvalid` | `control.time_picker_input_width_invalid` |
+| `selectGap` | `control.time_picker_select_gap` |
+| `invalidIconInset` | `spacing.spacing_05` |
+| `invalidIconMarginStart` | sum of `spacing.spacing_01`, `border.width_01` |
+| `invalidIconMarginEnd` | `border.width_01` |
+| `invalidIconMarginTop` | `border.width_01` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Time","value":"12:00","selects":[{"accessibilityLabel":"Period","testID":"time-select-period","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]},{"accessibilityLabel":"Time zone","testID":"time-select-zone","items":[{"value":"UTC","label":"UTC"},{"value":"GMT","label":"GMT"}]}]}` |
+| invalid | `{"label":"Time","value":"12:00","invalid":true,"invalidText":"Enter a valid time","selects":[{"accessibilityLabel":"Period","testID":"time-select-period","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]},{"accessibilityLabel":"Time zone","testID":"time-select-zone","items":[{"value":"UTC","label":"UTC"},{"value":"GMT","label":"GMT"}]}]}` |
+| disabled | `{"label":"Time","value":"12:00","disabled":true,"selects":[{"accessibilityLabel":"Period","testID":"time-select-period","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]},{"accessibilityLabel":"Time zone","testID":"time-select-zone","items":[{"value":"UTC","label":"UTC"},{"value":"GMT","label":"GMT"}]}]}` |
+| small | `{"label":"Time","value":"12:00","size":"sm","selects":[{"accessibilityLabel":"Period","testID":"time-select-period","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]},{"accessibilityLabel":"Time zone","testID":"time-select-zone","items":[{"value":"UTC","label":"UTC"},{"value":"GMT","label":"GMT"}]}]}` |
+| large | `{"label":"Time","value":"12:00","size":"lg","selects":[{"accessibilityLabel":"Period","testID":"time-select-period","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]},{"accessibilityLabel":"Time zone","testID":"time-select-zone","items":[{"value":"UTC","label":"UTC"},{"value":"GMT","label":"GMT"}]}]}` |
+
+## TimePickerSelect
+
+TimePickerSelect draws one compact time option selector and must be composed inside TimePicker; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state` |
+| Flags | `requires_parent` - renders only inside its parent; `superloom_decision` - anatomy or a value decided here, not measured from a reference; `deferred_gap` - a shape one reference system has is deferred; the row records the gap |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | Options, each `{ value, label }`; `value` is unique. |
+| `accessibilityLabel` | `string` | no | Accessible name of the option list. Default `Choose time option`; the parent's label also names the trigger. |
+| `value` | `string` | no | Controlled selected value. Absent: the member keeps its own selection, starting at `defaultValue`, else the first item's value. |
+| `defaultValue` | `string` | no | Initial uncontrolled selection; applied once. |
+| `onChange` | `function` | no | Called with the selected option's value. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default: the parent TimePicker's size. |
+| `disabled` | `boolean` | no | Disables the member; a disabled parent disables it too. |
+| `testID` | `string` | no | Test identifier forwarded to the trigger. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"accessibilityLabel":"Period","testID":"time-select","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]}` |
+| disabled | `{"accessibilityLabel":"Period","testID":"time-select","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}],"disabled":true}` |
+| small | `{"accessibilityLabel":"Period","testID":"time-select","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]}` |
+| large | `{"accessibilityLabel":"Period","testID":"time-select","items":[{"value":"AM","label":"AM"},{"value":"PM","label":"PM"}]}` |
+
+`default` mounts inside TimePicker wrapper (sample composition, not a prop).
+
+`disabled` mounts inside TimePicker wrapper (sample composition, not a prop).
+
+`small` mounts inside TimePicker wrapper (sample composition, not a prop).
+
+`large` mounts inside TimePicker wrapper (sample composition, not a prop).

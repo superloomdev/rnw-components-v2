@@ -15,6 +15,9 @@ export default Object.freeze({
     leaveDelayMs: { type: 'number', required: false, description: 'Milliseconds before the pointer leaving or blur closes the tooltip.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the anchor wrapper.' }
   }),
+  composition: Object.freeze({
+    paddingInline: { type: 'number', required: false, description: 'Composition prop: the bubble\'s inline padding override, zero included; absent or non-number falls back to the `paddingInline` role cell. A member host like the slider\'s value badge pins the tighter spacing.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([

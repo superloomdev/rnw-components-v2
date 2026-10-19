@@ -21,6 +21,7 @@ import * as WebUpstream from '@carbon/react';
 import * as UpstreamIcons from '@carbon/icons-react';
 import { Text as NativeText } from '@carbon/react-native/lib/module/components/Text/index.js';
 import { getColor } from '@carbon/react-native/lib/module/styles/colors.js';
+import { bodyCompact01, bodyCompact02, fontFamilies } from '@carbon/type';
 import '@material/web/button/filled-button.js';
 import '@material/web/button/filled-tonal-button.js';
 import '@material/web/button/elevated-button.js';
@@ -48,6 +49,7 @@ import '@material/web/menu/menu.js';
 import '@material/web/menu/menu-item.js';
 import '@material/web/divider/divider.js';
 import '@material/web/dialog/dialog.js';
+import '@material/web/slider/slider.js';
 import utils from 'helper-utils';
 import debug from 'helper-debug';
 import themer from 'helper-themer';
@@ -75,8 +77,35 @@ function icon (name) {
 
 }
 
+// The upstream compact body sets the fixture text draws in, read from the
+// pinned type package itself - never from our theme tokens
+const FIXTURE_TYPES = { bodyCompact01: bodyCompact01, bodyCompact02: bodyCompact02 };
+
+/********************************************************************
+The inline type for a fixture text element: the pinned set's own
+properties (font size, weight, line height, tracking) in the upstream
+sans family. Fixture text has no Carbon type class to draw on, so the
+element carries the set itself.
+
+@param {String} name - 'bodyCompact01' | 'bodyCompact02'
+
+@return {Object} - Style object
+*********************************************************************/
+function fixtureTextStyle (name) {
+
+  const set = FIXTURE_TYPES[name];
+  return {
+    fontFamily: fontFamilies.sans,
+    fontSize: set.fontSize,
+    fontWeight: set.fontWeight,
+    letterSpacing: set.letterSpacing,
+    lineHeight: set.lineHeight
+  };
+
+}
+
 const UPSTREAM = {
-  'render-web': Object.assign({}, WebUpstream, { icon: icon }),
+  'render-web': Object.assign({}, WebUpstream, { icon: icon, fixtureTextStyle: fixtureTextStyle }),
   'parse-rn': { Text: NativeText, getColor: getColor }
 };
 
@@ -158,9 +187,33 @@ One reference cell.
 function Cell (props) {
 
   const reference = set === 'second' ? references[props.name].second : references[props.name];
-  const element = set === 'second'
-    ? reference.mount(React, MATERIAL_TOKENS, props.state.props)
-    : reference.mount(React, UPSTREAM[reference.kind], props.state.props);
+  // `referenceProps` are fixture metadata for this adapter alone - the
+  // upstream prop names where ours differ (labelText versus label). Real
+  // consumers keep `props`; nothing here is a component prop
+  const mountProps = props.state.referenceProps === undefined
+    ? props.state.props
+    : Object.assign({}, props.state.props, props.state.referenceProps);
+  let element = set === 'second'
+    ? reference.mount(React, MATERIAL_TOKENS, mountProps)
+    : reference.mount(React, UPSTREAM[reference.kind], mountProps);
+  // A state's `wrappers` ask for the same composition the showcase gives
+  // the component, mounted through the upstream's own factories so the
+  // element sits at the same depth, first entry outermost
+  if (element !== null && set === 'primary' && Array.isArray(props.state.wrappers)) {
+    for (let i = props.state.wrappers.length - 1; i >= 0; i = i - 1) {
+      const descriptor = props.state.wrappers[i];
+      const factory = descriptor && typeof descriptor.component === 'string'
+        ? UPSTREAM[reference.kind][descriptor.component]
+        : undefined;
+      if (factory === undefined) {
+        throw new TypeError('sample wrapper "' + (descriptor && descriptor.component) + '" of ' + props.name + ' / ' + props.state.label + ' has no upstream factory');
+      }
+      const wrapperProps = descriptor.referenceProps === undefined
+        ? (descriptor.props || {})
+        : Object.assign({}, descriptor.props, descriptor.referenceProps);
+      element = React.createElement(factory, wrapperProps, element);
+    }
+  }
   if (element === null) {
     status.unmeasured.push(props.name + '/' + props.state.label);
     return null;

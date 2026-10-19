@@ -21,6 +21,7 @@ import materialProfile from 'helper-themer-template-material';
 import { createSystem } from 'rnw-components';
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
+import { createSampleElement } from './sample.js';
 
 // Template -> scheme name -> scheme
 const TEMPLATES = {
@@ -114,14 +115,15 @@ function bodyStyle (name) {
 
 function Cell (props) {
 
-  const Component = Registry[props.name];
-  // A staged cell renders its component inside the overlay host, as every
-  // host's showcase does: the body is the stage (its frame's width and
-  // height) and the layer covers it. A measurement page opens unhosted
+  // A state's `wrappers` mount around the component, first entry
+  // outermost; a staged cell then renders that inside the overlay host,
+  // as every host's showcase does: the body is the stage (its frame's
+  // width and height) and the layer covers it. A measurement page opens
+  // unhosted
   const frame = frames[props.name];
   const content = hosting && frame !== null && frame !== undefined && frame.stage === true
-    ? React.createElement(Registry.OverlayHost, null, React.createElement(Component, props.state.props))
-    : React.createElement(Component, props.state.props);
+    ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, props.state))
+    : createSampleElement(React, Registry, props.name, props.state);
 
   return React.createElement('div', {
     className: 'cell',
@@ -166,7 +168,11 @@ function Showcase () {
 
 if (Registry) {
   const root = createRoot(document.getElementById('root'));
-  root.render(React.createElement(Showcase));
+  const content = React.createElement(Showcase);
+  // Match the consumer's RootHost when reviewing layers across adjacent cells.
+  root.render(params.get('rootHost') === '1'
+    ? React.createElement(Registry.OverlayHost, null, content)
+    : content);
   // Ready once rendered and every font the rendered text asked for has loaded
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {

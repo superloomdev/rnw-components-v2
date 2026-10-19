@@ -6,6 +6,7 @@ export default Object.freeze({
   props: Object.freeze({
     label: { type: 'string', required: true, description: 'Visible label; it names the checkbox.' },
     checked: { type: 'boolean', required: false, description: 'Controlled checked state. Absent: the checkbox keeps its own state, starting unchecked.' },
+    defaultChecked: { type: 'boolean', required: false, description: 'Initial checked state while uncontrolled; ignored when `checked` is supplied.' },
     indeterminate: { type: 'boolean', required: false, description: 'Draws the mixed mark and announces the checkbox as mixed.' },
     disabled: { type: 'boolean', required: false, description: 'Disables toggling and feedback, draws the disabled colors and announces the checkbox as disabled.' },
     invalid: { type: 'boolean', required: false, description: 'Draws the error border, shows `invalidText` and announces the checkbox as invalid.' },
@@ -13,6 +14,9 @@ export default Object.freeze({
     helperText: { type: 'string', required: false, description: 'Message shown below while not `invalid`.' },
     onChange: { type: 'function', required: false, description: 'Called with the next checked value on activation (press, Space).' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
+  }),
+  composition: Object.freeze({
+    presentationOnly: { type: 'boolean', required: false, description: 'Composition prop: keeps the checked paint but removes every interaction handler and takes the box out of the accessibility tree and tab order, so a host can draw it inside its own interactive row (the multi-select option). Default `false`.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),

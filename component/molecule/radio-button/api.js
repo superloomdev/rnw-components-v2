@@ -13,6 +13,11 @@ export default Object.freeze({
     onChange: { type: 'function', required: false, description: 'Called with `true` when a press or Space checks the radio; a checked radio does not call it again.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
+  composition: Object.freeze({
+    rootRef: { type: 'object', required: false, description: 'Composition prop: a ref the group attaches to the pressable root so arrow navigation can move DOM focus to the member.' },
+    onGroupFocus: { type: 'function', required: false, description: 'Composition prop: called on focus; the group records which member holds the focus for keyboard movement.' },
+    groupVertical: { type: 'boolean', required: false, description: 'Composition prop: the row takes the vertical group geometry - top padding on the row instead of the ring\'s top and bottom insets - so the member is the group\'s vertical row height.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([

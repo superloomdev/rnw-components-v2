@@ -1,0 +1,15 @@
+// Info: SearchSkeleton public API, as data. The docs generator and the
+// accessibility tests read this; the component implements exactly this and
+// nothing more.
+
+export default Object.freeze({
+  name: 'SearchSkeleton',
+  props: Object.freeze({
+    size: { type: 'string', required: false, description: 'Field height the box draws: `sm`, `md`, `lg`. Default `md`.' },
+    testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' }
+  }),
+  kinds: Object.freeze([]),
+  variants: Object.freeze(['sm', 'md', 'lg']),
+  tokens: Object.freeze(['control.field_height', 'size.size_small', 'size.size_large']),
+  colors: Object.freeze([])
+});

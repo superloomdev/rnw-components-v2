@@ -26,13 +26,21 @@ Build the context every component factory receives.
 @param {Object} contract   - `Themer.getContract()`
 @param {Object} specs      - Component name -> spec sheet (metric -> token rule)
 @param {Object} Registry   - The registry the components are added to
+@param {Object} [options]  - { level, behaviors }: the painted level this
+                             context reads tokens at (default 1) and the
+                             already-built behavior map every level shares
 
 @return {Object} - The frozen context
 *********************************************************************/
-export default function createContext (Lib, config, built, breakpoint, platform, contract, specs, Registry) {
+export default function createContext (Lib, config, built, breakpoint, platform, contract, specs, Registry, options) {
 
   const Utils = Lib.Utils;
   const flat = built.tokens;
+
+  // The level-bound token maps the built theme carries, and this context's
+  // own painted level; an absent `levels` field reads as an empty map
+  const leveled = built.levels;
+  const level = options === undefined || options === null || options.level === undefined ? 1 : options.level;
 
   // The interactive target: the platforms' forty-four point minimum, wider
   // than the smallest sizes' face
@@ -40,21 +48,26 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  Read one token by its full dotted name.
+  Read one token by its full dotted name at a painted level: the level's
+  own reading when the built theme carries one for it, else the base map.
+  The fallback is only between a contextual override and its base value,
+  never between token names.
 
-  @param {String} name - e.g. 'spacing.spacing_05'
+  @param {Number} readLevel - Painted level (1 reads the base map)
+  @param {String} name      - e.g. 'spacing.spacing_05'
 
   @return {*} - The emitted value
   *********************************************************************/
-  function token (name) {
+  function tokenAt (readLevel, name) {
 
     // Validate the name is a string
     if (!Utils.isString(name)) {
-      throw new TypeError('ctx.token requires a token name string');
+      throw new TypeError('ctx.tokenAt requires a token name string');
     }
 
-    // Read the value
-    const value = flat[name];
+    // Read the level's own value when the theme carries one
+    const scoped = leveled === undefined || leveled === null ? undefined : leveled[readLevel];
+    const value = scoped === undefined || scoped === null || scoped[name] === undefined ? flat[name] : scoped[name];
 
     // A missing token is a defect, never a fallback
     if (value === undefined) {
@@ -68,7 +81,36 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  Read a color token by its leaf name.
+  Read one token by its full dotted name at this context's fixed level.
+
+  @param {String} name - e.g. 'spacing.spacing_05'
+
+  @return {*} - The emitted value
+  *********************************************************************/
+  function token (name) {
+
+    return tokenAt(level, name);
+
+  }
+
+
+  /********************************************************************
+  Read a color token by its leaf name at a painted level.
+
+  @param {Number} readLevel - Painted level (1 reads the base map)
+  @param {String} name      - e.g. 'interactive'
+
+  @return {String} - The color
+  *********************************************************************/
+  function colorAt (readLevel, name) {
+
+    return tokenAt(readLevel, 'color.' + name);
+
+  }
+
+
+  /********************************************************************
+  Read a color token by its leaf name at this context's fixed level.
 
   @param {String} name - e.g. 'interactive'
 
@@ -76,14 +118,22 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   *********************************************************************/
   function color (name) {
 
-    return token('color.' + name);
+    return colorAt(level, name);
 
   }
 
 
   /********************************************************************
   Read a type set by its leaf name and resolve its family token, so the
-  result spreads straight into a Text style.
+  result spreads straight into a Text style. On native the emitted
+  lineHeight is resolved on the host's physical pixel grid through the
+  injected `PixelRatio.roundToNearestPixel`: Android's CustomLineHeightSpan
+  ceils a fractional height on every text line, so the style must carry
+  what the grid will draw. The token, the built theme and the web result
+  all keep the raw number; web's `textPresentation` renders it as the
+  unitless CSS ratio, which keeps fractional products on the subpixel
+  grid. A native host without the injected PixelRatio cannot draw text;
+  asking for a type style is then a hard error, never a guessed grid.
 
   @param {String} name - e.g. 'body01'
 
@@ -94,14 +144,54 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // Read the type set
     const set = token('type.' + name);
 
+    // Resolve lineHeight on the host's physical pixel grid on native only
+    let lineHeight = set.lineHeight;
+    if (platform.isNative) {
+      const pixelRatio = Lib.ReactNative && Lib.ReactNative.PixelRatio;
+      if (Utils.isNullOrUndefined(pixelRatio) || !Utils.isFunction(pixelRatio.roundToNearestPixel)) {
+        throw new TypeError('ctx.typeStyle on native requires Lib.ReactNative.PixelRatio.roundToNearestPixel');
+      }
+      lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);
+      if (!Utils.isNumber(lineHeight) || !Number.isFinite(lineHeight)) {
+        throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
+      }
+    }
+
     // Return the style with the family token resolved
     return {
       fontFamily: token('font.family.' + set.fontFamily),
       fontSize: set.fontSize,
       fontWeight: set.fontWeight,
       letterSpacing: set.letterSpacing,
-      lineHeight: set.lineHeight
+      lineHeight: lineHeight
     };
+
+  }
+
+
+  /********************************************************************
+  Turn a type style into the platform's final text presentation. Web
+  renders lineHeight as the unitless CSS ratio, which keeps fractional
+  products on the subpixel grid; native keeps the number typeStyle already
+  resolved on the host's physical pixel grid. The source style is not
+  changed.
+
+  @param {Object} style - A typeStyle result
+
+  @return {Object} - A fresh style for the text element
+  *********************************************************************/
+  function textPresentation (style) {
+
+    if (Utils.isNullOrUndefined(style) || !Utils.isNumber(style.lineHeight) || !Utils.isNumber(style.fontSize) || style.fontSize === 0) {
+      throw new TypeError('ctx.textPresentation requires a style with numeric fontSize and lineHeight');
+    }
+
+    return Object.assign({}, style, {
+      lineHeight: platform.split({
+        web: String(style.lineHeight / style.fontSize),
+        native: style.lineHeight
+      })
+    });
 
   }
 
@@ -246,7 +336,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {Number}  [border] - The control's own border width (a button's
                               inner line sits inside it)
   @param {Object}  [options] - { gap }: `gap === false` draws no page-color
-                              separating line inside the ring
+                              separating line inside the ring;
+                              `offset` overrides the family's focus-offset cell
+                              (a member's own answer, like the tag close's 0)
 
   @return {Object} - Style fragment, empty when no ring shows
   *********************************************************************/
@@ -261,7 +353,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     }
 
     // The ring, at its offset from the edge
-    const offset = token('control.' + family + '_focus_offset');
+    const offset = options !== undefined && Utils.isNumber(options.offset) ? options.offset : token('control.' + family + '_focus_offset');
     const ringColor = color(family + '_focus_ring');
     if (family !== 'button' || offset >= 0) {
       return { outlineColor: ringColor, outlineOffset: offset, outlineStyle: 'solid', outlineWidth: width };
@@ -319,15 +411,25 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   fades by the theme's state opacity. A disabled control paints its
   disabled cell and shows no hover or press.
 
-  @param {Object} state  - { hovered, pressed, focused, disabled, selected }
-  @param {String} prefix - The fill cell's leaf prefix, e.g. 'button_primary_container'
+  @param {Object}  state                   - { hovered, pressed, focused, disabled, selected }
+  @param {String}  prefix                  - The fill cell's leaf prefix, e.g. 'button_primary_container'
+  @param {Object}  [options]               - Optional overrides
+  @param {Object}  [options.colors]        - An explicit map naming a leaf per
+                                           phase ('', '_hover', '_active',
+                                           '_focus', '_disabled', '_selected');
+                                           every key must be present, and a
+                                           null leaf paints nothing
+  @param {Boolean} [options.separateLayers] - Split hover and active into two
+                                           mounted layers, matching the
+                                           reference's ripple paint order
 
-  @return {Object} - { container, layer, phase }; `phase` names the state
-                     whose cells are in effect ('', '_hover', '_active',
-                     '_focus', '_disabled' or '_selected'), so a component
-                     reads its label and border cells for the same state
+  @return {Object} - { container, layer, phase } (`hoverLayer` joins when
+                     separateLayers is set); `phase` names the state whose
+                     cells are in effect ('', '_hover', '_active', '_focus',
+                     '_disabled' or '_selected'), so a component reads its
+                     label and border cells for the same state
   *********************************************************************/
-  function pressPresentation (state, prefix) {
+  function pressPresentation (state, prefix, options) {
 
     // Init the theme's choice and the state in effect. `phase` names the
     // dominant identity state - a selected control keeps its selected cells
@@ -341,34 +443,75 @@ export default function createContext (Lib, config, built, breakpoint, platform,
           : state.focused === true ? '_focus' : '';
     const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;
     const rest = state.selected === true && live ? '_selected' : !live ? '_disabled' : '';
-    const fill = color(prefix + phase);
+
+    // An explicit color map replaces the prefix convention: each phase key
+    // must exist so a missing mapping fails loudly, and a null leaf is a
+    // deliberate "paints nothing", not a missing cell
+    const PHASE_KEYS = ['', '_hover', '_active', '_focus', '_disabled', '_selected'];
+    const map = options !== undefined && options !== null && options.colors !== undefined ? options.colors : null;
+    if (map !== null) {
+      if (!Utils.isObject(map)) {
+        throw new TypeError('ctx.pressPresentation colors must be an object');
+      }
+      for (const key of PHASE_KEYS) {
+        if (!(key in map)) {
+          throw new TypeError('ctx.pressPresentation colors must map every phase; missing "' + key + '"');
+        }
+        if (map[key] !== null && !Utils.isString(map[key])) {
+          throw new TypeError('ctx.pressPresentation colors must name a color leaf or null');
+        }
+      }
+    }
+    const fillOf = function (ph) {
+      const leaf = map === null ? prefix + ph : map[ph];
+      return leaf === null ? 'transparent' : color(leaf);
+    };
+    const fill = fillOf(phase);
+    const hiddenLayer = { opacity: 0, pointerEvents: 'none' };
+    const separate = options !== undefined && options !== null && options.separateLayers === true;
 
     // Highlight: the container's own fill follows the state
     if (mode === 'highlight') {
-      return {
+      const result = {
         container: Object.assign({ backgroundColor: fill }, transition('background-color')),
-        layer: { opacity: 0, pointerEvents: 'none' },
+        layer: hiddenLayer,
         phase: phase
       };
+      if (separate) {
+        result.hoverLayer = hiddenLayer;
+      }
+      return result;
     }
 
     // Opacity: the resting fill, faded by the theme's state opacity
     if (mode === 'opacity') {
       const fade = interaction === '_active' ? token('state.pressed_opacity') : interaction === '_hover' ? token('state.hover_opacity') : 0;
-      return {
-        container: Object.assign({ backgroundColor: color(prefix + rest), opacity: 1 - fade }, transition('opacity')),
-        layer: { opacity: 0, pointerEvents: 'none' },
+      const result = {
+        container: Object.assign({ backgroundColor: fillOf(rest), opacity: 1 - fade }, transition('opacity')),
+        layer: hiddenLayer,
         phase: phase
       };
+      if (separate) {
+        result.hoverLayer = hiddenLayer;
+      }
+      return result;
     }
 
     // Ripple: the interaction's fill drawn as a layer over the resting
-    // container - a selected control keeps its resting fill under the layer
-    return {
-      container: { backgroundColor: color(prefix + rest) },
-      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
+    // container - a selected control keeps its resting fill under the layer.
+    // With separateLayers the active and hover fills mount as two layers so
+    // a hover fill survives while a press is in flight, like the reference
+    const result = {
+      container: { backgroundColor: fillOf(rest) },
+      layer: separate
+        ? Object.assign({ backgroundColor: fillOf('_active'), opacity: live && state.pressed === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'))
+        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
       phase: phase
     };
+    if (separate) {
+      result.hoverLayer = Object.assign({ backgroundColor: fillOf('_hover'), opacity: live && state.hovered === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'));
+    }
+    return result;
 
   }
 
@@ -376,13 +519,25 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   /********************************************************************
   The pressable style over a painted face: a transparent layer centered on
   the face and no smaller than the platform's minimum target. A `null`
-  face - before the face's first layout - covers the face exactly.
+  face - before the face's first layout - covers the face exactly. An
+  `inlineExpansion` of 'start' or 'end' pushes the minimum out through the
+  face's named logical edge instead of centering, so two adjacent faces can
+  share one minimum-width boundary without overlapping.
 
-  @param {Object} face - { width, height }, or null
+  @param {Object} face                          - { width, height }, or null
+  @param {Object} [options]                     - Optional overrides
+  @param {String} [options.inlineExpansion]     - 'center' (default), 'start' or 'end'
 
   @return {Object} - Style fragment
   *********************************************************************/
-  function pressTarget (face) {
+  function pressTarget (face, options) {
+
+    const expansion = options === undefined || options === null || options.inlineExpansion === undefined
+      ? 'center'
+      : options.inlineExpansion;
+    if (!Utils.inArray(['center', 'start', 'end'], expansion)) {
+      throw new TypeError('ctx.pressTarget inlineExpansion must be "center", "start" or "end"');
+    }
 
     if (face === null) {
       return { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 };
@@ -390,14 +545,21 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     const width = Math.max(MIN_TARGET, face.width);
     const height = Math.max(MIN_TARGET, face.height);
-    return {
+    const style = {
       height: height,
-      left: -(width - face.width) / 2,
       outlineStyle: 'none',
       position: 'absolute',
       top: -(height - face.height) / 2,
       width: width
     };
+    if (expansion === 'center') {
+      style.left = -(width - face.width) / 2;
+    } else {
+      // 'start' ends the target flush with the face's logical end edge;
+      // 'end' starts it flush with the face's logical start edge
+      style.start = expansion === 'start' ? face.width - width : 0;
+    }
+    return style;
 
   }
 
@@ -557,8 +719,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       return base + (focused ? '_focus' : hovered ? '_hover' : '');
     };
 
-    // Frame colors and widths for the state
-    const outline = disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');
+    // Frame colors and widths for the state; an owner may name a dedicated
+    // outline leaf that applies only while disabled
+    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled
+      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');
     const container = disabled ? 'field_container_disabled'
       : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
     const width = token(focused ? 'control.field_outline_width_focus' : 'control.field_outline_width');
@@ -654,14 +818,18 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
 
-  // Behaviors are built once per system from the same dependencies
-  const behaviors = createBehaviors({
-    React: Lib.React,
-    ReactNative: Lib.ReactNative,
-    Utils: Utils,
-    Debug: Lib.Debug,
-    platform: platform
-  });
+  // Behaviors are built once per system from the same dependencies; the
+  // level-2 and level-3 contexts reuse the level-1 map, contexts and all,
+  // so a behavior's identity never depends on the painted level
+  const behaviors = options === undefined || options === null || options.behaviors === undefined
+    ? createBehaviors({
+      React: Lib.React,
+      ReactNative: Lib.ReactNative,
+      Utils: Utils,
+      Debug: Lib.Debug,
+      platform: platform
+    })
+    : options.behaviors;
 
 
   return Object.freeze({
@@ -675,7 +843,11 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     breakpoint: breakpoint,
     config: Object.freeze(Object.assign({}, config)),
     platform: platform,
+    level: level,
+    LayerContext: behaviors.LayerContext,
+    DisabledContext: behaviors.DisabledContext,
     color: color,
+    colorAt: colorAt,
     enum: enumValue,
     fieldPresentation: fieldPresentation,
     focusRing: focusRing,
@@ -684,7 +856,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     metric: metric,
     pressPresentation: pressPresentation,
     pressTarget: pressTarget,
+    textPresentation: textPresentation,
     token: token,
+    tokenAt: tokenAt,
     typeStyle: typeStyle,
     useFaceSize: useFaceSize
   });

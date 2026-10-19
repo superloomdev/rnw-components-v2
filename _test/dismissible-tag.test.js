@@ -38,7 +38,7 @@ Render one DismissibleTag and return its parts.
 @param {Object} Registry - Registry
 @param {Object} props    - Props
 
-@return {Promise<Object>} - { root, label, face, close, icon }
+@return {Promise<Object>} - { root, label, face, layer, close, icon }
 *********************************************************************/
 async function renderDismissible (Registry, props) {
 
@@ -50,6 +50,7 @@ async function renderDismissible (Registry, props) {
     root: root,
     label: root.querySelector('[dir="auto"]'),
     face: face,
+    layer: face === null ? null : face.children[0],
     close: container.querySelector('[role="button"]'),
     icon: face === null ? null : face.querySelector('svg')
   };
@@ -139,6 +140,23 @@ describe('DismissibleTag: the close control interacts', function () {
     assert.equal(closes, 1);
   });
 
+  test('a press keeps the hover fill and layers the close\'s own active cell below the glyph', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const t = buildNative(template).tokens;
+      const parts = await renderDismissible(registryFor(template), { text: 'T', title: 'Dismiss' });
+      // The active layer mounts under every theme between the face and the glyph
+      assert.equal(parts.face.children[0], parts.layer);
+      assert.equal(parts.layer.style.position, 'absolute');
+      assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', 'rgba(0, 0, 0, 0)'));
+      await fire(parts.close, new Event('pointerover', { bubbles: true }));
+      await fire(parts.close, new MouseEvent('mousedown', { bubbles: true }));
+      assert.equal(parts.face.style.backgroundColor, cssValue('backgroundColor', t['color.tag_close_container_hover']));
+      assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.tag_close_layer_active']), template + ' pressed');
+      // Release the press before the next template's, or the responder stays held
+      await fire(parts.close, new MouseEvent('mouseup', { bubbles: true }));
+    }
+  });
+
   test('hover paints the close hover cell for a neutral tag, the hue\'s hover for a typed one', async function () {
     const t = buildNative('carbon').tokens;
     const neutral = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'Dismiss' });
@@ -156,6 +174,31 @@ describe('DismissibleTag: the close control interacts', function () {
       parts.close.focus();
     });
     assert.equal(parts.face.style.boxShadow, cssValue('boxShadow', 'inset 0 0 0 ' + t['border.width_01'] + 'px ' + t['color.tag_close_focus_ring']));
+  });
+
+  test('the start padding seam overrides, zeros and falls back', async function () {
+    const t = buildNative('carbon').tokens;
+    // The host override answers for its member's legacy leading edge; an
+    // explicit zero is honored; absent, the tag's own size logic stands -
+    // the standalone large keeps its large inline padding
+    const wide = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg', paddingStart: 8 });
+    assert.equal(wide.root.style.paddingLeft, '8px');
+    const zero = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg', paddingStart: 0 });
+    assert.equal(zero.root.style.paddingLeft, '0px');
+    const plain = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg' });
+    assert.equal(plain.root.style.paddingLeft, t['spacing.spacing_04'] + 'px', 'the standalone large keeps its large padding');
+  });
+
+  test('the inset close uses its own zero focus offset', async function () {
+    const t = buildNative('material').tokens;
+    const parts = await renderDismissible(registryFor('material'), { text: 'T', title: 'Dismiss' });
+    await fire(parts.close, new KeyboardEvent('keydown', { bubbles: true, key: 'Tab' }));
+    await act(async function () {
+      parts.close.focus();
+    });
+    assert.equal(parts.face.style.outlineOffset, t['control.tag_close_focus_offset'] + 'px');
+    assert.equal(parts.face.style.outlineWidth, t['control.tag_focus_width'] + 'px');
+    assert.equal(parts.face.style.outlineColor, cssValue('outlineColor', t['color.tag_focus_ring']));
   });
 
 });

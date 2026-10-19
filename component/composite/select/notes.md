@@ -17,6 +17,28 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 
 The select family's other member: the same field frame, trigger, label and message, but the open list reads the theme's `list` role cells in full - its container, item heights, dividers inside the inline padding, label colors by state, block padding, radius and shadow - and marks the selected item with the `selected_indicator` icon where `anatomy.list_selected_mark` says so (shown under the primary reference's template, hidden under the second's). The mark's seat mounts on every item under every template and only its drawing changes, so the accessibility tree is the same everywhere. The indicator turns 180 degrees while open. `open` is controllable like `value`, reporting through `onOpenChange`.
 
+## SelectSkeleton
+
+The select field's loading shape: an optional label placeholder over a field-height placeholder, drawn by the shared field-skeleton parts the family's other skeletons use. The block's height is the theme's `control.field_height` - the primary reference's select skeleton is a fixed 40px with no size variant (`select/_select.scss:317-327`), so there is no `size` prop. The second reference has no skeleton; the primary reference alone is measured.
+
+## DropdownSkeleton
+
+The dropdown's loading shape: the same label bar and field-height block. The primary reference marks its whole form wrapper with the skeleton class (`Dropdown.Skeleton.js:23-27`), but the skeleton mixin is emitted per component (`_dropdown.scss:489-492` matches `.cds--dropdown.cds--skeleton` only) - no compiled rule answers the bare `cds--skeleton` class, so the rendered wrapper stays transparent and the gap between the bars shows the page, exactly as upstream draws it. The upstream `size` prop is excluded: it emits a `cds--list-box--{size}` class no compiled rule answers (`_dropdown.scss` carries `cds--dropdown--sm`/`--lg`, never on the skeleton), so upstream's block stays 40px whatever the size - an inert prop, not a variant.
+
+## MultiSelect
+
+The family's multiple-choice field: a frame row of an optional selection-count member and a combobox control, an option list where every row carries a decorative checkbox member and toggles without closing, and a live region that announces each committed count. The selected values are keyed by `items` value, never by row position; a selection the current list cannot show stays selected until the count member's clear empties it. Selected rows order ahead of unselected ones, and within each partition the items keep the host's own order; during an open session that order is a snapshot, so a toggled row never jumps under the pointer.
+
+The count member is the dismissible tag's composition surface carrying the source's high-contrast palette - the existing `background_inverse`, `text_inverse`, `icon_inverse`, `background_inverse_hover` and `focus_inverse` leaves, `layer_01`, `text_disabled` and `icon_disabled` while disabled, and no tooltip because the control's `title` already names it. The second system has no multiple-choice field, so that member's treatment is a Superloom decision - the roster row's `superloom_decision` flag. The option checkbox is a presentation-only member of the same kind: it keeps its paint but answers no input, the option row being the one active surface.
+
+The option block's text inset is the source's twenty-eight-pixel checkbox label padding plus its ten-pixel text padding, thirty-eight total, not the twenty-eight cell alone. The first highlighted row draws the source's own mounted border - the field focus width on the sides and bottom, one pixel on top - when the count member shows, where every other highlighted row takes the ordinary field focus ring. `open` is controllable like the selection, reporting through `onOpenChange`; the source's closed Escape clears the selection where ours claims nothing, so the fixture's dismissal is an outside click.
+
+## FilterableMultiSelect
+
+The query-bearing form of the same field: the control is an editable input and its text filters the open list through `shouldFilterItem`, defaulting to case-insensitive label inclusion. Filtering changes which rows display, never which values are selected - the count member still clears the whole selection, including rows the current query hides. The query is its own channel (`inputValue`/`defaultInputValue`/`onInputChange`), independent of the selection array.
+
+The source's variants stay unported: there is no `select-all` row or mixed selection state, no `readOnly`, `warn`, `inline` or `upward` variant, as the carried contract keeps the field's one anatomy. The family's remaining rows (`SelectItem`, `SelectItemGroup`, `ComboBox` and `FloatingActionButton`) are deferred pending the next helper cell set; they stay pending and keep their roster places.
+
 ## Platform
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.

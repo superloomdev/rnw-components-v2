@@ -223,3 +223,40 @@ describe('Tooltip: native', function () {
   });
 
 });
+
+
+describe('Tooltip: private composition padding', function () {
+
+  test('a member host can pin the bubble\'s inline padding', async function () {
+    const parts = await renderTooltip(registryFor('carbon'), {
+      children: 'Anchor',
+      label: 'Tip',
+      defaultOpen: true,
+      paddingInline: 8
+    });
+    assert.equal(parts.bubble.style.paddingLeft, '8px');
+    assert.equal(parts.bubble.style.paddingRight, '8px');
+  });
+
+  test('an explicit zero override is honored', async function () {
+    const parts = await renderTooltip(registryFor('carbon'), {
+      children: 'Anchor',
+      label: 'Tip',
+      defaultOpen: true,
+      paddingInline: 0
+    });
+    assert.equal(parts.bubble.style.paddingLeft, '0px');
+    assert.equal(parts.bubble.style.paddingRight, '0px');
+  });
+
+  test('an omitted override keeps the role cell', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderTooltip(registryFor('carbon'), {
+      children: 'Anchor',
+      label: 'Tip',
+      defaultOpen: true
+    });
+    assert.equal(parts.bubble.style.paddingLeft, t['control.tooltip_padding_inline'] + 'px');
+  });
+
+});

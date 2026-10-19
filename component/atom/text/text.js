@@ -32,22 +32,27 @@ export default function Text (ctx) {
   *********************************************************************/
   function TextComponent (props) {
 
-    // Read the type set and the color through the context
-    const typeStyle = ctx.typeStyle(Utils.isString(props.type) ? props.type : 'body_compact_02');
+    // Read the type set and the color through the context; the final
+    // presentation adapts the line height to the platform's unit
+    const typeStyle = ctx.textPresentation(ctx.typeStyle(Utils.isString(props.type) ? props.type : 'body_compact_02'));
     const textColor = ctx.color(Utils.isString(props.color) ? props.color : 'text_primary');
 
     // A cut mode renders one line with the ellipsis where it says
     const cut = Utils.inArray(CUT_MODES, props.breakMode);
 
+    // A heading level rides the header role as its aria level
+    const position = ctx.behaviors.getA11yPosition({ level: props.headingLevel });
+
     // Render the text element
-    return React.createElement(NativeText, {
+    return React.createElement(NativeText, Object.assign({
       accessibilityRole: props.accessibilityRole,
       ellipsizeMode: cut ? props.breakMode : undefined,
       focusable: props.focusable === true ? true : undefined,
+      id: props.id,
       numberOfLines: cut ? 1 : undefined,
       style: [typeStyle, { color: textColor }, props.style],
       testID: props.testID
-    }, Utils.isNullOrUndefined(props.text) ? props.children : props.text);
+    }, position), Utils.isNullOrUndefined(props.text) ? props.children : props.text);
 
   }
 

@@ -5,6 +5,8 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: '.',
   testMatch: /\.spec\.js$/,
+  // Keep reporter evidence outside the directory Playwright clears on startup.
+  outputDir: 'test-results/browser',
   // The census reports, it does not gate; it runs on its own config
   testIgnore: /census\//,
   fullyParallel: false,

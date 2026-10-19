@@ -178,8 +178,8 @@
     {
       "id": "text-default-type",
       "file": "component/atom/text/text.js",
-      "find": ": 'body_compact_02');",
-      "replace": ": 'body_compact_01');",
+      "find": "props.type : 'body_compact_02'))",
+      "replace": "props.type : 'body_compact_01'))",
       "runner": "node",
       "test": "text.test.js",
       "testName": "default / default: type set and color come from the theme",
@@ -267,7 +267,7 @@
     },
     {
       "id": "text-input-unlabelled-placeholder",
-      "file": "component/molecule/text-input/text-input.js",
+      "file": "component/molecule/text-input/field-parts.js",
       "find": "          placeholder: presentation.placeholder || !labelled ? props.placeholder : undefined,",
       "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
       "runner": "node",
@@ -417,7 +417,7 @@
     },
     {
       "id": "text-input-no-zero-basis",
-      "file": "component/molecule/text-input/text-input.js",
+      "file": "component/molecule/text-input/field-parts.js",
       "find": "            flexBasis: 'auto',\n            flexGrow: 1,\n            flexShrink: 1,\n",
       "replace": "            flex: 1,\n",
       "runner": "node",
@@ -508,8 +508,8 @@
     {
       "id": "anatomy-ripple-pressed",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "anatomy.spec.js",
       "testName": "a held press paints the state layer over a button",
@@ -618,7 +618,7 @@
     {
       "id": "context-field-disabled-outline-border",
       "file": "component/context.js",
-      "find": "    const outline = disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
+      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
       "replace": "    const outline = cell('field_outline');",
       "runner": "node",
       "test": "select.test.js",
@@ -678,8 +678,8 @@
     {
       "id": "fidelity-state-cells",
       "file": "component/context.js",
-      "find": "      layer: Object.assign({ backgroundColor: color(prefix + interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "      layer: Object.assign({ backgroundColor: color(prefix + rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "fidelity.spec.js",
       "testName": "Button / second / light: matches the reference in every state",
@@ -1028,8 +1028,8 @@
     {
       "id": "dismissible-tag-hover-typed",
       "file": "component/molecule/tag/dismissible-tag.js",
-      "find": ": hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)",
-      "replace": ": hovered ? ctx.color('tag_close_container_hover')",
+      "find": "inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type",
+      "replace": "'tag_close_container_hover'",
       "runner": "node",
       "test": "dismissible-tag.test.js",
       "testName": "hover paints the close hover cell for a neutral tag, the hue's hover for a typed one",
@@ -1284,6 +1284,966 @@
       "test": "progress-indicator.test.js",
       "testName": "a horizontal step is a shrinkable flex item floored at the step minimum",
       "why": "upstream steps are CSS flex items that shrink to a minimum in a narrow row; a React Native default of shrink 0 must fail the step-shrink test"
+    },
+    {
+      "id": "layer-seam-level",
+      "file": "components.js",
+      "find": "    const impl = impls[level - 1];",
+      "replace": "    const impl = impls[0];",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "default: level 1 paints color.field_02",
+      "why": "a registry member that ignores the painted level and always dispatches the level-1 implementation must fail the level-2 read"
+    },
+    {
+      "id": "layer-background-level",
+      "file": "component/provider/layer/layer.js",
+      "find": "backgroundColor: ctx.colorAt(1, 'layer_background_0' + childLevel)",
+      "replace": "backgroundColor: ctx.colorAt(1, 'layer_background_01')",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "level 1 paints color.layer_background_02",
+      "why": "a Layer background pinned to the first surface token must fail the level-2 background read"
+    },
+    {
+      "id": "layer-overlay-scope",
+      "file": "behaviors/overlay.js",
+      "find": "React.createElement(LayerContext.Provider, { value: options.layerLevel },",
+      "replace": "React.createElement(LayerContext.Provider, { value: 1 },",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a Modal inside a Layer paints its hosted field at the origin level and follows updates",
+      "why": "a hosted overlay that publishes level 1 instead of the origin's captured level must fail the hosted-field read"
+    },
+    {
+      "id": "form-group-disabled",
+      "file": "component/molecule/form/form-group.js",
+      "find": "React.createElement(DisabledContext.Provider, { value: disabled },",
+      "replace": "React.createElement(DisabledContext.Provider, { value: false },",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a disabled group disables its fields, including disabled:false children and a nested group",
+      "why": "a group that never publishes its disabled state must fail the nested-controls-disabled test"
+    },
+    {
+      "id": "heading-level-semantics",
+      "file": "component/molecule/heading/heading.js",
+      "find": "      headingLevel: level,",
+      "replace": "      headingLevel: undefined,",
+      "runner": "node",
+      "test": "layer.test.js",
+      "testName": "a Heading inside 0 Sections draws heading06 at semantic level 1",
+      "why": "a heading that drops its semantic level loses the aria-level the host puts on the heading element"
+    },
+    {
+      "id": "stack-gap-step",
+      "file": "component/molecule/stack/stack.js",
+      "find": "    return ctx.metric('Stack', 'gap' + (gap < 10 ? '0' + gap : String(gap)));",
+      "replace": "    return ctx.metric('Stack', 'gap01');",
+      "runner": "node",
+      "test": "stack.test.js",
+      "testName": "default: gap 5 reads spacing.spacing_05",
+      "why": "a gap that reads a fixed metric instead of the named step must fail the scale read"
+    },
+    {
+      "id": "stack-horizontal-shrinkwrap",
+      "file": "component/molecule/stack/stack.js",
+      "find": "        alignSelf: horizontal ? 'flex-start' : undefined,",
+      "replace": "        alignSelf: undefined,",
+      "runner": "node",
+      "test": "stack.test.js",
+      "testName": "horizontal lays a shrink-wrapped row",
+      "why": "a horizontal stack that stretches instead of wrapping its content must fail the shrink-wrap assertion"
+    },
+    {
+      "id": "heading-level-type",
+      "file": "component/molecule/heading/heading.js",
+      "find": "      type: 'heading0' + (7 - level)",
+      "replace": "      type: 'heading01'",
+      "runner": "node",
+      "test": "heading.test.js",
+      "testName": "default: 0 Sections deep is level 1 in type.heading06",
+      "why": "a heading pinned to one type set instead of the level's set must fail the level-1 type read"
+    },
+    {
+      "id": "section-clamps-six",
+      "file": "behaviors/heading.js",
+      "find": "    return Math.min(level, 6);",
+      "replace": "    return Math.min(level, 5);",
+      "runner": "node",
+      "test": "heading.test.js",
+      "testName": "seven Sections clamp to level 6",
+      "why": "the section level clamp is the one boundary the test asserts: a clamp bound one level shallower must fail the six-deep read"
+    },
+    {
+      "id": "form-group-legend-gap",
+      "file": "component/molecule/form/form-group.js",
+      "find": "        style: { marginBottom: ctx.metric('FormGroup', 'legendGap') },",
+      "replace": "        style: { marginBottom: undefined },",
+      "runner": "node",
+      "test": "form.test.js",
+      "testName": "default: legend paints the label cells a spacing step above the fields",
+      "why": "a legend that drops its spacing-step gap must fail the legend-gap read"
+    },
+    {
+      "id": "form-label-disabled",
+      "file": "component/molecule/form/form-label.js",
+      "find": "      color: props.disabled === true ? 'field_label_disabled' : 'field_label',",
+      "replace": "      color: 'field_label',",
+      "runner": "node",
+      "test": "form.test.js",
+      "testName": "default / disabled: label type and color from the theme",
+      "why": "a label that ignores its disabled prop and keeps the enabled color must fail the disabled read"
+    },
+    {
+      "id": "toggle-skeleton-bar",
+      "file": "component/molecule/switch/toggle-skeleton.js",
+      "find": "      width: ctx.metric('ToggleSkeleton', 'barWidth')",
+      "replace": "      width: ctx.metric('ToggleSkeleton', 'circleSize')",
+      "runner": "node",
+      "test": "toggle-skeleton.test.js",
+      "testName": "default: 18-point circle, bar a spacing step later",
+      "why": "a bar sized by the circle's control cell instead of the bar cell must fail the bar geometry read"
+    },
+    {
+      "id": "harness-h2-scope",
+      "file": "_test/harness/serve.js",
+      "find": "'.family > h2{margin:0 0 12px;font:600 16px/24px system-ui}'",
+      "replace": "'h2{margin:0 0 12px;font:600 16px/24px system-ui}'",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Heading / primary / light: matches the reference in every state",
+      "why": "a title rule that escapes .family reaches a real h2 heading and must fail the Heading fidelity read"
+    },
+    {
+      "id": "sample-wrappers-dropped",
+      "file": "_test/harness/sample.js",
+      "find": "  for (let i = wrappers.length - 1; i >= 0; i = i - 1) {",
+      "replace": "  for (let i = -1; i >= 0; i = i - 1) {",
+      "runner": "node",
+      "test": "sample.test.js",
+      "testName": "Heading / level 2 mounts at h2",
+      "why": "a sample mounter that drops the wrappers must fail the level-2 catalog read"
+    },
+    {
+      "id": "text-presentation-absolute",
+      "file": "component/context.js",
+      "find": "        web: String(style.lineHeight / style.fontSize),",
+      "replace": "        web: style.lineHeight,",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Heading / primary / light: matches the reference in every state",
+      "why": "a web text presentation that emits the absolute line height must fail the Heading fidelity read"
+    },
+    {
+      "id": "context-press-separate-hover",
+      "file": "component/context.js",
+      "find": "opacity: live && state.hovered === true ? 1 : 0",
+      "replace": "opacity: live && state.hovered === true && state.pressed !== true ? 1 : 0",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "separateLayers: ripple mounts the hover and the active fills as two layers",
+      "why": "a hover layer that yields while a press is in flight must fail the simultaneous-layers assertion"
+    },
+    {
+      "id": "context-press-colors-every-phase",
+      "file": "component/context.js",
+      "find": "        if (!(key in map)) {",
+      "replace": "        if (false && !(key in map)) {",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "colors: an explicit map replaces the prefix convention; every phase key must be present",
+      "why": "an explicit press color map missing a phase key must throw rather than fall back silently"
+    },
+    {
+      "id": "context-target-inline-expansion",
+      "file": "component/context.js",
+      "find": "      style.start = expansion === 'start' ? face.width - width : 0;",
+      "replace": "      style.start = 0;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "inlineExpansion pushes the minimum out through the named logical edge, so adjacent faces share a boundary without overlap",
+      "why": "a named-edge expansion that centers instead must fail - the two NumberInput targets would overlap"
+    },
+    {
+      "id": "search-clear-hidden-empty",
+      "file": "component/molecule/search/search.js",
+      "find": "      hidden: !state.populated,",
+      "replace": "      hidden: false,",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "carbon / default: searchbox in a search landmark with the clear action",
+      "why": "the clear action must be hidden and untabbable while the field is empty"
+    },
+    {
+      "id": "search-escape-populated-clear",
+      "file": "behaviors/keyboard.js",
+      "find": "      if (options.populated === true) {",
+      "replace": "      if (false && options.populated === true) {",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "Escape clears a populated field; on an empty field it asks the owner to collapse",
+      "why": "Escape on a populated search clears it instead of collapsing the owner"
+    },
+    {
+      "id": "search-submit-reports",
+      "file": "behaviors/keyboard.js",
+      "find": "      if (typeof options.onSubmit === 'function') {",
+      "replace": "      if (false && typeof options.onSubmit === 'function') {",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "submission reports the current text",
+      "why": "submission must report the current text through onSubmit"
+    },
+    {
+      "id": "number-input-min-clamp",
+      "file": "behaviors/number-input.js",
+      "find": "      if (!isNullOrUndefined(min) && next < min) {",
+      "replace": "      if (false && !isNullOrUndefined(min) && next < min) {",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "a stepper at the bound reports nothing; the value never passes it",
+      "why": "a stepper press must clamp at the bound and stay silent when the clamp is a no-op"
+    },
+    {
+      "id": "number-input-finite-report",
+      "file": "behaviors/number-input.js",
+      "find": "      if (parsed !== undefined) {\n        props.onChange(parsed);",
+      "replace": "      if (true || parsed !== undefined) {\n        props.onChange(parsed);",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "typing keeps the raw text and reports the finite value",
+      "why": "onChange must report only finite parses; a non-finite edit reports nothing"
+    },
+    {
+      "id": "number-input-spinbutton-role",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "        accessibilityRole: 'spinbutton',",
+      "replace": "        accessibilityRole: 'text',",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "carbon / default: spinbutton, steppers and bounds from the theme",
+      "why": "the numeric input is a spinbutton in the accessibility tree"
+    },
+    {
+      "id": "number-input-min-width",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "      rootStyle: { minWidth: ctx.metric('NumberInput', 'minWidth') },",
+      "replace": "      rootStyle: {},",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "the field never narrows below the theme minimum width",
+      "why": "the number field keeps the theme's minimum width so the steppers never crowd the text"
+    },
+    {
+      "id": "number-input-center-divider",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "    divider('center', geometry.slotWidth - dividerWidth / 2, !downLive && !upLive));",
+      "replace": "    divider('center', geometry.slotWidth, !downLive && !upLive));",
+      "runner": "node",
+      "test": "number-input.test.js",
+      "testName": "the painted divider centers between the two action seats",
+      "why": "the one-point divider rule centers exactly on the boundary between the two action seats"
+    },
+    {
+      "id": "password-masked-input",
+      "file": "component/molecule/text-input/password-input.js",
+      "find": "      inputProps: { secureTextEntry: !visible },",
+      "replace": "      inputProps: { secureTextEntry: true },",
+      "runner": "node",
+      "test": "password-input.test.js",
+      "testName": "the value is masked until the reveal action turns it readable, and pressing again masks it",
+      "why": "the reveal action must switch the input between password and readable text"
+    },
+    {
+      "id": "time-picker-invalid-width",
+      "file": "component/molecule/text-input/time-picker.js",
+      "find": "          width: invalid ? ctx.metric('TimePicker', 'widthInvalid') : ctx.metric('TimePicker', 'width')",
+      "replace": "          width: ctx.metric('TimePicker', 'widthInvalid')",
+      "runner": "node",
+      "test": "time-picker.test.js",
+      "testName": "carbon / default: label, row and message at the theme metrics",
+      "why": "the field takes the wider invalid width only while invalid; the resting width is the theme's fixed time width"
+    },
+    {
+      "id": "time-picker-select-gap",
+      "file": "component/molecule/text-input/time-picker.js",
+      "find": "          gap: ctx.metric('TimePicker', 'selectGap'),",
+      "replace": "          gap: 0,",
+      "runner": "node",
+      "test": "time-picker.test.js",
+      "testName": "material / default: label, row and message at the theme metrics",
+      "why": "the row spaces its members by the theme's select gap"
+    },
+    {
+      "id": "time-picker-select-provider",
+      "file": "component/molecule/text-input/time-picker-select.js",
+      "find": "    const parent = Compound.useContext();",
+      "replace": "    const parent = { disabled: false, size: undefined };",
+      "runner": "node",
+      "test": "time-picker-select.test.js",
+      "testName": "standalone it fails loudly, naming the missing parent",
+      "why": "the member reads its parent context; rendering it standalone must throw"
+    },
+    {
+      "id": "skeleton-area-height",
+      "file": "component/molecule/text-input/text-area-skeleton.js",
+      "find": "      height: ctx.metric('TextAreaSkeleton', 'height'),",
+      "replace": "      height: ctx.metric('TextAreaSkeleton', 'labelHeight'),",
+      "runner": "node",
+      "test": "text-area-skeleton.test.js",
+      "testName": "carbon / default: label placeholder over the text-area height",
+      "why": "the text area placeholder draws the theme's text-area height, not the label's"
+    },
+    {
+      "id": "expandable-escape-collapse",
+      "file": "component/molecule/search/expandable-search.js",
+      "find": "      onCollapseRequest: disclosure.close,",
+      "replace": "      onCollapseRequest: undefined,",
+      "runner": "node",
+      "test": "expandable-search.test.js",
+      "testName": "Escape on the empty expanded field collapses and returns focus to the trigger",
+      "why": "Escape on the empty field must ask the disclosure to close"
+    },
+    {
+      "id": "search-landmark-role",
+      "file": "component/molecule/search/search.js",
+      "find": "      role: 'search',\n      style: [{ alignSelf: 'stretch'",
+      "replace": "      role: 'none',\n      style: [{ alignSelf: 'stretch'",
+      "runner": "node",
+      "test": "search.test.js",
+      "testName": "carbon / default: searchbox in a search landmark with the clear action",
+      "why": "the search field lives in a search landmark"
+    },
+    {
+      "id": "dismissible-tag-close-active-layer",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": "        backgroundColor: pressed ? ctx.color('tag_close_layer_active') : 'transparent',",
+      "replace": "        backgroundColor: pressed ? ctx.color('tag_interactive_layer_active') : 'transparent',",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "a press keeps the hover fill and layers the close's own active cell below the glyph",
+      "why": "the close's pressed layer reads its own cell, not the assist chip's; under the second system the two differ"
+    },
+    {
+      "id": "selectable-tag-unselected-active-layer",
+      "file": "component/molecule/tag/selectable-tag.js",
+      "find": "          ? ctx.color(selected ? 'tag_selectable_layer_active' : 'tag_selectable_layer_unselected_active') : undefined,",
+      "replace": "          ? ctx.color('tag_selectable_layer_active') : undefined,",
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "a press layers the unselected active cell while unselected, the selected one while selected",
+      "why": "the unselected press reads the unselected layer cell; the second system's filter chip presses a different role unselected"
+    },
+    {
+      "id": "fidelity-additional-target-phases",
+      "file": "_test/harness/fidelity.js",
+      "find": "  const additional = Array.isArray(reference.additionalTargets) ? reference.additionalTargets : [];",
+      "replace": "  const additional = [];",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the fidelity driver exercises every declared field-action phase",
+      "why": "a driver that drops the declared additional-target list must fail, not shrink the coverage"
+    },
+    {
+      "id": "fidelity-mask-origin",
+      "file": "_test/harness/fidelity.js",
+      "find": "  const dy = origin && origin._bodyY !== undefined ? -origin._bodyY : 0;",
+      "replace": "  const dy = 0;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "omitted pixels are copied only after the two frame origins align",
+      "why": "a part mask must be located in the compared frame, not an unaligned cell body"
+    },
+    {
+      "id": "fidelity-mask-anchor-node",
+      "file": "_test/harness/fidelity.js",
+      "find": "    if (core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
+      "replace": "    if (false && core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "an omission cannot mask the entire compared anchor",
+      "why": "the comparison must reject any omission hiding the whole reference anchor"
+    },
+    {
+      "id": "fidelity-profile-omission",
+      "file": "_test/harness/fidelity.js",
+      "find": "    if ((omitted || []).some(function (area) {",
+      "replace": "    if ([].some(function (area) {",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a proven omission excludes its own profile pixels but not the focus ring",
+      "why": "profiles must exclude the same proven no-counterpart parts as the screenshot without hiding real ring defects"
+    },
+    {
+      "id": "part-reader-declared-padding",
+      "file": "_test/harness/page.js",
+      "find": "            if (Array.isArray(part.compare) && part.compare.includes(property)) {",
+      "replace": "            if (false && Array.isArray(part.compare) && part.compare.includes(property)) {",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the part reader rejects zero-area and transparent-ancestor seats but keeps hairlines",
+      "why": "explicitly compared padding must be measured instead of passing as undefined on both sides"
+    },
+    {
+      "id": "numeric-focus-selection",
+      "file": "_test/harness/page.js",
+      "find": "    if (numberInput) {",
+      "replace": "    if (false && numberInput) {",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "keyboard focus collapses numeric selection without changing its value",
+      "why": "the keyboard-focus fixture collapses native number-input selection without changing or stepping the value"
+    },
+    {
+      "id": "fidelity-shadow-target-unresolved",
+      "file": "_test/harness/page.js",
+      "find": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = scope.querySelector(segments[i]);",
+      "replace": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = null;",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "the fidelity driver exercises declared shadow-target phases",
+      "why": "a shadow-root target that resolves to nothing must be a reported failure, not a silent skip"
+    },
+    {
+      "id": "password-compact-tooltip",
+      "file": "component/molecule/text-input/password-input.js",
+      "find": "      compact: true,\n",
+      "replace": "      compact: false,\n",
+      "runner": "node",
+      "test": "password-input.test.js",
+      "testName": "the reveal action names itself through the compact tooltip, not the full bubble",
+      "why": "the icon tooltip must read the compact member cells, not the full tooltip's padding"
+    },
+    {
+      "id": "context-focus-offset-override",
+      "file": "component/context.js",
+      "find": "    const offset = options !== undefined && Utils.isNumber(options.offset) ? options.offset : token('control.' + family + '_focus_offset');",
+      "replace": "    const offset = token('control.' + family + '_focus_offset');",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "options.offset overrides the family offset, including zero",
+      "why": "a member's own focus offset must reach the ring, including a member cell of zero"
+    },
+    {
+      "id": "dismissible-close-focus-offset",
+      "file": "component/molecule/tag/dismissible-tag.js",
+      "find": "offset: ctx.metric('DismissibleTag', 'focusOffset')",
+      "replace": "offset: ctx.token('control.tag_focus_offset')",
+      "runner": "node",
+      "test": "dismissible-tag.test.js",
+      "testName": "the inset close uses its own zero focus offset",
+      "why": "the close ring must use the close member cell, not the generic tag focus offset"
+    },
+    {
+      "id": "compact-select-fractional-width",
+      "file": "component/composite/select/select.js",
+      "find": "    const sizerWidth = intrinsic.anchor === null ? undefined : Math.ceil(intrinsic.anchor.width);",
+      "replace": "    const sizerWidth = intrinsic.anchor === null ? undefined : Math.floor(intrinsic.anchor.width);",
+      "runner": "pw",
+      "test": "anatomy.spec.js",
+      "testName": "intrinsically sized selections retain complete labels after fonts load",
+      "why": "rounded-down fractional text widths must fail the no-truncation assertion even when native-select parity passes under another template"
+    },
+    {
+      "id": "checkbox-skeleton-label-width",
+      "file": "component/molecule/checkbox/checkbox-skeleton.js",
+      "find": "width: ctx.metric('CheckboxSkeleton', 'width')",
+      "replace": "width: ctx.metric('CheckboxSkeleton', 'height')",
+      "runner": "node",
+      "test": "checkbox-skeleton.test.js",
+      "testName": "carbon: one bar of the label cell, inset where the text would start",
+      "why": "a bar reading the height cell instead of the label-width cell must fail the geometry assertion"
+    },
+    {
+      "id": "radio-skeleton-label-height",
+      "file": "component/molecule/radio-button/radio-button-skeleton.js",
+      "find": "height: ctx.metric('RadioButtonSkeleton', 'height')",
+      "replace": "height: ctx.metric('RadioButtonSkeleton', 'width')",
+      "runner": "node",
+      "test": "radio-button-skeleton.test.js",
+      "testName": "carbon: one bar of the label cell at the row height, no circle",
+      "why": "a bar reading the label-width cell instead of the dedicated height cell must fail the geometry assertion"
+    },
+    {
+      "id": "checkbox-default-checked",
+      "file": "behaviors/controls.js",
+      "find": "    const [internalChecked, setInternalChecked] = useState(props.defaultChecked === true);",
+      "replace": "    const [internalChecked, setInternalChecked] = useState(false);",
+      "runner": "node",
+      "test": "checkbox.test.js",
+      "testName": "defaultChecked seeds the uncontrolled answer; a controlled checked ignores it",
+      "why": "defaultChecked must initialize the shared checkbox behavior without overriding a controlled checked answer"
+    },
+    {
+      "id": "checkbox-group-member-state",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "          defaultChecked: item.defaultChecked,",
+      "replace": "          defaultChecked: false,",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "an id of __proto__ behaves like any stable id",
+      "why": "the group must preserve its member's initial state and stable identity, including ids that collide with object prototype names"
+    },
+    {
+      "id": "radio-group-selection-guard",
+      "file": "behaviors/radio-group.js",
+      "find": "      if (live.disabled || member === undefined || member.disabled === true || next === live.value) {",
+      "replace": "      if (next === live.value) {",
+      "runner": "node",
+      "test": "behaviors.test.js",
+      "testName": "the mutation boundary guards disabled, removed and unchecked callbacks",
+      "why": "headless radio callbacks must reject disabled or removed members at the selection boundary, not depend on rendered child guards"
+    },
+    {
+      "id": "radio-group-typed-keys",
+      "file": "component/molecule/radio-button/radio-button-group.js",
+      "find": "        const memberKey = typeof item.value + ':' + String(item.value);",
+      "replace": "        const memberKey = String(item.value);",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "typed member values keep distinct keys, generated ids and callback types through a reorder",
+      "why": "numeric zero and string zero must remain distinct React members with stable focus and callback value types after reordering"
+    },
+    {
+      "id": "checkbox-group-gap",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "    const rowGap = ctx.metric('CheckboxGroup', 'rowGap');",
+      "replace": "    const rowGap = ctx.token('spacing.spacing_01');",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "a brand layer overriding the group gap changes the row spacing only",
+      "why": "the group's own gap token must reach every member instead of a coincidentally similar global spacing value"
+    },
+    {
+      "id": "checkbox-group-inherited-disable",
+      "file": "component/molecule/checkbox/checkbox-group.js",
+      "find": "    return React.createElement(DisabledContext.Provider, { value: disabled },",
+      "replace": "    return React.createElement(DisabledContext.Provider, { value: false },",
+      "runner": "node",
+      "test": "checkbox-group.test.js",
+      "testName": "a disabled group suppresses every item callback, even an item passing disabled: false",
+      "why": "a disabled group must force inherited disabling onto each member, even when the item explicitly passes false"
+    },
+    {
+      "id": "radio-group-disabled-skip",
+      "file": "behaviors/radio-group.js",
+      "find": "      if (items[index].disabled !== true) {",
+      "replace": "      if (true) {",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "all four arrows move selection and focus, skipping disabled members and wrapping",
+      "why": "arrow navigation must skip disabled members rather than merely reject selection after focusing the wrong member"
+    },
+    {
+      "id": "radio-group-focus-ref",
+      "file": "behaviors/radio-group.js",
+      "find": "        ref.current.focus();",
+      "replace": "        void ref.current;",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "all four arrows move selection and focus, skipping disabled members and wrapping",
+      "why": "keyboard selection and actual DOM focus must move together"
+    },
+    {
+      "id": "radio-group-vertical-geometry",
+      "file": "component/molecule/radio-button/radio-button-group.js",
+      "find": "          groupVertical: vertical",
+      "replace": "          groupVertical: false",
+      "runner": "node",
+      "test": "radio-button-group.test.js",
+      "testName": "carbon / vertical: legend, members and message come from the theme",
+      "why": "vertical composition must select the member's shorter row geometry without changing standalone or horizontal radio layout"
+    },
+    {
+      "id": "slider-decimal-grid",
+      "file": "behaviors/slider.js",
+      "find": "    const places = Math.max(decimalsOf(min), decimalsOf(step));",
+      "replace": "    const places = 0;",
+      "runner": "node",
+      "test": "slider-behavior.test.js",
+      "testName": "the grid scale ignores binary request noise",
+      "why": "min-anchored decimal requests must canonicalize to their grid points rather than retain multiplication artifacts"
+    },
+    {
+      "id": "slider-controlled-drag-release",
+      "file": "behaviors/slider.js",
+      "find": "        live.onRelease(lastRequested);",
+      "replace": "        live.onRelease(baseRef.current);",
+      "runner": "node",
+      "test": "slider-behavior.test.js",
+      "testName": "a controlled drag across real renders releases with its last requested number",
+      "why": "interleaved React renders must not replace the drag's release value with an unchanged controlled prop"
+    },
+    {
+      "id": "slider-disabled-group-alpha",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "        hexByte(255 * part.a / opacity);",
+      "replace": "        hexByte(255 * part.a);",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "mixed alphas factor the largest; children keep their share",
+      "why": "maximum-alpha children must become opaque inside the shared disabled opacity, not be faded twice"
+    },
+    {
+      "id": "slider-own-focus-width",
+      "file": "component/molecule/slider/spec.js",
+      "find": "  focusWidth: 'control.slider_focus_width',",
+      "replace": "  focusWidth: 'control.selection_focus_width',",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "custom track and handle insets, focus widths and sizes reach their paint nodes",
+      "why": "the slider focus width must follow its own brand-overridable role, never a selection-family coincidence"
+    },
+    {
+      "id": "slider-skeleton-full-track",
+      "file": "component/molecule/slider/slider-skeleton.js",
+      "find": "      percent: true,",
+      "replace": "      percent: false,",
+      "runner": "node",
+      "test": "slider-skeleton.test.js",
+      "testName": "carbon / default: label, endpoint and track placeholders, shared paint, no roles",
+      "why": "a loading track remains fully filled with a separately centered inert nub, not the live zero-width geometry"
+    },
+    {
+      "id": "slider-source-paint-coverage",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "    const fillWidth = ratio >= 1 ? paintedWidth\n      : Math.min(Math.max(handleCenter - trackInset, 0), paintedWidth);",
+      "replace": "    const fillWidth = 0;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "fill coverage and disabled overlap match the actual source pixels",
+      "why": "actual source pixels must detect missing fill even where a clipped upstream pseudo's DOM width is not a painted bound"
+    },
+    {
+      "id": "slider-pseudo-translation",
+      "file": "_test/harness/page.js",
+      "find": "          pseudoX += transform.e;",
+      "replace": "          pseudoX += 0;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the part reader applies declared pseudo translations before comparing slider ticks",
+      "why": "the pseudo reader must include a declared translation instead of reporting the unpainted CSS left offset"
+    },
+    {
+      "id": "slider-point-cleanup",
+      "file": "_test/harness/page.js",
+      "find": "  const releaseFirst = options && options.releaseBeforeMove === true;",
+      "replace": "  const releaseFirst = false;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the slider point driver reaches a covered input and releases before moving away",
+      "why": "cleanup of a held slider must not drag its value to the page edge while moving the pointer away"
+    },
+    {
+      "id": "slider-painted-signature",
+      "file": "_test/harness/page.js",
+      "find": "      const face = control.getAttribute('role') === 'slider'\n        ? body.querySelector('[data-testid=\"slider-thumb-face\"]') : control;",
+      "replace": "      const face = control;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "structural paint reads a slider face rather than its transparent press target",
+      "why": "the enabled/disabled gate must read the real slider face and its effective ancestor opacity"
+    },
+    {
+      "id": "slider-disabled-composition",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "    const grouped = disabled && ctx.enum('anatomy.slider_disabled_paint') === 'grouped';",
+      "replace": "    const grouped = disabled;",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "independent disabled paints retain separate alpha layers",
+      "why": "a theme selecting independent disabled layers must not be silently changed into a single group opacity"
+    },
+    {
+      "id": "slider-scaled-radius",
+      "file": "_test/harness/page.js",
+      "find": "            measured.borderTopLeftRadius = (parseFloat(style.borderTopLeftRadius) * scaleX) + 'px';",
+      "replace": "            measured.borderTopLeftRadius = style.borderTopLeftRadius;",
+      "runner": "pw",
+      "test": "slider-anatomy.spec.js",
+      "testName": "the part reader compares a uniformly scaled radius in painted coordinates",
+      "why": "a circle scaled to twice its size must compare its painted radius rather than its unscaled CSS radius"
+    },
+    {
+      "id": "fidelity-center-paint",
+      "file": "_test/harness/fidelity.js",
+      "find": "    const inset = part._paintCenter === true ? part.height / 2",
+      "replace": "    const inset = false ? part.height / 2",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a center-painted part samples its core rather than an inset focus gap",
+      "why": "a circular control's interior paint sample must not mistake its decorative focus gap for its core color"
+    },
+    {
+      "id": "fidelity-omitted-paint",
+      "file": "_test/harness/fidelity.js",
+      "find": "        x >= area._bodyX && x <= area._bodyX + area.width &&",
+      "replace": "        false && x >= area._bodyX && x <= area._bodyX + area.width &&",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a proven omitted surface does not become the underlying part paint",
+      "why": "an explicitly absent counterpart's overlay must not be measured as the paint of the real part behind it"
+    },
+    {
+      "id": "fidelity-deep-focus-profile",
+      "file": "_test/harness/fidelity.js",
+      "find": "    ? Array.from({ length: part._profileDepth }, function (_, index) { return index + 1; }) : INSIDE;",
+      "replace": "    ? INSIDE : INSIDE;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "a deeper focus profile still detects a wrong inner color",
+      "why": "the declared deeper profile must actually sample its fifth pixel and detect a wrong inner color"
+    },
+    {
+      "id": "slider-pressed-inset-ring",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "          display: insetPressed ? undefined : 'none',",
+      "replace": "          display: 'none',",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "pressed inset focus paints a second ring over the scaled face",
+      "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
+    },
+    {
+      "id": "select-skeleton-field-height",
+      "file": "component/composite/select/select-skeleton.js",
+      "find": "heightKey: 'height',",
+      "replace": "heightKey: 'labelHeight',",
+      "runner": "node",
+      "test": "select-skeleton.test.js",
+      "testName": "uses the fixed field height and skeleton label metrics",
+      "why": "the select placeholder must draw the field-height token, not the shorter label bar"
+    },
+    {
+      "id": "dropdown-skeleton-wrapper",
+      "file": "component/molecule/text-input/field-skeleton-parts.js",
+      "find": "style: { alignSelf: 'stretch' },",
+      "replace": "style: { alignSelf: 'stretch', backgroundColor: ctx.color('skeleton_container') },",
+      "runner": "node",
+      "test": "dropdown-skeleton.test.js",
+      "testName": "keeps the wrapper transparent between its label and field",
+      "why": "a marker class does not paint a surface without a compiled rule; the label gap must remain transparent"
+    },
+    {
+      "id": "select-selection-by-value",
+      "file": "behaviors/controls.js",
+      "find": "const selectedIndex = indexByValue.has(storedValue) ? indexByValue.get(storedValue) : -1;",
+      "replace": "const selectedIndex = indexByValue.has(storedValue) ? 1 : -1;",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "selection follows its value when items reorder",
+      "why": "a selection initially at index one must follow its value to its new index after reordering"
+    },
+    {
+      "id": "select-retained-option-value",
+      "file": "behaviors/controls.js",
+      "find": "selectValue(value);",
+      "replace": "selectValue(liveRef.current.items[index]?.value);",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "retained option callbacks respect the current disabled boundary",
+      "why": "an old option callback must not target the new occupant of its former ordinal index"
+    },
+    {
+      "id": "select-live-disabled-boundary",
+      "file": "behaviors/controls.js",
+      "find": "return mountedRef.current === true && liveRef.current !== null && liveRef.current.disabled !== true;",
+      "replace": "return mountedRef.current === true && liveRef.current !== null;",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "the disabled boundary makes every saved action and handler inert",
+      "why": "all saved actions must honor the latest disabled state, not only pointer handlers"
+    },
+    {
+      "id": "select-key-default-claim",
+      "file": "behaviors/controls.js",
+      "find": "      const prevent = function () {\n        if (event && typeof event.preventDefault === 'function') {\n          event.preventDefault();\n        }\n      };",
+      "replace": "      const prevent = function () {};",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "handled selection keys prevent browser defaults but Tab does not",
+      "why": "handled navigation must claim the browser default while Tab remains free to leave"
+    },
+    {
+      "id": "select-same-act-state",
+      "file": "behaviors/controls.js",
+      "find": "live.storedValue = value;",
+      "replace": "",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "actions in one act compose on the latest answer, not the render they came from",
+      "why": "a clear after a pending selection must see that new uncontrolled selection in the same batch"
+    },
+    {
+      "id": "combobox-edit-keeps-selection",
+      "file": "behaviors/combobox.js",
+      "find": "      const before = live.displayed;\n      if (!live.inputControlled) {\n        live.raw = text;",
+      "replace": "      const before = live.displayed;\n      select.clearSelection();\n      if (!live.inputControlled) {\n        live.raw = text;",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "editing filters without changing the committed selection",
+      "why": "typing changes a query, not the independently committed selected value"
+    },
+    {
+      "id": "combobox-space-is-editing",
+      "file": "behaviors/combobox.js",
+      "find": "if (key === 'ArrowDown' || key === 'ArrowUp') {",
+      "replace": "if (key === 'ArrowDown' || key === 'ArrowUp' || key === ' ') {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "Space, Home, End, ArrowLeft and ArrowRight stay native text editing",
+      "why": "an editable space must not invoke the select-only activation handler"
+    },
+    {
+      "id": "combobox-clear-zero",
+      "file": "behaviors/combobox.js",
+      "find": "if (live.storedValue !== undefined && live.storedValue !== null) {",
+      "replace": "if (live.storedValue) {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "clearing numeric zero reports an empty selection once, closes and keeps input focus",
+      "why": "zero is a real selected value and must not be mistaken for an empty selection"
+    },
+    {
+      "id": "combobox-reselect-canonicalizes",
+      "file": "behaviors/controls.js",
+      "find": "if (typeof live.onSelect === 'function') {",
+      "replace": "if (changed && typeof live.onSelect === 'function') {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "reselecting the committed value canonicalizes the draft without a value request",
+      "why": "choice acceptance must canonicalize a draft even when no value change occurs"
+    },
+    {
+      "id": "multiselect-reselect-toggles",
+      "file": "behaviors/controls.js",
+      "find": "if (typeof live.onSelect === 'function') {",
+      "replace": "if (changed && typeof live.onSelect === 'function') {",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "toggling a checked first item removes it without closing",
+      "why": "multiple-choice activation must toggle even when the navigation value is already selected"
+    },
+    {
+      "id": "multiselect-open-session-order",
+      "file": "behaviors/multi-select.js",
+      "find": "const ordering = session !== null && session.open === true ? session.values : selectedValues;",
+      "replace": "const ordering = selectedValues;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "selection order changes only after the open session ends; reorder, removal and re-addition keep values and ids",
+      "why": "a toggled checkbox must not jump during an open session"
+    },
+    {
+      "id": "multiselect-query-keeps-values",
+      "file": "behaviors/multi-select.js",
+      "find": "      const before = live.text;\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "replace": "      const before = live.text;\n      setSelected([]);\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "filtering hides rows, never selections; the predicate receives exactly { item, inputValue }",
+      "why": "changing the displayed filter must not erase selected values outside its results"
+    },
+    {
+      "id": "multiselect-native-scroll",
+      "file": "behaviors/multi-select.js",
+      "find": "node.scrollTo({ y: target, animated: false });",
+      "replace": "node.scrollTo;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "the active row scrolls only when outside its measured viewport",
+      "why": "the measured scroll capability must actually reveal an offscreen active option on native and web"
+    },
+    {
+      "id": "multiselect-outside-cleanup",
+      "file": "_test/harness/page.js",
+      "find": "if (options && options.clickOutside === true) {",
+      "replace": "if (false) {",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "outside-click cleanup closes a menu without invoking its Escape action",
+      "why": "cleanup must really dismiss by outside click when Escape is a destructive selection action"
+    },
+    {
+      "id": "multiselect-scroll-web",
+      "file": "behaviors/multi-select.js",
+      "find": "node.scrollTo({ y: target, animated: false });",
+      "replace": "node.scrollTo;",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "multiple-choice keyboard navigation reveals the active option inside the real scroll viewport",
+      "why": "the real scroll adapter must reveal the keyboard-active last option, not merely report a virtual state"
+    },
+    {
+      "id": "multiselect-filter-values-web",
+      "file": "behaviors/multi-select.js",
+      "find": "      const before = live.text;\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "replace": "      const before = live.text;\n      setSelected([]);\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "filterable multiple-choice edits its query without erasing the selected values",
+      "why": "the uncontrolled selected count must survive a query that hides its selected row"
+    },
+    {
+      "id": "fidelity-additional-phases",
+      "file": "_test/harness/fidelity.js",
+      "find": "return Array.isArray(target.interactions) ? target.interactions : fallback;",
+      "replace": "return fallback;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "additional targets use their own declared phases",
+      "why": "an action's explicit phase list must not inherit the field's semantic open click"
+    },
+    {
+      "id": "fidelity-capture-preserves-state",
+      "file": "_test/harness/page.js",
+      "find": "if (preserveViewport !== true) {",
+      "replace": "if (true) {",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "capturing an open list preserves the measured interaction and viewport",
+      "why": "scrolling after the measured phase can move a stationary pointer onto an option and invalidate the screenshot"
+    },
+    {
+      "id": "multiselect-root-host-layer",
+      "file": "_test/harness/entry.js",
+      "find": "React.createElement(Registry.OverlayHost, null, content)",
+      "replace": "content",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "the root OverlayHost keeps an open menu above neighboring controls",
+      "why": "the consumer-equivalent portal fixture must really paint the menu above later neighboring controls"
+    },
+    {
+      "id": "combobox-decorative-caret-a11y",
+      "file": "behaviors/combobox.js",
+      "find": "        'aria-hidden': true,",
+      "replace": "        'aria-hidden': false,",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "the decorative caret is hidden from AT and tab focus; the primary stays exposed",
+      "why": "the entry caret is a visual affordance, not an unnamed second accessibility control"
+    },
+    {
+      "id": "multiselect-decorative-caret-a11y",
+      "file": "behaviors/multi-select.js",
+      "find": "        'aria-hidden': true,",
+      "replace": "        'aria-hidden': false,",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "the decorative caret is hidden from AT and tab focus; the primary and count clear stay exposed",
+      "why": "hiding the caret must be explicit while the primary entry and real clear action stay exposed"
+    },
+    {
+      "id": "native-type-physical-grid",
+      "file": "component/context.js",
+      "find": "lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);",
+      "replace": "lineHeight = set.lineHeight;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008",
+      "why": "native physical-grid emission prevents Android ceil accumulation while preserving exact theme and web values"
     }
   ]
 }

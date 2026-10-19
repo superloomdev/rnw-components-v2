@@ -16,6 +16,20 @@ A pressable row: a square box holding the check or mixed mark, then the label, w
 - **Geometry is the template's.** The box size and border width are `control.checkbox_size` and `control.checkbox_border`, so each template draws its own box (16 with a 1px border in one, 18 with a 2px border in another). Measured against both references in every sample state, in hover, focus and pressed, in light and dark; the second reference has no label, helper or invalid state of its own and draws its mark with rectangles, so those are compared against the primary reference only.
 - **Focus ring.** The ring is drawn around the box, not the row: an element centered on the box, larger by the theme's `control.selection_focus_offset` on each side, with the theme's corner (`control.selection_focus_radius`) and ring width and color. A square ring one pixel out in one template, a 44px circle in another. Under `feedback.focus_trigger: keyboard` it shows on keyboard focus only. A checkbox takes focus when a press completes (the primary reference focuses its input on the click), so no ring shows while the pointer is held.
 
+### CheckboxSkeleton
+
+- **The label block alone.** A `SkeletonPlaceholder` bar `control.selection_skeleton_label_width` wide and `spacing.spacing_05` tall, seated where the live row's text would start - the start inset (`spacing.spacing_05` + `spacing.spacing_03` + `spacing.spacing_01`) keeps the space the missing box and its gap take empty, as the primary reference's `.cds--checkbox-label-text.cds--skeleton` does. The row is `spacing.spacing_05` + `spacing.spacing_02` tall with a `spacing.spacing_01` + `border.width_01` bottom margin, the same wrapper the reference draws.
+- **No second reference.** No skeleton primitive exists in the second system; the row's values come from the published explicit skeleton cells only.
+
+### CheckboxGroup
+
+- **A fieldset, not a form.** The group is a `group` role named by its generated legend id, as the upstream fieldset is; items are `Checkbox` members - the group composes them, it does not redraw the control.
+- **Item state by id.** An item's `checked` is controlled when present; an uncontrolled item keeps its own `useCheckbox` state (seeded by `defaultChecked`), and the member element is keyed by the item's stable `id`, so reordering keeps each item's answer and removing one cannot shift another's state.
+- **The group owns the messages.** The legend and the one helper or error message are the group's; `invalid` is passed to every member so each draws its error edge, but member helper or error text is never forwarded - members mount no messages. A disabled group suppresses the invalid presentation; the `aria-invalid` marker still reports the group's flag.
+- **Vertical only.** The upstream horizontal checkbox-group class sets no layout rule at the pinned stylesheet, so no orientation option exists; adding one would promise a layout the source does not draw.
+- **Row geometry.** Every row carries `control.checkbox_group_gap` as its bottom margin - the source's always-present validation sibling sits one gap below the last row - and the first row pulls up by `spacing.spacing_01`, the negative top margin the source applies. The message's gap is `spacing.spacing_02`; since block margins do not collapse in flex layout, the message adds only the shortfall when rows precede it (`max(0, messageGap - rowGap)`), and the full gap when the group is empty.
+- **No second reference.** The second system has no checkbox group, so the group's values are the roster's `superloom_decision`: the legend and messages use the `field_label`/`field_helper`/`field_message_invalid` cells the form family already owns, and the error icon keeps the Checkbox's own margins and `selection_invalid_icon` cell.
+
 ### Platform
 
 Both. The row, the box and the mark render on iOS, Android and web; hover feedback appears only where a pointer exists.
@@ -39,6 +53,7 @@ Checkbox draws a box holding a check or mixed mark icon beside its label, with a
 |---|---|---|---|
 | `label` | `string` | yes | Visible label; it names the checkbox. |
 | `checked` | `boolean` | no | Controlled checked state. Absent: the checkbox keeps its own state, starting unchecked. |
+| `defaultChecked` | `boolean` | no | Initial checked state while uncontrolled; ignored when `checked` is supplied. |
 | `indeterminate` | `boolean` | no | Draws the mixed mark and announces the checkbox as mixed. |
 | `disabled` | `boolean` | no | Disables toggling and feedback, draws the disabled colors and announces the checkbox as disabled. |
 | `invalid` | `boolean` | no | Draws the error border, shows `invalidText` and announces the checkbox as invalid. |
@@ -80,3 +95,88 @@ Checkbox draws a box holding a check or mixed mark icon beside its label, with a
 | invalid | `{"label":"Invalid","invalid":true,"invalidText":"Select this option"}` |
 | disabled | `{"label":"Disabled","disabled":true}` |
 | disabled checked | `{"label":"Disabled checked","disabled":true,"checked":true}` |
+
+## CheckboxGroup
+
+CheckboxGroup gathers checkboxes under a legend in a vertical stack, drawing the group's invalid edge on every member and the helper or error message below while a disabled group disables every member; the second system has no checkbox group, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `press` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `legendText` | `string` | yes | The legend text; it names the group through `aria-labelledby`. |
+| `items` | `array` | no | The checkboxes, as `{ id, label, checked?, defaultChecked?, indeterminate?, disabled?, onChange?, testID? }`. `id` is a required unique string; `checked`, `indeterminate`, `disabled` and `onChange` have the Checkbox meanings; `defaultChecked` starts an uncontrolled item checked. An item's `testID` overrides the generated `checkbox-group-<id>`. |
+| `disabled` | `boolean` | no | Disables the group and every checkbox inside it, including an item passing `disabled: false`. |
+| `invalid` | `boolean` | no | Marks the group invalid: every checkbox draws its error edge and `invalidText` shows below the group. |
+| `invalidText` | `string` | no | Error message shown below the group while `invalid`. |
+| `helperText` | `string` | no | Message shown below the group while not `invalid`. |
+| `testID` | `string` | no | Test identifier forwarded to the group root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `legendGap` | `spacing.spacing_03` |
+| `rowGap` | `control.checkbox_group_gap` |
+| `firstRowOverlap` | `spacing.spacing_01` |
+| `messageGap` | `spacing.spacing_02` |
+| `iconSize` | `size.icon_01` |
+| `iconInsetStart` | sum of `spacing.spacing_01`, `border.width_01` |
+| `iconInsetEnd` | `border.width_01` |
+| `iconInsetTop` | `border.width_01` |
+| `messageTextGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"legendText":"Options","items":[{"id":"alpha","label":"Alpha","checked":true},{"id":"beta","label":"Beta"},{"id":"gamma","label":"Gamma"}]}` |
+| mixed | `{"legendText":"Options","items":[{"id":"alpha","label":"Alpha","indeterminate":true},{"id":"beta","label":"Beta"},{"id":"gamma","label":"Gamma"}]}` |
+| helper | `{"legendText":"Options","helperText":"Choose all that apply","items":[{"id":"alpha","label":"Alpha"},{"id":"beta","label":"Beta"},{"id":"gamma","label":"Gamma"}]}` |
+| invalid | `{"legendText":"Options","invalid":true,"invalidText":"Choose an option","items":[{"id":"alpha","label":"Alpha"},{"id":"beta","label":"Beta"},{"id":"gamma","label":"Gamma"}]}` |
+| disabled | `{"legendText":"Options","disabled":true,"items":[{"id":"alpha","label":"Alpha","checked":true},{"id":"beta","label":"Beta"},{"id":"gamma","label":"Gamma"}]}` |
+
+## CheckboxSkeleton
+
+A label-only loading bar with the checkbox row's empty box inset.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `width` | `control.selection_skeleton_label_width` |
+| `height` | `spacing.spacing_05` |
+| `rootHeight` | sum of `spacing.spacing_05`, `spacing.spacing_02` |
+| `insetStart` | sum of `spacing.spacing_05`, `spacing.spacing_03`, `spacing.spacing_01` |
+| `insetTop` | `spacing.spacing_01` |
+| `marginBottom` | sum of `spacing.spacing_01`, `border.width_01` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |

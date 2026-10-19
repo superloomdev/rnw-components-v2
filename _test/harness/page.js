@@ -36,7 +36,8 @@ export async function openShowcase (page, template, component, options) {
   const query = '?template=' + template + (component ? '&component=' + component : '') +
     (options && options.measure ? '&measure=1' : '') + (options && options.sheet ? '&sheet=1' : '') +
     (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
-    (options && options.hosted === false ? '&hosted=0' : '');
+    (options && options.hosted === false ? '&hosted=0' : '') +
+    (options && options.rootHost === true ? '&rootHost=1' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.__showcase && window.__showcase.ready === true;
@@ -243,14 +244,22 @@ export async function readParts (page, name, parts, side, origin, options) {
         // padding box plus its margin, so the host's border and padding move it
         const positioned = pseudo !== null && (style.position === 'absolute' || style.position === 'fixed');
         const hostStyle = pseudo !== null && !positioned ? getComputedStyle(element) : null;
-        const pseudoX = pseudo === null ? 0 : positioned
+        let pseudoX = pseudo === null ? 0 : positioned
           ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
           : (parseFloat(hostStyle.borderLeftWidth) || 0) + (parseFloat(hostStyle.paddingLeft) || 0) +
             (parseFloat(style.marginLeft) || 0) + (style.position === 'relative' ? parseFloat(style.left) || 0 : 0);
-        const pseudoY = pseudo === null ? 0 : positioned
+        let pseudoY = pseudo === null ? 0 : positioned
           ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
           : (parseFloat(hostStyle.borderTopWidth) || 0) + (parseFloat(hostStyle.paddingTop) || 0) +
             (parseFloat(style.marginTop) || 0) + (style.position === 'relative' ? parseFloat(style.top) || 0 : 0);
+        if (pseudo !== null && part.translate === true && style.transform !== 'none') {
+          const transform = new DOMMatrixReadOnly(style.transform);
+          if (transform.a !== 1 || transform.b !== 0 || transform.c !== 0 || transform.d !== 1) {
+            throw new Error('A translated pseudo part must use a translation-only transform');
+          }
+          pseudoX += transform.e;
+          pseudoY += transform.f;
+        }
         const stripTop = strip === null ? 0
           : strip === 'borderTop' ? rect.top : rect.bottom - parseFloat(style[strip + 'Width']);
         const measured = {};
@@ -261,6 +270,20 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured.height = strip === null ? (pseudo ? parseFloat(style.height) : rect.height) : parseFloat(style[strip + 'Width']);
           for (const property of BOX) {
             measured[property] = style[property];
+          }
+          if (part.scaleRadius === true && pseudo === null &&
+              /px$/.test(style.borderTopLeftRadius) && element.offsetWidth > 0 && element.offsetHeight > 0) {
+            const transform = new DOMMatrixReadOnly(style.transform === 'none' ? undefined : style.transform);
+            const scaleX = Math.abs(transform.a);
+            if (transform.b !== 0 || transform.c !== 0 || scaleX !== Math.abs(transform.d)) {
+              throw new Error('A scaled-radius part must use uniform scaling');
+            }
+            measured.borderTopLeftRadius = (parseFloat(style.borderTopLeftRadius) * scaleX) + 'px';
+          }
+          for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
+            if (Array.isArray(part.compare) && part.compare.includes(property)) {
+              measured[property] = style[property];
+            }
           }
           // The strip reads its edge's color as its own fill
           if (strip !== null) {
@@ -328,20 +351,21 @@ export async function readParts (page, name, parts, side, origin, options) {
           measured[property] = style[property];
         }
         // A visually hidden part (a 1px clip in both dimensions), an undisplayed,
-        // transparent or visibility-hidden one draws nothing; a hairline a pixel
+        // transparent or visibility-hidden one draws nothing, and neither does a
+        // rect with no width or no height (a collapsed input); a hairline a pixel
         // tall but a layout wide draws, and an edge strip draws only where its
-        // edge is painted
+        // edge is painted. A part under a fully transparent ancestor paints
+        // nothing in either read
+        const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo !== null ? parseFloat(style.opacity) : 1);
         const drawn = strip !== null
           ? parseFloat(style[strip + 'Width']) > 0 && style[strip + 'Color'] !== 'rgba(0, 0, 0, 0)'
-          : pseudo !== null || rect.width > 1 || rect.height > 1;
-        measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && parseFloat(style.opacity) > 0 && drawn;
+          : pseudo !== null || (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
+        measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && opacity > 0 && drawn;
         if (input.extended) {
-          // Text styled by another element is painted at that element's opacity,
-          // and a pseudo is painted at its own: it is not an element, so the
-          // ancestor walk cannot see it
-          const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo ? parseFloat(style.opacity) : 1);
-          // A part under a transparent ancestor draws nothing
-          measured.visible = measured.visible && opacity > 0;
+          measured._paintCenter = part.paintCenter === true;
+          if (Number.isInteger(part.profileDepth) && part.profileDepth > 0) {
+            measured._profileDepth = part.profileDepth;
+          }
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
             // A box drawn at an opacity paints its colors at that opacity, as an rgba color does
@@ -380,17 +404,48 @@ pointer down on it. Wait for transitions and state layers to settle.
 @param {Object} page        - Playwright page
 @param {String} name        - Component name
 @param {String} state       - The cell's state label
-@param {String} selector    - The interactive element, relative to the cell body (' >>> ' not used here)
+@param {String} selector    - The interactive element, relative to the cell body;
+                             ' >>> ' crosses shadow roots (resolved by hand)
 @param {String} interaction - 'hover' | 'focus' | 'pressed' | 'open'
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
 *********************************************************************/
-export async function enterInteraction (page, name, state, selector, interaction) {
+export async function enterInteraction (page, name, state, selector, interaction, options) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
-  const target = body.locator(selector).first();
-  if (await target.count() === 0) {
-    return false;
+  let target;
+  let targetHandle;
+  if (selector.indexOf('>>>') !== -1) {
+    // A shadow-crossing selector resolves like the part reader's: each
+    // segment inside the previous match's shadow root
+    const handle = await body.evaluateHandle(function (element, input) {
+      for (const alternative of input.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+        let current = element;
+        const segments = alternative.split(' >>> ');
+        for (let i = 0; i < segments.length; i++) {
+          if (current === null || current === undefined) {
+            break;
+          }
+          const scope = i === 0 ? current : (current.shadowRoot || current);
+          current = scope.querySelector(segments[i]);
+        }
+        if (current !== null && current !== undefined) {
+          return current;
+        }
+      }
+      return null;
+    }, selector);
+    targetHandle = handle;
+    target = handle.asElement();
+    if (target === null) {
+      await handle.dispose();
+      return false;
+    }
+  } else {
+    target = body.locator(selector).first();
+    if (await target.count() === 0) {
+      return false;
+    }
   }
   // Center the cell first, where its screenshot is taken, so nothing scrolls out from under the pointer
   await body.evaluate(function (element) {
@@ -403,7 +458,7 @@ export async function enterInteraction (page, name, state, selector, interaction
     await page.keyboard.press('Shift');
     await target.focus();
     // A focused text field shows its frame, not a selection: collapse any selection focusing made
-    await page.evaluate(function () {
+    const numberInput = await page.evaluate(function () {
       let active = document.activeElement;
       while (active && active.shadowRoot && active.shadowRoot.activeElement) {
         active = active.shadowRoot.activeElement;
@@ -411,14 +466,32 @@ export async function enterInteraction (page, name, state, selector, interaction
       if (active && typeof active.setSelectionRange === 'function' && typeof active.value === 'string' && (active.tagName === 'TEXTAREA' || ['text', 'search', 'email', 'tel', 'url', 'password', ''].includes(active.getAttribute('type') || ''))) {
         active.setSelectionRange(active.value.length, active.value.length);
       }
+      return active && active.tagName === 'INPUT' && active.type === 'number';
     });
+    // Number inputs reject setSelectionRange; a horizontal caret movement
+    // collapses their browser selection without stepping or changing value.
+    if (numberInput) {
+      await page.keyboard.press('ArrowRight');
+    }
   } else {
-    await target.hover();
+    if (options && options.point === true) {
+      const box = await target.boundingBox();
+      if (box === null || box.width <= 0 || box.height <= 0) {
+        return false;
+      }
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    } else {
+      await target.hover();
+    }
     if (interaction === 'pressed') {
       await page.mouse.down();
     }
   }
   await page.waitForTimeout(400);
+
+  if (targetHandle !== undefined) {
+    await targetHandle.dispose();
+  }
 
   return true;
 
@@ -430,15 +503,31 @@ Leave an interaction state without completing a click: the pointer moves
 off the element before it is released (so nothing toggles or opens),
 focus leaves, and an opened popup is dismissed.
 
-@param {Object} page - Playwright page
+@param {Object} page        - Playwright page
+@param {Object} [options]   - { escape, clickOutside }: false escape skips the Escape key alone,
+                              for a reference where Escape is the
+                              component's own action, not fixture reset;
+                              pointer release, blur and the settle wait stay;
+                              clickOutside explicitly dismisses at the blank fixture origin
 
 @return {Promise<void>}
 *********************************************************************/
-export async function leaveInteraction (page) {
+export async function leaveInteraction (page, options) {
 
+  const releaseFirst = options && options.releaseBeforeMove === true;
+  if (releaseFirst) {
+    await page.mouse.up();
+  }
   await page.mouse.move(0, 0);
-  await page.mouse.up();
-  await page.keyboard.press('Escape');
+  if (!releaseFirst) {
+    await page.mouse.up();
+  }
+  if (options === undefined || options === null || options.escape !== false) {
+    await page.keyboard.press('Escape');
+  }
+  if (options && options.clickOutside === true) {
+    await page.mouse.click(0, 0);
+  }
   await page.evaluate(function () {
     let active = document.activeElement;
     while (active && active.shadowRoot && active.shadowRoot.activeElement) {
@@ -584,7 +673,7 @@ hidden first, so a shot carries this cell's own painting only.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell is absent
 *********************************************************************/
-export async function shootCell (page, name, state, margin, pauseAnimations) {
+export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   if (await body.count() === 0) {
@@ -596,9 +685,11 @@ export async function shootCell (page, name, state, margin, pauseAnimations) {
     await pauseCellAnimations(body);
   }
   // Centered in the viewport, so the margin on every side is inside the picture
-  await body.evaluate(function (element) {
-    element.scrollIntoView({ block: 'center', inline: 'center' });
-  });
+  if (preserveViewport !== true) {
+    await body.evaluate(function (element) {
+      element.scrollIntoView({ block: 'center', inline: 'center' });
+    });
+  }
   const box = await body.boundingBox();
   await hideOutsideLayers(body);
   let shot;
@@ -629,7 +720,7 @@ that the cell shot cannot hold.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell or its part is absent
 *********************************************************************/
-export async function shootPart (page, name, state, selector, margin, pauseAnimations) {
+export async function shootPart (page, name, state, selector, margin, pauseAnimations, preserveViewport) {
 
   if (pauseAnimations === true) {
     const cellBody = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
@@ -663,9 +754,11 @@ export async function shootPart (page, name, state, selector, margin, pauseAnima
     await handle.dispose();
     return null;
   }
-  await element.evaluate(function (node) {
-    node.scrollIntoView({ block: 'center', inline: 'center' });
-  });
+  if (preserveViewport !== true) {
+    await element.evaluate(function (node) {
+      node.scrollIntoView({ block: 'center', inline: 'center' });
+    });
+  }
   const box = await element.boundingBox();
   await handle.dispose();
   if (box === null) {
@@ -1108,7 +1201,12 @@ export async function readControlPaint (page) {
       if (control === undefined) {
         continue;
       }
-      const style = getComputedStyle(control);
+      const face = control.getAttribute('role') === 'slider'
+        ? body.querySelector('[data-testid="slider-thumb-face"]') : control;
+      if (face === null) {
+        throw new Error('A slider paint signature requires its painted thumb face');
+      }
+      const style = getComputedStyle(face);
       // The first drawn text inside the control, or the control's own color
       const textNode = Array.from(control.querySelectorAll('*')).find(function (node) {
         return Array.from(node.childNodes).some(function (child) {
@@ -1122,11 +1220,15 @@ export async function readControlPaint (page) {
       // ancestor of it inside the body - not when a sibling control is (a
       // mixed cell's enabled control must not read as disabled)
       const flagged = control.closest('[aria-disabled="true"], [disabled]');
+      let opacity = 1;
+      for (let node = face; node !== null && node !== body; node = node.parentElement) {
+        opacity *= parseFloat(getComputedStyle(node).opacity);
+      }
       out.push({
         component: cell.getAttribute('data-component'),
         state: cell.getAttribute('data-state'),
         disabled: flagged !== null && flagged !== body && body.contains(flagged),
-        paint: style.backgroundColor + ' | ' + border + ' | ' + text
+        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity
       });
     }
     return out;

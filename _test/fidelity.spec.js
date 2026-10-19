@@ -42,6 +42,22 @@ test.describe('fidelity', function () {
             test.info().annotations.push({ type: 'fidelity', description: component.name + ': primary set skipped (no primary twin)' });
           }
           const run = await runFidelity(page, component, set, scheme);
+          if (run.errors.length > 0 || run.lines.length > 0 ||
+              Object.values(run.perceptual).some(value => value > BUDGET[component.name])) {
+            await test.info().attach('fidelity-parts', {
+              body: JSON.stringify({ upstream: run.upstream, ours: run.ours, lines: run.lines, perceptual: run.perceptual, errors: run.errors }),
+              contentType: 'application/json'
+            });
+            const failedKeys = new Set(run.lines.map(line => line.split(' / ')[0]).concat(
+              Object.keys(run.perceptual).filter(key => run.perceptual[key] > BUDGET[component.name])));
+            for (const key of failedKeys) {
+              if (run.shots[key]) {
+                for (const side of ['ours', 'upstream']) {
+                  await test.info().attach(key + ' ' + side, { body: run.shots[key][side], contentType: 'image/png' });
+                }
+              }
+            }
+          }
           expect(run.errors, 'render errors').toEqual([]);
           expect(run.lines, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);
           const over = Object.keys(run.perceptual).filter(function (key) {

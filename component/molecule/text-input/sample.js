@@ -8,6 +8,7 @@ export const FRAME = Object.freeze({ width: 320 });
 export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ label: 'Label', placeholder: 'Placeholder' }) }),
   Object.freeze({ label: 'filled', props: Object.freeze({ label: 'Label', value: 'Filled value' }) }),
+  Object.freeze({ label: 'initial', props: Object.freeze({ label: 'Label', defaultValue: 'Initial value' }) }),
   Object.freeze({ label: 'helper', props: Object.freeze({ label: 'Label', placeholder: 'Placeholder', helperText: 'Helper text' }) }),
   Object.freeze({ label: 'invalid', props: Object.freeze({ label: 'Label', value: 'Wrong value', invalid: true, invalidText: 'Enter a valid value' }) }),
   Object.freeze({ label: 'disabled', props: Object.freeze({ label: 'Label', value: 'Disabled value', disabled: true }) }),
