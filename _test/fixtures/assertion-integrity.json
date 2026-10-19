@@ -462,7 +462,7 @@
       "replace": "      fill: 'none',",
       "runner": "pw",
       "test": "perceptual.spec.js",
-      "testName": "the pixel pipeline discriminates: self is 0, blank is not",
+      "testName": "Icon: the pixel pipeline discriminates: self is 0, blank is not",
       "why": "an invisible render must not pass the pixel pipeline"
     },
     {

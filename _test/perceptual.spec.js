@@ -82,37 +82,43 @@ async function shootBodies (page, name, frozen) {
 
 test.describe('perceptual', function () {
 
-  test('the pixel pipeline discriminates: self is 0, blank is not', async function ({ page }) {
-    const opened = await openShowcase(page, PROOF_TEMPLATE);
-    expect(opened.status.cells).toBeGreaterThanOrEqual(1);
-    const cells = page.locator('.cell');
-    const count = await cells.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-    const blank = [];
-    const stale = [];
-    for (let i = 0; i < count; i++) {
-      const cell = cells.nth(i);
-      const id = await cell.getAttribute('data-component') + ' / ' + await cell.getAttribute('data-state');
-      const shot = await cell.locator('[data-part="body"]').screenshot({ scale: 'css' });
-      expect(ratio(shot, shot, 0.2)).toBe(0);
-      const png = PNG.sync.read(shot);
-      const white = new PNG({ width: png.width, height: png.height });
-      white.data.fill(255);
-      const drawn = ratio(shot, PNG.sync.write(white), 0) > 0;
-      const gap = GAPS.find(function (entry) {
-        return entry.check === 'perceptual-visible' && entry.template === PROOF_TEMPLATE && entry.cell === id;
-      });
-      if (gap && drawn) {
-        stale.push(id + ' now draws; remove its expected-gaps entry (' + gap.request + ')');
+  // Every cell is still checked, but roster growth must not make all
+  // screenshots share one test deadline or one page's overlay state.
+  for (const component of components) {
+    test(component.name + ': the pixel pipeline discriminates: self is 0, blank is not', async function ({ page }) {
+      const opened = await openShowcase(page, PROOF_TEMPLATE, component.name);
+      const expected = component.sample.filter(function (entry) { return entry.cell !== false; }).length;
+      expect(expected).toBeGreaterThanOrEqual(1);
+      expect(opened.status.cells).toBe(expected);
+      const cells = page.locator('.cell');
+      const count = await cells.count();
+      expect(count).toBe(expected);
+      const blank = [];
+      const stale = [];
+      for (let i = 0; i < count; i++) {
+        const cell = cells.nth(i);
+        const id = await cell.getAttribute('data-component') + ' / ' + await cell.getAttribute('data-state');
+        const shot = await cell.locator('[data-part="body"]').screenshot({ scale: 'css' });
+        expect(ratio(shot, shot, 0.2)).toBe(0);
+        const png = PNG.sync.read(shot);
+        const white = new PNG({ width: png.width, height: png.height });
+        white.data.fill(255);
+        const drawn = ratio(shot, PNG.sync.write(white), 0) > 0;
+        const gap = GAPS.find(function (entry) {
+          return entry.check === 'perceptual-visible' && entry.template === PROOF_TEMPLATE && entry.cell === id;
+        });
+        if (gap && drawn) {
+          stale.push(id + ' now draws; remove its expected-gaps entry (' + gap.request + ')');
+        }
+        if (!gap && !drawn) {
+          blank.push(id);
+        }
       }
-      if (!gap && !drawn) {
-        blank.push(id);
-      }
-    }
-    expect(stale, 'expected gaps that no longer reproduce').toEqual([]);
-    expect(blank, 'cells that rendered nothing visible').toEqual([]);
-    test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + primaryReference.length + ', without (skipped) ' + withoutReference.length + ', no primary twin (skipped) ' + noPrimaryTwin.length });
-  });
+      expect(stale, 'expected gaps that no longer reproduce').toEqual([]);
+      expect(blank, 'cells that rendered nothing visible').toEqual([]);
+      test.info().annotations.push({ type: 'perceptual', description: 'with reference ' + primaryReference.length + ', without (skipped) ' + withoutReference.length + ', no primary twin (skipped) ' + noPrimaryTwin.length });
+    });
+  }
 
   // A shot is cropped from the page, so anything the harness itself paints
   // around a cell (its border, outline or shadow) can enter a comparison
