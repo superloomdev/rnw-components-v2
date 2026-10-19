@@ -2234,6 +2234,16 @@
       "test": "multiselect-behavior.test.js",
       "testName": "the decorative caret is hidden from AT and tab focus; the primary and count clear stay exposed",
       "why": "hiding the caret must be explicit while the primary entry and real clear action stay exposed"
+    },
+    {
+      "id": "native-type-physical-grid",
+      "file": "component/context.js",
+      "find": "lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);",
+      "replace": "lineHeight = set.lineHeight;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008",
+      "why": "native physical-grid emission prevents Android ceil accumulation while preserving exact theme and web values"
     }
   ]
 }

@@ -125,7 +125,15 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   /********************************************************************
   Read a type set by its leaf name and resolve its family token, so the
-  result spreads straight into a Text style.
+  result spreads straight into a Text style. On native the emitted
+  lineHeight is resolved on the host's physical pixel grid through the
+  injected `PixelRatio.roundToNearestPixel`: Android's CustomLineHeightSpan
+  ceils a fractional height on every text line, so the style must carry
+  what the grid will draw. The token, the built theme and the web result
+  all keep the raw number; web's `textPresentation` renders it as the
+  unitless CSS ratio, which keeps fractional products on the subpixel
+  grid. A native host without the injected PixelRatio cannot draw text;
+  asking for a type style is then a hard error, never a guessed grid.
 
   @param {String} name - e.g. 'body01'
 
@@ -136,13 +144,26 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // Read the type set
     const set = token('type.' + name);
 
+    // Resolve lineHeight on the host's physical pixel grid on native only
+    let lineHeight = set.lineHeight;
+    if (platform.isNative) {
+      const pixelRatio = Lib.ReactNative && Lib.ReactNative.PixelRatio;
+      if (Utils.isNullOrUndefined(pixelRatio) || !Utils.isFunction(pixelRatio.roundToNearestPixel)) {
+        throw new TypeError('ctx.typeStyle on native requires Lib.ReactNative.PixelRatio.roundToNearestPixel');
+      }
+      lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);
+      if (!Utils.isNumber(lineHeight) || !Number.isFinite(lineHeight)) {
+        throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
+      }
+    }
+
     // Return the style with the family token resolved
     return {
       fontFamily: token('font.family.' + set.fontFamily),
       fontSize: set.fontSize,
       fontWeight: set.fontWeight,
       letterSpacing: set.letterSpacing,
-      lineHeight: set.lineHeight
+      lineHeight: lineHeight
     };
 
   }
@@ -151,8 +172,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   /********************************************************************
   Turn a type style into the platform's final text presentation. Web
   renders lineHeight as the unitless CSS ratio, which keeps fractional
-  products on the subpixel grid; native keeps the absolute number. The
-  source style is not changed.
+  products on the subpixel grid; native keeps the number typeStyle already
+  resolved on the host's physical pixel grid. The source style is not
+  changed.
 
   @param {Object} style - A typeStyle result
 

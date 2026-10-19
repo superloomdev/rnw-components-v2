@@ -226,9 +226,12 @@ describe('context: icon', function () {
 
 describe('context: textPresentation', function () {
 
-  const NativeLib = function (os) {
+  const NativeLib = function (os, roundToNearestPixel) {
     return Object.assign({}, Lib, {
-      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: os } })
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+      })
     });
   };
 
@@ -248,7 +251,7 @@ describe('context: textPresentation', function () {
 
   for (const os of ['ios', 'android']) {
     test(os + ' presents the numeric absolute line height', function () {
-      const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os) }).Probe.ctx;
+      const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os, Math.round) }).Probe.ctx;
       const set = buildNative('default').tokens['type.body01'];
       const presented = ctx.textPresentation(ctx.typeStyle('body01'));
       assert.equal(presented.lineHeight, set.lineHeight);
@@ -262,7 +265,7 @@ describe('context: textPresentation', function () {
     } }];
     const web = buildSystem('default', { Probe: Probe }, { layers: layers }).Probe.ctx;
     assert.equal(web.textPresentation(web.typeStyle('body01')).lineHeight, '1.5');
-    const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios') }).Probe.ctx;
+    const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios', Math.round) }).Probe.ctx;
     assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15);
   });
 
@@ -271,6 +274,92 @@ describe('context: textPresentation', function () {
     assert.throws(function () {
       ctx.textPresentation({ fontSize: 14 });
     }, TypeError);
+  });
+
+});
+
+
+describe('context: native lineHeight on the physical pixel grid', function () {
+
+  const NativeGridLib = function (os, roundToNearestPixel) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+      })
+    });
+  };
+
+  test('mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008', function () {
+    const set = buildNative('carbon').tokens['type.body_compact_01'];
+    assert.equal(set.lineHeight, 18.00008, 'fixture: carbon body_compact_01 must carry the fractional lineHeight');
+    for (const os of ['ios', 'android']) {
+      const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib(os, Math.round) }).Probe.ctx;
+      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, 18);
+    }
+    assert.equal(buildNative('carbon').tokens['type.body_compact_01'].lineHeight, 18.00008);
+    assert.equal(buildSystem('carbon', { Probe: Probe }).Probe.ctx.token('type.body_compact_01').lineHeight, 18.00008);
+  });
+
+  test('the host grid resolves, not a constant density: grid2 18.25 -> 18.5, grid3 -> its third', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 18.25 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const grid2 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return Math.round(v * 2) / 2; }) }).Probe.ctx;
+    assert.equal(grid2.typeStyle('body01').lineHeight, 18.5);
+    const grid3 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return Math.round(v * 3) / 3; }) }).Probe.ctx;
+    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3);
+    assert.notEqual(grid3.typeStyle('body01').lineHeight, 18);
+  });
+
+  test('web never invokes the pixel grid and keeps the exact raw number', function () {
+    let calls = 0;
+    const counting = function (v) { calls += 1; return Math.round(v); };
+    const webLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { PixelRatio: { roundToNearestPixel: counting } })
+    });
+    const ctx = buildSystem('carbon', { Probe: Probe }, { lib: webLib }).Probe.ctx;
+    const set = buildNative('carbon').tokens['type.body_compact_01'];
+    const style = ctx.typeStyle('body_compact_01');
+    assert.equal(style.lineHeight, 18.00008);
+    assert.equal(calls, 0);
+    assert.equal(ctx.textPresentation(style).lineHeight, String(set.lineHeight / set.fontSize));
+  });
+
+  test('an integer lineHeight is unchanged; a missing or bad PixelRatio throws on native only', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 20 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const native = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', Math.round) }).Probe.ctx;
+    assert.equal(native.typeStyle('body01').lineHeight, 20);
+    const noGrid = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'android' }, PixelRatio: undefined })
+    });
+    assert.throws(function () {
+      buildSystem('default', { Probe: Probe }, { lib: noGrid }).Probe.ctx.typeStyle('body01');
+    }, /PixelRatio\.roundToNearestPixel/);
+    const bad = buildSystem('default', { Probe: Probe }, { lib: NativeGridLib('android', function () { return 'oops'; }) }).Probe.ctx;
+    assert.throws(function () {
+      bad.typeStyle('body01');
+    }, TypeError);
+    // Web does not need the grid at all
+    const webLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { PixelRatio: undefined })
+    });
+    assert.equal(buildSystem('default', { Probe: Probe }, { lib: webLib }).Probe.ctx.typeStyle('body01').lineHeight, buildNative('default').tokens['type.body01'].lineHeight);
+  });
+
+  test('three carbon text lines in a group predict 54, not the ceiled 57', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib('android', Math.round) }).Probe.ctx;
+    const lines = ctx.typeStyle('body_compact_01').lineHeight
+      + ctx.typeStyle('heading_compact_01').lineHeight
+      + ctx.typeStyle('helper_text_02').lineHeight;
+    assert.equal(lines, 54);
+    assert.notEqual(lines, 57);
   });
 
 });
