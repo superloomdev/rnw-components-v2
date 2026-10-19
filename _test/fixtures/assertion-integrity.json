@@ -2214,6 +2214,26 @@
       "test": "multiselect-anatomy.spec.js",
       "testName": "the root OverlayHost keeps an open menu above neighboring controls",
       "why": "the consumer-equivalent portal fixture must really paint the menu above later neighboring controls"
+    },
+    {
+      "id": "combobox-decorative-caret-a11y",
+      "file": "behaviors/combobox.js",
+      "find": "        'aria-hidden': true,",
+      "replace": "        'aria-hidden': false,",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "the decorative caret is hidden from AT and tab focus; the primary stays exposed",
+      "why": "the entry caret is a visual affordance, not an unnamed second accessibility control"
+    },
+    {
+      "id": "multiselect-decorative-caret-a11y",
+      "file": "behaviors/multi-select.js",
+      "find": "        'aria-hidden': true,",
+      "replace": "        'aria-hidden': false,",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "the decorative caret is hidden from AT and tab focus; the primary and count clear stay exposed",
+      "why": "hiding the caret must be explicit while the primary entry and real clear action stay exposed"
     }
   ]
 }
