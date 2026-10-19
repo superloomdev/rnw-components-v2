@@ -23,10 +23,12 @@ describe('fire manifest', function () {
     const sandbox = mkdtempSync(join(tmpdir(), 'rnw-fire-cli-'));
     try {
       copyFileSync(join(REPO_ROOT, '_test', 'fire.js'), join(sandbox, 'fire.mjs'));
+      copyFileSync(join(REPO_ROOT, '_test', 'fire-selection.js'), join(sandbox, 'fire-selection.js'));
+      writeFileSync(join(sandbox, 'package.json'), JSON.stringify({ type: 'module' }));
       mkdirSync(join(sandbox, 'fixtures'));
       writeFileSync(join(sandbox, 'fixtures', 'assertion-integrity.json'), JSON.stringify({ rows: [] }));
       // Even a regressed parser can only see this empty sandbox manifest.
-      for (const [args, status] of [[['--help'], 0], [['--invalid'], 2], [['--only'], 2], [['--only', 'not-a-real-row'], 2]]) {
+      for (const [args, status] of [[['--help'], 0], [['--invalid'], 2], [['--only'], 2], [['--only', 'not-a-real-row'], 2], [['--shard', '0/4'], 2], [['--shard', '1/4'], 2]]) {
         const run = spawnSync(process.execPath, ['fire.mjs'].concat(args), {
           cwd: sandbox,
           encoding: 'utf8',

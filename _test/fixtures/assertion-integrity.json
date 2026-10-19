@@ -2244,6 +2244,16 @@
       "test": "system.test.js",
       "testName": "mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008",
       "why": "native physical-grid emission prevents Android ceil accumulation while preserving exact theme and web values"
+    },
+    {
+      "id": "fire-shards-complete",
+      "file": "_test/fire-selection.js",
+      "find": "return ordinal % total === index - 1;",
+      "replace": "return ordinal % total === 0;",
+      "runner": "node",
+      "test": "fire-selection.test.js",
+      "testName": "covers the real manifest exactly once across the four CI shards",
+      "why": "every mutation row must run exactly once across the CI shards, with no omissions or duplicate first-shard selection"
     }
   ]
 }

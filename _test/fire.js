@@ -4,7 +4,7 @@
 // fail is not asserting anything; a gate is trusted only after it has been
 // seen to fire.
 //
-// Usage: node fire.js [--only <id>]
+// Usage: node fire.js [--only <id> | --shard <index>/<total>]
 // Exit 1 on any row that did not fire, did not recover, or was not restored.
 
 import { execSync } from 'node:child_process';
@@ -12,24 +12,22 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FIRE_USAGE, getFireSelection } from './fire-selection.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..');
 const manifest = JSON.parse(readFileSync(join(HERE, 'fixtures', 'assertion-integrity.json'), 'utf8'));
 const args = process.argv.slice(2);
-const usage = 'usage: node fire.js [--only <id>] [--help]\n';
-if (args.length === 1 && args[0] === '--help') {
-  process.stdout.write(usage);
+let selection;
+try {
+  selection = getFireSelection(manifest.rows, args);
+} catch (error) {
+  process.stderr.write(error.message);
+  process.exit(2);
+}
+if (selection.help) {
+  process.stdout.write(FIRE_USAGE);
   process.exit(0);
-}
-if (args.length !== 0 && (args.length !== 2 || args[0] !== '--only' || !args[1])) {
-  process.stderr.write(usage);
-  process.exit(2);
-}
-const only = args.length === 0 ? null : args[1];
-if (only !== null && !manifest.rows.some(function (row) { return row.id === only; })) {
-  process.stderr.write('unknown fire row: ' + only + '\n');
-  process.exit(2);
 }
 
 
@@ -62,7 +60,10 @@ function runTest (row) {
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
-  } catch {
+  } catch (error) {
+    process.stdout.write('CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
+    const detail = String(error.stdout || '') + String(error.stderr || error.message);
+    process.stdout.write(detail.split('\n').slice(-30).join('\n') + '\n');
     return false;
   }
 
@@ -76,13 +77,13 @@ function runTest (row) {
 }
 
 
-const rows = manifest.rows.filter(function (row) {
-  return only === null || row.id === only;
-});
+const rows = selection.rows;
 const broken = [];
+process.stdout.write('fire selection: ' + rows.length + ' of ' + manifest.rows.length + ' manifest rows\n');
 
 for (const row of rows) {
 
+  process.stdout.write('START   ' + row.id + '  (' + row.runner + ': ' + row.test + ')\n');
   const target = join(REPO, row.file);
   const original = readFileSync(target);
   const originalHash = sha256(original);
@@ -95,9 +96,14 @@ for (const row of rows) {
   }
 
   // Plant the edit, run, restore, verify the restore
-  writeFileSync(target, text.replaceAll(row.find, row.replace));
-  const failedUnderMutation = !runTest(row);
-  writeFileSync(target, original);
+  let failedUnderMutation;
+  try {
+    writeFileSync(target, text.replaceAll(row.find, row.replace));
+    process.stdout.write('MUTATE  ' + row.id + '\n');
+    failedUnderMutation = !runTest(row);
+  } finally {
+    writeFileSync(target, original);
+  }
   const restored = sha256(readFileSync(target)) === originalHash;
 
   if (!restored) {
@@ -106,6 +112,7 @@ for (const row of rows) {
     continue;
   }
 
+  process.stdout.write('RECOVER ' + row.id + '\n');
   const recovered = runTest(row);
   let mark = 'FIRED  ';
   if (!failedUnderMutation) {
