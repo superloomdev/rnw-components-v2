@@ -17,6 +17,16 @@ export default Object.freeze({
     onClose: { type: 'function', required: false, description: 'Called when the close control is pressed.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the tag.' }
   }),
+  composition: Object.freeze({
+    containerLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the tag\'s container leaf (a host\'s high-contrast member).' },
+    labelLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the tag\'s label leaf (a host\'s high-contrast member).' },
+    iconLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the tag\'s icon leaf and the close glyph\'s (a host\'s high-contrast member).' },
+    closeHoverLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the close face\'s hovered fill (a host\'s high-contrast member).' },
+    closeFocusLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf name that overrides the close focus ring\'s color (a host\'s high-contrast member).' },
+    tooltip: { type: 'boolean', required: false, description: 'Composition prop: `false` renders the close control without its tooltip; `title` still names it. Default `true`.' },
+    closeGap: { type: 'number', required: false, description: 'Composition prop: the raw gap ahead of the close control, before its face bleed (a host member\'s legacy spacing). The default keeps the theme cell and the standalone small size\'s half-height adjustment.' },
+    paddingStart: { type: 'number', required: false, description: 'Composition prop: forwarded to the tag\'s start padding override (a host member\'s legacy leading edge).' }
+  }),
   kinds: TYPES,
   variants: Object.freeze(['sm', 'md', 'lg']),
   tokens: Object.freeze([

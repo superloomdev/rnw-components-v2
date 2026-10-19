@@ -69,6 +69,10 @@ import TextAreaSkeletonSample, { FRAME as TextAreaSkeletonFrame } from './compon
 import TextInputSkeletonSample, { FRAME as TextInputSkeletonFrame } from './component/molecule/text-input/sample.text-input-skeleton.js';
 import TimePickerSample, { FRAME as TimePickerFrame } from './component/molecule/text-input/sample.time-picker.js';
 import TimePickerSelectSample, { FRAME as TimePickerSelectFrame } from './component/molecule/text-input/sample.time-picker-select.js';
+import DropdownSkeletonSample, { FRAME as DropdownSkeletonFrame } from './component/composite/select/sample.dropdown-skeleton.js';
+import SelectSkeletonSample, { FRAME as SelectSkeletonFrame } from './component/composite/select/sample.select-skeleton.js';
+import MultiSelectSample, { FRAME as MultiSelectFrame } from './component/composite/select/sample.multi-select.js';
+import FilterableMultiSelectSample, { FRAME as FilterableMultiSelectFrame } from './component/composite/select/sample.filterable-multi-select.js';
 import LayerSample from './component/provider/layer/sample.js';
 
 export const catalog = Object.freeze([
@@ -140,5 +144,9 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'TextInputSkeleton', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: TextInputSkeletonFrame, sample: TextInputSkeletonSample }),
   Object.freeze({ name: 'TimePicker', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision', 'deferred_gap']), frame: TimePickerFrame, sample: TimePickerSample }),
   Object.freeze({ name: 'TimePickerSelect', family: 'TextInput', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'superloom_decision', 'deferred_gap']), frame: TimePickerSelectFrame, sample: TimePickerSelectSample }),
+  Object.freeze({ name: 'DropdownSkeleton', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: DropdownSkeletonFrame, sample: DropdownSkeletonSample }),
+  Object.freeze({ name: 'SelectSkeleton', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectSkeletonFrame, sample: SelectSkeletonSample }),
+  Object.freeze({ name: 'MultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: MultiSelectFrame, sample: MultiSelectSample }),
+  Object.freeze({ name: 'FilterableMultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: FilterableMultiSelectFrame, sample: FilterableMultiSelectSample }),
   Object.freeze({ name: 'Layer', family: 'Layer', tier: 'provider', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LayerSample })
 ]);

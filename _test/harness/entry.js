@@ -168,7 +168,11 @@ function Showcase () {
 
 if (Registry) {
   const root = createRoot(document.getElementById('root'));
-  root.render(React.createElement(Showcase));
+  const content = React.createElement(Showcase);
+  // Match the consumer's RootHost when reviewing layers across adjacent cells.
+  root.render(params.get('rootHost') === '1'
+    ? React.createElement(Registry.OverlayHost, null, content)
+    : content);
   // Ready once rendered and every font the rendered text asked for has loaded
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {

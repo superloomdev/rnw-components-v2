@@ -1028,8 +1028,8 @@
     {
       "id": "dismissible-tag-hover-typed",
       "file": "component/molecule/tag/dismissible-tag.js",
-      "find": ": hovered ? ctx.color(inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type)",
-      "replace": ": hovered ? ctx.color('tag_close_container_hover')",
+      "find": "inset || type === null ? 'tag_close_container_hover' : 'tag_hover_' + type",
+      "replace": "'tag_close_container_hover'",
       "runner": "node",
       "test": "dismissible-tag.test.js",
       "testName": "hover paints the close hover cell for a neutral tag, the hue's hover for a typed one",
@@ -2004,6 +2004,216 @@
       "test": "slider.test.js",
       "testName": "pressed inset focus paints a second ring over the scaled face",
       "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
+    },
+    {
+      "id": "select-skeleton-field-height",
+      "file": "component/composite/select/select-skeleton.js",
+      "find": "heightKey: 'height',",
+      "replace": "heightKey: 'labelHeight',",
+      "runner": "node",
+      "test": "select-skeleton.test.js",
+      "testName": "uses the fixed field height and skeleton label metrics",
+      "why": "the select placeholder must draw the field-height token, not the shorter label bar"
+    },
+    {
+      "id": "dropdown-skeleton-wrapper",
+      "file": "component/molecule/text-input/field-skeleton-parts.js",
+      "find": "style: { alignSelf: 'stretch' },",
+      "replace": "style: { alignSelf: 'stretch', backgroundColor: ctx.color('skeleton_container') },",
+      "runner": "node",
+      "test": "dropdown-skeleton.test.js",
+      "testName": "keeps the wrapper transparent between its label and field",
+      "why": "a marker class does not paint a surface without a compiled rule; the label gap must remain transparent"
+    },
+    {
+      "id": "select-selection-by-value",
+      "file": "behaviors/controls.js",
+      "find": "const selectedIndex = indexByValue.has(storedValue) ? indexByValue.get(storedValue) : -1;",
+      "replace": "const selectedIndex = indexByValue.has(storedValue) ? 1 : -1;",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "selection follows its value when items reorder",
+      "why": "a selection initially at index one must follow its value to its new index after reordering"
+    },
+    {
+      "id": "select-retained-option-value",
+      "file": "behaviors/controls.js",
+      "find": "selectValue(value);",
+      "replace": "selectValue(liveRef.current.items[index]?.value);",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "retained option callbacks respect the current disabled boundary",
+      "why": "an old option callback must not target the new occupant of its former ordinal index"
+    },
+    {
+      "id": "select-live-disabled-boundary",
+      "file": "behaviors/controls.js",
+      "find": "return mountedRef.current === true && liveRef.current !== null && liveRef.current.disabled !== true;",
+      "replace": "return mountedRef.current === true && liveRef.current !== null;",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "the disabled boundary makes every saved action and handler inert",
+      "why": "all saved actions must honor the latest disabled state, not only pointer handlers"
+    },
+    {
+      "id": "select-key-default-claim",
+      "file": "behaviors/controls.js",
+      "find": "      const prevent = function () {\n        if (event && typeof event.preventDefault === 'function') {\n          event.preventDefault();\n        }\n      };",
+      "replace": "      const prevent = function () {};",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "handled selection keys prevent browser defaults but Tab does not",
+      "why": "handled navigation must claim the browser default while Tab remains free to leave"
+    },
+    {
+      "id": "select-same-act-state",
+      "file": "behaviors/controls.js",
+      "find": "live.storedValue = value;",
+      "replace": "",
+      "runner": "node",
+      "test": "select-behavior.test.js",
+      "testName": "actions in one act compose on the latest answer, not the render they came from",
+      "why": "a clear after a pending selection must see that new uncontrolled selection in the same batch"
+    },
+    {
+      "id": "combobox-edit-keeps-selection",
+      "file": "behaviors/combobox.js",
+      "find": "      const before = live.displayed;\n      if (!live.inputControlled) {\n        live.raw = text;",
+      "replace": "      const before = live.displayed;\n      select.clearSelection();\n      if (!live.inputControlled) {\n        live.raw = text;",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "editing filters without changing the committed selection",
+      "why": "typing changes a query, not the independently committed selected value"
+    },
+    {
+      "id": "combobox-space-is-editing",
+      "file": "behaviors/combobox.js",
+      "find": "if (key === 'ArrowDown' || key === 'ArrowUp') {",
+      "replace": "if (key === 'ArrowDown' || key === 'ArrowUp' || key === ' ') {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "Space, Home, End, ArrowLeft and ArrowRight stay native text editing",
+      "why": "an editable space must not invoke the select-only activation handler"
+    },
+    {
+      "id": "combobox-clear-zero",
+      "file": "behaviors/combobox.js",
+      "find": "if (live.storedValue !== undefined && live.storedValue !== null) {",
+      "replace": "if (live.storedValue) {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "clearing numeric zero reports an empty selection once, closes and keeps input focus",
+      "why": "zero is a real selected value and must not be mistaken for an empty selection"
+    },
+    {
+      "id": "combobox-reselect-canonicalizes",
+      "file": "behaviors/controls.js",
+      "find": "if (typeof live.onSelect === 'function') {",
+      "replace": "if (changed && typeof live.onSelect === 'function') {",
+      "runner": "node",
+      "test": "combobox-behavior.test.js",
+      "testName": "reselecting the committed value canonicalizes the draft without a value request",
+      "why": "choice acceptance must canonicalize a draft even when no value change occurs"
+    },
+    {
+      "id": "multiselect-reselect-toggles",
+      "file": "behaviors/controls.js",
+      "find": "if (typeof live.onSelect === 'function') {",
+      "replace": "if (changed && typeof live.onSelect === 'function') {",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "toggling a checked first item removes it without closing",
+      "why": "multiple-choice activation must toggle even when the navigation value is already selected"
+    },
+    {
+      "id": "multiselect-open-session-order",
+      "file": "behaviors/multi-select.js",
+      "find": "const ordering = session !== null && session.open === true ? session.values : selectedValues;",
+      "replace": "const ordering = selectedValues;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "selection order changes only after the open session ends; reorder, removal and re-addition keep values and ids",
+      "why": "a toggled checkbox must not jump during an open session"
+    },
+    {
+      "id": "multiselect-query-keeps-values",
+      "file": "behaviors/multi-select.js",
+      "find": "      const before = live.text;\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "replace": "      const before = live.text;\n      setSelected([]);\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "filtering hides rows, never selections; the predicate receives exactly { item, inputValue }",
+      "why": "changing the displayed filter must not erase selected values outside its results"
+    },
+    {
+      "id": "multiselect-native-scroll",
+      "file": "behaviors/multi-select.js",
+      "find": "node.scrollTo({ y: target, animated: false });",
+      "replace": "node.scrollTo;",
+      "runner": "node",
+      "test": "multiselect-behavior.test.js",
+      "testName": "the active row scrolls only when outside its measured viewport",
+      "why": "the measured scroll capability must actually reveal an offscreen active option on native and web"
+    },
+    {
+      "id": "multiselect-outside-cleanup",
+      "file": "_test/harness/page.js",
+      "find": "if (options && options.clickOutside === true) {",
+      "replace": "if (false) {",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "outside-click cleanup closes a menu without invoking its Escape action",
+      "why": "cleanup must really dismiss by outside click when Escape is a destructive selection action"
+    },
+    {
+      "id": "multiselect-scroll-web",
+      "file": "behaviors/multi-select.js",
+      "find": "node.scrollTo({ y: target, animated: false });",
+      "replace": "node.scrollTo;",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "multiple-choice keyboard navigation reveals the active option inside the real scroll viewport",
+      "why": "the real scroll adapter must reveal the keyboard-active last option, not merely report a virtual state"
+    },
+    {
+      "id": "multiselect-filter-values-web",
+      "file": "behaviors/multi-select.js",
+      "find": "      const before = live.text;\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "replace": "      const before = live.text;\n      setSelected([]);\n      if (!live.inputControlled) {\n        live.raw = next;",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "filterable multiple-choice edits its query without erasing the selected values",
+      "why": "the uncontrolled selected count must survive a query that hides its selected row"
+    },
+    {
+      "id": "fidelity-additional-phases",
+      "file": "_test/harness/fidelity.js",
+      "find": "return Array.isArray(target.interactions) ? target.interactions : fallback;",
+      "replace": "return fallback;",
+      "runner": "node",
+      "test": "fidelity.test.js",
+      "testName": "additional targets use their own declared phases",
+      "why": "an action's explicit phase list must not inherit the field's semantic open click"
+    },
+    {
+      "id": "fidelity-capture-preserves-state",
+      "file": "_test/harness/page.js",
+      "find": "if (preserveViewport !== true) {",
+      "replace": "if (true) {",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "capturing an open list preserves the measured interaction and viewport",
+      "why": "scrolling after the measured phase can move a stationary pointer onto an option and invalidate the screenshot"
+    },
+    {
+      "id": "multiselect-root-host-layer",
+      "file": "_test/harness/entry.js",
+      "find": "React.createElement(Registry.OverlayHost, null, content)",
+      "replace": "content",
+      "runner": "pw",
+      "test": "multiselect-anatomy.spec.js",
+      "testName": "the root OverlayHost keeps an open menu above neighboring controls",
+      "why": "the consumer-equivalent portal fixture must really paint the menu above later neighboring controls"
     }
   ]
 }

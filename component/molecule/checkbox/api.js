@@ -15,6 +15,9 @@ export default Object.freeze({
     onChange: { type: 'function', required: false, description: 'Called with the next checked value on activation (press, Space).' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
+  composition: Object.freeze({
+    presentationOnly: { type: 'boolean', required: false, description: 'Composition prop: keeps the checked paint but removes every interaction handler and takes the box out of the accessibility tree and tab order, so a host can draw it inside its own interactive row (the multi-select option). Default `false`.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([

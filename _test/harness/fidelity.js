@@ -36,13 +36,18 @@ const INSIDE = Object.freeze([1, 2, 3]);
 const BELOW = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]);
 // The part a focus ring is drawn around and a shadow falls from, per component,
 // and the parts whose borders may draw a ring (their border CSS is left to the pixels while focused)
-const ANCHOR = Object.freeze({ Button: 'root', IconButton: 'root', Checkbox: 'box', TextInput: 'frame', TextArea: 'frame', Select: 'frame', PasswordInput: 'frame', NumberInput: 'frame', Search: 'frame', ExpandableSearch: 'frame', TimePicker: 'frame', Slider: 'thumb' });
-const RING_PARTS = Object.freeze({ Button: ['root'], IconButton: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], TextArea: ['frame', 'edge'], Select: ['frame', 'edge'], PasswordInput: ['frame', 'edge', 'toggleFace'], NumberInput: ['frame', 'edge', 'decrementFace', 'incrementFace'], Search: ['frame', 'edge', 'clearFace'], ExpandableSearch: ['frame', 'triggerFace', 'clearFace'], TimePicker: ['frame', 'edge'], Slider: ['thumb', 'frame'] });
+const ANCHOR = Object.freeze({ Button: 'root', IconButton: 'root', Checkbox: 'box', TextInput: 'frame', TextArea: 'frame', Select: 'frame', PasswordInput: 'frame', NumberInput: 'frame', Search: 'frame', ExpandableSearch: 'frame', TimePicker: 'frame', Slider: 'thumb', MultiSelect: 'frame', FilterableMultiSelect: 'frame' });
+const RING_PARTS = Object.freeze({ Button: ['root'], IconButton: ['root'], Checkbox: ['box', 'outline', 'fill'], TextInput: ['frame', 'edge'], TextArea: ['frame', 'edge'], Select: ['frame', 'edge'], PasswordInput: ['frame', 'edge', 'toggleFace'], NumberInput: ['frame', 'edge', 'decrementFace', 'incrementFace'], Search: ['frame', 'edge', 'clearFace'], ExpandableSearch: ['frame', 'triggerFace', 'clearFace'], TimePicker: ['frame', 'edge'], Slider: ['thumb', 'frame'], MultiSelect: ['frame', 'ring'], FilterableMultiSelect: ['frame', 'ring'] });
 // How far outside the cell body a pixel is compared (the cell chrome lies beyond)
 const OUTSIDE = 12;
 // Properties the pixels answer instead of the CSS that draws them
 const PIXEL_PROPERTIES = Object.freeze(['outline', 'boxShadow']);
 const RING_BORDER = Object.freeze(['borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderBottomColor']);
+
+// A clear button has no menu-opening phase even when its owning field does.
+export function targetInteractions (target, fallback) {
+  return Array.isArray(target.interactions) ? target.interactions : fallback;
+}
 
 
 /********************************************************************
@@ -294,15 +299,15 @@ async function collect (page, component, reference, side, masks) {
   // is anchored on (the painted face, not the enlarged invisible pressable)
   const anchors = {};
   const failures = [];
-  const shoot = async function (label, key) {
-    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations);
+  const shoot = async function (label, key, preserveViewport) {
+    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, preserveViewport);
     samplePaint(states[key], shots[key], Object.keys(masks || {}).map(function (name) {
       return states[key][name];
     }));
     if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
       // No margin: the part's own pixels are compared, without the backdrop
       // that differs under it (a fixed layer's, a top-layered element's)
-      originShots[key] = await shootPart(page, component.name, label, originSelector, 0, pauseAnimations);
+      originShots[key] = await shootPart(page, component.name, label, originSelector, 0, pauseAnimations, preserveViewport);
     }
   };
   for (const label of Object.keys(rest)) {
@@ -320,7 +325,8 @@ async function collect (page, component, reference, side, masks) {
   const leave = function () {
     return leaveInteraction(page, {
       escape: reference.escapeOnLeave !== false,
-      releaseBeforeMove: reference.releaseBeforeMove === true
+      releaseBeforeMove: reference.releaseBeforeMove === true,
+      clickOutside: reference.clickOutsideOnLeave === true
     });
   };
   if (reference.target) {
@@ -336,7 +342,7 @@ async function collect (page, component, reference, side, masks) {
         }
         const read = await readParts(page, component.name, parts, side, origin, { extended: true, only: entry.label, pauseAnimations: pauseAnimations });
         states[key] = read[entry.label];
-        await shoot(entry.label, key);
+        await shoot(entry.label, key, true);
         await leave();
       }
     }
@@ -353,16 +359,16 @@ async function collect (page, component, reference, side, masks) {
       })
       : enabled;
     for (const entry of list) {
-      for (const interaction of interactions) {
+      for (const interaction of targetInteractions(extra, interactions)) {
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
         const key = entry.label + ' @' + extra.name + ' ' + interaction;
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(key + ': additional target "' + extra.name + '" not found on ' + side);
           continue;
         }
         const read = await readParts(page, component.name, parts, side, origin, { extended: true, only: entry.label, pauseAnimations: pauseAnimations });
         states[key] = read[entry.label];
-        await shoot(entry.label, key);
+        await shoot(entry.label, key, true);
         if (typeof extra.anchor === 'string') {
           anchors[key] = extra.anchor;
         }

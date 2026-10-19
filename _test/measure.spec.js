@@ -28,6 +28,7 @@ import React from 'react';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
+import { targetInteractions } from './harness/fidelity.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts } from './harness/page.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
@@ -110,7 +111,8 @@ async function drawnParts (page, component, reference, side, extended, states) {
   const leave = function () {
     return leaveInteraction(page, {
       escape: reference.escapeOnLeave !== false,
-      releaseBeforeMove: reference.releaseBeforeMove === true
+      releaseBeforeMove: reference.releaseBeforeMove === true,
+      clickOutside: reference.clickOutsideOnLeave === true
     });
   };
   const read = async function (label) {
@@ -141,12 +143,12 @@ async function drawnParts (page, component, reference, side, extended, states) {
       })
       : enabled;
     for (const entry of list) {
-      for (const interaction of interactions) {
+      for (const interaction of targetInteractions(extra, interactions)) {
         if (drawn.size === Object.keys(parts).length) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction)) {
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(entry.label + ' @' + extra.name + ' ' + interaction + ': additional target "' + extra.name + '" not found on ' + side);
           continue;
         }

@@ -36,7 +36,8 @@ export async function openShowcase (page, template, component, options) {
   const query = '?template=' + template + (component ? '&component=' + component : '') +
     (options && options.measure ? '&measure=1' : '') + (options && options.sheet ? '&sheet=1' : '') +
     (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
-    (options && options.hosted === false ? '&hosted=0' : '');
+    (options && options.hosted === false ? '&hosted=0' : '') +
+    (options && options.rootHost === true ? '&rootHost=1' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.__showcase && window.__showcase.ready === true;
@@ -503,10 +504,11 @@ off the element before it is released (so nothing toggles or opens),
 focus leaves, and an opened popup is dismissed.
 
 @param {Object} page        - Playwright page
-@param {Object} [options]   - { escape }: false skips the Escape key alone,
+@param {Object} [options]   - { escape, clickOutside }: false escape skips the Escape key alone,
                               for a reference where Escape is the
                               component's own action, not fixture reset;
-                              pointer release, blur and the settle wait stay
+                              pointer release, blur and the settle wait stay;
+                              clickOutside explicitly dismisses at the blank fixture origin
 
 @return {Promise<void>}
 *********************************************************************/
@@ -522,6 +524,9 @@ export async function leaveInteraction (page, options) {
   }
   if (options === undefined || options === null || options.escape !== false) {
     await page.keyboard.press('Escape');
+  }
+  if (options && options.clickOutside === true) {
+    await page.mouse.click(0, 0);
   }
   await page.evaluate(function () {
     let active = document.activeElement;
@@ -668,7 +673,7 @@ hidden first, so a shot carries this cell's own painting only.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell is absent
 *********************************************************************/
-export async function shootCell (page, name, state, margin, pauseAnimations) {
+export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   if (await body.count() === 0) {
@@ -680,9 +685,11 @@ export async function shootCell (page, name, state, margin, pauseAnimations) {
     await pauseCellAnimations(body);
   }
   // Centered in the viewport, so the margin on every side is inside the picture
-  await body.evaluate(function (element) {
-    element.scrollIntoView({ block: 'center', inline: 'center' });
-  });
+  if (preserveViewport !== true) {
+    await body.evaluate(function (element) {
+      element.scrollIntoView({ block: 'center', inline: 'center' });
+    });
+  }
   const box = await body.boundingBox();
   await hideOutsideLayers(body);
   let shot;
@@ -713,7 +720,7 @@ that the cell shot cannot hold.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell or its part is absent
 *********************************************************************/
-export async function shootPart (page, name, state, selector, margin, pauseAnimations) {
+export async function shootPart (page, name, state, selector, margin, pauseAnimations, preserveViewport) {
 
   if (pauseAnimations === true) {
     const cellBody = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
@@ -747,9 +754,11 @@ export async function shootPart (page, name, state, selector, margin, pauseAnima
     await handle.dispose();
     return null;
   }
-  await element.evaluate(function (node) {
-    node.scrollIntoView({ block: 'center', inline: 'center' });
-  });
+  if (preserveViewport !== true) {
+    await element.evaluate(function (node) {
+      node.scrollIntoView({ block: 'center', inline: 'center' });
+    });
+  }
   const box = await element.boundingBox();
   await handle.dispose();
   if (box === null) {

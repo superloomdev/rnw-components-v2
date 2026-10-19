@@ -60,7 +60,7 @@ export default function Dropdown (ctx) {
       focused: state.focused === true,
       // While the open list carries the highlight its ring moves onto the
       // highlighted option and the field's own ring rests
-      highlighted: state.highlightedIndex >= 0,
+      highlighted: state.open === true && state.highlightedIndex >= 0,
       hovered: state.hovered === true,
       invalid: invalid,
       open: state.open === true,

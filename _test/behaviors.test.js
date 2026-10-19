@@ -42,10 +42,10 @@ const EXPECTED_NAMES = [
   'getA11yLive', 'getA11yPosition', 'getA11yRelation', 'getA11yState', 'getA11yValue',
   'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets', 'getSearchHandlers',
   'isLabelMatch', 'isRtl',
-  'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox',
+  'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox', 'useCombobox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
-  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useNumberInput', 'useOverlay', 'useOverlayHost',
+  'useLayerSpace', 'useLiveRegionHost', 'useMenuCollection', 'useMenuPosition', 'useMultiSelect', 'useNumberInput', 'useOverlay', 'useOverlayHost',
   'usePopoverDismiss', 'usePressKeys', 'useRadioGroup', 'useReducedMotion', 'useResponsiveStack',
   'useRovingTabIndex', 'useSectionLevel', 'useSelect', 'useSlider', 'useTabsState', 'useTextField',
   'useTimePickerDraft', 'useTimedFlag', 'useViewportLayer', 'useViewportSize'
@@ -78,6 +78,8 @@ const STATEFUL_PROPS = {
   useButton: { children: 'Go' },
   useCheckbox: { label: 'Agree' },
   useSelect: { items: [{ value: 'a', label: 'A' }] },
+  useCombobox: { items: [{ value: 'a', label: 'A' }], defaultValue: 'a' },
+  useMultiSelect: { items: [{ value: 'a', label: 'A' }], defaultValue: ['a'] },
   useDisclosure: {},
   useFocusState: {},
   useInteractionState: {},
@@ -213,8 +215,18 @@ describe('behaviors: every stateful hook returns { ...propGetters, state } match
       assert.ok(result !== null && 'state' in result, name + ' returns a state object');
       assert.deepEqual(Object.keys(result.state).sort(), [...behaviors[name].stateKeys].sort(),
         name + ': rendered state keys must equal the published stateKeys');
+      if (name === 'useSelect' || name === 'useCombobox') {
+        assert.ok(Array.isArray(result.items), name + '.items must be the current option array');
+      }
+      if (name === 'useMultiSelect') {
+        assert.ok(Array.isArray(result.items), 'useMultiSelect.items must be the displayed option array');
+        assert.ok(Array.isArray(result.selectedValues), 'useMultiSelect.selectedValues must be an array');
+      }
       for (const key of Object.keys(result)) {
-        if (key !== 'state') {
+        // These two choice hooks explicitly declare extra data results.
+        const choiceData = (name === 'useSelect' || name === 'useCombobox') &&
+          (key === 'value' || key === 'items');
+        if (key !== 'state' && !choiceData) {
           assert.ok(['function', 'object'].includes(typeof result[key]),
             name + '.' + key + ' must be a prop getter, handler or props object, not a bare value');
         }
@@ -816,8 +828,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds the eighteen behavior files plus the composer', function () {
-    assert.equal(files.length, 20);
+  test('the directory holds twenty-one behavior family files plus the composer', function () {
+    assert.equal(files.length, 22);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {

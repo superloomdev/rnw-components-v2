@@ -3,7 +3,15 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
 
-import { compareProfiles, cropTo, maskOmitted, profileOf, samplePaint } from './harness/fidelity.js';
+import { compareProfiles, cropTo, maskOmitted, profileOf, samplePaint, targetInteractions } from './harness/fidelity.js';
+
+test('additional targets use their own declared phases', function () {
+  const all = ['hover', 'focus', 'pressed', 'open'];
+  assert.deepEqual(targetInteractions({ interactions: ['hover', 'focus', 'pressed'] }, all),
+    ['hover', 'focus', 'pressed'], 'a clear action must not receive a field-opening click');
+  assert.deepEqual(targetInteractions({ interactions: [] }, all), []);
+  assert.equal(targetInteractions({}, all), all);
+});
 
 
 function image (width, height) {

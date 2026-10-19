@@ -1380,33 +1380,6 @@
       "status": "built"
     },
     {
-      "name": "FloatingActionButton",
-      "family": "FloatingActionButton",
-      "tier": "molecule",
-      "source": {
-        "package": "@material/web",
-        "version": "2.5.0",
-        "export": "MdFab"
-      },
-      "description": "FloatingActionButton is the composed primary action whose Carbon twin is BottomToolbarPrimaryAction.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@material/web"
-      },
-      "carbon_twin": "none",
-      "material_twin": "md-fab",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
       "name": "Form",
       "family": "Form",
       "tier": "molecule",
@@ -2376,40 +2349,6 @@
       "status": "pending"
     },
     {
-      "name": "ComboBox",
-      "family": "Select",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "ComboBox"
-      },
-      "description": "ComboBox is a component in the Select family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "overlay",
-        "keyboard"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ComboBox",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
       "name": "DropdownSkeleton",
       "family": "Select",
       "tier": "composite",
@@ -2418,20 +2357,13 @@
         "version": "1.115.0",
         "export": "DropdownSkeleton"
       },
-      "description": "DropdownSkeleton is a component in the Select family.",
+      "description": "A fixed-height loading placeholder for a dropdown, with an optional label bar.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "overlay",
-        "keyboard"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -2441,41 +2373,34 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
-      "name": "FilterableMultiSelect",
+      "name": "SelectSkeleton",
       "family": "Select",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "FilterableMultiSelect"
+        "export": "SelectSkeleton"
       },
-      "description": "FilterableMultiSelect is a component in the Select family.",
+      "description": "A fixed-height loading placeholder for a select field, with an optional label bar.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "overlay",
-        "keyboard"
-      ],
+      "enums": [],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "FilterableMultiSelect",
+      "carbon_twin": "SelectSkeleton",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MultiSelect",
@@ -2486,7 +2411,7 @@
         "version": "1.115.0",
         "export": "MultiSelect"
       },
-      "description": "MultiSelect is a component in the Select family.",
+      "description": "A multiple-choice field with value-keyed checkbox options and a clearable selection count; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2508,8 +2433,75 @@
       "carbon_twin": "MultiSelect",
       "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
+    },
+    {
+      "name": "FilterableMultiSelect",
+      "family": "Select",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "FilterableMultiSelect"
+      },
+      "description": "A multiple-choice field whose editable query filters options without discarding selections; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "anatomy.label",
+        "feedback.field"
+      ],
+      "behaviors": [
+        "controllable-state",
+        "overlay",
+        "keyboard"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "FilterableMultiSelect",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
+    },
+    {
+      "name": "Layer",
+      "family": "Layer",
+      "tier": "provider",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Layer"
+      },
+      "description": "Layer raises the surface level of everything inside it, so the theme's layered surfaces, fields and borders step up one level, and paints the new level's background when asked; the second system has no layer element, so its level values are a Superloom decision.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "Layer",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "SelectItem",
@@ -2585,15 +2577,15 @@
       "status": "pending"
     },
     {
-      "name": "SelectSkeleton",
+      "name": "ComboBox",
       "family": "Select",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "SelectSkeleton"
+        "export": "ComboBox"
       },
-      "description": "SelectSkeleton is a component in the Select family.",
+      "description": "ComboBox is a component in the Select family.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2612,22 +2604,22 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "SelectSkeleton",
+      "carbon_twin": "ComboBox",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
     },
     {
-      "name": "Layer",
-      "family": "Layer",
-      "tier": "provider",
+      "name": "FloatingActionButton",
+      "family": "FloatingActionButton",
+      "tier": "molecule",
       "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Layer"
+        "package": "@material/web",
+        "version": "2.5.0",
+        "export": "MdFab"
       },
-      "description": "Layer raises the surface level of everything inside it, so the theme's layered surfaces, fields and borders step up one level, and paints the new level's background when asked; the second system has no layer element, so its level values are a Superloom decision.",
+      "description": "FloatingActionButton is the composed primary action whose Carbon twin is BottomToolbarPrimaryAction.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2637,15 +2629,13 @@
       "parent": null,
       "reference": {
         "kind": "render-web",
-        "package": "@carbon/react"
+        "package": "@material/web"
       },
-      "carbon_twin": "Layer",
-      "material_twin": "none",
+      "carbon_twin": "none",
+      "material_twin": "md-fab",
       "diff_budget": 2,
-      "flags": [
-        "superloom_decision"
-      ],
-      "status": "built"
+      "flags": [],
+      "status": "pending"
     },
     {
       "name": "IconSwitch",

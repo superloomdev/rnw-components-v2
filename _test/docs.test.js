@@ -66,7 +66,8 @@ describe('docs: generated pages', function () {
       'CheckboxGroup:320', 'CheckboxSkeleton:320', 'NumberInput:320', 'NumberInputSkeleton:320',
       'RadioButtonGroup:320', 'RadioButtonSkeleton:320', 'ExpandableSearch:320', 'Search:320',
       'SearchSkeleton:320', 'Slider:640', 'SliderSkeleton:640', 'PasswordInput:320', 'TextAreaSkeleton:320', 'TextInputSkeleton:320',
-      'TimePicker:320', 'TimePickerSelect:320']);
+      'TimePicker:320', 'TimePickerSelect:320', 'DropdownSkeleton:320', 'SelectSkeleton:320',
+      'MultiSelect:320', 'FilterableMultiSelect:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

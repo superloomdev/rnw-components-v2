@@ -21,6 +21,28 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 
 The select family's other member: the same field frame, trigger, label and message, but the open list reads the theme's `list` role cells in full - its container, item heights, dividers inside the inline padding, label colors by state, block padding, radius and shadow - and marks the selected item with the `selected_indicator` icon where `anatomy.list_selected_mark` says so (shown under the primary reference's template, hidden under the second's). The mark's seat mounts on every item under every template and only its drawing changes, so the accessibility tree is the same everywhere. The indicator turns 180 degrees while open. `open` is controllable like `value`, reporting through `onOpenChange`.
 
+### SelectSkeleton
+
+The select field's loading shape: an optional label placeholder over a field-height placeholder, drawn by the shared field-skeleton parts the family's other skeletons use. The block's height is the theme's `control.field_height` - the primary reference's select skeleton is a fixed 40px with no size variant (`select/_select.scss:317-327`), so there is no `size` prop. The second reference has no skeleton; the primary reference alone is measured.
+
+### DropdownSkeleton
+
+The dropdown's loading shape: the same label bar and field-height block. The primary reference marks its whole form wrapper with the skeleton class (`Dropdown.Skeleton.js:23-27`), but the skeleton mixin is emitted per component (`_dropdown.scss:489-492` matches `.cds--dropdown.cds--skeleton` only) - no compiled rule answers the bare `cds--skeleton` class, so the rendered wrapper stays transparent and the gap between the bars shows the page, exactly as upstream draws it. The upstream `size` prop is excluded: it emits a `cds--list-box--{size}` class no compiled rule answers (`_dropdown.scss` carries `cds--dropdown--sm`/`--lg`, never on the skeleton), so upstream's block stays 40px whatever the size - an inert prop, not a variant.
+
+### MultiSelect
+
+The family's multiple-choice field: a frame row of an optional selection-count member and a combobox control, an option list where every row carries a decorative checkbox member and toggles without closing, and a live region that announces each committed count. The selected values are keyed by `items` value, never by row position; a selection the current list cannot show stays selected until the count member's clear empties it. Selected rows order ahead of unselected ones, and within each partition the items keep the host's own order; during an open session that order is a snapshot, so a toggled row never jumps under the pointer.
+
+The count member is the dismissible tag's composition surface carrying the source's high-contrast palette - the existing `background_inverse`, `text_inverse`, `icon_inverse`, `background_inverse_hover` and `focus_inverse` leaves, `layer_01`, `text_disabled` and `icon_disabled` while disabled, and no tooltip because the control's `title` already names it. The second system has no multiple-choice field, so that member's treatment is a Superloom decision - the roster row's `superloom_decision` flag. The option checkbox is a presentation-only member of the same kind: it keeps its paint but answers no input, the option row being the one active surface.
+
+The option block's text inset is the source's twenty-eight-pixel checkbox label padding plus its ten-pixel text padding, thirty-eight total, not the twenty-eight cell alone. The first highlighted row draws the source's own mounted border - the field focus width on the sides and bottom, one pixel on top - when the count member shows, where every other highlighted row takes the ordinary field focus ring. `open` is controllable like the selection, reporting through `onOpenChange`; the source's closed Escape clears the selection where ours claims nothing, so the fixture's dismissal is an outside click.
+
+### FilterableMultiSelect
+
+The query-bearing form of the same field: the control is an editable input and its text filters the open list through `shouldFilterItem`, defaulting to case-insensitive label inclusion. Filtering changes which rows display, never which values are selected - the count member still clears the whole selection, including rows the current query hides. The query is its own channel (`inputValue`/`defaultInputValue`/`onInputChange`), independent of the selection array.
+
+The source's variants stay unported: there is no `select-all` row or mixed selection state, no `readOnly`, `warn`, `inline` or `upward` variant, as the carried contract keeps the field's one anatomy. The family's remaining rows (`SelectItem`, `SelectItemGroup`, `ComboBox` and `FloatingActionButton`) are deferred pending the next helper cell set; they stay pending and keep their roster places.
+
 ### Platform
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.
@@ -99,6 +121,224 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 | unlabelled | `{"accessibilityLabel":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}]}` |
 | open | `{"label":"Size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"value":"medium","open":true}` |
 
+## DropdownSkeleton
+
+A fixed-height loading placeholder for a dropdown, with an optional label bar.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `hideLabel` | `boolean` | no | Skips the label placeholder. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `labelHeight` | `control.field_skeleton_label_height` |
+| `labelWidth` | `control.field_skeleton_label_width` |
+| `labelGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| hideLabel | `{"hideLabel":true}` |
+
+## FilterableMultiSelect
+
+A multiple-choice field whose editable query filters options without discarding selections; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | Flat options `{ value, label, disabled? }`; values are unique strings or finite numbers and labels are strings. |
+| `value` | `array` | no | Controlled selected values; empty is `[]`. Unavailable values remain selected until explicitly cleared. |
+| `defaultValue` | `array` | no | Initial uncontrolled selected values; applied once, else `[]`. |
+| `onChange` | `function` | no | Requests the next fresh selected-value array after a user toggle or clear. |
+| `label` | `string` | no | Visible label naming the field; absent requires `accessibilityLabel`. |
+| `accessibilityLabel` | `string` | no | Accessible field name when no visible label is supplied. |
+| `placeholder` | `string` | no | Field prompt. Default empty. |
+| `open` | `boolean` | no | Controlled open state; absent the field opens and closes itself. |
+| `onOpenChange` | `function` | no | Requests the next open state; matching states do not notify again. |
+| `size` | `string` | no | `sm`, `md` (default) or `lg`, sizing both field and option rows. |
+| `disabled` | `boolean` | no | Closes the list and blocks all activation, text and clear requests. |
+| `invalid` | `boolean` | no | Draws the error treatment and announces invalid while enabled. |
+| `invalidText` | `string` | no | Error message below the field while invalid. |
+| `helperText` | `string` | no | Supporting text below the field while not invalid. |
+| `clearLabel` | `string` | no | Accessible count-chip clear name. Default `Clear selection`. |
+| `selectionCountLabel` | `function` | no | Formats the committed selected-count announcement; must return a string. |
+| `clearAnnouncement` | `string` | no | Live-region text after the committed selection becomes empty. Default `All items cleared`. |
+| `surface` | `string` | no | Surface leaf used by the floating-label notch; defaults to `FIELD_SURFACE`, else `background`. |
+| `testID` | `string` | no | Test identifier on the field root. |
+| `inputValue` | `string` | no | Controlled filter text, independent of selected values. |
+| `defaultInputValue` | `string` | no | Initial uncontrolled filter text; applied once, else empty. |
+| `onInputChange` | `function` | no | Requests the next text from user editing or clear, not from external prop echoes. |
+| `shouldFilterItem` | `function` | no | Predicate `({ item, inputValue }) => boolean`; default case-insensitive label inclusion. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `iconZone` | `size.size_xsmall` |
+| `iconInset` | `spacing.spacing_04` |
+| `invalidIconInset` | `spacing.spacing_08` |
+| `inputPaddingEnd` | `spacing.spacing_09` |
+| `inputPaddingEndInvalid` | `spacing.spacing_10` |
+| `inputEdge` | `border.width_02` |
+| `restingEdge` | `control.field_outline_width` |
+| `rowPaddingInline` | `control.list_item_padding_inline` |
+| `rowDividerWidth` | `control.list_item_divider_width` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
+| `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
+| `countStart` | `spacing.spacing_05` |
+| `countEnd` | `spacing.spacing_03` |
+| `countCloseGap` | `control.tag_close_gap` |
+| `countPaddingStart` | `control.tag_padding_inline` |
+| `labelInset` | `spacing.spacing_01` |
+| `optionTextInset` | sum of `control.multi_select_checkbox_inset`, `spacing.spacing_03`, `spacing.spacing_01` |
+| `checkboxSize` | `control.checkbox_size` |
+| `firstRingTopWidth` | `border.width_01` |
+| `highlightedFieldRingWidth` | `border.width_01` |
+| `announceSize` | `border.width_01` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}]}` |
+| selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"]}` |
+| uncontrolled selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"defaultValue":["beta"]}` |
+| two selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["alpha","beta"]}` |
+| helper | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"helperText":"Choose any items"}` |
+| invalid | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"invalid":true,"invalidText":"Invalid value"}` |
+| disabled | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["alpha","beta"],"disabled":true}` |
+| small | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"size":"sm"}` |
+| large | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"size":"lg"}` |
+| unlabelled | `{"accessibilityLabel":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"]}` |
+| long list | `{"label":"Choice","placeholder":"Choose","items":[{"value":"item-1","label":"Item 1"},{"value":"item-2","label":"Item 2"},{"value":"item-3","label":"Item 3"},{"value":"item-4","label":"Item 4"},{"value":"item-5","label":"Item 5"},{"value":"item-6","label":"Item 6"},{"value":"item-7","label":"Item 7"},{"value":"item-8","label":"Item 8"},{"value":"item-9","label":"Item 9"},{"value":"item-10","label":"Item 10"},{"value":"item-11","label":"Item 11"},{"value":"item-12","label":"Item 12"}]}` |
+| open | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"open":true}` |
+
+## MultiSelect
+
+A multiple-choice field with value-keyed checkbox options and a clearable selection count; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | Flat options `{ value, label, disabled? }`; values are unique strings or finite numbers and labels are strings. |
+| `value` | `array` | no | Controlled selected values; empty is `[]`. Unavailable values remain selected until explicitly cleared. |
+| `defaultValue` | `array` | no | Initial uncontrolled selected values; applied once, else `[]`. |
+| `onChange` | `function` | no | Requests the next fresh selected-value array after a user toggle or clear. |
+| `label` | `string` | no | Visible label naming the field; absent requires `accessibilityLabel`. |
+| `accessibilityLabel` | `string` | no | Accessible field name when no visible label is supplied. |
+| `placeholder` | `string` | no | Field prompt. Default empty. |
+| `open` | `boolean` | no | Controlled open state; absent the field opens and closes itself. |
+| `onOpenChange` | `function` | no | Requests the next open state; matching states do not notify again. |
+| `size` | `string` | no | `sm`, `md` (default) or `lg`, sizing both field and option rows. |
+| `disabled` | `boolean` | no | Closes the list and blocks all activation, text and clear requests. |
+| `invalid` | `boolean` | no | Draws the error treatment and announces invalid while enabled. |
+| `invalidText` | `string` | no | Error message below the field while invalid. |
+| `helperText` | `string` | no | Supporting text below the field while not invalid. |
+| `clearLabel` | `string` | no | Accessible count-chip clear name. Default `Clear selection`. |
+| `selectionCountLabel` | `function` | no | Formats the committed selected-count announcement; must return a string. |
+| `clearAnnouncement` | `string` | no | Live-region text after the committed selection becomes empty. Default `All items cleared`. |
+| `surface` | `string` | no | Surface leaf used by the floating-label notch; defaults to `FIELD_SURFACE`, else `background`. |
+| `testID` | `string` | no | Test identifier on the field root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `iconZone` | `size.size_xsmall` |
+| `iconInset` | `spacing.spacing_04` |
+| `invalidIconInset` | `spacing.spacing_08` |
+| `inputPaddingEnd` | `spacing.spacing_09` |
+| `inputPaddingEndInvalid` | `spacing.spacing_10` |
+| `inputEdge` | `border.width_02` |
+| `restingEdge` | `control.field_outline_width` |
+| `rowPaddingInline` | `control.list_item_padding_inline` |
+| `rowDividerWidth` | `control.list_item_divider_width` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
+| `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
+| `countStart` | `spacing.spacing_05` |
+| `countEnd` | `spacing.spacing_03` |
+| `countCloseGap` | `control.tag_close_gap` |
+| `countPaddingStart` | `control.tag_padding_inline` |
+| `labelInset` | `spacing.spacing_01` |
+| `optionTextInset` | sum of `control.multi_select_checkbox_inset`, `spacing.spacing_03`, `spacing.spacing_01` |
+| `checkboxSize` | `control.checkbox_size` |
+| `firstRingTopWidth` | `border.width_01` |
+| `highlightedFieldRingWidth` | `border.width_01` |
+| `announceSize` | `border.width_01` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}]}` |
+| selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"]}` |
+| uncontrolled selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"defaultValue":["beta"]}` |
+| two selected | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["alpha","beta"]}` |
+| helper | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"helperText":"Choose any items"}` |
+| invalid | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"invalid":true,"invalidText":"Invalid value"}` |
+| disabled | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["alpha","beta"],"disabled":true}` |
+| small | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"size":"sm"}` |
+| large | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"size":"lg"}` |
+| unlabelled | `{"accessibilityLabel":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"]}` |
+| long list | `{"label":"Choice","placeholder":"Choose","items":[{"value":"item-1","label":"Item 1"},{"value":"item-2","label":"Item 2"},{"value":"item-3","label":"Item 3"},{"value":"item-4","label":"Item 4"},{"value":"item-5","label":"Item 5"},{"value":"item-6","label":"Item 6"},{"value":"item-7","label":"Item 7"},{"value":"item-8","label":"Item 8"},{"value":"item-9","label":"Item 9"},{"value":"item-10","label":"Item 10"},{"value":"item-11","label":"Item 11"},{"value":"item-12","label":"Item 12"}]}` |
+| open | `{"label":"Choice","placeholder":"Choose","items":[{"value":"alpha","label":"Alpha"},{"value":"beta","label":"Beta"},{"value":"gamma","label":"Gamma"},{"value":"delta","label":"Delta","disabled":true}],"value":["beta"],"open":true}` |
+
 ## Select
 
 Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every color, width, space and type set of the frame comes from the theme's field role cells.
@@ -164,3 +404,39 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 | small | `{"label":"Size","placeholder":"Small","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"sm"}` |
 | large | `{"label":"Size","placeholder":"Large","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"lg"}` |
 | unlabelled | `{"accessibilityLabel":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}]}` |
+
+## SelectSkeleton
+
+A fixed-height loading placeholder for a select field, with an optional label bar.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `hideLabel` | `boolean` | no | Skips the label placeholder. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `labelHeight` | `control.field_skeleton_label_height` |
+| `labelWidth` | `control.field_skeleton_label_width` |
+| `labelGap` | `spacing.spacing_03` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+| hideLabel | `{"hideLabel":true}` |

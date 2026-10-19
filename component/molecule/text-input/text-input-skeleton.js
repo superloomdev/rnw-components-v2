@@ -8,8 +8,7 @@
 // carries nothing else.
 
 import SPEC from './spec.text-input-skeleton.js';
-
-const PCT = '%';
+import createFieldSkeletonParts from './field-skeleton-parts.js';
 
 
 /********************************************************************
@@ -21,8 +20,7 @@ TextInputSkeleton factory.
 *********************************************************************/
 export default function TextInputSkeleton (ctx) {
 
-  const React = ctx.React;
-  const { View } = ctx.ReactNative;
+  const { renderFieldSkeleton } = createFieldSkeletonParts(ctx);
 
   // Size -> height metric in the spec sheet
   const SIZES = Object.freeze({ sm: 'heightSmall', md: 'height', lg: 'heightLarge' });
@@ -37,23 +35,12 @@ export default function TextInputSkeleton (ctx) {
   *********************************************************************/
   function TextInputSkeletonComponent (props) {
 
-    return React.createElement(View, {
-      style: { alignSelf: 'stretch' },
+    return renderFieldSkeleton('TextInputSkeleton', {
+      heightKey: SIZES[props.size] || 'height',
+      hideLabel: props.hideLabel,
+      prefix: 'text-input-skeleton',
       testID: props.testID
-    },
-    props.hideLabel === true ? null : React.createElement(View, {
-      style: { marginBottom: ctx.metric('TextInputSkeleton', 'labelGap') }
-    },
-    React.createElement(ctx.Registry.SkeletonPlaceholder, {
-      height: ctx.metric('TextInputSkeleton', 'labelHeight'),
-      testID: 'text-input-skeleton-label',
-      width: ctx.metric('TextInputSkeleton', 'labelWidth')
-    })),
-    React.createElement(ctx.Registry.SkeletonPlaceholder, {
-      height: ctx.metric('TextInputSkeleton', SIZES[props.size] || 'height'),
-      testID: 'text-input-skeleton-field',
-      width: 100 + PCT
-    }));
+    });
 
   }
 

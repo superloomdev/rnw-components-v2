@@ -176,6 +176,19 @@ describe('DismissibleTag: the close control interacts', function () {
     assert.equal(parts.face.style.boxShadow, cssValue('boxShadow', 'inset 0 0 0 ' + t['border.width_01'] + 'px ' + t['color.tag_close_focus_ring']));
   });
 
+  test('the start padding seam overrides, zeros and falls back', async function () {
+    const t = buildNative('carbon').tokens;
+    // The host override answers for its member's legacy leading edge; an
+    // explicit zero is honored; absent, the tag's own size logic stands -
+    // the standalone large keeps its large inline padding
+    const wide = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg', paddingStart: 8 });
+    assert.equal(wide.root.style.paddingLeft, '8px');
+    const zero = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg', paddingStart: 0 });
+    assert.equal(zero.root.style.paddingLeft, '0px');
+    const plain = await renderDismissible(registryFor('carbon'), { text: 'T', title: 'D', size: 'lg' });
+    assert.equal(plain.root.style.paddingLeft, t['spacing.spacing_04'] + 'px', 'the standalone large keeps its large padding');
+  });
+
   test('the inset close uses its own zero focus offset', async function () {
     const t = buildNative('material').tokens;
     const parts = await renderDismissible(registryFor('material'), { text: 'T', title: 'Dismiss' });
