@@ -114,9 +114,9 @@ describe('IconButton: every sample state under every template', function () {
         assert.equal(parts.icon.getAttribute('height'), String(t['control.icon_button_icon_size']));
         assert.equal(parts.icon.getAttribute('fill'), t['color.' + iconLeaf]);
 
-        // The target over the face is never smaller than the platform's
-        // forty-four point minimum
-        const target = Math.max(44, side);
+        // The target over the face is never smaller than the theme's
+        // minimum press target
+        const target = Math.max(t['control.target_min'], side);
         assert.equal(parts.root.style.width, target + 'px');
         assert.equal(parts.root.style.height, target + 'px');
 

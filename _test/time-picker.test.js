@@ -133,7 +133,7 @@ describe('TimePicker: the field contract', function () {
     const tokens = buildNative('carbon').tokens;
     // Both members draw the large height
     assert.equal(Number.parseFloat(input.parentElement.style.minHeight) || Number.parseFloat(input.parentElement.style.height), tokens['size.size_large']);
-    assert.equal(Number.parseFloat(select.parentElement.style.height), tokens['size.size_large'], 'member inherits the parent size');
+    assert.equal(Number.parseFloat(select.parentElement.style.minHeight) || Number.parseFloat(select.parentElement.style.height), tokens['size.size_large'], 'member inherits the parent size');
   });
 
   test('an explicit member size wins over the parent, including md', async function () {
@@ -143,7 +143,7 @@ describe('TimePicker: the field contract', function () {
       React.createElement(Registry.TimePickerSelect, { items: PERIOD, size: 'md' }),
       React.createElement(Registry.TimePickerSelect, { items: PERIOD })));
     const frames = Array.from(container.querySelectorAll('[role="combobox"]')).map(function (select) {
-      return Number.parseFloat(select.parentElement.style.height);
+      return Number.parseFloat(select.parentElement.style.minHeight) || Number.parseFloat(select.parentElement.style.height);
     });
     assert.equal(frames[0], tokens['control.field_height'], 'explicit md wins over the parent lg');
     assert.equal(frames[1], tokens['size.size_large'], 'an unmarked member inherits lg');

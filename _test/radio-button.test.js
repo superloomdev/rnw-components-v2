@@ -48,7 +48,10 @@ async function renderRadioButton (Registry, props) {
 
   const container = await render(React.createElement(Registry.RadioButton, props));
   const root = container.querySelector('[role="radio"]');
-  const wrap = root.children[0];
+  // The press layer is the painted row's last child; the row's first two
+  // children are the ring wrapper and the label
+  const row = root.parentElement;
+  const wrap = row.children[0];
 
   return {
     root: root,
@@ -56,7 +59,7 @@ async function renderRadioButton (Registry, props) {
     ring: wrap.children[0],
     layer: wrap.children[1],
     dot: wrap.children[2],
-    label: root.children[1]
+    label: row.children[1]
   };
 
 }
@@ -122,7 +125,7 @@ describe('RadioButton: every sample state under every template', function () {
 
         // Label
         assert.equal(parts.label.textContent, props.label);
-        assert.equal(parts.label.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
+        assert.equal(parts.label.style.fontSize, t['type.selection_label'].fontSize + 'px');
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'selection_label_disabled' : 'selection_label')]));
 
         // Accessibility answer

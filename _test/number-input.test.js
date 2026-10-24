@@ -95,14 +95,15 @@ describe('NumberInput: every sample state under every template', function () {
   for (const template of TEMPLATE_NAMES) {
     for (const state of SAMPLE) {
       test(template + ' / ' + state.label + ': spinbutton, steppers and bounds from the theme', async function () {
+        const t = buildNative(template).tokens;
         const parts = await renderField(registryFor(template), state.props);
         assert.equal(parts.input.getAttribute('role'), 'spinbutton');
         const hidden = state.props.hideSteppers === true;
         assert.equal(parts.increment !== null, !hidden, 'steppers present unless hideSteppers');
         assert.equal(parts.decrement !== null, !hidden, 'steppers present unless hideSteppers');
         if (!hidden) {
-          assert.ok(Number.parseFloat(parts.increment.style.width) >= 44);
-          assert.ok(Number.parseFloat(parts.decrement.style.width) >= 44);
+          assert.ok(Number.parseFloat(parts.increment.style.width) >= t['control.target_min']);
+          assert.ok(Number.parseFloat(parts.decrement.style.width) >= t['control.target_min']);
         }
         if (state.props.value !== undefined && state.props.value !== '') {
           assert.equal(parts.input.getAttribute('aria-valuenow'), String(state.props.value));

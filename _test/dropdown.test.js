@@ -127,7 +127,7 @@ describe('Dropdown: every sample state under every template', function () {
         const ring = t['control.field_invalid_ring_width'];
         const focusWidth = t['control.field_focus_width'];
         assert.equal(parts.frame.style.outlineWidth, focused && focusWidth > 0 && !highlightInList ? focusWidth + 'px' : invalid && ring > 0 ? ring + 'px' : '');
-        assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
+        assert.equal(parts.frame.style.minHeight, t[HEIGHTS[props.size || 'md']] + 'px');
         assert.equal(parts.frame.style.paddingLeft, (t['control.field_padding_inline'] - (outline ? width : 0)) + 'px');
         assert.equal(parts.frame.style.paddingRight, (t['spacing.spacing_04'] - (outline ? width : 0)) + 'px');
         assert.equal(parts.frame.style.borderBottomWidth, width + 'px');

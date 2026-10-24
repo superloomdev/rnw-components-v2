@@ -42,9 +42,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   const leveled = built.levels;
   const level = options === undefined || options === null || options.level === undefined ? 1 : options.level;
 
-  // The interactive target: the platforms' forty-four point minimum, wider
-  // than the smallest sizes' face
-  const MIN_TARGET = 44;
+  // The interactive target floor and the text scale: the theme's
+  // `control.target_min` (the host's chosen form class moves it) and the
+  // host's `textScale` clamped to `control.text_scale_max`
+  const targetMin = token('control.target_min');
+  const requestedScale = config === undefined || config === null || config.textScale === undefined ? 1 : config.textScale;
+  const textScale = Math.min(Math.max(requestedScale, 1), token('control.text_scale_max'));
 
 
   /********************************************************************
@@ -144,14 +147,20 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // Read the type set
     const set = token('type.' + name);
 
+    // Apply the host's text scale, clamped to the theme's declared maximum;
+    // scaling size, line height and tracking together keeps the web
+    // line-height ratio and every derived geometry intact
+    const fontSize = set.fontSize * textScale;
+    let lineHeight = set.lineHeight * textScale;
+    const letterSpacing = set.letterSpacing * textScale;
+
     // Resolve lineHeight on the host's physical pixel grid on native only
-    let lineHeight = set.lineHeight;
     if (platform.isNative) {
       const pixelRatio = Lib.ReactNative && Lib.ReactNative.PixelRatio;
       if (Utils.isNullOrUndefined(pixelRatio) || !Utils.isFunction(pixelRatio.roundToNearestPixel)) {
         throw new TypeError('ctx.typeStyle on native requires Lib.ReactNative.PixelRatio.roundToNearestPixel');
       }
-      lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);
+      lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(lineHeight);
       if (!Utils.isNumber(lineHeight) || !Number.isFinite(lineHeight)) {
         throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
       }
@@ -160,9 +169,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // Return the style with the family token resolved
     return {
       fontFamily: token('font.family.' + set.fontFamily),
-      fontSize: set.fontSize,
+      fontSize: fontSize,
       fontWeight: set.fontWeight,
-      letterSpacing: set.letterSpacing,
+      letterSpacing: letterSpacing,
       lineHeight: lineHeight
     };
 
@@ -518,7 +527,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   /********************************************************************
   The pressable style over a painted face: a transparent layer centered on
-  the face and no smaller than the platform's minimum target. A `null`
+  the face and no smaller than the theme's `control.target_min`. A `null`
   face - before the face's first layout - covers the face exactly. An
   `inlineExpansion` of 'start' or 'end' pushes the minimum out through the
   face's named logical edge instead of centering, so two adjacent faces can
@@ -543,8 +552,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       return { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 };
     }
 
-    const width = Math.max(MIN_TARGET, face.width);
-    const height = Math.max(MIN_TARGET, face.height);
+    const width = Math.max(targetMin, face.width);
+    const height = Math.max(targetMin, face.height);
     const style = {
       height: height,
       outlineStyle: 'none',
@@ -736,7 +745,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       borderColor: color(outline),
       borderRadius: options.radius,
       flexDirection: 'row',
-      height: options.height,
+      // A minimum, not a fixed height: a scaled text run grows the field
+      minHeight: options.height,
       position: 'relative'
     };
     if (mode === 'underline') {
@@ -832,9 +842,72 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     : options.behaviors;
 
 
+  /********************************************************************
+  A text component wrapper that switches the OS's own font scaling off: the
+  context already applies the host's `textScale` to every type set, so the
+  platform must not scale again. A caller's own `allowFontScaling` prop
+  still wins.
+
+  @param {Object} TextComponent - The injected React Native text component
+
+  @return {Function} - The wrapped component
+  *********************************************************************/
+  function withoutOsFontScaling (TextComponent) {
+
+    if (Utils.isNullOrUndefined(TextComponent)) {
+      return TextComponent;
+    }
+
+    function OsScalingOff (props) {
+      return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
+    }
+
+    OsScalingOff.displayName = 'OsScalingOff(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
+
+    return OsScalingOff;
+
+  }
+
+  // On native, OS font scaling is switched off centrally; on the web the
+  // injected React Native is the web build, which knows no such prop
+  const reactNative = platform.isNative
+    ? Object.assign({}, Lib.ReactNative, {
+      Text: withoutOsFontScaling(Lib.ReactNative.Text),
+      TextInput: withoutOsFontScaling(Lib.ReactNative.TextInput)
+    })
+    : Lib.ReactNative;
+
+  // The host's system-widget adapters and its diagnostic sink; `adapters`
+  // is an optional shared_lib ({ Switch, DateTimePicker, ... } - the
+  // components a `system` anatomy enum chooses instead of the drawn half)
+  const adapters = Lib.adapters === undefined ? {} : Lib.adapters;
+  const reportedDiagnostics = Lib.reportedDiagnostics;
+
+
+  /********************************************************************
+  Report one diagnostic to the host through `config.onDiagnostic`, once per
+  system build per distinct record. A host that declares no sink still gets
+  the fallback behavior the reporter chose.
+
+  @param {Object} record - e.g. { code, adapter, component }
+  *********************************************************************/
+  function diagnostic (record) {
+
+    const key = JSON.stringify(record);
+    if (reportedDiagnostics.has(key)) {
+      return;
+    }
+    reportedDiagnostics.add(key);
+    if (Utils.isFunction(config === undefined || config === null ? undefined : config.onDiagnostic)) {
+      config.onDiagnostic(record);
+    }
+
+  }
+
+
   return Object.freeze({
     React: Lib.React,
-    ReactNative: Lib.ReactNative,
+    ReactNative: reactNative,
     Svg: Lib.Svg,
     Utils: Utils,
     Debug: Lib.Debug,
@@ -846,8 +919,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     level: level,
     LayerContext: behaviors.LayerContext,
     DisabledContext: behaviors.DisabledContext,
+    adapters: Object.freeze(adapters),
     color: color,
     colorAt: colorAt,
+    diagnostic: diagnostic,
     enum: enumValue,
     fieldPresentation: fieldPresentation,
     focusRing: focusRing,

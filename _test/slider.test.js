@@ -338,7 +338,7 @@ describe('Slider: every sample state under every template', function () {
         } else {
           assert.equal(node.thumb.getAttribute('tabindex'), '0', template);
         }
-        assert.ok(Number.parseFloat(node.thumb.style.width) >= 44, template + ': thumb is the press target');
+        assert.ok(Number.parseFloat(node.thumb.style.width) >= t['control.target_min'], template + ': thumb is the press target');
         if (hiddenLabel) {
           assert.equal(node.thumb.getAttribute('aria-label'), props.accessibilityLabel, template);
         } else {

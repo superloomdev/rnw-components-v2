@@ -151,6 +151,8 @@ import layerSpec from './provider/layer/spec.js';
 
 // Tokens `component/context.js` reads whatever the component: the focus ring's trigger
 const CONTEXT_TOKENS = [
+  'control.target_min',
+  'control.text_scale_max',
   'feedback.focus_trigger'
 ];
 

@@ -23,7 +23,7 @@ export default Object.freeze({
   tokens: Object.freeze([
     'control.checkbox_size', 'control.checkbox_border',
     'control.selection_focus_width', 'control.selection_focus_offset', 'feedback.focus_trigger',
-    'type.body_compact_01', 'type.helper_text_01', 'font.family.sans'
+    'type.selection_label', 'type.helper_text_01', 'font.family.sans'
   ].concat([
     'outline', 'outline_hover', 'outline_active', 'outline_focus', 'outline_disabled', 'outline_invalid',
     'container', 'container_hover', 'container_active', 'container_focus', 'container_disabled', 'container_invalid',

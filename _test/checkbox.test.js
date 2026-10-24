@@ -49,7 +49,10 @@ async function renderCheckbox (Registry, props) {
 
   const container = await render(React.createElement(Registry.Checkbox, props));
   const root = container.querySelector('[role="checkbox"]');
-  const boxWrap = root.children[0];
+  // The press layer is the painted row's last child; the row's first two
+  // children are the box wrapper and the label
+  const row = root.parentElement;
+  const boxWrap = row.children[0];
 
   return {
     root: root,
@@ -57,7 +60,7 @@ async function renderCheckbox (Registry, props) {
     layer: boxWrap.children[1],
     ring: boxWrap.children[2],
     mark: boxWrap.children[3],
-    label: root.children[1],
+    label: row.children[1],
     message: container.firstElementChild.children[1] ? container.firstElementChild.children[1].lastElementChild : null,
     messageIcon: container.firstElementChild.children[1] ? container.firstElementChild.children[1].querySelector('svg') : null
   };
@@ -118,12 +121,12 @@ describe('Checkbox: every sample state under every template', function () {
 
         // Label and message
         assert.equal(parts.label.textContent, props.label);
-        assert.equal(parts.label.style.fontSize, t['type.body_compact_01'].fontSize + 'px');
+        assert.equal(parts.label.style.fontSize, t['type.selection_label'].fontSize + 'px');
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + (disabled ? 'selection_label_disabled' : 'selection_label')]));
         assert.equal(parts.label.style.marginLeft, (t['spacing.spacing_04'] - t['border.width_01']) + 'px');
         assert.equal(parts.box.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
         assert.equal(parts.box.parentElement.style.marginTop, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
-        assert.equal(parts.root.style.minHeight, (t['spacing.spacing_05'] + t['spacing.spacing_02']) + 'px');
+        assert.equal(parts.root.parentElement.style.minHeight, (t['spacing.spacing_05'] + t['spacing.spacing_02']) + 'px');
         const message = invalid ? [props.invalidText, 'selection_message_invalid'] : props.helperText ? [props.helperText, 'selection_helper'] : null;
         if (message === null) {
           assert.equal(parts.message, null);

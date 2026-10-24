@@ -32,8 +32,8 @@ export default Object.freeze({
   target: Object.freeze({ upstream: '.cds--checkbox-label', ours: '[role="checkbox"]', upstreamFocus: 'input[type="checkbox"]' }),
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--checkbox-wrapper', ours: ':scope > div', measure: 'box' }),
-    box: Object.freeze({ upstream: '.cds--checkbox-label', pseudo: '::before', ours: '[role="checkbox"] > div > div:nth-child(1)', measure: 'box' }),
-    label: Object.freeze({ upstream: '.cds--checkbox-label-text', ours: '[role="checkbox"] > [dir="auto"]', measure: 'text' }),
+    box: Object.freeze({ upstream: '.cds--checkbox-label', pseudo: '::before', ours: 'div:has(> [role="checkbox"]) > div:nth-child(1) > div:nth-child(1)', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--checkbox-label-text', ours: 'div:has(> [role="checkbox"]) > [dir="auto"]', measure: 'text' }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > div:nth-child(2) > [dir="auto"]', measure: 'text' }),
     messageIcon: Object.freeze({ upstream: '.cds--checkbox__invalid-icon path', ours: ':scope > div > div:nth-child(2) svg path', measure: 'box' })
   }),
@@ -54,9 +54,9 @@ export default Object.freeze({
     },
     target: Object.freeze({ upstream: 'md-checkbox', ours: '[role="checkbox"]' }),
     parts: Object.freeze({
-      box: Object.freeze({ upstream: 'md-checkbox >>> .container', ours: '[role="checkbox"] > div > div:nth-child(1)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
-      outline: Object.freeze({ upstream: 'md-checkbox >>> .container.unselected > .outline', ours: '[role="checkbox"][aria-checked="false"] > div > div:nth-child(1)', measure: 'box', compare: ['borderTopWidth', 'borderBottomWidth', 'borderBottomColor', 'backgroundColor'] }),
-      fill: Object.freeze({ upstream: 'md-checkbox >>> .container.selected > .background', ours: '[role="checkbox"]:not([aria-checked="false"]) > div > div:nth-child(1)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor'] })
+      box: Object.freeze({ upstream: 'md-checkbox >>> .container', ours: 'div:has(> [role="checkbox"]) > div:nth-child(1) > div:nth-child(1)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
+      outline: Object.freeze({ upstream: 'md-checkbox >>> .container.unselected > .outline', ours: 'div:has(> [role="checkbox"][aria-checked="false"]) > div:nth-child(1) > div:nth-child(1)', measure: 'box', compare: ['borderTopWidth', 'borderBottomWidth', 'borderBottomColor', 'backgroundColor'] }),
+      fill: Object.freeze({ upstream: 'md-checkbox >>> .container.selected > .background', ours: 'div:has(> [role="checkbox"]:not([aria-checked="false"])) > div:nth-child(1) > div:nth-child(1)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor'] })
     }),
     // The second reference's checkbox is the box alone: the page pairs it with its own label,
     // wrapper and messages, so nothing of those is drawn beside it

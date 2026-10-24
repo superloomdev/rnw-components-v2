@@ -37,7 +37,10 @@ export async function openShowcase (page, template, component, options) {
     (options && options.measure ? '&measure=1' : '') + (options && options.sheet ? '&sheet=1' : '') +
     (options && options.scheme === 'dark' ? '&scheme=dark' : '') +
     (options && options.hosted === false ? '&hosted=0' : '') +
-    (options && options.rootHost === true ? '&rootHost=1' : '');
+    (options && options.rootHost === true ? '&rootHost=1' : '') +
+    (options && options.adaptive ? '&adaptive=' + options.adaptive : '') +
+    (options && options.textScale !== undefined ? '&textScale=' + options.textScale : '') +
+    (options && options.dir === 'rtl' ? '&dir=rtl' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.__showcase && window.__showcase.ready === true;
@@ -1206,9 +1209,26 @@ export async function readControlPaint (page) {
       if (face === null) {
         throw new Error('A slider paint signature requires its painted thumb face');
       }
-      const style = getComputedStyle(face);
-      // The first drawn text inside the control, or the control's own color
-      const textNode = Array.from(control.querySelectorAll('*')).find(function (node) {
+      // A control that is a transparent interaction layer (the selection
+      // controls' press target) has no paint of its own: the painted face
+      // is the first painted descendant of the row it overlays
+      const painted = function (node) {
+        const s = getComputedStyle(node);
+        return s.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
+          (parseFloat(s.borderTopWidth) > 0 && s.borderTopColor !== 'rgba(0, 0, 0, 0)');
+      };
+      let paintedFace = face;
+      if (!painted(face) && face.parentElement !== null) {
+        const inner = Array.from(face.parentElement.querySelectorAll('*')).find(painted);
+        if (inner !== undefined) {
+          paintedFace = inner;
+        }
+      }
+      const style = getComputedStyle(paintedFace);
+      // The first drawn text inside the control (or its painted row for a
+      // transparent interaction layer), or the control's own color
+      const textScope = paintedFace === face ? control : face.parentElement;
+      const textNode = Array.from(textScope.querySelectorAll('*')).find(function (node) {
         return Array.from(node.childNodes).some(function (child) {
           return child.nodeType === 3 && child.textContent.trim() !== '';
         });
@@ -1221,7 +1241,7 @@ export async function readControlPaint (page) {
       // mixed cell's enabled control must not read as disabled)
       const flagged = control.closest('[aria-disabled="true"], [disabled]');
       let opacity = 1;
-      for (let node = face; node !== null && node !== body; node = node.parentElement) {
+      for (let node = paintedFace; node !== null && node !== body; node = node.parentElement) {
         opacity *= parseFloat(getComputedStyle(node).opacity);
       }
       out.push({

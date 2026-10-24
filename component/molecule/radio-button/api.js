@@ -23,7 +23,7 @@ export default Object.freeze({
   tokens: Object.freeze([
     'control.radio_size', 'control.radio_border', 'control.radio_dot_size', 'control.radio_focus_offset',
     'control.selection_focus_width', 'control.selection_layer_size', 'feedback.focus_trigger',
-    'type.body_compact_01', 'font.family.sans'
+    'type.selection_label', 'font.family.sans'
   ].concat([
     'outline', 'outline_hover', 'outline_active', 'outline_focus', 'outline_disabled', 'outline_invalid',
     'container', 'container_hover', 'container_active', 'container_focus', 'container_disabled', 'container_invalid',

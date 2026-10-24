@@ -113,13 +113,16 @@ export default function ButtonSet (ctx) {
       // The seat's share of the row for the layout the measured width picks
       // A stacked seat stretches the column and keeps its button's height:
       // a zero basis would shrink it to nothing in a container whose own
-      // height is indefinite
+      // height is indefinite. Every seat is a row so the fill button's zero
+      // basis sizes its width while its height can still grow with the label
       const seat = !fluid ? stacked ? {
         alignSelf: 'stretch',
+        flexDirection: 'row',
         maxWidth: itemMax,
         position: 'relative'
       } : {
         flexBasis: 0,
+        flexDirection: 'row',
         flexGrow: 1,
         flexShrink: 1,
         maxWidth: itemMax,
@@ -127,6 +130,7 @@ export default function ButtonSet (ctx) {
       }
         : column ? {
           alignSelf: 'stretch',
+          flexDirection: 'row',
           flexGrow: 0,
           flexShrink: 1,
           minWidth: fluidMin,
@@ -135,6 +139,7 @@ export default function ButtonSet (ctx) {
         }
           : full ? {
             flexBasis: 100 + PCT,
+            flexDirection: 'row',
             flexGrow: 1,
             flexShrink: 1,
             minWidth: fluidMin,
@@ -142,6 +147,7 @@ export default function ButtonSet (ctx) {
           }
             : {
               flexBasis: half ? 50 + PCT : 25 + PCT,
+              flexDirection: 'row',
               flexGrow: ghostish ? 1 : 0,
               flexShrink: 1,
               maxWidth: half || ghostish ? undefined : fluidMax,
@@ -162,7 +168,7 @@ export default function ButtonSet (ctx) {
           : ctx.color('button_set_separator');
       const separatorStyle = stacked
         ? { backgroundColor: separator, height: separatorWidth, left: 0, position: 'absolute', right: 0, top: -separatorWidth, zIndex: 1 }
-        : { backgroundColor: separator, bottom: 0, left: -separatorWidth, position: 'absolute', top: 0, width: separatorWidth, zIndex: 1 };
+        : { backgroundColor: separator, bottom: 0, position: 'absolute', start: -separatorWidth, top: 0, width: separatorWidth, zIndex: 1 };
 
       return React.createElement(View, { key: index, style: seat },
         React.createElement(ctx.Registry.Button, Object.assign({}, item, {

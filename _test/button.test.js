@@ -104,7 +104,7 @@ describe('Button: every sample state under every template', function () {
         const phase = props.disabled ? '_disabled' : props.selected ? '_selected' : '';
         const parts = await renderButton(registryFor(template), props);
         const set = t['type.button_label'];
-        assert.equal(parts.root.style.height, t[HEIGHTS[props.size || 'lg']] + 'px');
+        assert.equal(parts.root.style.minHeight, t[HEIGHTS[props.size || 'lg']] + 'px');
         assert.equal(parts.root.style.borderTopWidth, t['border.width_01'] + 'px');
         const inline = INLINE.includes(props.kind);
         assert.equal(parts.root.style.paddingLeft, ((inline ? t['control.button_ghost_padding_start'] : t['control.button_padding_start']) - t['border.width_01']) + 'px');

@@ -43,6 +43,7 @@ export default {
     'anatomy.switch_handle',
     'anatomy.switch_state_text',
     'anatomy.switch_edge',
+    'anatomy.toggle_widget',
     'feedback.press',
     'feedback.focus_trigger',
     'state.hover_opacity',

@@ -2638,6 +2638,320 @@
       "status": "pending"
     },
     {
+      "name": "Tab",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Tab"
+      },
+      "description": "Tab is a component in the Tabs family; it must be composed inside Tabs.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": "Tabs",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "Tab",
+      "material_twin": "md-tabs",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "TabList",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabList"
+      },
+      "description": "TabList is a component in the Tabs family; it must be composed inside Tabs.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": "Tabs",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabList",
+      "material_twin": "md-tabs",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "TabPanel",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabPanel"
+      },
+      "description": "TabPanel is a component in the Tabs family; it must be composed inside Tabs.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": "Tabs",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabPanel",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "TabPanels",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabPanels"
+      },
+      "description": "TabPanels is a component in the Tabs family; it must be composed inside Tabs.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": "Tabs",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabPanels",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "IconTab",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "IconTab"
+      },
+      "description": "IconTab is a component in the Tabs family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "IconTab",
+      "material_twin": "md-tabs",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "TabsVertical",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabsVertical"
+      },
+      "description": "TabsVertical is a component in the Tabs family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabsVertical",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "TabListVertical",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabListVertical"
+      },
+      "description": "TabListVertical is a component in the Tabs family; it must be composed inside Tabs.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": "Tabs",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabListVertical",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "TabsSkeleton",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "TabsSkeleton"
+      },
+      "description": "TabsSkeleton is a component in the Tabs family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "TabsSkeleton",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "ContentSwitcher",
+      "family": "Tabs",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "ContentSwitcher"
+      },
+      "description": "ContentSwitcher is a component in the Tabs family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "controllable-state",
+        "roving-tab-index"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "ContentSwitcher",
+      "material_twin": "md-outlined-segmented-button-set",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "Switch",
+      "family": "Tabs",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Switch"
+      },
+      "description": "Switch is a component in the Switch family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "feedback.press",
+        "anatomy.content_switcher_separator",
+        "anatomy.content_switcher_selected_mark"
+      ],
+      "behaviors": [
+        "controllable-state",
+        "press"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "Switch",
+      "material_twin": "md-outlined-segmented-button",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
       "name": "IconSwitch",
       "family": "Tabs",
       "tier": "molecule",
@@ -2659,534 +2973,7 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "IconSwitch",
-      "material_twin": "md-icon",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "Breadcrumb",
-      "family": "Breadcrumb",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Breadcrumb"
-      },
-      "description": "Breadcrumb is a component in the Breadcrumb family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "Breadcrumb",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "BreadcrumbItem",
-      "family": "Breadcrumb",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "BreadcrumbItem"
-      },
-      "description": "BreadcrumbItem is a component in the Breadcrumb family; it must be composed inside Breadcrumb.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": "Breadcrumb",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "BreadcrumbItem",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "BreadcrumbSkeleton",
-      "family": "Breadcrumb",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "BreadcrumbSkeleton"
-      },
-      "description": "BreadcrumbSkeleton is a component in the Breadcrumb family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "BreadcrumbSkeleton",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "CopyButton",
-      "family": "Copy",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "CopyButton"
-      },
-      "description": "CopyButton is a component in the CodeSnippet family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "CopyButton",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "ListItem",
-      "family": "List",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "ListItem"
-      },
-      "description": "ListItem is a component in the List family; it must be composed inside List.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": "List",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ListItem",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "OrderedList",
-      "family": "List",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "OrderedList"
-      },
-      "description": "OrderedList is a component in the List family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "OrderedList",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "UnorderedList",
-      "family": "List",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "UnorderedList"
-      },
-      "description": "UnorderedList is a component in the List family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "UnorderedList",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "ActionableNotification",
-      "family": "Notification",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "ActionableNotification"
-      },
-      "description": "ActionableNotification is a component in the Notification family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.status_marker"
-      ],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ActionableNotification",
-      "material_twin": "md-snackbar",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "Callout",
-      "family": "Notification",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Callout"
-      },
-      "description": "Callout is a component in the Notification family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.status_marker"
-      ],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "Callout",
-      "material_twin": "md-snackbar",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "InlineNotification",
-      "family": "Notification",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "InlineNotification"
-      },
-      "description": "InlineNotification is a component in the Notification family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.status_marker"
-      ],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "InlineNotification",
-      "material_twin": "md-snackbar",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "NotificationActionButton",
-      "family": "Notification",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "NotificationActionButton"
-      },
-      "description": "NotificationActionButton is a component in the Notification family; it must be composed inside Notification.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.status_marker"
-      ],
-      "behaviors": [],
-      "parent": "Notification",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "NotificationActionButton",
-      "material_twin": "md-snackbar",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "SkipToContent",
-      "family": "SkipToContent",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "SkipToContent"
-      },
-      "description": "SkipToContent is a component in the SkipToContent family; it is web-only and renders nothing on native platforms.",
-      "platform": {
-        "support": "web",
-        "fallback": "renders nothing on native"
-      },
-      "enums": [],
-      "behaviors": [],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "SkipToContent",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [
-        "web_only"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "Switch",
-      "family": "Tabs",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Switch"
-      },
-      "description": "Switch is a component in the Switch family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [
-        "anatomy.switch_handle",
-        "feedback.press"
-      ],
-      "behaviors": [
-        "controllable-state",
-        "press"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "Switch",
-      "material_twin": "md-switch",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "Accordion",
-      "family": "Accordion",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Accordion"
-      },
-      "description": "Accordion is a component in the Accordion family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "disclosure",
-        "keyboard"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "Accordion",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "AccordionItem",
-      "family": "Accordion",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "AccordionItem"
-      },
-      "description": "AccordionItem is a component in the Accordion family; it must be composed inside Accordion.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "disclosure",
-        "keyboard"
-      ],
-      "parent": "Accordion",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "AccordionItem",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "AccordionSkeleton",
-      "family": "Accordion",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "AccordionSkeleton"
-      },
-      "description": "AccordionSkeleton is a component in the Accordion family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "disclosure",
-        "keyboard"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "AccordionSkeleton",
-      "material_twin": "md-list",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "ContainedList",
-      "family": "ContainedList",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "ContainedList"
-      },
-      "description": "ContainedList is a component in the ContainedList family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "compound-context",
-        "keyboard"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ContainedList",
-      "material_twin": "none",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "ContainedListItem",
-      "family": "ContainedList",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "ContainedListItem"
-      },
-      "description": "ContainedListItem is a component in the ContainedList family; it must be composed inside ContainedList.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "compound-context",
-        "keyboard"
-      ],
-      "parent": "ContainedList",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ContainedListItem",
-      "material_twin": "none",
+      "material_twin": "md-outlined-segmented-button",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3444,6 +3231,62 @@
       "status": "pending"
     },
     {
+      "name": "CopyButton",
+      "family": "Copy",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "CopyButton"
+      },
+      "description": "CopyButton is a component in the CodeSnippet family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "CopyButton",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "SkipToContent",
+      "family": "SkipToContent",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "SkipToContent"
+      },
+      "description": "SkipToContent is a component in the SkipToContent family; it is web-only and renders nothing on native platforms.",
+      "platform": {
+        "support": "web",
+        "fallback": "renders nothing on native"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "SkipToContent",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "web_only"
+      ],
+      "status": "pending"
+    },
+    {
       "name": "ComposedModal",
       "family": "Modal",
       "tier": "composite",
@@ -3473,6 +3316,40 @@
       "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "ModalHeader",
+      "family": "Modal",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "ModalHeader"
+      },
+      "description": "ModalHeader is a component in the Modal family; it must be composed inside Modal.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "anatomy.dialog_actions"
+      ],
+      "behaviors": [
+        "overlay",
+        "focus-trap"
+      ],
+      "parent": "Modal",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "ModalHeader",
+      "material_twin": "md-dialog",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
       "status": "pending"
     },
     {
@@ -3544,33 +3421,117 @@
       "status": "pending"
     },
     {
-      "name": "ModalHeader",
-      "family": "Modal",
-      "tier": "composite",
+      "name": "InlineNotification",
+      "family": "Notification",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "ModalHeader"
+        "export": "InlineNotification"
       },
-      "description": "ModalHeader is a component in the Modal family; it must be composed inside Modal.",
+      "description": "InlineNotification is a component in the Notification family.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
-        "anatomy.dialog_actions"
+        "anatomy.status_marker"
       ],
-      "behaviors": [
-        "overlay",
-        "focus-trap"
-      ],
-      "parent": "Modal",
+      "behaviors": [],
+      "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "ModalHeader",
-      "material_twin": "md-dialog",
+      "carbon_twin": "InlineNotification",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "ActionableNotification",
+      "family": "Notification",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "ActionableNotification"
+      },
+      "description": "ActionableNotification is a component in the Notification family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "anatomy.status_marker"
+      ],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "ActionableNotification",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "Callout",
+      "family": "Notification",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Callout"
+      },
+      "description": "Callout is a component in the Notification family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "anatomy.status_marker"
+      ],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "Callout",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "NotificationActionButton",
+      "family": "Notification",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "NotificationActionButton"
+      },
+      "description": "NotificationActionButton is a component in the Notification family; it must be composed inside Notification.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "anatomy.status_marker"
+      ],
+      "behaviors": [],
+      "parent": "Notification",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "NotificationActionButton",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3578,91 +3539,257 @@
       "status": "pending"
     },
     {
-      "name": "ContentSwitcher",
-      "family": "Tabs",
+      "name": "Breadcrumb",
+      "family": "Breadcrumb",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Breadcrumb"
+      },
+      "description": "Breadcrumb is a component in the Breadcrumb family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "Breadcrumb",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "BreadcrumbItem",
+      "family": "Breadcrumb",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "BreadcrumbItem"
+      },
+      "description": "BreadcrumbItem is a component in the Breadcrumb family; it must be composed inside Breadcrumb.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": "Breadcrumb",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "BreadcrumbItem",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "BreadcrumbSkeleton",
+      "family": "Breadcrumb",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "BreadcrumbSkeleton"
+      },
+      "description": "BreadcrumbSkeleton is a component in the Breadcrumb family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "BreadcrumbSkeleton",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "Accordion",
+      "family": "Accordion",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "ContentSwitcher"
+        "export": "Accordion"
       },
-      "description": "ContentSwitcher is a component in the Tabs family.",
+      "description": "Accordion is a component in the Accordion family.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
+        "disclosure",
+        "keyboard"
       ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "ContentSwitcher",
-      "material_twin": "md-tabs",
+      "carbon_twin": "Accordion",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
     },
     {
-      "name": "IconTab",
-      "family": "Tabs",
+      "name": "AccordionItem",
+      "family": "Accordion",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "IconTab"
+        "export": "AccordionItem"
       },
-      "description": "IconTab is a component in the Tabs family.",
+      "description": "AccordionItem is a component in the Accordion family; it must be composed inside Accordion.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
+        "disclosure",
+        "keyboard"
+      ],
+      "parent": "Accordion",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "AccordionItem",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [
+        "requires_parent"
+      ],
+      "status": "pending"
+    },
+    {
+      "name": "AccordionSkeleton",
+      "family": "Accordion",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "AccordionSkeleton"
+      },
+      "description": "AccordionSkeleton is a component in the Accordion family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [
+        "disclosure",
+        "keyboard"
       ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "IconTab",
-      "material_twin": "md-tabs",
+      "carbon_twin": "AccordionSkeleton",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
     },
     {
-      "name": "Tab",
-      "family": "Tabs",
-      "tier": "composite",
+      "name": "UnorderedList",
+      "family": "List",
+      "tier": "molecule",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "Tab"
+        "export": "UnorderedList"
       },
-      "description": "Tab is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "UnorderedList is a component in the List family.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": "Tabs",
+      "behaviors": [],
+      "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "Tab",
-      "material_twin": "md-tabs",
+      "carbon_twin": "UnorderedList",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "OrderedList",
+      "family": "List",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "OrderedList"
+      },
+      "description": "OrderedList is a component in the List family.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "OrderedList",
+      "material_twin": "none",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "pending"
+    },
+    {
+      "name": "ListItem",
+      "family": "List",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "ListItem"
+      },
+      "description": "ListItem is a component in the List family; it must be composed inside List.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": "List",
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "ListItem",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3670,191 +3797,65 @@
       "status": "pending"
     },
     {
-      "name": "TabList",
-      "family": "Tabs",
+      "name": "ContainedList",
+      "family": "ContainedList",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "TabList"
+        "export": "ContainedList"
       },
-      "description": "TabList is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "ContainedList is a component in the ContainedList family.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": "Tabs",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "TabList",
-      "material_twin": "md-tabs",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "TabListVertical",
-      "family": "Tabs",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "TabListVertical"
-      },
-      "description": "TabListVertical is a component in the Tabs family; it must be composed inside Tabs.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": "Tabs",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "TabListVertical",
-      "material_twin": "md-tabs",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "TabPanel",
-      "family": "Tabs",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "TabPanel"
-      },
-      "description": "TabPanel is a component in the Tabs family; it must be composed inside Tabs.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": "Tabs",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "TabPanel",
-      "material_twin": "md-tabs",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "TabPanels",
-      "family": "Tabs",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "TabPanels"
-      },
-      "description": "TabPanels is a component in the Tabs family; it must be composed inside Tabs.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": "Tabs",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "TabPanels",
-      "material_twin": "md-tabs",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "TabsSkeleton",
-      "family": "Tabs",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "TabsSkeleton"
-      },
-      "description": "TabsSkeleton is a component in the Tabs family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
+        "compound-context",
+        "keyboard"
       ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabsSkeleton",
-      "material_twin": "md-tabs",
+      "carbon_twin": "ContainedList",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
     },
     {
-      "name": "TabsVertical",
-      "family": "Tabs",
+      "name": "ContainedListItem",
+      "family": "ContainedList",
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
         "version": "1.115.0",
-        "export": "TabsVertical"
+        "export": "ContainedListItem"
       },
-      "description": "TabsVertical is a component in the Tabs family.",
+      "description": "ContainedListItem is a component in the ContainedList family; it must be composed inside ContainedList.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
+        "compound-context",
+        "keyboard"
       ],
-      "parent": null,
+      "parent": "ContainedList",
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabsVertical",
-      "material_twin": "md-tabs",
+      "carbon_twin": "ContainedListItem",
+      "material_twin": "none",
       "diff_budget": 2,
-      "flags": [],
+      "flags": [
+        "requires_parent"
+      ],
       "status": "pending"
     },
     {

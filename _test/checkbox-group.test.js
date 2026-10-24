@@ -75,7 +75,8 @@ async function renderGroup (Registry, props) {
     legend: root.children[0],
     rows: rows,
     rowWrappers: rows.map(function (row) {
-      return row.parentElement.parentElement;
+      // press layer -> painted row -> member root -> the group's row wrapper
+      return row.parentElement.parentElement.parentElement;
     })
   };
 

@@ -16,6 +16,31 @@ export { REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS };
 
 const REQUIRED_LIBS = ['React', 'ReactNative', 'Svg', 'Utils', 'Debug', 'Themer'];
 
+// The form classes a host resolves from its window width: `compact` below
+// 600, `medium` from 600 to 839, `expanded` from 840 (decision 23). The
+// host builds the theme with `variant: { form }` for the resolved class
+export const FORM_CLASSES = Object.freeze(['compact', 'medium', 'expanded']);
+
+
+/********************************************************************
+Resolve the form class for a window width in CSS pixels or points.
+
+@param {Number} width - The host's window width
+
+@return {String} - 'compact' | 'medium' | 'expanded'
+*********************************************************************/
+export function resolveForm (width) {
+
+  // Validate the width is a finite number
+  if (typeof width !== 'number' || !Number.isFinite(width)) {
+    throw new TypeError('resolveForm requires a finite width in CSS pixels');
+  }
+
+  // Return the width's class
+  return width < 600 ? 'compact' : width < 840 ? 'medium' : 'expanded';
+
+}
+
 // Finding codes from Themer.validateContract that concern token presence.
 // Value-shape findings are the template's concern: the engine checks template
 // literal shapes, and a built theme carries emitted shapes (a type set is
@@ -53,14 +78,18 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
     throw new TypeError('createSystem requires shared_libs.' + missingLibs.join(', shared_libs.'));
   }
 
-  // Init the dependency container
+  // Init the dependency container; `adapters` is the host's optional map of
+  // system-widget components and `reportedDiagnostics` dedupes diagnostics
+  // across the three level contexts of this one build
   const Lib = {
     React: shared_libs.React,
     ReactNative: shared_libs.ReactNative,
     Svg: shared_libs.Svg,
     Utils: shared_libs.Utils,
     Debug: shared_libs.Debug,
-    Themer: shared_libs.Themer
+    Themer: shared_libs.Themer,
+    adapters: shared_libs.adapters === undefined ? {} : shared_libs.adapters,
+    reportedDiagnostics: new Set()
   };
 
   // Validate the built theme shape
@@ -71,6 +100,31 @@ export function createSystem (shared_libs, config, built, breakpoint, factories)
   // Validate the factories map
   if (Utils.isNullOrUndefined(factories) || !Utils.isObject(factories)) {
     throw new TypeError('createSystem requires a factories map');
+  }
+
+  // Validate the optional adapter map: every present adapter is a component
+  if (shared_libs.adapters !== undefined) {
+    if (!Utils.isObject(shared_libs.adapters)) {
+      throw new TypeError('shared_libs.adapters must be a map of components');
+    }
+    const nonComponents = Object.keys(shared_libs.adapters).filter(function (name) {
+      const adapter = shared_libs.adapters[name];
+      return !Utils.isFunction(adapter) &&
+        !(Utils.isObject(adapter) && (Utils.isFunction(adapter.render) || adapter.$$typeof !== undefined));
+    });
+    if (!Utils.isEmptyArray(nonComponents)) {
+      throw new TypeError('shared_libs.adapters.' + nonComponents.join(', shared_libs.adapters.') + ' must be a component');
+    }
+  }
+
+  // Validate the optional config inputs
+  if (config !== undefined && config !== null) {
+    if (config.onDiagnostic !== undefined && !Utils.isFunction(config.onDiagnostic)) {
+      throw new TypeError('config.onDiagnostic must be a function');
+    }
+    if (config.textScale !== undefined && !Utils.isNumber(config.textScale)) {
+      throw new TypeError('config.textScale must be a number');
+    }
   }
 
   // Validate the breakpoint against the contract's breakpoint tokens

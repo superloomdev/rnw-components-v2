@@ -75,31 +75,21 @@ export default function RadioButton (ctx) {
     const ring = ctx.focusRing('selection', { focused: state.focused && !state.pressed, focusVisible: state.focusVisible });
     const ringStyle = Object.assign({}, ring, { outlineOffset: ctx.metric('RadioButton', 'focusOffset') });
 
-    // Render the row: the ring box with its layer and dot, then the label
+    // The measured face size grows the transparent pressable to the
+    // theme's target floor on both axes, centered on the painted row;
+    // before the first layout it covers the row exactly
+    const [faceSize, onLayout] = ctx.useFaceSize();
+
+    // Render the row: the ring box with its layer and dot, the label, and
+    // the press layer over the painted row
     const labelId = useA11yId('radio');
-    return React.createElement(Pressable, Object.assign({}, interaction.rootProps, getA11yState({ checked: selected, disabled: disabled || undefined, invalid: invalid || undefined }), getA11yRelation({ labelledby: labelId }), {
-      accessibilityRole: 'radio',
-      disabled: disabled,
-      // A group receives the member's root to move DOM focus on arrows
-      ref: props.rootRef,
-      // Pressable owns the tab order and honors tabIndex only, so the group's
-      // roving answer arrives as tabIndex, not the `focusable` prop
-      tabIndex: props.focusable === false ? -1 : undefined,
-      onKeyDown: function (event) {
-        // The web press responder activates a radio on Enter only; the radio
-        // pattern checks on Space, so Space is handled here
-        if (disabled || event.key !== ' ') {
-          return;
-        }
-        event.preventDefault();
-        select();
-      },
-      testID: props.testID,
+    return React.createElement(View, {
+      onLayout: onLayout,
       // The focus ring is drawn on the ring, so the row itself shows none
       style: groupVertical
-        ? { alignItems: 'center', flexDirection: 'row', outlineStyle: 'none', paddingTop: ctx.metric('RadioButton', 'ringInsetBottom') }
-        : { alignItems: 'center', flexDirection: 'row', outlineStyle: 'none' }
-    }),
+        ? { alignItems: 'center', flexDirection: 'row', paddingTop: ctx.metric('RadioButton', 'ringInsetBottom'), position: 'relative' }
+        : { alignItems: 'center', flexDirection: 'row', position: 'relative' }
+    },
     React.createElement(View, {
       style: {
         flexShrink: 0,
@@ -147,7 +137,7 @@ export default function RadioButton (ctx) {
     })),
     React.createElement(Text, {
       nativeID: labelId,
-      style: [ctx.typeStyle('body_compact_01'), {
+      style: [ctx.typeStyle('selection_label'), {
         alignSelf: 'flex-start',
         color: ctx.color(state.disabled ? 'selection_label_disabled' : 'selection_label'),
         // The label grows from its own width, not from zero: native layout
@@ -158,7 +148,27 @@ export default function RadioButton (ctx) {
         flexShrink: 1,
         minWidth: 0
       }]
-    }, props.label));
+    }, props.label),
+    React.createElement(Pressable, Object.assign({}, interaction.rootProps, getA11yState({ checked: selected, disabled: disabled || undefined, invalid: invalid || undefined }), getA11yRelation({ labelledby: labelId }), {
+      accessibilityRole: 'radio',
+      disabled: disabled,
+      // A group receives the member's root to move DOM focus on arrows
+      ref: props.rootRef,
+      // Pressable owns the tab order and honors tabIndex only, so the group's
+      // roving answer arrives as tabIndex, not the `focusable` prop
+      tabIndex: props.focusable === false ? -1 : undefined,
+      onKeyDown: function (event) {
+        // The web press responder activates a radio on Enter only; the radio
+        // pattern checks on Space, so Space is handled here
+        if (disabled || event.key !== ' ') {
+          return;
+        }
+        event.preventDefault();
+        select();
+      },
+      testID: props.testID,
+      style: ctx.pressTarget(faceSize)
+    })));
 
   }
 

@@ -93,13 +93,19 @@ export default function Checkbox (ctx) {
     const message = invalid && Utils.isString(props.invalidText) ? { text: props.invalidText, color: 'selection_message_invalid', invalid: true }
       : Utils.isString(props.helperText) ? { text: props.helperText, color: 'selection_helper', invalid: false } : null;
 
-    // Render the root, the row, the box with its state layer, the label and the message
+    // The measured face size grows the transparent pressable to the
+    // theme's target floor on both axes, centered on the painted row;
+    // before the first layout it covers the row exactly
+    const [faceSize, onLayout] = ctx.useFaceSize();
+
+    // Render the root, the painted row, the press layer over it, the box
+    // with its state layer, the label and the message
     return React.createElement(View, null,
-      React.createElement(Pressable, Object.assign({}, rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
-        testID: props.testID,
+      React.createElement(View, {
+        onLayout: onLayout,
         // The focus ring is drawn on the box, so the row itself shows none
-        style: { alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }
-      }),
+        style: { alignItems: 'center', flexDirection: 'row', minHeight: ctx.metric('Checkbox', 'minHeight'), position: 'relative' }
+      },
       React.createElement(View, {
         style: { alignSelf: 'flex-start', height: boxSize, marginStart: ctx.metric('Checkbox', 'boxInsetStart'), marginTop: ctx.metric('Checkbox', 'boxInsetTop'), width: boxSize }
       },
@@ -131,11 +137,18 @@ export default function Checkbox (ctx) {
       }, mark)
       ),
       React.createElement(Text, Object.assign({}, checkbox.labelProps, {
-        style: [ctx.typeStyle('body_compact_01'), {
+        style: [ctx.typeStyle('selection_label'), {
           color: ctx.color(state.disabled ? 'selection_label_disabled' : 'selection_label'),
           marginStart: ctx.metric('Checkbox', 'labelGap')
         }]
-      }), props.label)),
+      }), props.label),
+      // The transparent press layer covers the whole row on both axes at
+      // the theme's target floor; the row's own paint stays visible
+      // beneath it
+      React.createElement(Pressable, Object.assign({}, rootProps, getA11yState({ invalid: invalid ? true : undefined }), {
+        testID: props.testID,
+        style: ctx.pressTarget(faceSize)
+      }))),
       message === null ? null : React.createElement(View, {
         style: { alignItems: 'flex-start', flexDirection: 'row', marginTop: ctx.metric('Checkbox', 'messageGap') }
       },

@@ -469,7 +469,13 @@ export default function createMultiSelectComponent (owner, filterable, prefix) {
           flexDirection: 'row',
           flexGrow: 1,
           flexShrink: 1,
-          height: wrapperHeight,
+          // A minimum, not a fixed height: a scaled text run grows the row.
+          // The press-only owner wraps the border strip, so its floor is
+          // the field height; the negative margin takes that strip back out
+          // of the content box so the frame itself does not grow. Every
+          // other row floors at the content edge and the margin is zero
+          minHeight: wrapperHeight,
+          marginBottom: contentHeight - wrapperHeight,
           minWidth: 0,
           position: 'relative'
         }

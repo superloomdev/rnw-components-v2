@@ -594,59 +594,61 @@ describe('context: pressPresentation', function () {
 
 describe('context: pressTarget', function () {
 
-  test('a null face covers it exactly; a small face centers a 44 target; a wider face keeps its width', function () {
+  test('a null face covers it exactly; a small face centers the theme minimum; a wider face keeps its width', function () {
     const ctx = probeWith({});
+    // The default theme's expanded minimum: 24 points
+    assert.equal(buildNative('default').tokens['control.target_min'], 24, 'fixture: the default target minimum is 24');
     assert.deepEqual(ctx.pressTarget(null), { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 });
     assert.deepEqual(ctx.pressTarget({ height: 26, width: 20 }), {
-      height: 44,
-      left: -12,
+      height: 26,
+      left: -2,
       outlineStyle: 'none',
       position: 'absolute',
-      top: -9,
-      width: 44
+      top: -0,
+      width: 24
     });
     assert.deepEqual(ctx.pressTarget({ height: 20, width: 64 }), {
-      height: 44,
+      height: 24,
       left: -0,
       outlineStyle: 'none',
       position: 'absolute',
-      top: -12,
+      top: -2,
       width: 64
     });
   });
 
   test('inlineExpansion pushes the minimum out through the named logical edge, so adjacent faces share a boundary without overlap', function () {
     const ctx = probeWith({});
-    // A 40-point face: centered leaves two points of overhang on each side
-    assert.deepEqual(ctx.pressTarget({ height: 40, width: 40 }), {
-      height: 44, left: -2, outlineStyle: 'none', position: 'absolute', top: -2, width: 44
+    // A 20-point face: centered leaves two points of overhang on each side
+    assert.deepEqual(ctx.pressTarget({ height: 20, width: 20 }), {
+      height: 24, left: -2, outlineStyle: 'none', position: 'absolute', top: -2, width: 24
     });
     // 'start' pushes the same four points out through the leading edge: the
     // target ends flush with the face's end edge
-    const start = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'start' });
-    assert.equal(start.width, 44);
+    const start = ctx.pressTarget({ height: 20, width: 20 }, { inlineExpansion: 'start' });
+    assert.equal(start.width, 24);
     assert.equal(start.start, -4);
-    assert.equal(start.start + start.width, 40);
+    assert.equal(start.start + start.width, 20);
     // 'end' pushes them through the trailing edge: it starts flush with the
     // face's start edge
-    const end = ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'end' });
-    assert.equal(end.width, 44);
+    const end = ctx.pressTarget({ height: 20, width: 20 }, { inlineExpansion: 'end' });
+    assert.equal(end.width, 24);
     assert.equal(end.start, 0);
-    // Two adjacent 40 faces, the first 'start' and the second 'end': the first
-    // target stops at 40, exactly where the second target begins - they meet
+    // Two adjacent 20 faces, the first 'start' and the second 'end': the first
+    // target stops at 20, exactly where the second target begins - they meet
     // without overlap
-    assert.equal(start.start + start.width, end.start + 40);
-    // A 32-point sided face (the small field action) keeps both axes at the
-    // minimum and pushes the whole twelve-point overhang through one edge
-    const smallStart = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'start' });
-    assert.equal(smallStart.width, 44);
-    assert.equal(smallStart.height, 44);
-    assert.equal(smallStart.start, -12);
-    assert.equal(smallStart.start + smallStart.width, 32);
-    const smallEnd = ctx.pressTarget({ height: 32, width: 32 }, { inlineExpansion: 'end' });
+    assert.equal(start.start + start.width, end.start + 20);
+    // A 16-point sided face keeps both axes at the minimum and pushes the
+    // whole eight-point overhang through one edge
+    const smallStart = ctx.pressTarget({ height: 16, width: 16 }, { inlineExpansion: 'start' });
+    assert.equal(smallStart.width, 24);
+    assert.equal(smallStart.height, 24);
+    assert.equal(smallStart.start, -8);
+    assert.equal(smallStart.start + smallStart.width, 16);
+    const smallEnd = ctx.pressTarget({ height: 16, width: 16 }, { inlineExpansion: 'end' });
     assert.equal(smallEnd.start, 0);
-    assert.equal(smallEnd.width, 44);
-    assert.equal(smallEnd.height, 44);
+    assert.equal(smallEnd.width, 24);
+    assert.equal(smallEnd.height, 24);
     assert.throws(function () {
       ctx.pressTarget({ height: 40, width: 40 }, { inlineExpansion: 'up' });
     }, /inlineExpansion must be "center", "start" or "end"/);
@@ -667,7 +669,7 @@ describe('context: fieldPresentation', function () {
     assert.equal(underline.borderBottomWidth, t['control.field_outline_width']);
     assert.equal(underline.borderWidth, undefined);
     assert.equal(underline.paddingStart, pad);
-    assert.equal(underline.height, 40);
+    assert.equal(underline.minHeight, 40);
     assert.equal(underline.borderRadius, 4);
     const outline = probeWith({ 'feedback.field': 'outline' }).fieldPresentation({}, options).frame;
     assert.equal(outline.borderWidth, t['control.field_outline_width']);

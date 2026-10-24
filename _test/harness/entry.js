@@ -18,7 +18,8 @@ import defaultProfile from 'helper-themer-template-default';
 import carbonProfile from 'helper-themer-template-carbon';
 import materialProfile from 'helper-themer-template-material';
 
-import { createSystem } from 'rnw-components';
+import { createSystem, resolveForm } from 'rnw-components';
+import { LocaleProvider } from 'react-native-web/dist/modules/useLocale/index.js';
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
 import { createSampleElement } from './sample.js';
@@ -42,13 +43,23 @@ const sheeting = params.get('sheet') === '1';
 // A measurement page renders unhosted, as the upstream it is compared
 // with does: its layer is viewport-relative, not confined to a stage
 const hosting = params.get('hosted') !== '0';
+// The adaptive inputs a host resolves at its seam: the form class from the
+// window width, `adaptive=fixed` to ignore variants, `textScale` for the
+// host's text scale and `dir=rtl` for the direction
+const form = resolveForm(window.innerWidth);
+const adaptive = params.get('adaptive') === 'fixed' ? 'fixed' : 'auto';
+const textScale = params.get('textScale') === null ? undefined : parseFloat(params.get('textScale'));
+const rtl = params.get('dir') === 'rtl';
+if (rtl) {
+  document.documentElement.dir = 'rtl';
+}
 
 const Utils = utils({});
 const Debug = debug({ Utils: Utils }, { LOG_LEVEL: 'error' });
 const Themer = themer({ Utils: Utils, Debug: Debug });
 const Lib = { React: React, ReactNative: ReactNative, Svg: Svg, Utils: Utils, Debug: Debug, Themer: Themer };
 
-const status = { template: templateName, scheme: schemeName, ready: false, errors: [], cells: 0, components: Object.keys(factories) };
+const status = { adaptive: adaptive, cells: 0, components: Object.keys(factories), errors: [], form: form, ready: false, scheme: schemeName, template: templateName, textScale: textScale };
 window.__showcase = status;
 
 window.addEventListener('error', function (event) {
@@ -57,7 +68,10 @@ window.addEventListener('error', function (event) {
 
 let Registry;
 try {
-  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native');
+  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native', {
+    adaptive: adaptive,
+    variant: { form: form, platform: 'web' }
+  });
   // The page paints the scheme's background behind every cell, as the
   // reference page does for a system whose surface is not white
   document.body.style.background = built.tokens['color.background'];
@@ -68,7 +82,7 @@ try {
   }
   // The built tokens the page draws with, for a gate that samples pixels against them
   status.theme = built.tokens;
-  Registry = createSystem(Lib, {}, built, 'md', factories);
+  Registry = createSystem(Lib, { textScale: textScale }, built, 'md', factories);
 } catch (error) {
   status.errors.push('createSystem: ' + error.message);
 }
@@ -168,7 +182,11 @@ function Showcase () {
 
 if (Registry) {
   const root = createRoot(document.getElementById('root'));
-  const content = React.createElement(Showcase);
+  // RNW resolves start/end through its locale context, not the document's
+  // dir: a dir=rtl pass needs the provider or every logical edge stays ltr
+  const content = rtl
+    ? React.createElement(LocaleProvider, { direction: 'rtl' }, React.createElement(Showcase))
+    : React.createElement(Showcase);
   // Match the consumer's RootHost when reviewing layers across adjacent cells.
   root.render(params.get('rootHost') === '1'
     ? React.createElement(Registry.OverlayHost, null, content)
