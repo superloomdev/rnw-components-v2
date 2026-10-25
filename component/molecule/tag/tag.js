@@ -98,7 +98,7 @@ export default function Tag (ctx) {
         borderWidth: inLayout ? props.outlineWidth : undefined,
         boxShadow: !inLayout && outlineWidth > 0 ? 'inset 0 0 0 ' + outlineWidth + 'px ' + ctx.color(outlineLeaf) : undefined,
         flexDirection: 'row',
-        height: height,
+        minHeight: height,
         minWidth: ctx.metric('Tag', 'heightLarge'),
         overflow: 'visible',
         paddingEnd: Utils.isNumber(props.paddingEnd) ? props.paddingEnd : ctx.metric('Tag', large ? 'paddingInlineLarge' : 'paddingInline'),

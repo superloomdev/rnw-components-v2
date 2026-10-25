@@ -143,7 +143,8 @@ export default function Button (ctx) {
           borderRadius: radius,
           borderWidth: borderWidth,
           flexDirection: 'row',
-          height: height,
+          // A minimum, not a fixed height: a scaled text run grows the button
+          minHeight: height,
           // The theme places the label: the start padding under `top`,
           // centered under `center`
           justifyContent: labelAtStart ? 'flex-start' : 'center',

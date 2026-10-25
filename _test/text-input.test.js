@@ -100,7 +100,7 @@ describe('TextInput: every sample state under every template', function () {
         const width = t['control.field_outline_width'];
         const ring = t['control.field_invalid_ring_width'];
         assert.equal(parts.frame.style.outlineWidth, invalid && ring > 0 ? ring + 'px' : '');
-        assert.equal(parts.frame.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
+        assert.equal(parts.frame.style.minHeight, t[HEIGHTS[props.size || 'md']] + 'px');
         // An outline frame keeps its borders inside the inline padding
         assert.equal(parts.frame.style.paddingLeft, (t['control.field_padding_inline'] - (outline ? width : 0)) + 'px');
         assert.equal(parts.frame.style.paddingRight, ((invalid ? t['control.field_icon_inset'] : t['control.field_padding_inline']) - (outline ? width : 0)) + 'px');

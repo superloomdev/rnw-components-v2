@@ -101,7 +101,7 @@ export function createMultiSelectReference (filterable) {
       }),
       box: Object.freeze({
         upstream: '.cds--list-box__menu-item:nth-child(2) .cds--checkbox-label', pseudo: '::before',
-        ours: '[role="option"]:nth-child(2) [role="checkbox"] > div > div:first-child',
+        ours: '[role="option"]:nth-child(2) div:has(> [role="checkbox"]) > div:nth-child(1) > div:nth-child(1)',
         measure: 'box', optional: true
       }),
       optionLabel: Object.freeze({

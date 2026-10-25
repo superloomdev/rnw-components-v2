@@ -70,7 +70,7 @@ describe('Tag: every sample state under every template', function () {
         const padding = props.size === 'lg' ? t['spacing.spacing_04'] : t['control.tag_padding_inline'];
 
         // Container geometry and colors; the outline is an inset shadow that neither shifts the text nor grows the box
-        assert.equal(parts.root.style.height, height + 'px');
+        assert.equal(parts.root.style.minHeight, height + 'px');
         assert.equal(parts.root.style.minWidth, t['size.size_small'] + 'px');
         assert.equal(parts.root.style.borderTopLeftRadius, t['control.tag_radius'] + 'px');
         assert.equal(parts.root.style.borderTopWidth, '');
@@ -188,7 +188,7 @@ describe('Tag: composition props', function () {
 
   test('the height composition prop overrides the size', async function () {
     const sized = await renderTag(registryFor('carbon'), { children: 'T', height: 20, size: 'sm' });
-    assert.equal(sized.root.style.height, '20px');
+    assert.equal(sized.root.style.minHeight, '20px');
   });
 
 });

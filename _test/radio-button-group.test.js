@@ -133,10 +133,12 @@ describe('RadioButtonGroup: every sample state under every template', function (
           for (const wrapper of wrappers) {
             assert.equal(wrapper.style.marginBottom, t['control.radio_group_gap_vertical'] + 'px');
           }
-          // The vertical member is the shorter row: the row pads the top
-          // and the ring keeps no top or bottom inset of its own
-          const ring = parts.rows[0].querySelector('div > div');
-          assert.equal(parts.rows[0].style.paddingTop, t['border.width_02'] + 'px');
+          // The vertical member is the shorter row: the painted row pads
+          // the top and the ring seat keeps no top or bottom inset of its
+          // own; the press layer is the member's transparent overlay
+          const paintedRow = parts.rows[0].parentElement;
+          const ring = paintedRow.querySelector('div > div');
+          assert.equal(paintedRow.style.paddingTop, t['border.width_02'] + 'px');
           assert.equal(ring.style.marginTop, '0px');
           assert.equal(ring.style.marginBottom, '0px');
         } else {

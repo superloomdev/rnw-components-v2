@@ -85,7 +85,7 @@ describe('DismissibleTag: every sample state under every template', function () 
         const parts = await renderDismissible(registryFor(template), props);
 
         // The tag itself keeps the Tag cells
-        assert.equal(parts.root.style.height, height + 'px');
+        assert.equal(parts.root.style.minHeight, height + 'px');
         assert.equal(parts.label.textContent, props.text);
 
         // The close control: a circle the tag's height, or the action layer

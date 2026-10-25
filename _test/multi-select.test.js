@@ -34,7 +34,7 @@ describe('MultiSelect + FilterableMultiSelect: every sample state under every te
           const parts = await renderField(registryFor(template), owner.name, props);
 
           // Frame geometry from the field cells for the state
-          assert.equal(parts.frame.style.height, height + 'px');
+          assert.equal(parts.frame.style.minHeight, height + 'px');
           assert.equal(parts.frame.style.position, 'relative');
           const phase = disabled ? '_disabled' : invalid ? '_invalid' : '';
           // An open underline frame drops to the subtle border; an outline
@@ -374,7 +374,7 @@ describe('MultiSelect: the list through the DOM', function () {
         label: 'Choice', items: ITEMS, size: size, value: ['alpha'], testID: 'count-' + size
       });
       const face = parts.count.querySelector('[data-testid="tag-close-face"]');
-      assert.equal(parts.count.style.height, expected[size] + 'px', size + ' count height');
+      assert.equal(parts.count.style.minHeight, expected[size] + 'px', size + ' count height');
       assert.equal(parts.count.style.paddingLeft, t['control.tag_padding_inline'] + 'px',
         size + ' count keeps the legacy base leading padding');
       assert.equal(face.style.height, expected[size] + 'px', size + ' close face height');
@@ -417,7 +417,7 @@ describe('MultiSelect: the list through the DOM', function () {
             label: 'Choice', items: ITEMS, open: open
           });
           const wrapper = parts.frame.firstElementChild;
-          assert.equal(wrapper.style.height, expected + 'px',
+          assert.equal(wrapper.style.minHeight, expected + 'px',
             owner.name + ' / ' + template + ' / open:' + open + ' wrapper');
           if (open === true) {
             assert.equal(parts.list().style.top, expected + 'px',

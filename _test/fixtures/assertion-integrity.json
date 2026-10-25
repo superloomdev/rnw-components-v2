@@ -398,8 +398,8 @@
     {
       "id": "checkbox-row-no-browser-ring",
       "file": "component/molecule/checkbox/checkbox.js",
-      "find": "minHeight: ctx.metric('Checkbox', 'minHeight'), outlineStyle: 'none' }",
-      "replace": "minHeight: ctx.metric('Checkbox', 'minHeight') }",
+      "find": "        style: ctx.pressTarget(faceSize)",
+      "replace": "        style: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }",
       "runner": "node",
       "test": "checkbox.test.js",
       "testName": "the row suppresses the browser",
@@ -588,8 +588,8 @@
     {
       "id": "gates-census-unlisted-test",
       "file": "_test/structural.spec.js",
-      "find": "    test('interactive targets are at least 44 points', function () {",
-      "replace": "    test('interactive targets are at least 44 pts', function () {",
+      "find": "      test('every interactive target meets its form-class minimum on both axes or clears it by spacing', function () {",
+      "replace": "      test('every interactive target meets its form-class minimum on both axes or clears it through spacing', function () {",
       "runner": "node",
       "test": "gates.test.js",
       "testName": "structural.spec.js: every listed title is a declared test, and every declared test is listed",
@@ -598,7 +598,7 @@
     {
       "id": "gates-census-missing-clause",
       "file": "_test/fixtures/gates.json",
-      "find": "    { \"layer\": 1, \"spec\": \"structural.spec.js\", \"clause\": \"target >= 44\", \"title\": \"interactive targets are at least 44 points\" },\n",
+      "find": "    { \"layer\": 1, \"spec\": \"structural.spec.js\", \"clause\": \"target >= control.target_min on both axes, or the WCAG 2.5.8 spacing exception clears it\", \"title\": \"every interactive target meets its form-class minimum on both axes or clears it by spacing\" },\n",
       "replace": "",
       "runner": "node",
       "test": "gates.test.js",
@@ -717,7 +717,7 @@
     },
     {
       "id": "purity-visibility-style",
-      "file": "component/molecule/switch/toggle.js",
+      "file": "component/molecule/switch/toggle.web.js",
       "find": "          opacity: selected ? 1 : 0",
       "replace": "          visibility: selected ? 'visible' : 'hidden'",
       "runner": "node",
@@ -728,12 +728,12 @@
     {
       "id": "structural-target-size",
       "file": "component/context.js",
-      "find": "  const MIN_TARGET = 44;",
-      "replace": "  const MIN_TARGET = 32;",
+      "find": "  const targetMin = token('control.target_min');",
+      "replace": "  const targetMin = 12;",
       "runner": "pw",
       "test": "structural.spec.js",
-      "testName": "interactive targets are at least 44 points",
-      "why": "a transparent hit layer shrunk below 44 points must fail the target-size gate"
+      "testName": "every interactive target meets its form-class minimum on both axes or clears it by spacing",
+      "why": "a transparent hit layer shrunk below the form-class minimum must fail the target-size gate"
     },
     {
       "id": "structural-contrast-enabled",
@@ -868,12 +868,12 @@
     {
       "id": "link-target-size",
       "file": "component/context.js",
-      "find": "  const MIN_TARGET = 44;",
-      "replace": "  const MIN_TARGET = 0;",
+      "find": "  const targetMin = token('control.target_min');",
+      "replace": "  const targetMin = 0;",
       "runner": "pw",
       "test": "structural.spec.js",
-      "testName": "interactive targets are at least 44 points",
-      "why": "the pressable must be no smaller than the platform minimum target; dropping the floor must fail the structural gate"
+      "testName": "every interactive target meets its form-class minimum on both axes or clears it by spacing",
+      "why": "the pressable must be no smaller than the theme minimum target; dropping the floor must fail the structural gate"
     },
     {
       "id": "button-set-separator-color",
@@ -1257,13 +1257,13 @@
     },
     {
       "id": "structural-text-in-painted-box",
-      "file": "component/molecule/tag/spec.js",
-      "find": "  heightSmall: 'control.tag_height_small',",
-      "replace": "  heightSmall: { tokens: ['size.icon_01', 'spacing.spacing_01'], operation: 'sum' },",
+      "file": "component/molecule/tag/tag.js",
+      "find": "        minHeight: height,",
+      "replace": "        height: height - 8,",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "no text overflows the box that paints behind it",
-      "why": "restoring the derived small height draws the material small tag's label line taller than the pill that paints behind it; the range-versus-painted-box check must catch it"
+      "why": "a pill 8 points shorter than its label line (material small tag: 16 under a 24 line) draws the label past the box that paints behind it; the range-versus-painted-box check must catch it"
     },
     {
       "id": "tooltip-caret-color",
@@ -2238,8 +2238,8 @@
     {
       "id": "native-type-physical-grid",
       "file": "component/context.js",
-      "find": "lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(set.lineHeight);",
-      "replace": "lineHeight = set.lineHeight;",
+      "find": "lineHeight = Lib.ReactNative.PixelRatio.roundToNearestPixel(lineHeight);",
+      "replace": "lineHeight = lineHeight;",
       "runner": "node",
       "test": "system.test.js",
       "testName": "mdpi resolves the carbon compact lineHeight to 18; the token and the built theme keep 18.00008",
@@ -2254,6 +2254,56 @@
       "test": "fire-selection.test.js",
       "testName": "covers the real manifest exactly once across the four CI shards",
       "why": "every mutation row must run exactly once across the CI shards, with no omissions or duplicate first-shard selection"
+    },
+    {
+      "id": "target-min-both-axes",
+      "file": "component/context.js",
+      "find": "const height = Math.max(targetMin, face.height);",
+      "replace": "const height = face.height;",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "pressTarget reads control.target_min on both axes",
+      "why": "the press-target floor applies on both axes, not only the longer one"
+    },
+    {
+      "id": "target-spacing-rule",
+      "file": "_test/structural.spec.js",
+      "find": "Math.sqrt(dx * dx + dy * dy) < min - 0.001",
+      "replace": "Math.sqrt(dx * dx + dy * dy) > min - 0.001",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every interactive target meets its form-class minimum on both axes or clears it by spacing",
+      "why": "the WCAG 2.5.8 spacing exception must measure circle intersection, not merely coexistence"
+    },
+    {
+      "id": "text-scale-applied",
+      "file": "component/context.js",
+      "find": "const fontSize = set.fontSize * textScale;",
+      "replace": "const fontSize = set.fontSize;",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "typeStyle scales by the clamped text scale",
+      "why": "the host's text scale must reach every type set, clamped to control.text_scale_max"
+    },
+    {
+      "id": "form-variant-applied",
+      "file": "_test/harness/entry.js",
+      "find": "variant: { form: form, platform: 'web' }",
+      "replace": "variant: { form: 'expanded', platform: 'web' }",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "adaptive fixed at a compact width builds the expanded token map",
+      "why": "the showcase must build the theme for the width's form class, or the compact structural pass proves nothing"
+    },
+    {
+      "id": "toggle-adapter-fallback",
+      "file": "component/molecule/switch/toggle.native.js",
+      "find": "return React.createElement(WebComponent, props);",
+      "replace": "return null;",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "Toggle without its adapter draws the theme's switch and reports adapter_missing once",
+      "why": "a missing optional adapter must degrade to the drawn widget, never draw nothing"
     }
   ]
 }

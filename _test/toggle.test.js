@@ -50,12 +50,15 @@ async function renderToggle (Registry, props) {
 
   const container = await render(React.createElement(Registry.Toggle, props));
   const root = container.querySelector('[role="switch"]');
-  const row = root.children[1];
+  // The press layer is the painted field's last child; the field's first
+  // two children are the label and the track row
+  const field = root.parentElement;
+  const row = field.children[1];
   const track = row.children[0];
 
   return {
     root: root,
-    label: root.children[0],
+    label: field.children[0],
     row: row,
     track: track,
     layer: track.children[0],

@@ -94,8 +94,9 @@ describe('PasswordInput: the reveal contract', function () {
       onVisibilityChange: function (next) { calls.push(next); },
       value: 'secret'
     });
-    assert.equal(Number.parseFloat(parts.action.style.height), 44);
-    assert.equal(Number.parseFloat(parts.action.style.width), 44);
+    const target = buildNative('carbon').tokens['control.target_min'];
+    assert.ok(Number.parseFloat(parts.action.style.height) >= target);
+    assert.ok(Number.parseFloat(parts.action.style.width) >= target);
     await act(async function () {
       parts.action.click();
     });

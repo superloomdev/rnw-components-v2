@@ -187,11 +187,12 @@ test('the slider point driver reaches a covered input and releases before moving
 });
 
 test('structural paint reads a slider face rather than its transparent press target', async function ({ page }) {
-  await page.setContent('<div class="cell" data-component="Slider" data-state="enabled"><div data-part="body"><div data-testid="slider-thumb-face" style="background:black"></div><div role="slider"></div></div></div>' +
-    '<div class="cell" data-component="Slider" data-state="disabled"><div data-part="body"><div style="opacity:0.38"><div data-testid="slider-thumb-face" style="background:black"></div></div><div role="slider" aria-disabled="true"></div></div></div>');
+  await page.setContent('<div class="cell" data-component="Slider" data-state="enabled"><div data-part="body"><div data-testid="slider-track" style="background:rgb(128, 128, 128)"></div><div data-testid="slider-thumb-face" style="background:black"></div><div role="slider"></div></div></div>' +
+    '<div class="cell" data-component="Slider" data-state="disabled"><div data-part="body"><div data-testid="slider-track" style="background:rgb(128, 128, 128)"></div><div style="opacity:0.38"><div data-testid="slider-thumb-face" style="background:black"></div></div><div role="slider" aria-disabled="true"></div></div></div>');
   const result = await readControlPaint(page);
   expect(result).toHaveLength(2);
   expect(result[0].disabled).toBe(false);
   expect(result[1].disabled).toBe(true);
+  expect(result[0].paint.startsWith('rgb(0, 0, 0) |')).toBe(true);
   expect(result[0].paint).not.toBe(result[1].paint);
 });
