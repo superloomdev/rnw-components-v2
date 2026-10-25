@@ -2286,6 +2286,16 @@
       "why": "the host's text scale must reach every type set, clamped to control.text_scale_max"
     },
     {
+      "id": "native-namespace-inherited",
+      "file": "component/context.js",
+      "find": "Object.create(Lib.ReactNative, {",
+      "replace": "Object.create(Object.assign({}, Lib.ReactNative), {",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "the native namespace is wrapped without reading any other export",
+      "why": "the native wrapper must inherit the namespace, not copy it - copying runs every lazy export getter, and removed modules throw under React Native 0.88"
+    },
+    {
       "id": "form-variant-applied",
       "file": "_test/harness/entry.js",
       "find": "variant: { form: form, platform: 'web' }",

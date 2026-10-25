@@ -869,11 +869,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
   // On native, OS font scaling is switched off centrally; on the web the
-  // injected React Native is the web build, which knows no such prop
+  // injected React Native is the web build, which knows no such prop. The
+  // native wrapper inherits the namespace rather than copying it, so no other
+  // export's lazy getter runs (React Native 0.88 throws from removed modules)
   const reactNative = platform.isNative
-    ? Object.assign({}, Lib.ReactNative, {
-      Text: withoutOsFontScaling(Lib.ReactNative.Text),
-      TextInput: withoutOsFontScaling(Lib.ReactNative.TextInput)
+    ? Object.create(Lib.ReactNative, {
+      Text: { value: withoutOsFontScaling(Lib.ReactNative.Text), enumerable: true },
+      TextInput: { value: withoutOsFontScaling(Lib.ReactNative.TextInput), enumerable: true }
     })
     : Lib.ReactNative;
 

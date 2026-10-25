@@ -146,6 +146,16 @@ describe('adaptive: text scale', function () {
     await cleanup();
   });
 
+  test('the native namespace is wrapped without reading any other export', function () {
+    let touched = false;
+    const RN = Object.assign({}, Lib.ReactNative, { Platform: { OS: 'ios' } });
+    Object.defineProperty(RN, 'PushNotificationIOS', { enumerable: true, get () { touched = true; throw new Error('removed module'); } });
+    const ctx = buildSystem('default', { Probe: Probe }, { lib: Object.assign({}, Lib, { ReactNative: RN }) }).Probe.ctx;
+    assert.equal(touched, false);
+    assert.equal(ctx.ReactNative.View, RN.View);
+    assert.notEqual(ctx.ReactNative.Text, RN.Text);
+  });
+
 });
 
 
