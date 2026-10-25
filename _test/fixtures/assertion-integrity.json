@@ -2304,6 +2304,16 @@
       "test": "adaptive.test.js",
       "testName": "Toggle without its adapter draws the theme's switch and reports adapter_missing once",
       "why": "a missing optional adapter must degrade to the drawn widget, never draw nothing"
+    },
+    {
+      "id": "fire-dead-child-refused",
+      "file": "_test/fire-selection.js",
+      "find": "export function isMutationProof (error) {\n",
+      "replace": "export function isMutationProof (error) {\n  return true;\n",
+      "runner": "node",
+      "test": "fire-result.test.js",
+      "testName": "a signal-killed child is not a mutation proof",
+      "why": "a child that dies must never count as a fired row; a classifier that returns true unconditionally must fail the pinned cases"
     }
   ]
 }

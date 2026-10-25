@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FIRE_USAGE, getFireSelection } from './fire-selection.js';
+import { FIRE_USAGE, getFireSelection, isMutationProof } from './fire-selection.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..');
@@ -64,6 +64,11 @@ function runTest (row) {
     process.stdout.write('CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
     const detail = String(error.stdout || '') + String(error.stderr || error.message);
     process.stdout.write(detail.split('\n').slice(-30).join('\n') + '\n');
+    // A child that died without a normal test failure proves nothing about
+    // the mutation; the caller's finally restores the file before this throw
+    if (!isMutationProof(error)) {
+      throw new Error(row.id + ': child termination is not a mutation proof (status=' + error.status + ', signal=' + error.signal + ')');
+    }
     return false;
   }
 

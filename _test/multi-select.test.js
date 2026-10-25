@@ -204,7 +204,7 @@ describe('MultiSelect: the list through the DOM', function () {
     assert.deepEqual(calls, [[]]);
     assert.equal(parts.count, null);
     assert.equal(parts.live.textContent, 'All items cleared');
-    assert.equal(parts.root.ownerDocument.activeElement, parts.trigger);
+    assert.equal(parts.root.ownerDocument.activeElement === parts.trigger, true, 'the trigger keeps focus');
   });
 
   test('a controlled clear refusal leaves the count and its member up', async function () {
@@ -477,7 +477,7 @@ describe('MultiSelect: the list through the DOM', function () {
     });
     assert.deepEqual(opens, [true], 'one toggle request arrives through the trigger');
     assert.equal(parts.list() === null, false);
-    assert.equal(parts.root.ownerDocument.activeElement, parts.trigger, 'the real control keeps focus');
+    assert.equal(parts.root.ownerDocument.activeElement === parts.trigger, true, 'the real control keeps focus');
   });
 
   test('the editable caret stays a sibling toggle beside its input', async function () {
@@ -578,7 +578,7 @@ describe('MultiSelect: the list through the DOM', function () {
     await act(async function () {
       editable.options()[0].click();
     });
-    assert.equal(editable.root.ownerDocument.activeElement, editable.trigger,
+    assert.equal(editable.root.ownerDocument.activeElement === editable.trigger, true,
       'focus returns to the editable field');
 
     const pressOnly = await renderField(registryFor('carbon'), 'MultiSelect', {
@@ -590,7 +590,7 @@ describe('MultiSelect: the list through the DOM', function () {
     await act(async function () {
       pressOnly.options()[0].click();
     });
-    assert.equal(pressOnly.root.ownerDocument.activeElement, pressOnly.trigger,
+    assert.equal(pressOnly.root.ownerDocument.activeElement === pressOnly.trigger, true,
       'focus returns to the trigger');
   });
 

@@ -44,7 +44,7 @@ describe('CheckboxSkeleton: the label block alone, under every template', functi
 
       // The seat anchors the bar at the start/top the spec sums describe
       const seat = bar.parentElement;
-      assert.equal(seat, root.firstElementChild, template);
+      assert.equal(seat === root.firstElementChild, true, template);
       assert.equal(seat.style.position, 'absolute', template);
       assert.equal(Number.parseFloat(seat.style.left), insetStart, template);
       assert.equal(Number.parseFloat(seat.style.top), t['spacing.spacing_01'], template);

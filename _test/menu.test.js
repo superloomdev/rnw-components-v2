@@ -120,7 +120,7 @@ describe('Menu: every sample state under every template', function () {
               return path.getAttribute('d') === glyph.d;
             });
           });
-          assert.equal(marked, selectable);
+          assert.equal(marked === selectable, true, 'the mark lands on the selected item');
           if (selectable) {
             const mark = parts.mark(item);
             assert.equal(mark.style.display, t['anatomy.list_selected_mark'] === 'shown' ? 'flex' : 'none');

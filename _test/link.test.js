@@ -88,7 +88,7 @@ describe('Link: every sample state under every template', function () {
         assert.equal(target.getAttribute('aria-label'), props.children);
         assert.equal(target.style.position, 'absolute');
         assert.equal(target.style.outlineStyle, 'none');
-        assert.notEqual(face, target);
+        assert.equal(face === target, false, 'the face wraps the target, not the other way');
 
         // The label: the size's type set, the state's color leaf, the
         // underline only while inline at rest

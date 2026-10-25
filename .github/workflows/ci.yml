@@ -108,6 +108,10 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run fire
         working-directory: _test
+        env:
+          # Tripwire, not a fix: a child that blows the heap exits nonzero
+          # (not status 1), and fire.js refuses it as a mutation proof
+          NODE_OPTIONS: '--max-old-space-size=3072'
         run: |
           set -o pipefail
           mkdir -p test-results

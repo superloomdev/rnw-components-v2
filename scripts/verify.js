@@ -378,7 +378,13 @@ if (!GATES_ONLY) {
     executed.push('browser gates');
 
     if (runCheck('fire', function () {
-      sh('node fire.js', path.join(REPO_ROOT, '_test'));
+      // The CI 'Run fire' step's heap tripwire, mirrored so local and CI
+      // see the same child-termination behavior
+      execSync('node fire.js', {
+        cwd: path.join(REPO_ROOT, '_test'),
+        stdio: 'inherit',
+        env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=3072' }
+      });
     })) {
       passed++;
     } else {

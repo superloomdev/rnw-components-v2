@@ -145,7 +145,7 @@ describe('DismissibleTag: the close control interacts', function () {
       const t = buildNative(template).tokens;
       const parts = await renderDismissible(registryFor(template), { text: 'T', title: 'Dismiss' });
       // The active layer mounts under every theme between the face and the glyph
-      assert.equal(parts.face.children[0], parts.layer);
+      assert.equal(parts.face.children[0] === parts.layer, true, 'the layer is the face\'s first child');
       assert.equal(parts.layer.style.position, 'absolute');
       assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', 'rgba(0, 0, 0, 0)'));
       await fire(parts.close, new Event('pointerover', { bubbles: true }));

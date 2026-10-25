@@ -42,3 +42,34 @@ export function getFireSelection (rows, args) {
   return { help: false, rows: selected };
 
 }
+
+
+/********************************************************************
+A child's termination is a mutation proof only when the test suite ran
+and failed normally: status 1 with a failing-test marker in its output.
+A signal kill (SIGKILL on a dead runner, SIGTERM), a non-failure status
+(heap tripwires exit 134/137), or output with no failing marker means
+the harness died, not that the mutation tripped an assertion.
+
+@param {Object} error - The execSync error: { status, signal, stdout, stderr }
+
+@return {Boolean} - True when the child failed by a test assertion
+*********************************************************************/
+export function isMutationProof (error) {
+
+  // A signal kill is never a proof
+  if (error.signal !== null && error.signal !== undefined) {
+    return false;
+  }
+
+  // node:test and playwright exit 1 on a failing test; anything else is the
+  // harness dying (heap ceiling, runner kill, missing binary)
+  if (error.status !== 1) {
+    return false;
+  }
+
+  // Status 1 without a failing-test marker is a crash, not an assertion
+  const detail = String(error.stdout || '') + String(error.stderr || error.message || '');
+  return /✖|not ok|failed/.test(detail);
+
+}

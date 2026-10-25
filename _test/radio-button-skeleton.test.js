@@ -38,7 +38,7 @@ describe('RadioButtonSkeleton: the label block alone, under every template', fun
       assert.equal(root.style.alignSelf, 'stretch', template);
 
       // The bar seats at the row's start/top edge: zero is structural
-      assert.equal(bar, root.firstElementChild, template);
+      assert.equal(bar === root.firstElementChild, true, template);
       assert.equal(bar.style.left, '', template);
       assert.equal(bar.style.top, '', template);
 

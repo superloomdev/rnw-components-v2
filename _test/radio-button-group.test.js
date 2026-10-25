@@ -295,17 +295,17 @@ describe('RadioButtonGroup: keyboard navigation', function () {
     // ArrowDown from alpha skips disabled beta and selects gamma
     assert.equal(await keydown(rows[0], 'ArrowDown'), true);
     assert.equal(rows[2].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, rows[2]);
+    assert.equal(document.activeElement === rows[2], true, 'the third radio holds focus');
 
     // ArrowRight from gamma wraps to alpha
     assert.equal(await keydown(rows[2], 'ArrowRight'), true);
     assert.equal(rows[0].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, rows[0]);
+    assert.equal(document.activeElement === rows[0], true, 'wrap lands on the first radio');
 
     // ArrowLeft from alpha wraps and skips beta to land on gamma
     assert.equal(await keydown(rows[0], 'ArrowLeft'), true);
     assert.equal(rows[2].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, rows[2]);
+    assert.equal(document.activeElement === rows[2], true, 'a disabled member is skipped');
 
     // ArrowUp from gamma skips beta to land on alpha
     assert.equal(await keydown(rows[2], 'ArrowUp'), true);
@@ -318,10 +318,10 @@ describe('RadioButtonGroup: keyboard navigation', function () {
     const parts = await renderGroup(registryFor('carbon'), { legendText: 'Options', defaultValue: 'beta', onChange: function (next) { calls.push(next); }, items: ITEMS });
     assert.equal(await keydown(parts.rows[1], 'Home'), true);
     assert.equal(parts.rows[0].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, parts.rows[0]);
+    assert.equal(document.activeElement === parts.rows[0], true, 'focus follows selection');
     assert.equal(await keydown(parts.rows[0], 'End'), true);
     assert.equal(parts.rows[2].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, parts.rows[2]);
+    assert.equal(document.activeElement === parts.rows[2], true, 'focus follows the arrow');
     assert.deepEqual(calls, ['alpha', 'gamma']);
   });
 
@@ -428,7 +428,7 @@ describe('RadioButtonGroup: keyboard navigation', function () {
     });
     await keydown(rows()[0], 'ArrowRight');
     assert.equal(rows()[1].getAttribute('aria-checked'), 'true');
-    assert.equal(document.activeElement, rows()[1]);
+    assert.equal(document.activeElement === rows()[1], true, 'focus moves with selection');
   });
 
   test('typed member values keep distinct keys, generated ids and callback types through a reorder', async function () {

@@ -135,13 +135,13 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
     assert.deepEqual(calls, [true]);
     const input = parts.container.querySelector('input');
     assert.ok(input, 'field mounted after expand');
-    assert.equal(document.activeElement, input, 'a user expand request moves focus to the input');
+    assert.equal(document.activeElement === input, true, 'a user expand request moves focus to the input');
   });
 
   test('an initially controlled expanded field mounts without stealing focus', async function () {
     const parts = await renderExpandable(registryFor('material'), { expanded: true, label: 'Search' });
     assert.ok(parts.input, 'controlled expanded mounts the field');
-    assert.notEqual(document.activeElement, parts.input, 'a controlled prop alone never steals focus');
+    assert.equal(document.activeElement === parts.input, false, 'a controlled prop alone never steals focus');
   });
 
   test('Escape on the empty expanded field collapses and returns focus to the trigger', async function () {
@@ -160,7 +160,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
     assert.equal(parts.container.querySelector('input'), null, 'field unmounted after collapse');
     const trigger = parts.container.querySelector('button');
     assert.ok(trigger, 'trigger remounted after collapse');
-    assert.equal(document.activeElement, trigger, 'focus returns to the remounted trigger');
+    assert.equal(document.activeElement === trigger, true, 'focus returns to the remounted trigger');
   });
 
   test('blur on the empty field requests collapse; a populated blur keeps it open', async function () {

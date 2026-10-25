@@ -239,8 +239,8 @@ describe('TextInput: state through the DOM', function () {
   test('the label is the first child of the field root under both placements', async function () {
     for (const placement of ['above', 'floating']) {
       const parts = await renderField(registryFor('default', { 'anatomy.label': placement }), { label: 'L' });
-      assert.equal(parts.root.firstElementChild, parts.label, placement);
-      assert.equal(parts.root.children[1], parts.frame, placement);
+      assert.equal(parts.root.firstElementChild === parts.label, true, placement);
+      assert.equal(parts.root.children[1] === parts.frame, true, placement);
     }
   });
 

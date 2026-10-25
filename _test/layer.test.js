@@ -331,7 +331,7 @@ describe('seam: updates do not remount or lose input', function () {
         return count + 1;
       });
     });
-    assert.equal(container.querySelector('[data-testid="outer"]'), node);
+    assert.equal(container.querySelector('[data-testid="outer"]') === node, true, 'the outer node is marked');
     assert.equal(store.mounts, mounts);
     assert.equal(store.count, 1);
   });
