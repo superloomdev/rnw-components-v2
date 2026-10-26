@@ -92,7 +92,11 @@ async function rereadReopened (page, component, reference, side, extended, state
     if (states[label] === undefined) {
       continue;
     }
-    await reopenPanel(page, component.name, label, reference.reopen, side);
+    await reopenPanel(page, component.name, label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
     await page.mouse.move(0, 0);
     const reread = await readParts(page, component.name, reference.parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true });
     if (reread[label] !== undefined) {
@@ -150,7 +154,11 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
-        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+          escape: reference.escapeOnLeave !== false,
+          releaseBeforeMove: reference.releaseBeforeMove === true,
+          clickOutside: reference.clickOutsideOnLeave === true
+        });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: target.point === true })) {
           failures.push(entry.label + ' @' + interaction + ': target not found on ' + side);
           continue;
@@ -174,7 +182,11 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
-        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+          escape: reference.escapeOnLeave !== false,
+          releaseBeforeMove: reference.releaseBeforeMove === true,
+          clickOutside: reference.clickOutsideOnLeave === true
+        });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(entry.label + ' @' + extra.name + ' ' + interaction + ': additional target "' + extra.name + '" not found on ' + side);
           continue;

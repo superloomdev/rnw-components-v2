@@ -1332,17 +1332,31 @@ the panel to draw, as the probe's `prepare` does.
 
 @return {Promise<Boolean>} - Whether a reopen click happened
 *********************************************************************/
-export async function reopenPanel (page, name, state, reopen, side) {
+export async function reopenPanel (page, name, state, reopen, side, leave) {
 
   if (reopen === undefined || reopen === null || !Array.isArray(reopen.states) || reopen.states.indexOf(state) === -1 ||
       reopen.when === undefined || reopen.when === null) {
     return false;
   }
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
-  if (await body.count() === 0 || await body.locator(reopen.when[side]).count() > 0) {
+  if (await body.count() === 0) {
     return false;
   }
+  // A panel left mounted from an earlier read carries stale coordinates:
+  // dismiss it so the state reads a panel opened by the click that follows
   const trigger = body.locator(reopen[side]).first();
+  if (await body.locator(reopen.when[side]).count() > 0) {
+    await leaveInteraction(page, leave);
+    if (await body.locator(reopen.when[side]).count() > 0 && await trigger.count() > 0) {
+      // Escape/blur only reach an open menu that holds focus; a seeded
+      // panel whose focus was lost dismisses on the trigger toggle instead
+      await trigger.click();
+      await page.waitForTimeout(200);
+      if (await body.locator(reopen.when[side]).count() > 0) {
+        return false;
+      }
+    }
+  }
   if (await trigger.count() === 0) {
     return false;
   }

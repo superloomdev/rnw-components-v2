@@ -5,6 +5,7 @@ export default Object.freeze({
   props: Object.freeze({
     label: { type: 'string', required: true, description: 'Names the set for assistive technology.' },
     children: { type: 'node', required: false, description: 'The radio options (MenuItemSelectable or MenuItem with `radio`).' },
+    items: { type: 'array', required: false, description: 'The radio options as data: labels or item objects, drawn standalone or inside a Menu.' },
     selectedItem: { type: 'string', required: false, description: 'The selected option\'s label.' }
   }),
   composition: Object.freeze({}),

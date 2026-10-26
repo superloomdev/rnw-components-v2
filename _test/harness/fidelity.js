@@ -326,7 +326,11 @@ async function collect (page, component, reference, side, masks) {
     // state is read while its own panel is open, then dismissed again
     const reopened = reference.reopen !== undefined && Array.isArray(reference.reopen.states) && reference.reopen.states.indexOf(label) !== -1;
     if (reopened) {
-      await reopenPanel(page, component.name, label, reference.reopen, side);
+      await reopenPanel(page, component.name, label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
       await page.mouse.move(0, 0);
       const reread = await readParts(page, component.name, parts, side, origin, { extended: true, only: label, pauseAnimations: pauseAnimations });
       if (reread[label] !== undefined) {
@@ -365,7 +369,11 @@ async function collect (page, component, reference, side, masks) {
         const key = entry.label + ' @' + interaction;
         // A declared main target missing on an enabled, mounted state is a
         // failure, as a missing additional target is - not a silent skip
-        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true })) {
           failures.push(key + ': target not found on ' + side);
           continue;
@@ -392,7 +400,11 @@ async function collect (page, component, reference, side, masks) {
       for (const interaction of targetInteractions(extra, interactions)) {
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
         const key = entry.label + ' @' + extra.name + ' ' + interaction;
-        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(key + ': additional target "' + extra.name + '" not found on ' + side);
           continue;

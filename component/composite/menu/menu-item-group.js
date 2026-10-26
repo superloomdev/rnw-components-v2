@@ -27,10 +27,16 @@ export default function MenuItemGroup (ctx) {
   *********************************************************************/
   function MenuItemGroupComponent (props) {
 
+    // The group's items compose as children inside a Menu; standalone the
+    // `items` data draws the members the same way
+    const items = Array.isArray(props.items) ? props.items.map(function (item, index) {
+      return React.createElement(ctx.Registry.MenuItem, { item: item, key: index });
+    }) : props.children;
+
     return React.createElement(View, {
       accessibilityLabel: props.label,
       role: 'group'
-    }, props.children);
+    }, items);
 
   }
 
