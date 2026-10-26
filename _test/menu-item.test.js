@@ -97,7 +97,7 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'after 100 ms the submenu opens');
   });
 
-  test('a leaf choice inside the submenu reports and closes the root', async function () {
+  test('a leaf choice inside the submenu reports, closes the submenu and leaves the controlled root open', async function () {
     let closed = 0;
     const chosen = [];
     const Registry = buildSystem('carbon', factories);
@@ -121,8 +121,33 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
       leaf.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     assert.deepEqual(chosen, ['Email'], 'the leaf entry reports');
-    assert.equal(container.querySelector('[role="menu"]'), null, 'the root closed');
     assert.equal(closed, 1, 'onClose fired once');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu closed');
+    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the controlled root stays open');
+  });
+
+  test('a leaf choice inside the submenu unmounts an uncontrolled root', async function () {
+    function Harness () {
+      const [open, setOpen] = React.useState(true);
+      return React.createElement(buildSystem('carbon', factories).Menu, {
+        accessibilityLabel: 'Actions',
+        items: SUB_ITEMS,
+        open: open,
+        onClose: function () {
+          setOpen(false);
+        }
+      });
+    }
+    const container = await render(React.createElement(Harness));
+    const item = container.querySelector('[aria-haspopup="true"]');
+    await act(async function () {
+      item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
+    });
+    const leaf = container.querySelector('[role="menu"] [role="menu"] [role="menuitem"]');
+    await act(async function () {
+      leaf.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'the root closed');
   });
 
 });
@@ -193,5 +218,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
   });
 
 });
+
+
 
 

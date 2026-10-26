@@ -70,7 +70,8 @@ export default function MenuItem (ctx) {
     };
     const labelLeaf = disabled ? 'list_item_label_disabled'
       : danger ? (dangerActive ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
-        : list.labelLeaf(state);
+        : item.selected === true ? 'menu_item_label_selected'
+          : list.labelLeaf(state);
     const itemFill = !disabled && danger && dangerActive ? 'menu_item_danger_container_hover' : null;
     const iconLeaf = disabled ? 'menu_item_icon_disabled' : dangerActive && danger ? 'menu_item_icon_hover' : active ? 'menu_item_icon_hover' : 'menu_item_icon';
     const itemStyle = Object.assign({}, list.item(state));
@@ -113,6 +114,12 @@ export default function MenuItem (ctx) {
       }
     }, [submenuOpen, anchored.measure]);
     const anchor = anchored.anchor;
+    // Stable identities for the submenu's placement props: a fresh array
+    // every render would re-arm the positioner each pass
+    const subX = React.useMemo(function () {
+      return anchor === null ? null : [anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd'), anchor.x - ctx.metric('MenuItem', 'submenuOffsetStart')];
+    }, [anchor]);
+    const subY = anchor === null ? null : anchor.y + ctx.metric('MenuItem', 'submenuOffsetBlock');
 
     // Render the item: mark seat, icon seat, label, shortcut seat (caret
     // for a submenu), then the submenu itself
@@ -235,8 +242,8 @@ export default function MenuItem (ctx) {
       items: item.items,
       menuAlignment: 'bottom-start',
       open: true,
-      x: [anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd'), anchor.x - ctx.metric('MenuItem', 'submenuOffsetStart')],
-      y: anchor.y + ctx.metric('MenuItem', 'submenuOffsetBlock'),
+      x: subX,
+      y: subY,
       onChange: function (chosen) {
         // A leaf choice inside the submenu closes the root
         if (typeof props.onChoose === 'function') {

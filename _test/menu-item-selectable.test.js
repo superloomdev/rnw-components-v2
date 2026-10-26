@@ -30,7 +30,7 @@ describe('MenuItemSelectable: the checkbox role and the mark cells', function ()
       assert.equal(items[0].getAttribute('aria-checked'), 'false', 'the other is unchecked');
       assert.equal(items[1].style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']), 'the selected fill cell');
       const label = items[1].querySelector('[dir="auto"]');
-      assert.equal(label.style.color, cssValue('color', t['color.list_item_label_selected']), 'the selected label cell');
+      assert.equal(label.style.color, cssValue('color', t['color.menu_item_label_selected']), 'the selected label cell');
       const mark = items[1].querySelector('svg');
       assert.notEqual(mark, null, 'the selection mark draws');
       assert.equal(mark.style.opacity, '1', 'the mark shows on the selected item');

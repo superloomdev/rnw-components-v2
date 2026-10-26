@@ -137,7 +137,7 @@ describe('Menu: every sample state under every template', function () {
           const role = radio ? 'menuitemradio' : entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
           assert.equal(item.getAttribute('role'), role);
           assert.equal(item.getAttribute('aria-checked'), radio ? String(selected) : entry.selected === undefined ? null : String(selected));
-          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? (index === 0 ? 'menu_item_danger_label_hover' : 'menu_item_danger_label') : selected ? 'list_item_label_selected' : 'list_item_label';
+          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? (index === 0 ? 'menu_item_danger_label_hover' : 'menu_item_danger_label') : selected ? 'menu_item_label_selected' : 'list_item_label';
           const label = parts.label(item);
           assert.equal(label.textContent, entry.label);
           assert.equal(label.style.color, cssValue('color', t['color.' + labelLeaf]));
@@ -201,7 +201,7 @@ describe('Menu: every sample state under every template', function () {
           assert.notEqual(chosen, null, 'the selected option mounts');
           assert.equal(chosen.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']));
           const chosenLabel = chosen.querySelector('[dir="auto"]');
-          assert.equal(chosenLabel.style.color, cssValue('color', t['color.list_item_label_selected']), 'the selected label cell');
+          assert.equal(chosenLabel.style.color, cssValue('color', t['color.menu_item_label_selected']), 'the selected label cell');
         }
       });
     }
