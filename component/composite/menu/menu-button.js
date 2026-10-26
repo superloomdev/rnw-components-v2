@@ -37,14 +37,20 @@ export default function MenuButton (ctx) {
   *********************************************************************/
   function MenuButtonComponent (props) {
 
-    // Init the size, kind, alignment and the open state (controlled when
-    // `open` is given, the trigger's own toggle otherwise)
+    // Init the size, kind, alignment and open state: `open` seeds the
+    // menu, never locks it - every close path dismisses it and a prop
+    // change re-syncs, as OverflowMenu and upstream
     const size = Utils.inArray(SIZES, props.size) ? props.size : 'lg';
     const kind = Utils.inArray(KINDS, props.kind) ? props.kind : 'primary';
     const alignment = Utils.inArray(ALIGNMENTS, props.menuAlignment) ? props.menuAlignment : 'bottom';
-    const controlled = props.open !== undefined;
-    const [toggled, setToggled] = React.useState(false);
-    const open = controlled ? props.open === true : toggled;
+    const [open, setOpen] = React.useState(props.open === true);
+    const openPropRef = React.useRef(props.open);
+    React.useEffect(function () {
+      if (props.open !== openPropRef.current) {
+        openPropRef.current = props.open;
+        setOpen(props.open === true);
+      }
+    }, [props.open]);
     const menuId = useA11yId('menu-button-menu');
     const containerRef = React.useRef(null);
     const triggerRef = React.useRef(null);
@@ -64,10 +70,16 @@ export default function MenuButton (ctx) {
     }, [open, anchored.measure]);
     const anchor = anchored.anchor;
 
+    // `onClose` fires once per open -> close cycle: Escape's keydown, the
+    // blur it causes and an outside press all request the same close
+    const openRef = React.useRef(open);
+    openRef.current = open;
     const close = function () {
-      if (!controlled) {
-        setToggled(false);
+      if (!openRef.current) {
+        return;
       }
+      openRef.current = false;
+      setOpen(false);
       if (typeof props.onClose === 'function') {
         props.onClose();
       }
@@ -117,15 +129,14 @@ export default function MenuButton (ctx) {
       kind: kind,
       minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth'),
       onPress: function () {
-        if (controlled) {
-          if (open && typeof props.onClose === 'function') {
-            props.onClose();
-          }
+        if (open) {
+          close();
           return;
         }
-        setToggled(function (previous) {
-          return !previous;
-        });
+        setOpen(true);
+        if (typeof props.onOpen === 'function') {
+          props.onOpen();
+        }
       },
       size: size
     }));

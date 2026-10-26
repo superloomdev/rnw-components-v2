@@ -2894,6 +2894,16 @@
       "id": "menu-button-menu-width",
       "test": "menu-button.test.js",
       "why": "anchoring the stretched container must fail the trigger-width menu assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-button.js",
+      "find": "      setOpen(false);",
+      "replace": "      if (props.open === undefined) {\n        setOpen(false);\n      }",
+      "testName": "a passed open seeds the menu, and Escape still closes it once",
+      "runner": "node",
+      "id": "menu-button-open-locks",
+      "test": "menu-button.test.js",
+      "why": "a close path that ignores the request while `open` is passed must fail the seeded-close assertion"
     }
   ]
 }

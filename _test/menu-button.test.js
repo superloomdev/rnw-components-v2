@@ -103,3 +103,51 @@ describe('MenuButton: the menu takes the trigger width', function () {
   });
 
 });
+
+describe('MenuButton: `open` seeds and re-syncs, never locks', function () {
+
+  test('a passed open seeds the menu, and Escape still closes it once', async function () {
+    let closed = 0;
+    const container = await render(React.createElement(registryFor('carbon').MenuButton, {
+      items: SAMPLE[1].props.items,
+      label: 'Actions',
+      open: true,
+      onClose: function () {
+        closed += 1;
+      }
+    }));
+    const menu = container.querySelector('[role="menu"]');
+    assert.notEqual(menu, null, 'open: true mounts the menu');
+    await act(async function () {
+      menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closes a seeded menu');
+    assert.equal(closed, 1, 'onClose fired once for the open -> close cycle');
+  });
+
+  test('a closed seeded menu re-opens when the prop flips back to true', async function () {
+    const { createRoot } = await import('react-dom/client');
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      const el = function (open) {
+        return React.createElement(registryFor('carbon').MenuButton, { items: SAMPLE[1].props.items, label: 'Actions', open: open });
+      };
+      await act(async function () { root.render(el(true)); });
+      const menu = container.querySelector('[role="menu"]');
+      await act(async function () {
+        menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+      });
+      assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed the seeded menu');
+      await act(async function () { root.render(el(false)); });
+      assert.equal(container.querySelector('[role="menu"]'), null, 'open: false keeps it closed');
+      await act(async function () { root.render(el(true)); });
+      assert.notEqual(container.querySelector('[role="menu"]'), null, 'open: true again re-syncs it open');
+    } finally {
+      await act(async function () { root.unmount(); });
+      container.remove();
+    }
+  });
+
+});
