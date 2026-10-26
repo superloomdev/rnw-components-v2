@@ -108,6 +108,15 @@ export default function createMenuBehaviors (deps) {
     // An `-end` alignment hangs the surface's end on the range's end; a `top`
     // alignment ends the surface at the range's start (the container's top)
     const endAligned = menuAlignment === 'bottom-end' || menuAlignment === 'top-end';
+    // `fit: false` places by direction alone, as upstream's FloatingMenu:
+    // below or above the anchor, start- or end-aligned, with no viewport
+    // fitting or clamping
+    if (options.fit === false) {
+      return {
+        left: endAligned ? rangeX[1] - menuSize.width : rangeX[0],
+        top: topAlignment ? rangeY[0] - menuSize.height : rangeY[1]
+      };
+    }
     return {
       left: fitMenuAxis(axes.x, 'x', spacing, topAlignment, endAligned),
       top: fitMenuAxis(axes.y, 'y', spacing, topAlignment, topAlignment)
@@ -176,7 +185,8 @@ export default function createMenuBehaviors (deps) {
           menuSize: { width: rect.width, height: rect.height },
           viewport: viewport,
           spacing: current.spacing,
-          actionButtonWidth: actionButtonWidth
+          actionButtonWidth: actionButtonWidth,
+          fit: current.fit
         });
         setPosition(function (previous) {
           return previous !== null && previous.left === next.left && previous.top === next.top ? previous : next;

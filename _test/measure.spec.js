@@ -81,6 +81,30 @@ first open cell covers the parts the rest read left hidden.
   state (a main or additional target that resolves to nothing is reported,
   never silently skipped, as the fidelity gate reports them)
 *********************************************************************/
+// A `reopen.states` label reads on its own right after reopening that
+// state: an opened upstream panel focuses its option, closing every
+// sibling's, so each is measured while its own panel is open
+async function rereadReopened (page, component, reference, side, extended, states) {
+  if (reference.reopen === undefined || !Array.isArray(reference.reopen.states)) {
+    return;
+  }
+  for (const label of reference.reopen.states) {
+    if (states[label] === undefined) {
+      continue;
+    }
+    await reopenPanel(page, component.name, label, reference.reopen, side);
+    const reread = await readParts(page, component.name, reference.parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true });
+    if (reread[label] !== undefined) {
+      states[label] = reread[label];
+    }
+    await leaveInteraction(page, {
+      escape: reference.escapeOnLeave !== false,
+      releaseBeforeMove: reference.releaseBeforeMove === true,
+      clickOutside: reference.clickOutsideOnLeave === true
+    });
+  }
+}
+
 async function drawnParts (page, component, reference, side, extended, states) {
 
   const parts = reference.parts;
@@ -209,6 +233,7 @@ test.describe('measure: primary reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference, 'upstream', false, upstream);
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
       expect(upstreamDrawn.failures, name + ': declared targets missing upstream').toEqual([]);
 
@@ -217,6 +242,7 @@ test.describe('measure: primary reference', function () {
       const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, name, parts, 'ours', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference, 'ours', false, ours);
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
@@ -287,6 +313,7 @@ test.describe('measure: second reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference.second, 'upstream', true, upstream);
       const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
       expect(upstreamDrawn.failures, component.name + ': declared targets missing upstream').toEqual([]);
 
@@ -306,6 +333,7 @@ test.describe('measure: second reference', function () {
       const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference.second, 'ours', true, ours);
       const undrawn = Object.keys(parts).filter(function (part) {
         return !upstreamDrawn.drawn.has(part);
       });

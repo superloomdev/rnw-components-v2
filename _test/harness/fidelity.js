@@ -321,8 +321,26 @@ async function collect (page, component, reference, side, masks) {
     }
   };
   for (const label of Object.keys(rest)) {
+    // An opened state reads on its own right after its reopen: upstream a
+    // panel focusing its option closes every sibling's, so each reopen
+    // state is read while its own panel is open, then dismissed again
+    const reopened = reference.reopen !== undefined && Array.isArray(reference.reopen.states) && reference.reopen.states.indexOf(label) !== -1;
+    if (reopened) {
+      await reopenPanel(page, component.name, label, reference.reopen, side);
+      const reread = await readParts(page, component.name, parts, side, origin, { extended: true, only: label, pauseAnimations: pauseAnimations });
+      if (reread[label] !== undefined) {
+        rest[label] = reread[label];
+      }
+    }
     states[label] = rest[label];
     await shoot(label, label);
+    if (reopened) {
+      await leaveInteraction(page, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
+    }
   }
   const enabled = component.sample.filter(function (entry) {
     return !(entry.props && entry.props.disabled === true) && rest[entry.label] !== undefined;

@@ -107,6 +107,7 @@ export default function OverflowMenu (ctx) {
     const positioned = useMenuPosition({
       menuRef: panelRef,
       menuAlignment: menuAlignment,
+      fit: false,
       spacing: ctx.metric('OverflowMenu', 'spacing'),
       x: anchor === null ? 0 : [anchor.x, anchor.x + anchor.width],
       y: anchor === null ? 0 : [anchor.y, anchor.y + anchor.height]
@@ -116,7 +117,15 @@ export default function OverflowMenu (ctx) {
     // close, focus leaving closes; opening focuses the first enabled
     // option
     const collection = useMenuCollection({
-      onRequestClose: close,
+      onRequestClose: function (event) {
+        // Upstream OverflowMenu exempts the trigger from the focus-leave
+        // close: focus moving to it leaves the panel open
+        const next = event !== undefined && event !== null ? event.relatedTarget : null;
+        if (next !== null && next !== undefined && containerRef.current !== null && containerRef.current.contains(next)) {
+          return;
+        }
+        close(event);
+      },
       rootRef: panelRef
     });
     React.useEffect(function () {

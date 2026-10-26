@@ -10,17 +10,27 @@ export default Object.freeze({
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement('div', { style: { position: 'relative' } },
-      React.createElement(upstream.MenuButton, {
-        disabled: props.disabled === true,
-        kind: props.kind,
-        label: props.label,
-        menuAlignment: props.menuAlignment,
-        open: props.open === true,
-        size: props.size
-      }, items.map(function (item, index) {
-        return React.createElement(upstream.MenuItem, { key: index, label: item.label });
-      })));
+
+    function Host () {
+      const host = React.useRef(null);
+      const [target, setTarget] = React.useState(null);
+      React.useEffect(function () {
+        setTarget(host.current);
+      }, []);
+      return React.createElement('div', { ref: host, style: { height: 280, position: 'relative', width: 320 } },
+        target === null ? null : React.createElement(upstream.MenuButton, {
+          disabled: props.disabled === true,
+          kind: props.kind,
+          label: props.label,
+          menuAlignment: props.menuAlignment,
+          menuTarget: target,
+          size: props.size
+        }, items.map(function (item, index) {
+          return React.createElement(upstream.MenuItem, { key: index, label: item.label });
+        })));
+    }
+
+    return React.createElement(Host, null);
   },
   // The element a person hovers, presses and focuses: the trigger
   target: Object.freeze({ upstream: '.cds--menu-button__trigger', upstreamFocus: '.cds--menu-button__trigger', ours: '[role="button"]' }),

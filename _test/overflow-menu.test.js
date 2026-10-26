@@ -216,3 +216,48 @@ describe('OverflowMenu: `open` seeds and re-syncs, never locks', function () {
   });
 
 });
+
+describe('OverflowMenu: focus to the trigger and direction-only placement', function () {
+
+  test('focus moving from an option to the trigger keeps the panel open', async function () {
+    let closed = 0;
+    const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {
+      items: OPEN.props.items,
+      open: true,
+      onClose: function () {
+        closed += 1;
+      }
+    }));
+    const trigger = container.querySelector('button');
+    const option = container.querySelector('[role="menuitem"]');
+    const leaving = new Event('focusout', { bubbles: true });
+    Object.defineProperty(leaving, 'relatedTarget', { value: trigger });
+    await act(async function () {
+      option.dispatchEvent(leaving);
+    });
+    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the panel stays open when focus moves to the trigger');
+    assert.equal(closed, 0, 'onClose did not fire');
+  });
+
+  test('a trigger near the viewport bottom still opens below with direction bottom', async function () {
+    const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {
+      items: OPEN.props.items,
+      open: true
+    }));
+    const panel = container.querySelector('[role="menu"]');
+    assert.notEqual(panel, null, 'the panel mounts');
+    const anchor = container.firstElementChild;
+    anchor.getBoundingClientRect = function () {
+      return { x: 0, y: 620, width: 40, height: 40, top: 620, right: 40, bottom: 660, left: 0 };
+    };
+    panel.getBoundingClientRect = function () {
+      return { x: 0, y: 0, width: 160, height: 160, top: 0, right: 160, bottom: 160, left: 0 };
+    };
+    await act(async function () {
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('scroll'));
+    });
+    assert.equal(panel.style.top, '660px', 'direction bottom places the panel below the trigger, never flipped');
+  });
+
+});

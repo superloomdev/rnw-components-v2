@@ -2864,6 +2864,26 @@
       "id": "menu-seat-top-level-only",
       "test": "menu.test.js",
       "why": "a top-level-only selectable check must fail the nested-selectable seat assertion"
+    },
+    {
+      "file": "component/composite/menu/overflow-menu.js",
+      "find": "containerRef.current.contains(next)",
+      "replace": "false",
+      "testName": "focus moving from an option to the trigger keeps the panel open",
+      "runner": "node",
+      "id": "overflow-menu-trigger-focus-closes",
+      "test": "overflow-menu.test.js",
+      "why": "a focus-leave close that does not exempt the trigger must fail the keeps-open assertion"
+    },
+    {
+      "file": "component/composite/menu/overflow-menu.js",
+      "find": "      fit: false,",
+      "replace": "      fit: true,",
+      "testName": "a trigger near the viewport bottom still opens below with direction bottom",
+      "runner": "node",
+      "id": "overflow-menu-viewport-flip",
+      "test": "overflow-menu.test.js",
+      "why": "a viewport-fitting placement must fail the direction-only assertion"
     }
   ]
 }
