@@ -4,6 +4,9 @@ A short, non-interactive label: a pill-shaped container holding an optional deco
 
 ## Decisions
 
+Samples cap the visible count so the accessibility tree is the same under every template; fitting is tested with measured widths.
+
+
 - **A molecule, not an atom.** The tag draws its optional leading icon through the Icon component (`ctx.Registry.Icon`), so it composes a library component - the same rule that makes IconButton a molecule. The icon is decorative; the label names the tag.
 - **`type` picks a hue.** The contract's `color.tag_background_<hue>` and `color.tag_color_<hue>` cells (ten hues, answered by every template) color the container, label and icon. No `type`: the neutral `tag_container` / `tag_label` / `tag_icon` cells. The hue border cells (`tag_border_<hue>`) belong to the interactive tag variants of a later part; a read-only tag draws no hue border in the primary reference.
 - **The outline is an inset shadow, not a border.** A real border would move the text inward and grow the box by two widths; both references draw the tag's outline as an overlay that does neither (`border: 0` on the primary, an absolutely-positioned `.outline` element on the second). The component paints `control.tag_outline_width` of `color.tag_outline` (`_disabled`) as an inset `boxShadow` - zero width under the primary, 1px under the second.

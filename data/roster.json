@@ -2365,7 +2365,7 @@
         "version": "1.115.0",
         "export": "Popover"
       },
-      "description": "Popover is a component in the Popover family.",
+      "description": "Popover anchors a floating surface with an optional caret to its trigger and leaves its open state to the caller.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2384,7 +2384,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "PopoverContent",
@@ -2395,7 +2395,7 @@
         "version": "1.115.0",
         "export": "PopoverContent"
       },
-      "description": "PopoverContent is a component in the Popover family; it must be composed inside Popover.",
+      "description": "PopoverContent is the floating body of a Popover; it must be composed inside Popover; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2407,16 +2407,17 @@
       ],
       "parent": "Popover",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "PopoverContent",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DefinitionTooltip",
@@ -2427,7 +2428,7 @@
         "version": "1.115.0",
         "export": "DefinitionTooltip"
       },
-      "description": "DefinitionTooltip is a component in the Tooltip family.",
+      "description": "DefinitionTooltip underlines a term and shows its definition in a small inverse bubble when the term is pressed, or hovered when asked.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2446,7 +2447,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Toggletip",
@@ -2457,7 +2458,7 @@
         "version": "1.115.0",
         "export": "Toggletip"
       },
-      "description": "Toggletip is a component in the Tooltip family.",
+      "description": "Toggletip pairs a label with an information button that toggles an inverse bubble of text and up to two actions.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2476,7 +2477,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipLabel",
@@ -2487,7 +2488,7 @@
         "version": "1.115.0",
         "export": "ToggletipLabel"
       },
-      "description": "ToggletipLabel is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipLabel is the text beside a Toggletip's button; it must be composed inside Toggletip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2508,7 +2509,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipButton",
@@ -2519,7 +2520,7 @@
         "version": "1.115.0",
         "export": "ToggletipButton"
       },
-      "description": "ToggletipButton is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipButton is the information button that opens and closes a Toggletip; it must be composed inside Toggletip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2540,7 +2541,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipContent",
@@ -2551,7 +2552,7 @@
         "version": "1.115.0",
         "export": "ToggletipContent"
       },
-      "description": "ToggletipContent is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipContent is the body text of a Toggletip's bubble; it must be composed inside Toggletip; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2563,16 +2564,17 @@
       ],
       "parent": "Toggletip",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipContent",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipActions",
@@ -2583,7 +2585,7 @@
         "version": "1.115.0",
         "export": "ToggletipActions"
       },
-      "description": "ToggletipActions is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2604,7 +2606,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TagSet",
@@ -2615,7 +2617,7 @@
         "version": "2.99.0",
         "export": "TagSet"
       },
-      "description": "TagSet is a component in the Tag family.",
+      "description": "TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag that lists them, with a searchable dialog when there are many.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2631,7 +2633,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tab",

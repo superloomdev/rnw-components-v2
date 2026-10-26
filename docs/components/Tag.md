@@ -8,6 +8,8 @@ A short, non-interactive label: a pill-shaped container holding an optional deco
 
 ### Decisions
 
+Samples cap the visible count so the accessibility tree is the same under every template; fitting is tested with measured widths.
+
 - **A molecule, not an atom.** The tag draws its optional leading icon through the Icon component (`ctx.Registry.Icon`), so it composes a library component - the same rule that makes IconButton a molecule. The icon is decorative; the label names the tag.
 - **`type` picks a hue.** The contract's `color.tag_background_<hue>` and `color.tag_color_<hue>` cells (ten hues, answered by every template) color the container, label and icon. No `type`: the neutral `tag_container` / `tag_label` / `tag_icon` cells. The hue border cells (`tag_border_<hue>`) belong to the interactive tag variants of a later part; a read-only tag draws no hue border in the primary reference.
 - **The outline is an inset shadow, not a border.** A real border would move the text inward and grow the box by two widths; both references draw the tag's outline as an overlay that does neither (`border: 0` on the primary, an absolutely-positioned `.outline` element on the second). The component paints `control.tag_outline_width` of `color.tag_outline` (`_disabled`) as an inset `boxShadow` - zero width under the primary, 1px under the second.
@@ -241,6 +243,50 @@ Color leaves accepted: `tag_background_red`, `tag_color_red`, `tag_background_ma
 | type | `{"children":"Tag","type":"blue"}` |
 | icon | `{"children":"Tag","icon":"checkmark"}` |
 | disabled | `{"children":"Tag","disabled":true}` |
+
+## TagSet
+
+TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag that lists them, with a searchable dialog when there are many.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/ibm-products`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `tags` | `array` | yes | `{ label, type?, onClose? }` entries: a `Tag` of that type, or a `DismissibleTag` when `onClose` is given. |
+| `align` | `string` | no | Row alignment: `start` (default), `center`, `end`. |
+| `multiline` | `boolean` | no | Wraps every tag with no overflow control. |
+| `maxVisible` | `number` | no | Caps how many tags the row may show. |
+| `overflowType` | `string` | no | `default` lists hidden tags as rows; `tag` draws them as high-contrast tags. |
+| `showAllTagsLabel` | `string` | no | The link that opens the all-tags dialog past ten hidden tags. Default `View all tags`. |
+| `allTagsModalTitle` | `string` | no | The dialog's title. Default `All tags`. |
+| `allTagsModalSearchLabel` | `string` | no | The dialog search field's label. Default `Search all tags`. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `gap` | `control.tag_set_gap` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| fits | `{"tags":[{"label":"One"},{"label":"Two"},{"label":"Three"}]}` |
+| overflow | `{"maxVisible":2,"tags":[{"label":"One"},{"label":"Two"},{"label":"Three"},{"label":"Four"},{"label":"Five"},{"label":"Six"},{"label":"Seven"},{"label":"Eight"}]}` |
+| max-visible | `{"maxVisible":2,"tags":[{"label":"One"},{"label":"Two"},{"label":"Three"}]}` |
+| multiline | `{"multiline":true,"tags":[{"label":"One"},{"label":"Two"},{"label":"Three"},{"label":"Four"},{"label":"Five"},{"label":"Six"}]}` |
+| many | `{"maxVisible":2,"tags":[{"label":"Tag 1"},{"label":"Tag 2"},{"label":"Tag 3"},{"label":"Tag 4"},{"label":"Tag 5"},{"label":"Tag 6"},{"label":"Tag 7"},{"label":"Tag 8"},{"label":"Tag 9"},{"label":"Tag 10"},{"label":"Tag 11"},{"label":"Tag 12"},{"label":"Tag 13"},{"label":"Tag 14"}]}` |
+| dismissible | `{"maxVisible":2,"tags":[{"label":"One"},{"label":"Two"}]}` |
 
 ## TagSkeleton
 

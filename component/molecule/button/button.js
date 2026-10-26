@@ -75,6 +75,14 @@ export default function Button (ctx) {
     // beside it. The ring draws its own page-color line width (none in the
     // primary system, where the ring is a plain inset)
     const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth));
+    // A composing parent may point the ring at another leaf (the toggletip's
+    // action sits on the inverse surface, whose ring is `focus_ring_inverse`)
+    if (Utils.isString(props.focusRingLeaf)) {
+      ring.outlineColor = ctx.color(props.focusRingLeaf);
+      if (Utils.isString(ring.borderColor)) {
+        ring.borderColor = ctx.color(props.focusRingLeaf);
+      }
+    }
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
     }

@@ -16,12 +16,16 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' },
     accessibilityLabel: { type: 'string', required: false, description: 'The accessible name when it should differ from the children.' }
   }),
+  composition: Object.freeze({
+    inverse: { type: 'boolean', required: false, description: 'Composition prop: draws the inverse cells - `link_label_inverse` and its hover - with the inverse focus ring; a dark surface asks for it.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),
   tokens: Object.freeze([
     'color.link_label', 'color.link_label_hover', 'color.link_label_active',
     'color.link_label_visited', 'color.link_label_disabled', 'color.link_focus_ring',
     'type.link_label', 'type.link_label_small', 'type.link_label_large',
+    'color.link_label_inverse', 'color.link_label_inverse_hover', 'color.focus_ring_inverse',
     'control.link_focus_width', 'control.link_icon_gap',
     'control.link_icon_size', 'control.link_icon_size_large'
   ]),

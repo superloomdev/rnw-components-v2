@@ -78,6 +78,15 @@ import SelectItemSample, { FRAME as SelectItemFrame } from './component/composit
 import SelectItemGroupSample, { FRAME as SelectItemGroupFrame } from './component/composite/select/sample.select-item-group.js';
 import ComboBoxSample, { FRAME as ComboBoxFrame } from './component/composite/select/sample.combo-box.js';
 import FloatingActionButtonSample from './component/molecule/floating-action-button/sample.floating-action-button.js';
+import PopoverSample from './component/molecule/popover/sample.js';
+import PopoverContentSample from './component/molecule/popover/sample.popover-content.js';
+import DefinitionTooltipSample from './component/molecule/tooltip/sample.definition-tooltip.js';
+import ToggletipSample from './component/molecule/tooltip/sample.toggletip.js';
+import ToggletipLabelSample from './component/molecule/tooltip/sample.toggletip-label.js';
+import ToggletipButtonSample from './component/molecule/tooltip/sample.toggletip-button.js';
+import ToggletipContentSample from './component/molecule/tooltip/sample.toggletip-content.js';
+import ToggletipActionsSample from './component/molecule/tooltip/sample.toggletip-actions.js';
+import TagSetSample, { FRAME as TagSetFrame } from './component/molecule/tag/sample.tag-set.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -156,5 +165,14 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'SelectItem', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: SelectItemFrame, sample: SelectItemSample }),
   Object.freeze({ name: 'SelectItemGroup', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'superloom_decision']), frame: SelectItemGroupFrame, sample: SelectItemGroupSample }),
   Object.freeze({ name: 'ComboBox', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ComboBoxFrame, sample: ComboBoxSample }),
-  Object.freeze({ name: 'FloatingActionButton', family: 'FloatingActionButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: FloatingActionButtonSample })
+  Object.freeze({ name: 'FloatingActionButton', family: 'FloatingActionButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: FloatingActionButtonSample }),
+  Object.freeze({ name: 'Popover', family: 'Popover', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: PopoverSample }),
+  Object.freeze({ name: 'PopoverContent', family: 'Popover', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: PopoverContentSample }),
+  Object.freeze({ name: 'DefinitionTooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: DefinitionTooltipSample }),
+  Object.freeze({ name: 'Toggletip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: ToggletipSample }),
+  Object.freeze({ name: 'ToggletipLabel', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipLabelSample }),
+  Object.freeze({ name: 'ToggletipButton', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipButtonSample }),
+  Object.freeze({ name: 'ToggletipContent', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: ToggletipContentSample }),
+  Object.freeze({ name: 'ToggletipActions', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipActionsSample }),
+  Object.freeze({ name: 'TagSet', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TagSetFrame, sample: TagSetSample })
 ]);

@@ -2454,6 +2454,136 @@
       "test": "combo-box.test.js",
       "testName": "a press puts the invalid icon at its unpopulated seat",
       "why": "the invalid icon takes its unpopulated seat while the input is pressed; dropping the press check must fail the assertion"
+    },
+    {
+      "id": "popover-caret-offset",
+      "file": "component/molecule/popover/popover.js",
+      "find": "(caret === true ? caretHeight / 2 : 0)",
+      "replace": "0",
+      "runner": "node",
+      "test": "popover.test.js",
+      "testName": "the caret offset adds half the caret height; without a caret it does not",
+      "why": "the caret lifts the surface half its height"
+    },
+    {
+      "id": "popover-shadow-hc",
+      "file": "component/molecule/popover/popover-content.js",
+      "find": "props.dropShadow === true && highContrast === false",
+      "replace": "props.dropShadow === true",
+      "runner": "node",
+      "test": "popover.test.js",
+      "testName": "the inverse surface reads the tooltip cells and draws no shadow",
+      "why": "the inverse surface never draws a shadow"
+    },
+    {
+      "id": "popover-border-flag",
+      "file": "component/molecule/popover/popover-content.js",
+      "find": "props.border === true && highContrast === false ? ctx.color('popover_border') : undefined",
+      "replace": "ctx.color('popover_border')",
+      "runner": "node",
+      "test": "popover.test.js",
+      "testName": "the border flag draws the 1px popover border",
+      "why": "the border only draws when border is set"
+    },
+    {
+      "id": "definition-underline-hover",
+      "file": "component/molecule/tooltip/definition-tooltip.js",
+      "find": "hovered === true ? 'definition_term_underline_hover' : 'definition_term_underline'",
+      "replace": "'definition_term_underline'",
+      "runner": "node",
+      "test": "definition-tooltip.test.js",
+      "testName": "the hover underline reads the hover cell and openOnHover opens on enter",
+      "why": "the hovered or focused term reads the hover underline cell"
+    },
+    {
+      "id": "definition-max-width",
+      "file": "component/molecule/tooltip/definition-tooltip.js",
+      "find": "ctx.metric('DefinitionTooltip', 'maxWidth')",
+      "replace": "ctx.metric('Popover', 'maxWidth')",
+      "runner": "node",
+      "test": "definition-tooltip.test.js",
+      "testName": "the term reads the underline cells and toggles on press",
+      "why": "the bubble caps at the definition tooltip max width, not the popover's"
+    },
+    {
+      "id": "toggletip-offset",
+      "file": "component/molecule/tooltip/toggletip.js",
+      "find": "ctx.metric('Toggletip', 'offset')",
+      "replace": "ctx.metric('Popover', 'offset')",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "the bubble rides the toggletip offset cell, not the popover offset",
+      "why": "the toggletip rides its own offset cell"
+    },
+    {
+      "id": "toggletip-icon-active",
+      "file": "component/molecule/tooltip/toggletip-button.js",
+      "find": "state.hovered === true || props.expanded === true",
+      "replace": "state.hovered === true",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "the icon reads the active cell while the bubble is open",
+      "why": "the icon reads the active cell while open too"
+    },
+    {
+      "id": "link-inverse-color",
+      "file": "component/molecule/link/link.js",
+      "find": "'link_label_inverse_hover' : 'link_label_inverse'",
+      "replace": "'link_label_inverse_hover' : 'link_label'",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "a link action renders the inverse link and a button action the inverse-ring button",
+      "why": "the inverse link reads the inverse label cells"
+    },
+    {
+      "id": "button-inverse-ring",
+      "file": "component/molecule/button/button.js",
+      "find": "Utils.isString(props.focusRingLeaf)",
+      "replace": "false",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "a link action renders the inverse link and a button action the inverse-ring button",
+      "why": "the composed button draws the inverse focus ring"
+    },
+    {
+      "id": "tag-set-gap",
+      "file": "component/molecule/tag/tag-set.js",
+      "find": "ctx.metric('TagSet', 'gap')",
+      "replace": "ctx.token('spacing.spacing_02')",
+      "runner": "node",
+      "test": "tag-set.test.js",
+      "testName": "each tag carries the tag_set_gap margin and the row keeps it",
+      "why": "the row gap is the tag_set_gap cell"
+    },
+    {
+      "id": "tag-set-max-visible",
+      "file": "component/molecule/tag/tag-set.js",
+      "find": "Utils.isNumber(props.maxVisible) ? props.maxVisible : tags.length",
+      "replace": "tags.length",
+      "runner": "node",
+      "test": "tag-set.test.js",
+      "testName": "maxVisible caps the visible count and the rest sit behind the overflow tag",
+      "why": "the cap must apply"
+    },
+    {
+      "id": "tag-set-view-all-threshold",
+      "file": "component/molecule/tag/tag-set.js",
+      "find": "const many = hidden.length > 10;",
+      "replace": "const many = hidden.length > 0;",
+      "runner": "node",
+      "test": "tag-set.test.js",
+      "testName": "the overflow press opens the popover listing hidden tags",
+      "why": "the view-all link appears only past ten hidden tags"
+    },
+    {
+      "id": "toggletip-button-target",
+      "file": "component/molecule/tooltip/toggletip-button.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "the target meets the theme's press floor on both axes",
+      "why": "the info glyph's face is 16; the press layer must still meet control.target_min"
     }
   ]
 }

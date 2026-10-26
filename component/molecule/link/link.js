@@ -45,12 +45,15 @@ export default function Link (ctx) {
 
     const size = props.size === 'sm' || props.size === 'lg' ? props.size : 'md';
 
-    // The color leaf: disabled, then pressed, hovered, visited, rest
+    // The color leaf: disabled, then the inverse pair a composing parent
+    // asks for on a dark surface, then pressed, hovered, visited, rest
+    const inverse = props.inverse === true;
     const leaf = disabled ? 'link_label_disabled'
-      : state.pressed === true ? 'link_label_active'
-        : state.hovered === true ? 'link_label_hover'
-          : props.visited === true ? 'link_label_visited'
-            : 'link_label';
+      : inverse === true ? (state.pressed === true || state.hovered === true ? 'link_label_inverse_hover' : 'link_label_inverse')
+        : state.pressed === true ? 'link_label_active'
+          : state.hovered === true ? 'link_label_hover'
+            : props.visited === true ? 'link_label_visited'
+              : 'link_label';
 
     // Underline while inline, hovered, focused or pressed, unless disabled
     const underline = !disabled && (props.inline === true || state.hovered === true || state.focused === true || state.pressed === true);
@@ -58,7 +61,7 @@ export default function Link (ctx) {
     // The ring while focused or pressed: a solid outline at the edge
     const ring = !disabled && (state.focused === true || state.pressed === true)
       ? {
-        outlineColor: ctx.color('link_focus_ring'),
+        outlineColor: ctx.color(inverse === true ? 'focus_ring_inverse' : 'link_focus_ring'),
         outlineOffset: ctx.metric('Link', 'focusOffset'),
         outlineStyle: 'solid',
         outlineWidth: ctx.metric('Link', 'focusWidth')

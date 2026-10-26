@@ -249,6 +249,15 @@ describe('ComboBox: typing filters and opens the list', function () {
       inputProps[0].onMouseUp();
     });
     assert.deepEqual(iconSeat(), before);
+    // The native press handlers track the same flag
+    await act(async function () {
+      inputProps[0].onPressIn();
+    });
+    assert.notDeepEqual(iconSeat(), before);
+    await act(async function () {
+      inputProps[0].onPressOut();
+    });
+    assert.deepEqual(iconSeat(), before);
   });
 
   test('a focused invalid field carries the focus ring', async function () {

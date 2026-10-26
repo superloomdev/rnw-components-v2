@@ -224,6 +224,20 @@ export default function ComboBox (ctx) {
           combo.inputProps.onMouseUp(event);
         }
       },
+      // React Native's TextInput fires these on the native halves; the web
+      // build ignores them, where the DOM events above carry the press
+      onPressIn: function (event) {
+        setPressing(true);
+        if (typeof combo.inputProps.onPressIn === 'function') {
+          combo.inputProps.onPressIn(event);
+        }
+      },
+      onPressOut: function (event) {
+        setPressing(false);
+        if (typeof combo.inputProps.onPressOut === 'function') {
+          combo.inputProps.onPressOut(event);
+        }
+      },
       placeholder: Utils.isString(props.placeholder) ? props.placeholder : '',
       placeholderTextColor: presentation.placeholderColor,
       testID: props.testID,

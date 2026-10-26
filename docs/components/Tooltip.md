@@ -10,6 +10,10 @@ above it on hover, focus or touch.
 
 ### Decisions
 
+`requires_parent`: ToggletipContent must be composed inside Toggletip; the reference draws the content only inside an open parent.
+
+`no_reference`: the reference draws this member only inside an open parent, so it is measured through that parent's samples.
+
 - The wrapper, not the anchor, owns the listeners: pointer, focus and touch
   events propagate to it, so the anchor keeps its own role and focusability
   and nothing is cloned.
@@ -50,6 +54,212 @@ above it on hover, focus or touch.
 
 `none` - the compact geometry comes from the theme's `tooltip_compact`
 cells.
+
+## DefinitionTooltip
+
+DefinitionTooltip underlines a term and shows its definition in a small inverse bubble when the term is pressed, or hovered when asked.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `touch_degraded` - fallback: opens on press without hover |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `string` | yes | The term; it carries the dotted underline that toggles the definition bubble. |
+| `definition` | `string` | yes | The definition shown in the inverse bubble while the term is open. |
+| `align` | `string` | no | The side and alignment the bubble opens on; the 12 Popover placements. Default `bottom`. |
+| `autoAlign` | `boolean` | no | Flips the placement at the viewport edge. |
+| `openOnHover` | `boolean` | no | Opens on the pointer entering the term and closes when it leaves. Default false: a press toggles. |
+| `defaultOpen` | `boolean` | no | Initially open. |
+| `testID` | `string` | no | Test identifier forwarded to the term's pressable. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `maxWidth` | `control.definition_tooltip_max_width` |
+| `paddingBlock` | `control.definition_tooltip_padding_block` |
+| `paddingInline` | `control.definition_tooltip_padding_inline` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Term","definition":"The definition of the term"}` |
+| open | `{"children":"Term","definition":"The definition of the term","defaultOpen":true}` |
+| hover-mode | `{"children":"Term","definition":"The definition of the term","openOnHover":true}` |
+| top | `{"children":"Term","definition":"The definition of the term","align":"top","defaultOpen":true}` |
+
+## Toggletip
+
+Toggletip pairs a label with an information button that toggles an inverse bubble of text and up to two actions.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `touch_degraded` - fallback: opens on press without hover |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | The ToggletipLabel text beside the button. |
+| `buttonLabel` | `string` | no | The button's accessible name. Default `Show information`. |
+| `content` | `node` | yes | The bubble's text. |
+| `actions` | `array` | no | Up to two `{ label, kind: "link" | "button", href?, onPress? }` laid out at the bubble's base. |
+| `align` | `string` | no | The side and alignment the bubble opens on; the 12 Popover placements. Default `bottom`. |
+| `autoAlign` | `boolean` | no | Flips the placement at the viewport edge. |
+| `defaultOpen` | `boolean` | no | Initially open. |
+| `testID` | `string` | no | Test identifier forwarded to the toggletip root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `offset` | `control.toggletip_offset` |
+| `maxWidth` | `control.toggletip_max_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Toggletip label","content":"Helpful information for this field"}` |
+| open | `{"label":"Toggletip label","content":"Helpful information for this field","defaultOpen":true}` |
+| with-actions | `{"label":"Toggletip label","content":"Helpful information for this field","defaultOpen":true,"actions":[{"kind":"link","label":"Learn more","href":"#"},{"kind":"button","label":"Apply"}]}` |
+| bottom | `{"label":"Toggletip label","content":"Helpful information for this field","align":"bottom","defaultOpen":true}` |
+
+## ToggletipActions
+
+ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `actions` | `array` | no | The action list, at most two; the Toggletip supplies it. |
+| `testID` | `string` | no | Test identifier forwarded to the actions row. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"actions":[{"kind":"link","label":"Learn more","href":"#"},{"kind":"button","label":"Apply"}]}` |
+
+## ToggletipButton
+
+ToggletipButton is the information button that opens and closes a Toggletip; it must be composed inside Toggletip.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | The button's accessible name. |
+| `testID` | `string` | no | Test identifier forwarded to the button. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Show information"}` |
+
+## ToggletipContent
+
+ToggletipContent is the body text of a Toggletip's bubble; it must be composed inside Toggletip; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `node` | no | The bubble's body text; a second node after it is the actions row. |
+| `testID` | `string` | no | Test identifier forwarded to the content. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `maxWidth` | `control.toggletip_max_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Toggletip body text"}` |
+
+## ToggletipLabel
+
+ToggletipLabel is the text beside a Toggletip's button; it must be composed inside Toggletip.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `anchored-position` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `string` | no | The label text beside the button. |
+| `testID` | `string` | no | Test identifier forwarded to the label. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Toggletip label"}` |
 
 ## Tooltip
 

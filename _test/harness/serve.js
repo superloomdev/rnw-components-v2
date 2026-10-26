@@ -106,8 +106,10 @@ files (`.../IBM-Plex-Sans/fonts/` -> `/fonts/plex-sans/`).
 function readUpstreamCss () {
 
   const css = readFileSync(join(MODULES, '@carbon', 'styles', 'css', 'styles.min.css'), 'utf8');
+  // The ibm-products sheet carries TagSet's styles; its font urls are unused here
+  const products = readFileSync(join(MODULES, '@carbon', 'ibm-products', 'css', 'index-without-carbon.min.css'), 'utf8');
 
-  return css.replace(/https:\/\/1\.www\.s81c\.com\/common\/carbon\/plex\/fonts\/IBM-Plex-([A-Za-z-]+)\/fonts\//g, function (match, family) {
+  return (css + products).replace(/https:\/\/1\.www\.s81c\.com\/common\/carbon\/plex\/fonts\/IBM-Plex-([A-Za-z-]+)\/fonts\//g, function (match, family) {
     return '/fonts/plex-' + family.toLowerCase() + '/';
   });
 
