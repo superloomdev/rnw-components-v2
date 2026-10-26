@@ -852,14 +852,15 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   @return {Function} - The wrapped component
   *********************************************************************/
-  function withoutOsFontScaling (TextComponent) {
+  function withoutOsFontScaling (TextComponent, baseStyle) {
 
     if (Utils.isNullOrUndefined(TextComponent)) {
       return TextComponent;
     }
 
     function OsScalingOff (props) {
-      return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
+      return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props,
+        baseStyle === undefined ? {} : { style: [baseStyle, props.style] }));
     }
 
     OsScalingOff.displayName = 'OsScalingOff(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
@@ -871,11 +872,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   // On native, OS font scaling is switched off centrally; on the web the
   // injected React Native is the web build, which knows no such prop. The
   // native wrapper inherits the namespace rather than copying it, so no other
-  // export's lazy getter runs (React Native 0.88 throws from removed modules)
+  // export's lazy getter runs (React Native 0.88 throws from removed modules).
+  // Android's EditText keeps the theme's vertical padding on any side the
+  // style leaves unset, so the native input zeroes both before the caller's style
   const reactNative = platform.isNative
     ? Object.create(Lib.ReactNative, {
       Text: { value: withoutOsFontScaling(Lib.ReactNative.Text), enumerable: true },
-      TextInput: { value: withoutOsFontScaling(Lib.ReactNative.TextInput), enumerable: true }
+      TextInput: { value: withoutOsFontScaling(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 }), enumerable: true }
     })
     : Lib.ReactNative;
 

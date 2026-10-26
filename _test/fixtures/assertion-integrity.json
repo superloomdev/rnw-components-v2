@@ -2324,6 +2324,26 @@
       "test": "fire-result.test.js",
       "testName": "a signal-killed child is not a mutation proof",
       "why": "a child that dies must never count as a fired row; a classifier that returns true unconditionally must fail the pinned cases"
+    },
+    {
+      "id": "native-input-padding-zeroed",
+      "file": "component/context.js",
+      "find": "withoutOsFontScaling(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 })",
+      "replace": "withoutOsFontScaling(Lib.ReactNative.TextInput, {})",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "the native input zeroes Android vertical padding before the caller style",
+      "why": "the native input must zero Android's default vertical padding before the caller's style"
+    },
+    {
+      "id": "toggle-system-seat",
+      "file": "component/molecule/switch/toggle.native.js",
+      "find": "width: ctx.metric('Toggle', small ? 'trackWidthSmall' : 'trackWidth')",
+      "replace": "width: ctx.metric('Toggle', 'layerSize')",
+      "runner": "node",
+      "test": "toggle.test.js",
+      "testName": "the OS switch sits in a seat of the drawn track's size",
+      "why": "the system seat must carry the drawn track's width for the size"
     }
   ]
 }

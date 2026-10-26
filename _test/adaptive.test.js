@@ -146,6 +146,38 @@ describe('adaptive: text scale', function () {
     await cleanup();
   });
 
+  test('the native input zeroes Android vertical padding before the caller style', async function () {
+    const seen = { text: [], input: [] };
+    function SpyText (props) {
+      seen.text.push(props);
+      return React.createElement(Lib.ReactNative.View);
+    }
+    function SpyTextInput (props) {
+      seen.input.push(props);
+      return React.createElement(Lib.ReactNative.View);
+    }
+    const nativeLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: 'ios' },
+        Text: SpyText,
+        TextInput: SpyTextInput
+      })
+    });
+    const ctx = buildSystem('default', { Probe: Probe }, { lib: nativeLib }).Probe.ctx;
+    const flat = function (style) {
+      return Object.assign({}, ...(Array.isArray(style) ? style : [style]).filter(function (x) { return x !== undefined && x !== null; }));
+    };
+    await render(React.createElement(ctx.ReactNative.TextInput, { style: { paddingTop: 7 } }));
+    const styled = flat(seen.input[0].style);
+    assert.equal(styled.paddingTop, 7, "the caller's explicit padding still wins");
+    assert.equal(styled.paddingBottom, 0);
+    await render(React.createElement(ctx.ReactNative.TextInput, null));
+    const plain = flat(seen.input[1].style);
+    assert.equal(plain.paddingTop, 0);
+    assert.equal(plain.paddingBottom, 0);
+    await cleanup();
+  });
+
   test('the native namespace is wrapped without reading any other export', function () {
     let touched = false;
     const RN = Object.assign({}, Lib.ReactNative, { Platform: { OS: 'ios' } });

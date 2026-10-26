@@ -12,7 +12,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/switch/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -323,6 +323,39 @@ describe('Toggle: state through the DOM', function () {
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.track.style.outlineWidth, t['control.switch_focus_width'] + 'px');
     assert.equal(parts.track.style.outlineColor, cssValue('outlineColor', t['color.switch_focus_ring']));
+  });
+
+});
+
+describe('Toggle: the system half', function () {
+
+  test("the OS switch sits in a seat of the drawn track's size", async function () {
+    const calls = [];
+    function StubSwitch (props) {
+      calls.push(props);
+      return React.createElement(Lib.ReactNative.View, { testID: 'stub-switch' });
+    }
+    const built = Lib.Themer.buildTheme(TEMPLATES.carbon, [], 'native', { variant: { form: 'expanded', platform: 'ios' } });
+    assert.equal(built.tokens['anatomy.toggle_widget'], 'system', 'fixture: carbon platform.ios pins the system widget');
+    const nativeLib = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'ios' } }),
+      adapters: { Switch: StubSwitch }
+    });
+    const Registry = buildSystem('default', factories, { built: built, config: {}, lib: nativeLib });
+    for (const size of [undefined, 'sm']) {
+      const keys = size === 'sm' ? ['size.size_small', 'size.icon_01'] : ['control.switch_track_width', 'control.switch_track_height'];
+      const container = await render(React.createElement(Registry.Toggle, { label: 'L', checked: true, onText: 'On', offText: 'Off', size: size }));
+      const seat = container.querySelector('[data-testid="stub-switch"]').parentElement;
+      assert.equal(parseFloat(seat.style.width), built.tokens[keys[0]], 'seat width is the track metric');
+      assert.equal(parseFloat(seat.style.height), built.tokens[keys[1]], 'seat height is the track metric');
+      // The state text renders as in the drawn half, with the row's gap
+      const texts = seat.parentElement.children;
+      const stateEl = texts[texts.length - 1];
+      const gap = parseFloat(stateEl.style.marginInlineStart || stateEl.style.marginLeft);
+      assert.equal(gap, built.tokens['spacing.spacing_03'], 'state text keeps the drawn row gap');
+      assert.equal(stateEl.textContent, 'On');
+      await cleanup();
+    }
   });
 
 });
