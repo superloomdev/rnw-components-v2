@@ -107,3 +107,8 @@ export { default as SkipToContent } from './component/molecule/skip-to-content/s
 export { default as OverflowMenu } from './component/composite/menu/overflow-menu.js';
 export { default as OverflowMenuItem } from './component/composite/menu/overflow-menu-item.js';
 export { default as MenuButton } from './component/composite/menu/menu-button.js';
+export { default as MenuItem } from './component/composite/menu/menu-item.js';
+export { default as MenuItemSelectable } from './component/composite/menu/menu-item-selectable.js';
+export { default as MenuItemRadioGroup } from './component/composite/menu/menu-item-radio-group.js';
+export { default as MenuItemGroup } from './component/composite/menu/menu-item-group.js';
+export { default as MenuItemDivider } from './component/composite/menu/menu-item-divider.js';

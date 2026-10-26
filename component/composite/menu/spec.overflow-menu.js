@@ -10,10 +10,12 @@ export default Object.freeze({
   iconSize: 'size.icon_01',
   level: 'stacking.dropdown',
   optionHeight: 'control.option_height',
+  optionHeightXsmall: 'size.size_xsmall',
+  optionHeightSmall: 'size.size_small',
   optionHeightLarge: 'size.size_large',
   optionMaxWidth: 'control.overflow_menu_option_max_width',
   optionPaddingInline: 'control.list_item_padding_inline',
   dividerWidth: 'control.menu_divider_width',
   dangerInsetWidth: 'control.menu_item_danger_focus_inset_width',
-  spacing: { constant: 8 }
+  spacing: 'control.menu_viewport_margin'
 });

@@ -6,6 +6,8 @@
 
 export default Object.freeze({
   optionHeight: 'control.option_height',
+  optionHeightXsmall: 'size.size_xsmall',
+  optionHeightSmall: 'size.size_small',
   optionHeightLarge: 'size.size_large',
   optionPaddingInline: 'control.list_item_padding_inline',
   optionMaxWidth: 'control.overflow_menu_option_max_width',

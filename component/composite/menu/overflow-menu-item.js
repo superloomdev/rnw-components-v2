@@ -58,7 +58,7 @@ export default function OverflowMenuItem (ctx) {
       backgroundColor: !disabled && !danger && active ? ctx.color('list_item_container_hover') : 'transparent',
       borderTopColor: ctx.color('menu_divider'),
       borderTopWidth: props.divider === true ? ctx.metric('OverflowMenuItem', 'dividerWidth') : 0,
-      height: props.size === 'lg' ? ctx.metric('OverflowMenuItem', 'optionHeightLarge') : ctx.metric('OverflowMenuItem', 'optionHeight')
+      height: ctx.metric('OverflowMenuItem', { xs: 'optionHeightXsmall', sm: 'optionHeightSmall', lg: 'optionHeightLarge' }[props.size] || 'optionHeight')
     };
     const labelLeaf = disabled ? 'list_item_label_disabled'
       : danger ? (active ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')

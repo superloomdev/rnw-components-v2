@@ -3025,7 +3025,7 @@
         "version": "1.115.0",
         "export": "MenuItem"
       },
-      "description": "MenuItem is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItem is one action of a Menu, with an optional icon and shortcut, a danger kind and a submenu of further items; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3037,7 +3037,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItem",
@@ -3046,7 +3046,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemDivider",
@@ -3057,7 +3057,7 @@
         "version": "1.115.0",
         "export": "MenuItemDivider"
       },
-      "description": "MenuItemDivider is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemDivider is a rule that separates groups of items in a Menu; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3069,7 +3069,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemDivider",
@@ -3078,7 +3078,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemGroup",
@@ -3089,7 +3089,7 @@
         "version": "1.115.0",
         "export": "MenuItemGroup"
       },
-      "description": "MenuItemGroup is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemGroup names a run of a Menu's items for assistive technology without drawing a heading; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3101,7 +3101,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemGroup",
@@ -3110,7 +3110,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemRadioGroup",
@@ -3121,7 +3121,7 @@
         "version": "1.115.0",
         "export": "MenuItemRadioGroup"
       },
-      "description": "MenuItemRadioGroup is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemRadioGroup is a named set of Menu items of which exactly one is selected and marked; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3133,7 +3133,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemRadioGroup",
@@ -3142,7 +3142,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemSelectable",
@@ -3153,7 +3153,7 @@
         "version": "1.115.0",
         "export": "MenuItemSelectable"
       },
-      "description": "MenuItemSelectable is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemSelectable is a Menu item that toggles on and off and shows a mark while it is on; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3165,7 +3165,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemSelectable",
@@ -3174,7 +3174,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OverflowMenu",
