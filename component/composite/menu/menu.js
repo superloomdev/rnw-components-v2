@@ -49,8 +49,9 @@ export default function Menu (ctx) {
     // selectable (the element tree stays the same under every template);
     // where `anatomy.menu_icon_seat` says `item` the seat draws only for an
     // item carrying an icon of its own
-    const selectable = items.some(function (item) {
-      return item.selected !== undefined;
+    const selectable = items.some(function anySelectable (item) {
+      return item.selected !== undefined || item.radioGroup !== undefined ||
+        (item.group !== undefined && Utils.isArray(item.items) && item.items.some(anySelectable));
     });
     const icons = items.some(function (item) {
       return item.icon !== undefined;

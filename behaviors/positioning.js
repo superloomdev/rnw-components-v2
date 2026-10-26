@@ -436,7 +436,9 @@ export default function createPositioningBehaviors (deps) {
       const onClick = function (event) {
         const current = latestRef.current;
         const root = current.rootRef && current.rootRef.current;
-        if (event.target && root && !root.contains(event.target)) {
+        const content = current.contentRef && current.contentRef.current;
+        if (event.target && root && !root.contains(event.target) &&
+            !(content && content.contains(event.target))) {
           if (typeof current.onRequestClose === 'function') {
             current.onRequestClose(event);
           }

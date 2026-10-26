@@ -13,6 +13,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/menu/sample.overflow-menu.js';
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { createRoot } from 'react-dom/client';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -139,6 +140,79 @@ describe('OverflowMenu: the open panel', function () {
     });
     assert.equal(container.querySelector('[role="menu"]'), null, 'the press closes the panel');
     assert.equal(document.activeElement, trigger, 'the press refocuses the trigger');
+  });
+
+});
+
+describe('OverflowMenu: `open` seeds and re-syncs, never locks', function () {
+
+  test('a passed open seeds the panel, and every close still lands: Escape', async function () {
+    let closed = 0;
+    const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {
+      items: OPEN.props.items,
+      open: true,
+      onClose: function () {
+        closed += 1;
+      }
+    }));
+    const panel = container.querySelector('[role="menu"]');
+    assert.notEqual(panel, null, 'open: true mounts the panel');
+    await act(async function () {
+      panel.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closes a seeded panel');
+    assert.equal(closed, 1, 'onClose fired once for the open -> close cycle');
+  });
+
+  test('a closed seeded panel re-opens when `open` flips back to true', async function () {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async function () {
+        root.render(React.createElement(registryFor('carbon').OverflowMenu, { items: OPEN.props.items, open: true }));
+      });
+      const panel = container.querySelector('[role="menu"]');
+      await act(async function () {
+        panel.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+      });
+      assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed the seeded panel');
+      await act(async function () {
+        root.render(React.createElement(registryFor('carbon').OverflowMenu, { items: OPEN.props.items, open: false }));
+      });
+      assert.equal(container.querySelector('[role="menu"]'), null, 'open: false keeps it closed');
+      await act(async function () {
+        root.render(React.createElement(registryFor('carbon').OverflowMenu, { items: OPEN.props.items, open: true }));
+      });
+      assert.notEqual(container.querySelector('[role="menu"]'), null, 'open: true again re-syncs it open');
+    } finally {
+      await act(async function () {
+        root.unmount();
+      });
+      container.remove();
+    }
+  });
+
+  test('a document click outside closes; a click inside the panel does not', async function () {
+    let closed = 0;
+    const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {
+      items: OPEN.props.items,
+      open: true,
+      onClose: function () {
+        closed += 1;
+      }
+    }));
+    const panel = container.querySelector('[role="menu"]');
+    await act(async function () {
+      panel.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.notEqual(container.querySelector('[role="menu"]'), null, 'a click inside the panel does not close it');
+    assert.equal(closed, 0, 'onClose quiet inside');
+    await act(async function () {
+      document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'a click outside closes the panel');
+    assert.equal(closed, 1, 'onClose fired once');
   });
 
 });

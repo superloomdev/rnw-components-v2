@@ -7,7 +7,8 @@ export default Object.freeze({
   props: Object.freeze({
     items: { type: 'array', required: true, description: 'The panel\'s options: `{ label, disabled, danger, divider, href, onPress }` per row.' },
     size: { type: 'string', required: false, description: 'One of `xs`, `sm`, `md`, `lg`: the trigger square\'s side off the size scale. Default `md`.' },
-    open: { type: 'boolean', required: false, description: 'Whether the panel is open; when given the caller owns it and closes through `onClose`, otherwise the trigger toggles it.' },
+    open: { type: 'boolean', required: false, description: 'Whether the panel is open; a given value seeds it and re-syncs on change, otherwise the trigger toggles it.' },
+    onOpen: { type: 'function', required: false, description: 'Called when the panel opens (the trigger press).' },
     flipped: { type: 'boolean', required: false, description: 'Align the panel\'s end edge to the trigger\'s instead of the start edge. Default false.' },
     direction: { type: 'string', required: false, description: '`bottom` (default) or `top`: the trigger edge the panel opens from.' },
     iconDescription: { type: 'string', required: false, description: 'The trigger\'s accessible name and its tooltip label. Default `Options`.' },

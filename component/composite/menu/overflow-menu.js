@@ -39,14 +39,20 @@ export default function OverflowMenu (ctx) {
   *********************************************************************/
   function OverflowMenuComponent (props) {
 
-    // Init the size, direction, alignment and open state (controlled when
-    // `open` is given, the trigger's own toggle otherwise)
+    // Init the size, direction, alignment and open state: `open` seeds the
+    // panel, never locks it - every close path dismisses it and a prop
+    // change re-syncs, as upstream
     const size = Utils.inArray(SIZES, props.size) ? props.size : 'md';
     const direction = props.direction === 'top' ? 'top' : 'bottom';
     const flipped = props.flipped === true;
-    const controlled = props.open !== undefined;
-    const [toggled, setToggled] = React.useState(false);
-    const open = controlled ? props.open === true : toggled;
+    const [open, setOpen] = React.useState(props.open === true);
+    const openPropRef = React.useRef(props.open);
+    React.useEffect(function () {
+      if (props.open !== openPropRef.current) {
+        openPropRef.current = props.open;
+        setOpen(props.open === true);
+      }
+    }, [props.open]);
     // `onClose` fires once per open -> close cycle: Escape's keydown, the
     // blur it causes and an outside press all request the same close
     const openRef = React.useRef(open);
@@ -63,9 +69,7 @@ export default function OverflowMenu (ctx) {
         return;
       }
       openRef.current = false;
-      if (!controlled) {
-        setToggled(false);
-      }
+      setOpen(false);
       if (typeof props.onClose === 'function') {
         props.onClose();
       }
@@ -123,11 +127,11 @@ export default function OverflowMenu (ctx) {
         }
       }
     }, [open, positioned.measure, collection.state.items]);
-    const dismiss = usePopoverDismiss({
+    usePopoverDismiss({
       contentRef: panelRef,
       onRequestClose: close,
       open: open,
-      rootRef: panelRef
+      rootRef: containerRef
     });
 
     // Arrows rove over the enabled options; Escape and Tab close through
@@ -154,13 +158,9 @@ export default function OverflowMenu (ctx) {
       ref: panelRef,
       onLayout: positioned.measure,
       accessibilityLabel: props.accessibilityLabel,
-      onBlur: function (event) {
-        dismiss.rootProps.onBlur(event);
-        collection.containerProps.onBlur(event);
-      },
+      onBlur: collection.containerProps.onBlur,
       nativeID: menuId,
       onKeyDown: onKeyDown,
-      onMouseDown: dismiss.rootProps.onMouseDown,
       role: 'menu',
       tabIndex: -1,
       style: [positioned.layerStyle, {
@@ -229,15 +229,14 @@ export default function OverflowMenu (ctx) {
       kind: 'ghost',
       label: props.iconDescription === undefined ? 'Options' : props.iconDescription,
       onPress: function () {
-        if (controlled) {
-          if (typeof props.onClose === 'function' && open) {
-            props.onClose();
-          }
+        if (open) {
+          close();
           return;
         }
-        setToggled(function (previous) {
-          return !previous;
-        });
+        setOpen(true);
+        if (typeof props.onOpen === 'function') {
+          props.onOpen();
+        }
       },
       size: size
     }));

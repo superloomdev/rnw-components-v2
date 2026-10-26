@@ -2844,6 +2844,26 @@
       "id": "perceptual-union-box-first",
       "test": "perceptual-harness.test.js",
       "why": "a unionBox returning only the first box must fail the union assertion"
+    },
+    {
+      "file": "component/composite/menu/overflow-menu.js",
+      "find": "      setOpen(false);",
+      "replace": "      if (props.open === undefined) {\n        setOpen(false);\n      }",
+      "testName": "a passed open seeds the panel, and every close still lands: Escape",
+      "runner": "node",
+      "id": "overflow-menu-open-locks",
+      "test": "overflow-menu.test.js",
+      "why": "a close path that ignores the request while `open` is passed must fail the seeded-close assertion"
+    },
+    {
+      "file": "component/composite/menu/menu.js",
+      "find": "      return item.selected !== undefined || item.radioGroup !== undefined ||\n        (Utils.isArray(item.items) && item.items.some(anySelectable));",
+      "replace": "      return item.selected !== undefined;",
+      "testName": "a menu whose only selectable sits inside a group reserves the seat on a plain top-level item",
+      "runner": "node",
+      "id": "menu-seat-top-level-only",
+      "test": "menu.test.js",
+      "why": "a top-level-only selectable check must fail the nested-selectable seat assertion"
     }
   ]
 }

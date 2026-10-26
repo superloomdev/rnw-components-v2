@@ -64,17 +64,17 @@ export default Object.freeze({
   parts: Object.freeze({
     surface: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'paddingTop', 'paddingBottom', 'backgroundColor'] }),
     item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
-    label: Object.freeze({ upstream: '.cds--menu-item .cds--menu-item__label', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"]', measure: 'text' }),
+    label: Object.freeze({ upstream: '.cds--menu-item .cds--menu-item__label', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"], [role="menuitemradio"] [dir="auto"]', measure: 'text' }),
     // The shortcut is its own text run: the item's last labelled text
-    shortcut: Object.freeze({ upstream: '.cds--menu-item__shortcut', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
+    shortcut: Object.freeze({ upstream: '.cds--menu-item__shortcut', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type, [role="menuitemradio"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
     icon: Object.freeze({ upstream: '.cds--menu-item__icon svg', ours: '[role="menuitem"] svg', measure: 'box', optional: true }),
-    mark: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"] .cds--menu-item__selection-icon svg', ours: '[role="menuitemcheckbox"][aria-checked="true"] > div > div:first-child svg', measure: 'box', optional: true }),
+    mark: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"] .cds--menu-item__selection-icon svg', ours: '[role="menuitemcheckbox"][aria-checked="true"] > div > div:first-child svg, [role="menuitemradio"][aria-checked="true"] > div > div:first-child svg', measure: 'box', optional: true }),
     divider: Object.freeze({ upstream: '.cds--menu-item-divider', ours: '[role="separator"]', measure: 'box', compare: ['width', 'height', 'backgroundColor', 'marginTop', 'marginBottom'] }),
     submenu: Object.freeze({ upstream: '.cds--menu .cds--menu', ours: '[role="menu"] [role="menu"]', measure: 'box', compare: ['width', 'paddingTop', 'backgroundColor'], optional: true }),
     caret: Object.freeze({ upstream: '.cds--menu-item__shortcut svg', ours: '[aria-haspopup="true"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true }),
     selected: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"]', ours: '[aria-checked="true"]', measure: 'box', compare: ['backgroundColor'], optional: true }),
-    // The danger states' first item is the danger one
-    danger: Object.freeze({ upstream: '.cds--menu-item--danger', ours: '[role="menuitem"]', measure: 'box', compare: ['backgroundColor', 'boxShadow'], optional: true }),
+    // The danger item names its kind on the row
+    danger: Object.freeze({ upstream: '.cds--menu-item--danger', ours: '[data-part="danger"]', measure: 'box', compare: ['backgroundColor', 'boxShadow'], optional: true }),
     outline: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['outlineColor', 'outlineWidth', 'outlineStyle'] })
   }),
   second: Object.freeze({

@@ -126,6 +126,7 @@ export default function MenuItem (ctx) {
     const role = item.radio === true ? 'menuitemradio' : item.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
     return React.createElement(Pressable, {
       ref: ref,
+      dataSet: danger === true ? { part: 'danger' } : undefined,
       role: role,
       'aria-checked': item.selected === undefined && item.radio !== true ? undefined : item.selected === true,
       'aria-expanded': hasSub ? submenuOpen : undefined,

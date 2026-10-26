@@ -145,8 +145,9 @@ describe('Menu: every sample state under every template', function () {
           // A selectable menu reserves the mark seat for every item, drawn
           // only where the anatomy says `shown`; a non-selectable menu
           // mounts no mark seat
-          const selectable = props.items.some(function (candidate) {
-            return candidate.selected !== undefined || candidate.radioGroup !== undefined;
+          const selectable = props.items.some(function anySelectable (candidate) {
+            return candidate.selected !== undefined || candidate.radioGroup !== undefined ||
+              (Array.isArray(candidate.items) && candidate.items.some(anySelectable));
           });
           const marked = Array.from(parts.option(item).querySelectorAll('svg path')).some(function (path) {
             return t['icon.selected_indicator'].paths.some(function (glyph) {
@@ -344,5 +345,23 @@ describe('Menu: a focused danger item draws the ring, the fill and the label cel
       assert.equal(item.style.boxShadow.includes(' ' + t['control.menu_item_danger_focus_inset_width'] + 'px '), true, 'the ring width');
     });
   }
+
+});
+
+describe('Menu: a nested selectable still reserves the mark seat', function () {
+
+  test('a menu whose only selectable sits inside a group reserves the seat on a plain top-level item', async function () {
+    const parts = await renderMenu(registryFor('carbon'), {
+      items: [
+        { label: 'Plain' },
+        { group: 'Views', items: [{ label: 'Grid view', selected: true }] }
+      ],
+      open: true,
+      x: 8,
+      y: 8
+    });
+    const item = parts.items()[0];
+    assert.notEqual(parts.mark(item).querySelector('svg'), null, 'the plain top-level item mounts the mark seat');
+  });
 
 });
