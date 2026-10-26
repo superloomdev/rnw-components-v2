@@ -2694,6 +2694,36 @@
       "runner": "node",
       "testName": "a text segment reads 16 and an icon segment 14 at lg",
       "why": "an icon-only segment at lg must read control.content_switcher_padding_inline_large (14), not the text padding"
+    },
+    {
+      "id": "accordion-divider-hover-blend",
+      "file": "component/composite/accordion/accordion-item.js",
+      "find": "const hoverRule = props.dividerHover === true || props.previousHover === true;",
+      "replace": "const hoverRule = props.dividerHover === true;",
+      "test": "accordion.test.js",
+      "runner": "node",
+      "testName": "the next item's top rule blends under a hovered heading",
+      "why": "a hovered heading's own top rule and the next item's rule both read color.accordion_divider_hover"
+    },
+    {
+      "id": "accordion-item-aria-expanded",
+      "file": "component/composite/accordion/accordion-item.js",
+      "find": "'aria-expanded': open,",
+      "replace": "'aria-expanded': true,",
+      "test": "accordion-item.test.js",
+      "runner": "node",
+      "testName": "pressing the heading toggles aria-expanded and aria-controls names the content",
+      "why": "aria-expanded reports the item's disclosure state"
+    },
+    {
+      "id": "copy-button-onclick-once",
+      "file": "component/molecule/copy/copy-button.js",
+      "find": "        props.onClick();",
+      "replace": "        // no onClick",
+      "test": "copy-button.test.js",
+      "runner": "node",
+      "testName": "the press calls onClick once",
+      "why": "onClick is the host's clipboard write; the component must call it exactly once per press"
     }
   ]
 }

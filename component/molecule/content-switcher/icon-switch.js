@@ -39,7 +39,7 @@ export default function IconSwitch (ctx) {
     const press = ctx.pressPresentation(state, 'content_switcher', {
       colors: {
         '': null,
-        '_active': hoverCell,
+        '_active': low ? 'content_switcher_low_contrast_container_active' : 'content_switcher_container_hover',
         '_disabled': null,
         '_focus': null,
         '_hover': hoverCell,

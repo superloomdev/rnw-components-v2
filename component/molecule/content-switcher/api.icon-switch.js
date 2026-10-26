@@ -26,7 +26,7 @@ export default Object.freeze({
     'color.content_switcher_icon_only', 'color.content_switcher_icon_hover', 'color.content_switcher_icon_selected', 'color.content_switcher_icon_disabled',
     'color.content_switcher_container_hover', 'color.content_switcher_container_selected', 'color.content_switcher_container_selected_disabled',
     'color.content_switcher_separator', 'color.content_switcher_separator_disabled',
-    'color.content_switcher_focus', 'color.content_switcher_focus_inset', 'color.content_switcher_low_contrast_icon_selected', 'color.content_switcher_low_contrast_container_selected',
+    'color.content_switcher_focus', 'color.content_switcher_focus_inset', 'color.content_switcher_low_contrast_icon_selected', 'color.content_switcher_low_contrast_container_active', 'color.content_switcher_low_contrast_container_selected',
     'feedback.focus_trigger'
   ]),
   colors: Object.freeze([])

@@ -3245,7 +3245,7 @@
         "version": "1.115.0",
         "export": "CopyButton"
       },
-      "description": "CopyButton is a component in the CodeSnippet family.",
+      "description": "CopyButton is an icon button whose tooltip confirms a copy for a moment after it is pressed.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3261,7 +3261,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SkipToContent",
@@ -3636,7 +3636,7 @@
         "version": "1.115.0",
         "export": "Accordion"
       },
-      "description": "Accordion is a component in the Accordion family.",
+      "description": "Accordion stacks headed sections that open and close independently, each with a chevron and a divider rule.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3655,7 +3655,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "AccordionItem",
@@ -3666,7 +3666,7 @@
         "version": "1.115.0",
         "export": "AccordionItem"
       },
-      "description": "AccordionItem is a component in the Accordion family; it must be composed inside Accordion.",
+      "description": "AccordionItem is one headed section of an Accordion with its chevron, title and collapsible content; it must be composed inside Accordion and has no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3678,16 +3678,17 @@
       ],
       "parent": "Accordion",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "AccordionItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "AccordionSkeleton",
@@ -3698,7 +3699,7 @@
         "version": "1.115.0",
         "export": "AccordionSkeleton"
       },
-      "description": "AccordionSkeleton is a component in the Accordion family.",
+      "description": "AccordionSkeleton draws the placeholder shape of an accordion, one section open, while its content loads.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3717,7 +3718,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "UnorderedList",

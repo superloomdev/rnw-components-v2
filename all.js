@@ -39,6 +39,10 @@ export { default as TabsSkeleton } from './component/composite/tabs/tabs-skeleto
 export { default as ContentSwitcher } from './component/composite/tabs/content-switcher.js';
 export { default as Switch } from './component/molecule/content-switcher/switch.js';
 export { default as IconSwitch } from './component/molecule/content-switcher/icon-switch.js';
+export { default as CopyButton } from './component/molecule/copy/copy-button.js';
+export { default as Accordion } from './component/composite/accordion/accordion.js';
+export { default as AccordionItem } from './component/composite/accordion/accordion-item.js';
+export { default as AccordionSkeleton } from './component/composite/accordion/accordion-skeleton.js';
 export { default as Menu } from './component/composite/menu/menu.js';
 export { default as Modal } from './component/composite/modal/modal.js';
 export { default as ToastNotification } from './component/molecule/notification/toast-notification.js';
