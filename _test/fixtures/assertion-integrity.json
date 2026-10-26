@@ -328,8 +328,8 @@
     {
       "id": "select-sizer",
       "file": "component/composite/select/select.js",
-      "find": "[placeholder].concat(items.map(",
-      "replace": "[].concat(items.map(",
+      "find": "[placeholder].concat(flatItems.map(",
+      "replace": "[].concat(flatItems.map(",
       "runner": "node",
       "test": "select.test.js",
       "testName": "the trigger is sized by a hidden sizer",
@@ -2296,6 +2296,16 @@
       "why": "the native wrapper must inherit the namespace, not copy it - copying runs every lazy export getter, and removed modules throw under React Native 0.88"
     },
     {
+      "id": "list-selected-active",
+      "file": "component/context.js",
+      "find": "state.selected === true ? 'list_item_container_selected_active' : 'list_item_container_active'",
+      "replace": "state.selected === true ? 'list_item_container_active' : 'list_item_container_active'",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a selected and pressed item draws the selected-active fill",
+      "why": "a selected row under press must draw the selected-active cell, not the plain active one"
+    },
+    {
       "id": "form-variant-applied",
       "file": "_test/harness/entry.js",
       "find": "variant: { form: form, platform: 'web' }",
@@ -2324,6 +2334,126 @@
       "test": "fire-result.test.js",
       "testName": "a signal-killed child is not a mutation proof",
       "why": "a child that dies must never count as a fired row; a classifier that returns true unconditionally must fail the pinned cases"
+    },
+    {
+      "id": "select-item-divider",
+      "file": "component/composite/select/select.js",
+      "find": "divider: index !== 0,",
+      "replace": "divider: true,",
+      "runner": "node",
+      "test": "select-item.test.js",
+      "testName": "the first option draws a transparent top border",
+      "why": "the first option must suppress the divider hairline"
+    },
+    {
+      "id": "select-group-disabled",
+      "file": "component/composite/select/select.js",
+      "find": "flatItems.push(entry.disabled === true ? Object.assign({}, item, { disabled: true }) : item);",
+      "replace": "flatItems.push(item);",
+      "runner": "node",
+      "test": "select-item-group.test.js",
+      "testName": "a disabled group disables its options: no onChange on press and the arrows skip them",
+      "why": "a group's disabled must propagate to every option it flattens"
+    },
+    {
+      "id": "select-group-header-type",
+      "file": "component/composite/select/select-item-group.js",
+      "find": "type: 'select_group_label'",
+      "replace": "type: 'list_item'",
+      "runner": "node",
+      "test": "select-item-group.test.js",
+      "testName": "carbon / default: the header reads the theme's list cells",
+      "why": "the group header reads the group label type set, not the option's"
+    },
+    {
+      "id": "combo-box-clear-inset",
+      "file": "component/composite/select/combo-box.js",
+      "find": "const clearInsetEnd = ctx.metric('ComboBox', 'clearInsetEnd');",
+      "replace": "const clearInsetEnd = ctx.metric('ComboBox', 'clearSize');",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "carbon / selected: exact member insets and paddings from the theme",
+      "why": "the clear seat sits at its own inset, not its size"
+    },
+    {
+      "id": "combo-box-padding-invalid",
+      "file": "component/composite/select/combo-box.js",
+      "find": "(invalid ? ctx.metric('ComboBox', 'inputPaddingEndInvalid') : ctx.metric('ComboBox', 'inputPaddingEnd'))",
+      "replace": "ctx.metric('ComboBox', 'inputPaddingEnd')",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "carbon / invalid-selected: exact member insets and paddings from the theme",
+      "why": "the input's end padding grows for the invalid icon while populated"
+    },
+    {
+      "id": "combo-box-clear-hidden",
+      "file": "component/composite/select/combo-box.js",
+      "find": "const clear = populated === true ? React.createElement(View, {",
+      "replace": "const clear = false ? React.createElement(View, {",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "carbon / selected: exact member insets and paddings from the theme",
+      "why": "the clear shows only while populated"
+    },
+    {
+      "id": "fab-extended-padding-end",
+      "file": "component/molecule/floating-action-button/floating-action-button.js",
+      "find": "ctx.metric('FloatingActionButton', 'extendedPaddingEnd')",
+      "replace": "ctx.metric('FloatingActionButton', 'extendedPadding')",
+      "runner": "node",
+      "test": "floating-action-button.test.js",
+      "testName": "material / extended: exact geometry, paint and type from the theme",
+      "why": "the extended form's end padding differs from its start padding"
+    },
+    {
+      "id": "fab-hover-shadow",
+      "file": "component/molecule/floating-action-button/floating-action-button.js",
+      "find": "state.hovered === true && state.pressed !== true ? 'shadow.fab_hover' : 'shadow.fab'",
+      "replace": "'shadow.fab'",
+      "runner": "node",
+      "test": "floating-action-button.test.js",
+      "testName": "material: hover lifts the elevation to the hover shadow, a press reports onPress once",
+      "why": "hover lifts the button to the hover shadow"
+    },
+    {
+      "id": "fab-large-icon",
+      "file": "component/molecule/floating-action-button/floating-action-button.js",
+      "find": "size === 'lg' ? 'iconSizeLarge' : 'iconSize'",
+      "replace": "'iconSize'",
+      "runner": "node",
+      "test": "floating-action-button.test.js",
+      "testName": "carbon / large: exact geometry, paint and type from the theme",
+      "why": "the large button takes the large icon cell"
+    },
+    {
+      "id": "combo-box-no-selected-fill",
+      "file": "component/composite/select/combo-box.js",
+      "find": "          selected: false",
+      "replace": "          selected: selectedItem",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "the open list draws no selected fill on the chosen option",
+      "why": "the open list draws no selected fill; painting one must fail the rest-fill assertion"
+    },
+    {
+      "id": "combo-box-focus-wins-invalid",
+      "file": "component/composite/select/combo-box.js",
+      "find": "      focused: state.focused === true || state.open === true,",
+      "replace": "      focused: false,",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "a focused invalid field carries the focus ring",
+      "why": "the focused or open field carries the focus ring even while invalid, as the reference does"
+    },
+    {
+      "id": "combo-box-invalid-icon-press",
+      "file": "component/composite/select/combo-box.js",
+      "find": " && pressing !== true",
+      "replace": " && true",
+      "runner": "node",
+      "test": "combo-box.test.js",
+      "testName": "a press puts the invalid icon at its unpopulated seat",
+      "why": "the invalid icon takes its unpopulated seat while the input is pressed; dropping the press check must fail the assertion"
     }
   ]
 }

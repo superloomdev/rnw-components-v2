@@ -20,5 +20,16 @@ export default Object.freeze([
   Object.freeze({ label: 'disabled', props: Object.freeze({ label: 'Size', items: ITEMS, value: 'small', disabled: true }) }),
   Object.freeze({ label: 'small', props: Object.freeze({ label: 'Size', placeholder: 'Small', items: ITEMS, size: 'sm' }) }),
   Object.freeze({ label: 'large', props: Object.freeze({ label: 'Size', placeholder: 'Large', items: ITEMS, size: 'lg' }) }),
-  Object.freeze({ label: 'unlabelled', props: Object.freeze({ accessibilityLabel: 'Size', placeholder: 'Choose a size', items: ITEMS }) })
+  Object.freeze({ label: 'unlabelled', props: Object.freeze({ accessibilityLabel: 'Size', placeholder: 'Choose a size', items: ITEMS }) }),
+  Object.freeze({ label: 'grouped', props: Object.freeze({ label: 'Meal', placeholder: 'Choose a meal', items: [
+    Object.freeze({ label: 'Fruits', items: [
+      Object.freeze({ value: 'apple', label: 'Apple' }),
+      Object.freeze({ value: 'banana', label: 'Banana' })
+    ] }),
+    Object.freeze({ label: 'Vegetables', items: [
+      Object.freeze({ value: 'carrot', label: 'Carrot' }),
+      Object.freeze({ value: 'daikon', label: 'Daikon' })
+    ] }),
+    Object.freeze({ value: 'bread', label: 'Bread' })
+  ] }) })
 ]);

@@ -754,3 +754,18 @@ describe('context: fieldPresentation', function () {
 
 });
 
+
+
+describe('context: listPresentation', function () {
+
+  test('a selected and pressed item draws the selected-active fill', function () {
+    for (const name of ['default', 'carbon', 'material']) {
+      const t = buildNative(name).tokens;
+      const ctx = buildSystem(name, { Probe: Probe }).Probe.ctx;
+      const list = ctx.listPresentation({ dividerWidth: 0, itemHeight: 0, level: 0, mark: false, markRoom: 0, paddingBlock: 0, paddingInline: 0, radius: 0 });
+      assert.equal(list.item({ pressed: true, selected: true }).backgroundColor, t['color.list_item_container_selected_active']);
+      assert.equal(list.item({ pressed: true }).backgroundColor, t['color.list_item_container_active']);
+    }
+  });
+
+});

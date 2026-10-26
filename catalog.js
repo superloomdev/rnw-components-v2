@@ -74,6 +74,10 @@ import SelectSkeletonSample, { FRAME as SelectSkeletonFrame } from './component/
 import MultiSelectSample, { FRAME as MultiSelectFrame } from './component/composite/select/sample.multi-select.js';
 import FilterableMultiSelectSample, { FRAME as FilterableMultiSelectFrame } from './component/composite/select/sample.filterable-multi-select.js';
 import LayerSample from './component/provider/layer/sample.js';
+import SelectItemSample, { FRAME as SelectItemFrame } from './component/composite/select/sample.select-item.js';
+import SelectItemGroupSample, { FRAME as SelectItemGroupFrame } from './component/composite/select/sample.select-item-group.js';
+import ComboBoxSample, { FRAME as ComboBoxFrame } from './component/composite/select/sample.combo-box.js';
+import FloatingActionButtonSample from './component/molecule/floating-action-button/sample.floating-action-button.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -148,5 +152,9 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'SelectSkeleton', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: SelectSkeletonFrame, sample: SelectSkeletonSample }),
   Object.freeze({ name: 'MultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: MultiSelectFrame, sample: MultiSelectSample }),
   Object.freeze({ name: 'FilterableMultiSelect', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: FilterableMultiSelectFrame, sample: FilterableMultiSelectSample }),
-  Object.freeze({ name: 'Layer', family: 'Layer', tier: 'provider', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LayerSample })
+  Object.freeze({ name: 'Layer', family: 'Layer', tier: 'provider', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: LayerSample }),
+  Object.freeze({ name: 'SelectItem', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: SelectItemFrame, sample: SelectItemSample }),
+  Object.freeze({ name: 'SelectItemGroup', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'superloom_decision']), frame: SelectItemGroupFrame, sample: SelectItemGroupSample }),
+  Object.freeze({ name: 'ComboBox', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ComboBoxFrame, sample: ComboBoxSample }),
+  Object.freeze({ name: 'FloatingActionButton', family: 'FloatingActionButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: FloatingActionButtonSample })
 ]);

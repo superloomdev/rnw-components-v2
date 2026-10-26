@@ -13,6 +13,7 @@ A field that opens a list of options: a label, a frame holding a pressable trigg
 - **Width.** The trigger is as wide as its widest text (the placeholder or any option), as a platform select is, so the frame keeps one width whatever is selected. A hidden sizer holding those texts sets it; it takes no height and is hidden from assistive technology.
 - **Indicator.** The trailing indicator is the theme's `dropdown_indicator` icon role in the field's indicator cell for the state: the primary reference's chevron in one template, the second reference's own ten-by-five drop-down drawing in another. Which glyph a part shows is template data, so the select names the role and never a shape. The frame's trailing padding is the theme's `control.field_icon_inset`, the gap before the indicator `control.field_icon_gap`.
 - **List.** While open, the options are laid out directly below the frame, spanning its width, on the theme's `list_container` fill at the `dropdown` stacking level with the `list` shadow and `control.list_radius`, each option at `control.list_item_height` in the `list_item` type set with the `list_item` label and container cells for its state. The selected option fills with `list_item_container_selected`, the highlighted one with `list_item_container_hover`, a pressed one with `list_item_container_active`. The list closes on selection, on Escape and on a second press of the trigger.
+- The open list marks the chosen option for assistive technology only; it draws no selected fill or mark, as the reference draws none.
 - **Keyboard.** Arrow keys open the list and move the highlight, Enter and Space open it or commit the highlighted option, Escape closes it; all of this is the select behavior's.
 - **Invalid.** An invalid select shows the `invalid` icon role in the field's invalid icon cell before the indicator and the error message below; a disabled select is never invalid.
 - **Geometry is the template's.** The height, corner radius and icon size are `control.field_height`, `control.field_radius` and `control.field_icon_size` (and the option row height `control.list_item_height`); the frame, label and text are the `field` role cells, so each template draws its own field. Measured against both references in every sample state, in hover, focus and pressed, in light and dark.
@@ -41,13 +42,111 @@ The option block's text inset is the source's twenty-eight-pixel checkbox label 
 
 The query-bearing form of the same field: the control is an editable input and its text filters the open list through `shouldFilterItem`, defaulting to case-insensitive label inclusion. Filtering changes which rows display, never which values are selected - the count member still clears the whole selection, including rows the current query hides. The query is its own channel (`inputValue`/`defaultInputValue`/`onInputChange`), independent of the selection array.
 
-The source's variants stay unported: there is no `select-all` row or mixed selection state, no `readOnly`, `warn`, `inline` or `upward` variant, as the carried contract keeps the field's one anatomy. The family's remaining rows (`SelectItem`, `SelectItemGroup`, `ComboBox` and `FloatingActionButton`) are deferred pending the next helper cell set; they stay pending and keep their roster places.
+The source's variants stay unported: there is no `select-all` row or mixed selection state, no `readOnly`, `warn`, `inline` or `upward` variant, as the carried contract keeps the field's one anatomy.
+
+### SelectItem
+
+SelectItem is Select's option row, composed by Select with the behavior's option props; rendered alone it answers the same role and state from its own props. `requires_parent`: it must be composed inside Select; its standalone render is for the showcase and the gates only. Upstream's `hidden` prop is not carried: Select's `placeholder` covers its use. A long option label truncates to one line in every template; the second reference wraps it into a two-line row, so that state is not measured against it.
+
+### SelectItemGroup
+
+SelectItemGroup is Select's option-group row; it must be composed inside Select. A group entry in `items` carries `{ label, items, disabled? }`: the behavior works on the flattened options while the render keeps the group structure. Neither reference system draws an option group header of its own, so the header's height, padding, type and color read the theme's list cells as a Superloom decision. `requires_parent`: it must be composed inside Select. `superloom_decision`: neither reference system draws an option group header, so the header's values are a Superloom decision. Its header row draws no divider, and the first option inside a group draws none.
+
+### ComboBox
+
+ComboBox is the family's single-choice field with an editable input that filters the open list as you type and a clear action once a value is chosen. Its trigger is a text input, so it takes the text input's field member: the field does not repaint on hover or press as a select's does, and its option list draws no selected mark - the selection lives in the input's text, as the reference draws none. The Material template's member cells equal Carbon's (census).
+
+### FloatingActionButton
+
+FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action. The source's `lowered` prop and disabled state are not carried: there are no cells for them.
 
 ### Platform
 
 Both. The frame, trigger and list render on iOS, Android and web; the list is drawn by the library on every platform rather than by a platform picker.
 
 The select fills the width its container gives it (`sample.js` FRAME: the showcase and the walker lay it out at 320). In a container that sizes to its content, its trigger grows from the hidden sizer (the widest option), the same on every platform, never from zero.
+
+## ComboBox
+
+ComboBox is a single-choice field whose editable input filters the open option list as you type, with a clear action once a value is chosen.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | Options, each `{ value, label, disabled? }`; `value` is unique. The input filters them as you type. |
+| `label` | `string` | no | Visible label; it names the combo box. Without it, pass `accessibilityLabel`. |
+| `placeholder` | `string` | no | Text shown while the input is empty. |
+| `value` | `string` | no | Controlled selected value. Absent: the combo box keeps its own selection, starting empty. |
+| `defaultValue` | `string` | no | Initial selected value for an uncontrolled combo box. |
+| `onChange` | `function` | no | Called with the selected option's value, or `null` when the selection clears. |
+| `inputValue` | `string` | no | Controlled input text. Absent: the combo box keeps its own query. |
+| `defaultInputValue` | `string` | no | Initial input text for an uncontrolled combo box. |
+| `onInputChange` | `function` | no | Called with the next input text whenever it changes. |
+| `shouldFilterItem` | `function` | no | Filter predicate `(item, query)`; defaults to case-insensitive label inclusion. |
+| `open` | `boolean` | no | Controlled open state of the list. Absent: the combo box opens and closes itself. |
+| `onOpenChange` | `function` | no | Called with the next open state whenever the list opens or closes. |
+| `size` | `string` | no | One of `variants`: `sm`, `md`, `lg`. Default `md`. |
+| `disabled` | `boolean` | no | Disables input and opening, draws the disabled colors and announces the combo box as disabled. |
+| `invalid` | `boolean` | no | Draws the error border and icon, shows `invalidText` and announces the combo box as invalid. |
+| `invalidText` | `string` | no | Message shown below while `invalid`. |
+| `helperText` | `string` | no | Message shown below while not `invalid`. |
+| `clearLabel` | `string` | no | The clear button's accessible name. Default from the behavior. |
+| `surface` | `string` | no | Color leaf of the surface the combo box sits on; a floating label occludes the border with it. Default: config `FIELD_SURFACE`, else `background`. |
+| `accessibilityLabel` | `string` | no | Accessible name when there is no visible label. |
+| `testID` | `string` | no | Test identifier forwarded to the input. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `iconZone` | `size.size_xsmall` |
+| `iconInset` | `spacing.spacing_04` |
+| `iconGapEnd` | `spacing.spacing_02` |
+| `labelInset` | `spacing.spacing_01` |
+| `restingEdge` | `control.field_outline_width` |
+| `itemPaddingInline` | `control.list_item_padding_inline` |
+| `itemDividerWidth` | `control.list_item_divider_width` |
+| `itemMarkRoom` | `spacing.spacing_06` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
+| `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
+| `markSize` | `control.field_icon_size` |
+| `clearSize` | `control.combo_box_clear_size` |
+| `clearInsetEnd` | `control.combo_box_clear_inset_end` |
+| `inputPaddingEnd` | `control.combo_box_input_padding_end` |
+| `inputPaddingEndInvalid` | `control.combo_box_input_padding_end_invalid` |
+| `invalidIconInsetEnd` | `control.combo_box_invalid_icon_inset_end` |
+
+Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Fruit","placeholder":"Choose a fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}]}` |
+| selected | `{"label":"Fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"value":"banana"}` |
+| helper | `{"label":"Fruit","placeholder":"Choose a fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"helperText":"Helper text"}` |
+| invalid | `{"label":"Fruit","placeholder":"Choose a fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"invalid":true,"invalidText":"Choose a fruit"}` |
+| invalid-selected | `{"label":"Fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"value":"banana","invalid":true,"invalidText":"Choose a fruit"}` |
+| disabled | `{"label":"Fruit","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"value":"apple","disabled":true}` |
+| small | `{"label":"Fruit","placeholder":"Small","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"size":"sm"}` |
+| large | `{"label":"Fruit","placeholder":"Large","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"},{"value":"cherry","label":"Cherry"},{"value":"durian","label":"Durian","disabled":true}],"size":"lg"}` |
 
 ## Dropdown
 
@@ -404,6 +503,93 @@ Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.
 | small | `{"label":"Size","placeholder":"Small","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"sm"}` |
 | large | `{"label":"Size","placeholder":"Large","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}],"size":"lg"}` |
 | unlabelled | `{"accessibilityLabel":"Size","placeholder":"Choose a size","items":[{"value":"small","label":"Small"},{"value":"medium","label":"Medium"},{"value":"large","label":"Large"}]}` |
+| grouped | `{"label":"Meal","placeholder":"Choose a meal","items":[{"label":"Fruits","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"}]},{"label":"Vegetables","items":[{"value":"carrot","label":"Carrot"},{"value":"daikon","label":"Daikon"}]},{"value":"bread","label":"Bread"}]}` |
+
+## SelectItem
+
+SelectItem draws one option of a Select's open list from the theme's list cells; it must be composed inside Select.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The option text, drawn on one line. |
+| `value` | `string` | yes | The option's value; a string or a finite number. |
+| `disabled` | `boolean` | no | Disables the option and draws the disabled label. |
+| `selected` | `boolean` | no | Draws the option as selected; Select supplies it from its value. |
+| `testID` | `string` | no | Test identifier forwarded to the row. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightSmall` | `size.size_small` |
+| `heightLarge` | `size.size_large` |
+| `radius` | `control.field_radius` |
+| `iconSize` | `control.field_icon_size` |
+| `compactIconGap` | `spacing.spacing_05` |
+| `itemHeight` | `control.list_item_height` |
+| `itemPaddingInline` | `control.list_item_padding_inline` |
+| `itemDividerWidth` | `control.list_item_divider_width` |
+| `listPaddingBlock` | `control.list_padding_block` |
+| `listRadius` | `control.list_radius` |
+| `listLevel` | `stacking.dropdown` |
+| `listMaxRows` | constant `5.5` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Option one","value":"one"}` |
+| selected | `{"label":"Option one","value":"one","selected":true}` |
+| disabled | `{"label":"Option one","value":"one","disabled":true}` |
+| long | `{"label":"An option label long enough to truncate inside the frame","value":"long"}` |
+
+## SelectItemGroup
+
+SelectItemGroup draws a group label row above its SelectItems inside a Select's open list and disables them together; it must be composed inside Select; neither reference system draws an option group header of its own, so its values are a Superloom decision.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | `requires_parent` - renders only inside its parent; `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The group label, drawn on one line above the group's options. |
+| `disabled` | `boolean` | no | Disables the group and every option in it. |
+| `items` | `array` | no | Options, each `{ value, label }`; used only when the group renders standalone. |
+| `testID` | `string` | no | Test identifier forwarded to the group. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `headerHeight` | `control.list_item_height` |
+| `headerPaddingInline` | `control.list_item_padding_inline` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Fruits","items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"}]}` |
+| disabled | `{"label":"Fruits","disabled":true,"items":[{"value":"apple","label":"Apple"},{"value":"banana","label":"Banana"}]}` |
 
 ## SelectSkeleton
 

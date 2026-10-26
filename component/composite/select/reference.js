@@ -12,6 +12,15 @@ export default Object.freeze({
   mount: function (React, upstream, props) {
     counter = counter + 1;
     const options = (Array.isArray(props.items) ? props.items : []).map(function (item) {
+      if (item !== null && typeof item === 'object' && Array.isArray(item.items)) {
+        return React.createElement(upstream.SelectItemGroup, {
+          key: item.label,
+          label: item.label,
+          disabled: item.disabled === true ? true : undefined
+        }, item.items.map(function (sub) {
+          return React.createElement(upstream.SelectItem, { key: sub.value, value: sub.value, text: sub.label });
+        }));
+      }
       return React.createElement(upstream.SelectItem, { key: item.value, value: item.value, text: item.label });
     });
     const placeholder = React.createElement(upstream.SelectItem, { key: '', value: '', text: props.placeholder || '' });

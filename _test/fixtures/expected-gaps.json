@@ -4,5 +4,13 @@
     "Each entry names the check, the cell or the component part and property (optionally the states), and the request. The gate asserts the gap still reproduces; once it does not, the entry is stale and the gate fails until it is removed.",
     "An entry is added only by the reasoning tier, with the request it waits on; the execution tier never adds one."
   ],
-  "gaps": []
+  "gaps": [
+    {
+      "check": "measure-second",
+      "component": "FloatingActionButton",
+      "part": "container",
+      "property": "width",
+      "request": "type.fab_label letter_spacing 0 (material)"
+    }
+  ]
 }

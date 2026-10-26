@@ -622,7 +622,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         return null;
       }
       if (state.pressed === true) {
-        return 'list_item_container_active';
+        return state.selected === true ? 'list_item_container_selected_active' : 'list_item_container_active';
       }
       if (state.selected === true) {
         return state.hovered === true ? 'list_item_container_selected_hover' : 'list_item_container_selected';

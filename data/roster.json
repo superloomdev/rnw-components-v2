@@ -2235,15 +2235,12 @@
         "version": "1.115.0",
         "export": "SelectItem"
       },
-      "description": "SelectItem is a component in the Select family; it must be composed inside Select.",
+      "description": "SelectItem draws one option of a Select's open list from the theme's list cells; it must be composed inside Select.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "overlay",
@@ -2254,13 +2251,13 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "SelectItem",
+      "carbon_twin": "none",
       "material_twin": "md-select-option",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SelectItemGroup",
@@ -2271,15 +2268,12 @@
         "version": "1.115.0",
         "export": "SelectItemGroup"
       },
-      "description": "SelectItemGroup groups SelectItems under a group label inside Select; it must be composed inside Select; neither reference system draws an option group header, so its values are a Superloom decision.",
+      "description": "SelectItemGroup draws a group label row above its SelectItems inside a Select's open list and disables them together; it must be composed inside Select; neither reference system draws an option group header of its own, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "overlay",
@@ -2290,14 +2284,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "SelectItemGroup",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
         "superloom_decision"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ComboBox",
@@ -2308,7 +2302,7 @@
         "version": "1.115.0",
         "export": "ComboBox"
       },
-      "description": "ComboBox is a component in the Select family.",
+      "description": "ComboBox is a single-choice field whose editable input filters the open option list as you type, with a clear action once a value is chosen.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2331,7 +2325,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FloatingActionButton",
@@ -2342,7 +2336,7 @@
         "version": "2.5.0",
         "export": "MdFab"
       },
-      "description": "FloatingActionButton is the composed primary action whose Carbon twin is BottomToolbarPrimaryAction.",
+      "description": "FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction, so its values outside the Material template are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2357,8 +2351,10 @@
       "carbon_twin": "none",
       "material_twin": "md-fab",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Popover",
