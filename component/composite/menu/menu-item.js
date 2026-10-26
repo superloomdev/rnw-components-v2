@@ -51,6 +51,7 @@ export default function MenuItem (ctx) {
     // press draws the hover's fill; a focused item carries the ring alone
     const danger = item.danger === true;
     const active = hovered || pressed;
+    const dangerActive = active || focused;
     const state = { disabled: disabled, hovered: active && !danger, highlighted: focused, selected: item.selected === true };
     const list = props.list !== undefined ? props.list : {
       item: function () {
@@ -68,13 +69,19 @@ export default function MenuItem (ctx) {
       mark: 'shown'
     };
     const labelLeaf = disabled ? 'list_item_label_disabled'
-      : danger ? (active ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
+      : danger ? (dangerActive ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
         : list.labelLeaf(state);
-    const itemFill = !disabled && danger && active ? 'menu_item_danger_container_hover' : null;
-    const iconLeaf = disabled ? 'menu_item_icon_disabled' : active ? 'menu_item_icon_hover' : 'menu_item_icon';
+    const itemFill = !disabled && danger && dangerActive ? 'menu_item_danger_container_hover' : null;
+    const iconLeaf = disabled ? 'menu_item_icon_disabled' : dangerActive && danger ? 'menu_item_icon_hover' : active ? 'menu_item_icon_hover' : 'menu_item_icon';
     const itemStyle = Object.assign({}, list.item(state));
+    if (item.selected === true) {
+      itemStyle.backgroundColor = ctx.color('menu_item_container_selected');
+    }
     if (itemFill !== null) {
       itemStyle.backgroundColor = ctx.color(itemFill);
+    }
+    if (!disabled && danger && focused) {
+      itemStyle.boxShadow = 'inset 0 0 0 ' + ctx.metric('MenuItem', 'dangerInsetWidth') + 'px ' + ctx.color('menu_item_danger_focus_inset');
     }
     const seats = props.seats || {};
 
@@ -100,31 +107,12 @@ export default function MenuItem (ctx) {
         clearTimeout(submenuTimer.current);
       };
     }, []);
-    const [flipX, setFlipX] = React.useState(null);
-    const subRef = React.useRef(null);
     React.useEffect(function () {
       if (submenuOpen) {
         anchored.measure();
-        setFlipX(null);
       }
     }, [submenuOpen, anchored.measure]);
-    // Flip: a submenu whose right edge would pass the viewport less the
-    // margin opens at the item's start side instead (`_start`)
     const anchor = anchored.anchor;
-    React.useEffect(function () {
-      if (submenuOpen !== true || anchor === null || subRef.current === null) {
-        return;
-      }
-      const submenu = subRef.current.querySelector('[role="menu"]');
-      if (submenu === null || typeof submenu.getBoundingClientRect !== 'function') {
-        return;
-      }
-      const rect = submenu.getBoundingClientRect();
-      const viewport = typeof window === 'undefined' ? rect.right + 1 : window.innerWidth;
-      if (rect.right > viewport - ctx.metric('MenuItem', 'viewportMargin')) {
-        setFlipX(anchor.x - rect.width - ctx.metric('MenuItem', 'submenuOffsetStart'));
-      }
-    }, [submenuOpen, anchor]);
 
     // Render the item: mark seat, icon seat, label, shortcut seat (caret
     // for a submenu), then the submenu itself
@@ -209,7 +197,6 @@ export default function MenuItem (ctx) {
           style: [ctx.typeStyle('menu_item_shortcut'), { color: ctx.color(disabled || danger ? labelLeaf : active ? 'menu_item_shortcut_hover' : 'menu_item_shortcut'), marginStart: ctx.metric('MenuItem', 'itemGap') }]
         }, item.shortcut)),
     hasSub === true && submenuOpen === true && anchor !== null ? React.createElement(View, {
-      ref: subRef,
       onKeyDown: function (event) {
         if (event.key === 'ArrowLeft') {
           if (typeof event.preventDefault === 'function') {
@@ -222,8 +209,16 @@ export default function MenuItem (ctx) {
           if (ref.current !== null && typeof ref.current.focus === 'function') {
             ref.current.focus();
           }
-        } else if (event.key === 'Escape' && typeof event.stopPropagation === 'function') {
-          event.stopPropagation();
+        } else if (event.key === 'Escape') {
+          // The submenu's Escape never reaches the document, so it closes
+          // only this level; the root's own Escape is unaffected
+          if (typeof event.stopPropagation === 'function') {
+            event.stopPropagation();
+          }
+          closeSub();
+          if (ref.current !== null && typeof ref.current.focus === 'function') {
+            ref.current.focus();
+          }
         }
       },
       onPointerEnter: function () {
@@ -240,7 +235,7 @@ export default function MenuItem (ctx) {
       items: item.items,
       menuAlignment: 'bottom-start',
       open: true,
-      x: flipX === null ? anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd') : flipX,
+      x: [anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd'), anchor.x - ctx.metric('MenuItem', 'submenuOffsetStart')],
       y: anchor.y + ctx.metric('MenuItem', 'submenuOffsetBlock'),
       onChange: function (chosen) {
         // A leaf choice inside the submenu closes the root

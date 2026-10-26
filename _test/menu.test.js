@@ -137,7 +137,7 @@ describe('Menu: every sample state under every template', function () {
           const role = radio ? 'menuitemradio' : entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
           assert.equal(item.getAttribute('role'), role);
           assert.equal(item.getAttribute('aria-checked'), radio ? String(selected) : entry.selected === undefined ? null : String(selected));
-          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? 'menu_item_danger_label' : selected ? 'list_item_label_selected' : 'list_item_label';
+          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? (index === 0 ? 'menu_item_danger_label_hover' : 'menu_item_danger_label') : selected ? 'list_item_label_selected' : 'list_item_label';
           const label = parts.label(item);
           assert.equal(label.textContent, entry.label);
           assert.equal(label.style.color, cssValue('color', t['color.' + labelLeaf]));
@@ -172,10 +172,36 @@ describe('Menu: every sample state under every template', function () {
           }
         }
 
-        // Each separator reads the member divider cells
+        // Each separator reads the member divider cells, margin and rule alike
         for (const divider of parts.dividers()) {
           assert.equal(divider.style.height, t['control.menu_divider_width'] + 'px');
           assert.equal(divider.style.backgroundColor, cssValue('backgroundColor', t['color.menu_divider']));
+          assert.equal(divider.style.marginTop, t['control.menu_divider_margin_block'] + 'px');
+          assert.equal(divider.style.marginBottom, t['control.menu_divider_margin_block'] + 'px');
+        }
+
+        // Group and radio-group wrappers carry `role="group"` and name the run
+        for (const item of props.items) {
+          const kind = item.group !== undefined ? item.group : item.radioGroup;
+          if (kind === undefined) {
+            continue;
+          }
+          const group = parts.surface.querySelector('[role="group"][aria-label="' + kind + '"]');
+          assert.notEqual(group, null, 'the ' + kind + ' run mounts role="group" named ' + kind);
+        }
+
+        // The border variant outlines the surface; the surface is capped
+        assert.equal(parts.surface.style.outlineColor, props.border === true ? cssValue('color', t['color.menu_border']) : '');
+        assert.equal(parts.surface.style.outlineWidth, props.border === true ? t['border.width_01'] + 'px' : '');
+        assert.equal(parts.surface.style.maxWidth, t['control.menu_max_width'] + 'px');
+
+        // A selected item reads the selected fill and label cells
+        if (radioEntry !== undefined || props.items.some(function (item) { return item.selected === true; }) || props.items.some(function (item) { return (item.items || []).some(function (sub) { return sub.selected === true; }); })) {
+          const chosen = parts.surface.querySelector('[aria-checked="true"]');
+          assert.notEqual(chosen, null, 'the selected option mounts');
+          assert.equal(chosen.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']));
+          const chosenLabel = chosen.querySelector('[dir="auto"]');
+          assert.equal(chosenLabel.style.color, cssValue('color', t['color.list_item_label_selected']), 'the selected label cell');
         }
       });
     }
@@ -295,5 +321,28 @@ describe('Menu: behavior through the DOM', function () {
     assert.equal(item.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']));
     assert.equal(parts.label(item).style.color, cssValue('color', t['color.menu_item_danger_label_hover']));
   });
+
+});
+
+
+describe('Menu: a focused danger item draws the ring, the fill and the label cell', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': danger focus draws fill, white label and the inset ring', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = registryFor(template);
+      const parts = await renderMenu(Registry, { items: [{ danger: true, label: 'Delete' }, { label: 'Archive' }], open: true });
+      const item = parts.items()[0];
+      await act(async function () {
+        item.dispatchEvent(new Event('focus', { bubbles: false }));
+      });
+      assert.equal(item.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']), 'the danger fill');
+      const label = parts.label(item);
+      assert.equal(label.style.color, cssValue('color', t['color.menu_item_danger_label_hover']), 'the danger label on focus');
+      assert.equal(item.style.boxShadow.includes('inset'), true, 'the inset ring draws');
+      assert.equal(item.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring colour');
+      assert.equal(item.style.boxShadow.includes(' ' + t['control.menu_item_danger_focus_inset_width'] + 'px '), true, 'the ring width');
+    });
+  }
 
 });

@@ -7,6 +7,7 @@ export default Object.freeze({
   iconSize: 'control.menu_icon_size',
   itemGap: 'control.menu_item_gap',
   markSize: 'size.icon_01',
+  dangerInsetWidth: 'control.menu_item_danger_focus_inset_width',
   optionPaddingInline: 'control.list_item_padding_inline',
   submenuDelay: { constant: 100 },
   viewportMargin: 'control.menu_viewport_margin',
