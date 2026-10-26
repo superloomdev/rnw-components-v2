@@ -33,7 +33,7 @@ const ROWS = process.argv.slice(2).filter(function (arg) { return arg.indexOf('-
 
 // The fields every part reports: its box, the computed properties the recipe
 // measures, and the trimmed text
-const PART_FIELDS = ['backgroundColor', 'borderColor', 'borderWidth', 'borderRadius', 'borderTopWidth', 'borderTopColor', 'borderBottomWidth', 'borderBottomColor', 'color', 'fill', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'boxShadow', 'outlineColor', 'outlineWidth', 'outlineStyle', 'outlineOffset', 'marginTop', 'marginBottom', 'minWidth', 'maxWidth', 'zIndex', 'transform', 'opacity', 'fontFamily', 'display', 'visibility'];
+const PART_FIELDS = ['backgroundColor', 'borderColor', 'borderWidth', 'borderRadius', 'borderTopWidth', 'borderTopColor', 'borderBottomWidth', 'borderBottomColor', 'color', 'fill', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'boxShadow', 'outlineColor', 'outlineWidth', 'outlineStyle', 'outlineOffset', 'marginTop', 'marginBottom', 'minWidth', 'maxWidth', 'zIndex', 'transform', 'opacity', 'fontFamily', 'display', 'visibility', 'marginLeft', 'marginRight', 'minHeight', 'borderLeftWidth', 'borderLeftColor', 'borderRightWidth', 'borderRightColor', 'borderBottomStyle', 'content', 'filter', 'maskImage', 'columnGap'];
 
 const FONT_ROOTS = {
   '/fonts/plex-sans/': join(MODULES, '@ibm', 'plex-sans', 'fonts'),
@@ -366,6 +366,14 @@ async function probeRow (page, row, mount) {
     if (target !== null && target !== undefined) {
       for (const interaction of interactions) {
         await prepare(page, row, state, mount);
+        // A fixed layer of another cell (a modal scrim covers the page)
+        // would intercept the pointer: only this cell's body keeps events
+        await page.evaluate(function (input) {
+          for (const body of document.querySelectorAll('.cell [data-part="body"]')) {
+            const cell = body.parentElement;
+            body.style.pointerEvents = cell.getAttribute('data-component') === input.row && cell.getAttribute('data-state') === input.state ? '' : 'none';
+          }
+        }, { row: row, state: state });
         const ok = await enterInteraction(page, row, state, target, interaction, {});
         if (ok === false) {
           reads[interaction] = { targetMissing: true };
@@ -717,7 +725,8 @@ async function main () {
   });
   await new Promise(function (done) { app.listen(PORT, done); });
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1400, height: 2400 } });
+  // The gate's own width (`playwright.config.js:22`): modal and notification widths are breakpoint rules
+  const page = await browser.newPage({ viewport: { width: 1280, height: 2400 } });
   const mounts = {};
   for (const row of ROWS) {
     mounts[row] = (await import(join(RECIPES, 'probe', row + '.mount.js'))).default;

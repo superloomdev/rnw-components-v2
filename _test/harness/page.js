@@ -3,7 +3,13 @@
 // page rendered its cells before measuring anything, so a blank page never
 // passes.
 
+import { unionBox } from './perceptual.js';
+
 export const TEMPLATE_NAMES = ['default', 'carbon', 'material'];
+
+// Pixels around a sample's painted union: a focus ring or shadow drawn just
+// outside the element stays in the comparison frame
+const RING_ROOM = 4;
 
 
 /********************************************************************
@@ -1253,5 +1259,95 @@ export async function readControlPaint (page) {
     }
     return out;
   });
+
+}
+
+
+/********************************************************************
+Read the sample's own painted box inside one cell: the sample root (the
+body's first element child) and every descendant element whose rect is
+non-empty and whose computed visibility is not `hidden` and opacity is
+not `0`, in viewport coordinates, unioned and expanded by RING_ROOM on
+each side (a focus ring or shadow drawn just outside the element). Call
+it right before a screenshot: the box is in the same scroll frame.
+
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {String} state  - The cell's state label
+
+@return {Promise<Object|null>} - { x, y, width, height, bodyX, bodyY }:
+   the expanded union in viewport coordinates plus the cell body's
+   origin (subtract it to land inside a body-framed shot)
+*********************************************************************/
+export async function readSampleBox (page, name, state) {
+
+  const sample = await page.evaluate(function (input) {
+    const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.state + '"] [data-part="body"]');
+    if (body === null) {
+      return null;
+    }
+    const boxes = [];
+    const collect = function (element) {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      if (rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.opacity !== '0') {
+        boxes.push({ x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+      }
+      for (const child of element.children) {
+        collect(child);
+      }
+    };
+    const root = body.firstElementChild;
+    if (root !== null) {
+      collect(root);
+    }
+    const bodyRect = body.getBoundingClientRect();
+    const rootRect = root === null ? null : root.getBoundingClientRect();
+    return { boxes: boxes, bodyX: bodyRect.x, bodyY: bodyRect.y, root: rootRect === null ? null : { x: rootRect.x, y: rootRect.y, width: rootRect.width, height: rootRect.height } };
+  }, { name: name, state: state });
+  if (sample === null) {
+    return null;
+  }
+  const box = unionBox(sample.boxes);
+  if (box === null || sample.root === null) {
+    return null;
+  }
+  return { x: box.x - RING_ROOM, y: box.y - RING_ROOM, width: box.width + 2 * RING_ROOM, height: box.height + 2 * RING_ROOM,
+    rootX: sample.root.x, rootY: sample.root.y, bodyX: sample.bodyX, bodyY: sample.bodyY };
+
+}
+
+
+/********************************************************************
+Re-open a reference's panel before an interaction that needs it: on a
+state the reference's `reopen` lists, when its `when` selector of this
+side is absent in the cell body, click the side's trigger and wait for
+the panel to draw, as the probe's `prepare` does.
+
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {String} state  - The cell's state label
+@param {Object} reopen - { states, upstream, ours, when: { upstream, ours } }
+@param {String} side   - 'upstream' | 'ours'
+
+@return {Promise<Boolean>} - Whether a reopen click happened
+*********************************************************************/
+export async function reopenPanel (page, name, state, reopen, side) {
+
+  if (reopen === undefined || reopen === null || !Array.isArray(reopen.states) || reopen.states.indexOf(state) === -1 ||
+      reopen.when === undefined || reopen.when === null) {
+    return false;
+  }
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0 || await body.locator(reopen.when[side]).count() > 0) {
+    return false;
+  }
+  const trigger = body.locator(reopen[side]).first();
+  if (await trigger.count() === 0) {
+    return false;
+  }
+  await trigger.click();
+  await page.waitForTimeout(400);
+  return true;
 
 }

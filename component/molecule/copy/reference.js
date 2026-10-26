@@ -18,6 +18,7 @@ export default Object.freeze({
   target: Object.freeze({ upstream: '.cds--copy-btn', ours: '[role="button"]' }),
   parts: Object.freeze({
     button: Object.freeze({ upstream: '.cds--copy-btn', ours: '[role="button"]', measure: 'box' }),
-    icon: Object.freeze({ upstream: '.cds--copy-btn svg path', ours: '[role="button"] svg path', measure: 'box' })
+    icon: Object.freeze({ upstream: '.cds--copy-btn svg path', ours: '[role="button"] svg path', measure: 'box' }),
+    tooltip: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true })
   })
 });

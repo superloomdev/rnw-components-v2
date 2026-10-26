@@ -18,8 +18,8 @@
 import { PNG } from 'pngjs';
 
 import { findDisagreements } from './compare.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, shootCell, shootPart } from './page.js';
-import { perceptualRatio } from './perceptual.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, reopenPanel, shootCell, shootPart } from './page.js';
+import { perceptualRatio, windowFor } from './perceptual.js';
 import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
@@ -299,8 +299,18 @@ async function collect (page, component, reference, side, masks) {
   // is anchored on (the painted face, not the enlarged invisible pressable)
   const anchors = {};
   const failures = [];
+  const samples = {};
   const shoot = async function (label, key, preserveViewport) {
-    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, preserveViewport);
+    // The sample box is read in the same scroll frame as the shot: settle
+    // the rest frame's centering first, then read, then shoot without
+    // another scroll (an interaction frame is already centered)
+    if (preserveViewport !== true) {
+      await page.locator('.cell[data-component="' + component.name + '"][data-state="' + label + '"] [data-part="body"]').first().evaluate(function (element) {
+        element.scrollIntoView({ block: 'center', inline: 'center' });
+      });
+    }
+    samples[key] = await readSampleBox(page, component.name, label);
+    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, true);
     samplePaint(states[key], shots[key], Object.keys(masks || {}).map(function (name) {
       return states[key][name];
     }));
@@ -336,6 +346,7 @@ async function collect (page, component, reference, side, masks) {
         const key = entry.label + ' @' + interaction;
         // A declared main target missing on an enabled, mounted state is a
         // failure, as a missing additional target is - not a silent skip
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true })) {
           failures.push(key + ': target not found on ' + side);
           continue;
@@ -362,6 +373,7 @@ async function collect (page, component, reference, side, masks) {
       for (const interaction of targetInteractions(extra, interactions)) {
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
         const key = entry.label + ' @' + extra.name + ' ' + interaction;
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(key + ': additional target "' + extra.name + '" not found on ' + side);
           continue;
@@ -377,7 +389,7 @@ async function collect (page, component, reference, side, masks) {
     }
   }
 
-  return { states: states, shots: shots, originShots: originShots, anchors: anchors, failures: failures };
+  return { states: states, shots: shots, originShots: originShots, anchors: anchors, failures: failures, samples: samples };
 
 }
 
@@ -467,13 +479,28 @@ export async function runFidelity (page, component, set, scheme) {
       a = ours.originShots[key];
       b = upstream.originShots[key];
     } else {
-      a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
-      b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+      // No origin (D39-3): align both pictures at the sample root's
+      // top-left and crop both to one common window around it - never
+      // each side's own union, which would compare shifted pixels
+      const oursSample = reference.origin === undefined ? ours.samples[key] : undefined;
+      const upSample = reference.origin === undefined ? upstream.samples[key] : undefined;
+      if (oursSample !== undefined && oursSample !== null && upSample !== undefined && upSample !== null) {
+        const window = windowFor(oursSample, oursSample, upSample, upSample);
+        const oursCrop = { _bodyX: oursSample.rootX + window.x - oursSample.bodyX, _bodyY: oursSample.rootY + window.y - oursSample.bodyY, width: window.width, height: window.height };
+        const upCrop = { _bodyX: upSample.rootX + window.x - upSample.bodyX, _bodyY: upSample.rootY + window.y - upSample.bodyY, width: window.width, height: window.height };
+        a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
+        b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);
+        ours.samples[key] = oursCrop;
+      } else {
+        a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
+        b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+        ours.samples[key] = undefined;
+      }
     }
     // Align each origin before copying source pixels: cell bodies may reserve
     // different label space even when their compared frames are identical.
     const masked = maskOmitted(a, b, ours.states[key] || {}, Object.keys(masks), keyAnchor,
-      crop ? ours.states[key][reference.origin] : undefined, crop ? 0 : undefined);
+      crop ? ours.states[key][reference.origin] : ours.samples[key], crop ? 0 : undefined);
     for (const line of masked.lines) {
       lines.push(key + ' / ' + line);
     }

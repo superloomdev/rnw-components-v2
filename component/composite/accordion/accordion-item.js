@@ -75,7 +75,7 @@ export default function AccordionItem (ctx) {
         transform: [{ rotate: open ? '-90deg' : '-270deg' }]
       }, chevronFirst
         ? { marginStart: headingPadding, marginTop: ctx.metric('AccordionItem', 'iconTop') }
-        : { marginStart: titleGap })
+        : {})
     });
     const title = React.createElement(Text, {
       numberOfLines: 1,
@@ -84,7 +84,7 @@ export default function AccordionItem (ctx) {
         flexBasis: 'auto',
         flexGrow: 1,
         flexShrink: 1
-      }, chevronFirst ? { paddingStart: titleGap } : { paddingStart: titleGap }]
+      }, chevronFirst ? { paddingStart: titleGap } : { paddingStart: titleGap, paddingEnd: titleGap }]
     }, props.title);
 
     const rule = flush === true

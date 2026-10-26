@@ -29,7 +29,7 @@ import React from 'react';
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
 import { targetInteractions } from './harness/fidelity.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, reopenPanel } from './harness/page.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
@@ -125,6 +125,7 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: target.point === true })) {
           failures.push(entry.label + ' @' + interaction + ': target not found on ' + side);
           continue;
@@ -148,6 +149,7 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side);
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(entry.label + ' @' + extra.name + ' ' + interaction + ': additional target "' + extra.name + '" not found on ' + side);
           continue;

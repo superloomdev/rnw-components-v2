@@ -2724,6 +2724,26 @@
       "runner": "node",
       "testName": "the press calls onClick once",
       "why": "onClick is the host's clipboard write; the component must call it exactly once per press"
+    },
+    {
+      "id": "perceptual-union-box",
+      "file": "_test/harness/perceptual.js",
+      "find": "  for (const b of boxes) {",
+      "replace": "  for (const b of boxes.slice(0, 1)) {",
+      "runner": "node",
+      "test": "perceptual-harness.test.js",
+      "testName": "unionBox holds two disjoint boxes",
+      "why": "a union that keeps only the first box must fail the union test"
+    },
+    {
+      "id": "perceptual-window-for",
+      "file": "_test/harness/perceptual.js",
+      "find": "  return unionBox(relative);",
+      "replace": "  return unionBox(relative.slice(0, 1));",
+      "runner": "node",
+      "test": "perceptual-harness.test.js",
+      "testName": "windowFor is one window relative to either root",
+      "why": "a window that keeps only our side's box must fail the window test"
     }
   ]
 }

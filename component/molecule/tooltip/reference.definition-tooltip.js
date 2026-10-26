@@ -18,8 +18,8 @@ export default Object.freeze({
   },
   target: Object.freeze({ upstream: '.cds--definition-term', ours: '[aria-expanded]' }),
   parts: Object.freeze({
-    term: Object.freeze({ upstream: '.cds--definition-term', ours: '[aria-expanded] [dir="auto"]', measure: 'box' }),
-    underline: Object.freeze({ upstream: '.cds--definition-term', ours: '[aria-expanded] [dir="auto"]', measure: 'box', compare: ['borderBottomColor', 'borderBottomWidth', 'borderBottomStyle'] }),
+    term: Object.freeze({ upstream: '.cds--definition-term', ours: '[aria-expanded]', measure: 'box' }),
+    underline: Object.freeze({ upstream: '.cds--definition-term', ours: '[aria-expanded]', measure: 'box', compare: ['borderBottomColor', 'borderBottomWidth', 'borderBottomStyle'] }),
     bubble: Object.freeze({ upstream: '.cds--popover-content', ours: 'div[style*="max-width"] > div:not([aria-hidden])', optional: true })
   })
 });

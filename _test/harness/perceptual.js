@@ -108,3 +108,85 @@ export function perceptualRatio (a, b) {
   return ratio(PNG.sync.write(ha), PNG.sync.write(hb), 0.2);
 
 }
+
+
+/********************************************************************
+The smallest box holding every box with width and height > 0. Empty
+boxes carry no pixels and do not move the union.
+
+@param {Array} boxes - [{ x, y, width, height }]
+
+@return {Object|null} - { x, y, width, height }, or null for no boxes
+*********************************************************************/
+export function unionBox (boxes) {
+
+  let out = null;
+  for (const b of boxes) {
+    if (b === null || b === undefined || b.width <= 0 || b.height <= 0) {
+      continue;
+    }
+    if (out === null) {
+      out = { x: b.x, y: b.y, width: b.width, height: b.height };
+      continue;
+    }
+    const x2 = Math.max(out.x + out.width, b.x + b.width);
+    const y2 = Math.max(out.y + out.height, b.y + b.height);
+    out.x = Math.min(out.x, b.x);
+    out.y = Math.min(out.y, b.y);
+    out.width = x2 - out.x;
+    out.height = y2 - out.y;
+  }
+  return out;
+
+}
+
+
+/********************************************************************
+Crop a PNG buffer to a rectangle in its own coordinates, clamped to the
+image with a minimum of one pixel on each axis.
+
+@param {Buffer} shot    - PNG
+@param {Number} x       - Left edge in shot coordinates
+@param {Number} y       - Top edge in shot coordinates
+@param {Number} width   - Crop width
+@param {Number} height  - Crop height
+
+@return {Buffer} - PNG
+*********************************************************************/
+export function cropRect (shot, x, y, width, height) {
+
+  const source = PNG.sync.read(shot);
+  const cx = Math.max(0, Math.round(x));
+  const cy = Math.max(0, Math.round(y));
+  const cw = Math.max(1, Math.min(source.width - cx, Math.round(width)));
+  const ch = Math.max(1, Math.min(source.height - cy, Math.round(height)));
+  const out = new PNG({ width: cw, height: ch });
+  PNG.bitblt(source, out, cx, cy, cw, ch, 0, 0);
+
+  return PNG.sync.write(out);
+
+}
+
+
+/********************************************************************
+The common comparison window for one state (D39-3): each side's union
+box expressed relative to its own sample root's top-left, then unioned.
+Cropping each shot to `root + window` aligns both pictures at the
+sample root and compares one window, never each side's own union.
+
+@param {Object} oursRoot     - Our sample root's box ({ x, y })
+@param {Object} oursUnion    - Our painted union box ({ x, y, width, height })
+@param {Object} upstreamRoot - The reference's sample root
+@param {Object} upstreamUnion - The reference's union box
+
+@return {Object|null} - { x, y, width, height } relative to either root
+*********************************************************************/
+export function windowFor (oursRoot, oursUnion, upstreamRoot, upstreamUnion) {
+
+  const relative = [
+    { x: oursUnion.x - oursRoot.x, y: oursUnion.y - oursRoot.y, width: oursUnion.width, height: oursUnion.height },
+    { x: upstreamUnion.x - upstreamRoot.x, y: upstreamUnion.y - upstreamRoot.y, width: upstreamUnion.width, height: upstreamUnion.height }
+  ];
+  return unionBox(relative);
+
+}

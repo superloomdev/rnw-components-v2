@@ -17,8 +17,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { openReference, openShowcase, pauseCellAnimations } from './harness/page.js';
-import { perceptualRatio, ratio } from './harness/perceptual.js';
+import { openReference, openShowcase, pauseCellAnimations, readSampleBox } from './harness/page.js';
+import { cropRect, perceptualRatio, ratio, windowFor } from './harness/perceptual.js';
 import { PNG } from 'pngjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -54,7 +54,9 @@ const pauseAnimations = function (name) {
 
 
 /********************************************************************
-Screenshot every cell body of one component on the open page.
+Screenshot every cell body's painted sample box on the open page: the
+union of its painted elements (readSampleBox), so cell whitespace never
+dilutes the ratio.
 
 @param {Object} page    - Playwright page
 @param {String} name    - Component name
@@ -72,7 +74,8 @@ async function shootBodies (page, name, frozen) {
     if (frozen === true) {
       await pauseCellAnimations(cell.locator('[data-part="body"]'));
     }
-    out[await cell.getAttribute('data-state')] = await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' });
+    const state = await cell.getAttribute('data-state');
+    out[state] = { shot: await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' }), sample: await readSampleBox(page, name, state) };
   }
 
   return out;
@@ -168,14 +171,27 @@ test.describe('perceptual', function () {
       const ours = await shootBodies(page, row.name, pauseAnimations(row.name));
       const ratios = [];
       const over = [];
+      const crops = [];
       for (const state of Object.keys(upstream)) {
         expect(ours[state], row.name + ' / ' + state + ' is drawn upstream but not here').toBeDefined();
-        const percent = Math.round(perceptualRatio(ours[state], upstream[state]) * 10000) / 100;
+        let a = ours[state].shot;
+        let b = upstream[state].shot;
+        // D39-3: one common window aligned at each side's sample root
+        if (ours[state].sample !== null && upstream[state].sample !== null) {
+          const window = windowFor(ours[state].sample, ours[state].sample, upstream[state].sample, upstream[state].sample);
+          a = cropRect(ours[state].shot, ours[state].sample.rootX + window.x - ours[state].sample.bodyX, ours[state].sample.rootY + window.y - ours[state].sample.bodyY, window.width, window.height);
+          b = cropRect(upstream[state].shot, upstream[state].sample.rootX + window.x - upstream[state].sample.bodyX, upstream[state].sample.rootY + window.y - upstream[state].sample.bodyY, window.width, window.height);
+        }
+        const pngA = PNG.sync.read(a);
+        const pngB = PNG.sync.read(b);
+        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + ' @' + ours[state].sample.rootX + ',' + ours[state].sample.rootY + ' upstream ' + pngB.width + 'x' + pngB.height + ' @' + upstream[state].sample.rootX + ',' + upstream[state].sample.rootY);
+        const percent = Math.round(perceptualRatio(a, b) * 10000) / 100;
         ratios.push(state + ' ' + percent + '%');
         if (percent > row.diff_budget) {
           over.push(state + ': ' + percent + '% > ' + row.diff_budget + '%');
         }
       }
+      test.info().annotations.push({ type: 'crop', description: row.name + ' crops: ' + crops.join('; ') });
       test.info().annotations.push({ type: 'perceptual', description: row.name + ': ' + ratios.join(', ') });
       expect(over, row.name + ' states over the diff budget').toEqual([]);
     });

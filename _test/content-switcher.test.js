@@ -9,7 +9,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/tabs/sample.content-switcher.js';
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
-import { React, cleanup, render } from './harness/render.js';
+import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 const ITEMS = [{ text: 'One' }, { text: 'Two' }, { text: 'Three' }];
@@ -143,6 +143,33 @@ describe('ContentSwitcher: the lg segment padding', function () {
     const icon = await render(React.createElement(registryFor('default').ContentSwitcher, { items: ITEMS_ICON, size: 'lg' }));
     assert.equal(getComputedStyle(icon.querySelector('[role="tab"]')).paddingLeft, '14px');
     await cleanup();
+  });
+
+});
+
+describe('ContentSwitcher: the low-contrast pressed cell', function () {
+
+  test('a pressed low-contrast segment paints the active cell under every template', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const t = buildNative(template).tokens;
+      const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, lowContrast: true, defaultSelectedIndex: 0 }));
+      const segment = container.querySelectorAll('[role="tab"]')[1];
+      const want = cssValue('backgroundColor', t['color.content_switcher_low_contrast_container_active']);
+      const painted = function () {
+        return segment.style.backgroundColor === want || Array.from(segment.querySelectorAll('div')).some(function (el) {
+          return el.style.backgroundColor === want;
+        });
+      };
+      assert.equal(painted(), false, template + ': nothing paints the active fill at rest');
+      await act(async function () {
+        segment.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+      });
+      assert.equal(painted(), true, template + ': a press paints ' + want);
+      await act(async function () {
+        segment.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
+      });
+      await cleanup();
+    }
   });
 
 });
