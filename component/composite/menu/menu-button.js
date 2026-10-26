@@ -47,10 +47,16 @@ export default function MenuButton (ctx) {
     const open = controlled ? props.open === true : toggled;
     const menuId = useA11yId('menu-button-menu');
     const containerRef = React.useRef(null);
+    const triggerRef = React.useRef(null);
+    // The menu opens at the trigger's edge: the measured anchor is the
+    // pressable itself, not the stretched container
+    React.useEffect(function () {
+      triggerRef.current = containerRef.current !== null && typeof containerRef.current.querySelector === 'function' ? containerRef.current.querySelector('button') : containerRef.current;
+    }, []);
 
-    // The container is the menu's anchor: measured into the layer's own
+    // The trigger is the menu's anchor: measured into the layer's own
     // space each time the menu opens (and on scroll and resize while it is)
-    const anchored = useAnchoredPosition({ anchor: containerRef, offset: 0, placement: 'bottom', track: open });
+    const anchored = useAnchoredPosition({ anchor: triggerRef, offset: 0, placement: 'bottom', track: open });
     React.useEffect(function () {
       if (open) {
         anchored.measure();

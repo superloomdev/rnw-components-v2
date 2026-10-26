@@ -77,3 +77,29 @@ describe('MenuButton: every sample state under every template', function () {
   });
 
 });
+
+describe('MenuButton: the menu takes the trigger width', function () {
+
+  test('a bottom menu is exactly the trigger width inside the min/max cells', async function () {
+    const container = await render(React.createElement(registryFor('carbon').MenuButton, {
+      items: SAMPLE[1].props.items,
+      label: 'Actions',
+      open: true
+    }));
+    const menu = container.querySelector('[role="menu"]');
+    assert.notEqual(menu, null, 'the menu mounts');
+    const trigger = container.querySelector('button');
+    trigger.getBoundingClientRect = function () {
+      return { x: 37, y: 0, width: 192, height: 48, top: 0, right: 229, bottom: 48, left: 37 };
+    };
+    container.firstElementChild.getBoundingClientRect = function () {
+      return { x: 37, y: 0, width: 320, height: 48, top: 0, right: 357, bottom: 48, left: 37 };
+    };
+    await act(async function () {
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('scroll'));
+    });
+    assert.equal(menu.style.width, '192px', 'the menu matches the 192 trigger, not the 320 container');
+  });
+
+});

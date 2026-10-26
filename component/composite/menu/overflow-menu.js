@@ -163,6 +163,7 @@ export default function OverflowMenu (ctx) {
     // Render the container (the panel's anchor and its upstream mounting
     // block) and the trigger; the panel mounts once the anchor is measured
     const triggerFill = open === true ? 'overflow_menu_trigger_open' : undefined;
+    const triggerSize = ctx.metric('IconButton', { xs: 'sizeXsmall', sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' }[size]);
     const panel = open === true && anchor !== null ? React.createElement(View, {
       ref: panelRef,
       onLayout: positioned.measure,
@@ -189,7 +190,7 @@ export default function OverflowMenu (ctx) {
         position: 'absolute',
         right: flipped === true ? 0 : undefined,
         top: direction === 'top' ? undefined : -ctx.metric('OverflowMenu', 'connectorSize'),
-        width: ctx.metric('IconButton', { xs: 'sizeXsmall', sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' }[size])
+        width: triggerSize
       }
     }),
     items.map(function (item, index) {
@@ -220,7 +221,7 @@ export default function OverflowMenu (ctx) {
     return React.createElement(View, {
       ref: containerRef,
       testID: props.testID,
-      style: { alignSelf: 'flex-start' }
+      style: { alignSelf: 'flex-start', width: triggerSize }
     },
     panel !== null && overlay.hosted !== true ? panel : null,
     React.createElement(ctx.Registry.IconButton, {

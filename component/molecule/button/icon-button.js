@@ -64,7 +64,7 @@ export default function IconButton (ctx) {
         '': props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix,
         _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_hover',
         _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_active'),
-        _focus: containerPrefix + '_focus',
+        _focus: props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix + '_focus',
         _disabled: containerPrefix + '_disabled',
         _selected: containerPrefix + '_selected'
       }

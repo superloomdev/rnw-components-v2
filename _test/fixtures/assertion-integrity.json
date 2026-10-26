@@ -2884,6 +2884,16 @@
       "id": "overflow-menu-viewport-flip",
       "test": "overflow-menu.test.js",
       "why": "a viewport-fitting placement must fail the direction-only assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-button.js",
+      "find": "anchor: triggerRef",
+      "replace": "anchor: containerRef",
+      "testName": "a bottom menu is exactly the trigger width inside the min/max cells",
+      "runner": "node",
+      "id": "menu-button-menu-width",
+      "test": "menu-button.test.js",
+      "why": "anchoring the stretched container must fail the trigger-width menu assertion"
     }
   ]
 }

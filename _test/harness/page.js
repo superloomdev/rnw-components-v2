@@ -1346,6 +1346,11 @@ export async function reopenPanel (page, name, state, reopen, side) {
   if (await trigger.count() === 0) {
     return false;
   }
+  // Pin the cell to the viewport top before the click so a re-opened menu
+  // fits and flips at the same scroll position on both pages
+  await body.evaluate(function (element) {
+    element.scrollIntoView({ block: 'start', inline: 'nearest' });
+  });
   await trigger.click();
   // Park the pointer off the cells: an upstream option paints its hover
   // fill wherever the click left it, and the read must see rest fills
