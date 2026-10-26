@@ -2744,6 +2744,14 @@
       "test": "perceptual-harness.test.js",
       "testName": "windowFor is one window relative to either root",
       "why": "a window that keeps only our side's box must fail the window test"
+    },
+    {
+      "name": "perceptual-crop-rect-pad",
+      "file": "_test/harness/perceptual.js",
+      "find": "  const sx = Math.max(0, cx);",
+      "replace": "  const sx = cx;",
+      "testName": "cropRect pads a rectangle starting outside the source instead of shifting it",
+      "runner": "node"
     }
   ]
 }

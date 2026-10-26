@@ -12,10 +12,16 @@ export default Object.freeze({
   iconSize: 'control.menu_icon_size',
   markSize: 'size.icon_01',
   dividerWidth: 'control.menu_divider_width',
+  dividerMargin: 'control.menu_divider_margin_block',
   level: 'stacking.dropdown',
   itemGap: 'control.menu_item_gap',
   minWidth: 'control.menu_min_width',
   iconMinWidth: 'control.menu_icon_min_width',
   radius: 'control.list_radius',
-  spacing: { constant: 8 }
+  spacing: 'control.menu_viewport_margin',
+  maxWidth: 'control.menu_max_width',
+  borderWidth: 'border.width_01',
+  itemHeightXsmall: 'size.size_xsmall',
+  itemHeightMedium: 'size.size_medium',
+  itemHeightLarge: 'size.size_large'
 });

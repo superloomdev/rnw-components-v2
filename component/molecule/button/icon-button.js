@@ -30,7 +30,7 @@ export default function IconButton (ctx) {
   const ICON_KINDS = Object.freeze(['ghost', 'tertiary']);
 
   // Size -> side metric in the spec sheet
-  const SIZES = Object.freeze({ sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' });
+  const SIZES = Object.freeze({ xs: 'sizeXsmall', sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' });
 
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
   const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
@@ -54,7 +54,22 @@ export default function IconButton (ctx) {
     const side = ctx.metric('IconButton', SIZES[props.size] || 'size');
     const borderWidth = ctx.metric('IconButton', 'borderWidth');
     const radius = ctx.metric('IconButton', 'radius');
-    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');
+    const containerPrefix = 'button_' + kind + '_container';
+    // Composition props that name the face's fill leaves outright (a
+    // composing parent's own cells - the overflow menu's open-trigger
+    // fill, the copy button's pressed fill); every unset phase falls back
+    // to the kind's cell
+    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined
+      ? {
+        '': props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix,
+        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_hover',
+        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_active'),
+        _focus: containerPrefix + '_focus',
+        _disabled: containerPrefix + '_disabled',
+        _selected: containerPrefix + '_selected'
+      }
+      : null;
+    const press = ctx.pressPresentation(state, containerPrefix, fillMap !== null ? { colors: fillMap } : undefined);
     // A toggle's identity pair is its own: `selected` draws the kind's
     // selected cells, `selected === false` the unselected-toggle cells; any
     // other value is an ordinary button at the family cells. The toggle's

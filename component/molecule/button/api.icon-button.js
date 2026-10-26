@@ -12,7 +12,7 @@ export default Object.freeze({
     iconColor: { type: 'string', required: false, description: 'The color leaf the glyph draws; default the kind\'s icon cell. Composing parents name their own cell (the notification\'s close icon).' },
     label: { type: 'string', required: true, description: 'The button\'s accessible name, which its compact tooltip shows.' },
     kind: { type: 'string', required: false, description: 'One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`.' },
-    size: { type: 'string', required: false, description: 'One of `sm`, `md`, `lg`: the square\'s side. Default `lg`, the `icon_button` member cell.' },
+    size: { type: 'string', required: false, description: 'One of `xs`, `sm`, `md`, `lg`: the square\'s side. Default `lg`, the `icon_button` member cell.' },
     disabled: { type: 'boolean', required: false, description: 'Disables the button.' },
     selected: { type: 'boolean', required: false, description: 'A toggle button\'s state: present makes it `aria-pressed`, true draws the kind\'s selected cells.' },
     onPress: { type: 'function', required: false, description: 'Called when the button is pressed.' },
@@ -21,6 +21,9 @@ export default Object.freeze({
   }),
   composition: Object.freeze({
     iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
+    fillLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws at rest (the overflow menu\'s open-trigger fill); default the kind\'s container cell.' },
+    fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws under hover (the overflow menu\'s trigger hover); default the kind\'s hover cell.' },
+    fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws while pressed (the copy button\'s pressed fill); default the hover leaf, then the kind\'s active cell.' },
     onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },
     'aria-controls': { type: 'string', required: false, description: 'Composition prop: the id of the layer the trigger controls (the combo button\'s menu).' },
     'aria-expanded': { type: 'boolean', required: false, description: 'Composition prop: whether the layer the trigger controls is open (the combo button\'s menu).' },
@@ -30,7 +33,7 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'control.icon_button_size', 'control.icon_button_icon_size',
-    'size.size_small', 'size.size_medium',
+    'size.size_xsmall', 'size.size_small', 'size.size_medium',
     'control.button_radius', 'border.width_01',
     'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',

@@ -115,6 +115,16 @@ export default function Button (ctx) {
     const iconPlace = inline
       ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
       : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
+    // A composing parent turns the glyph (the menu button's chevron while
+    // open); the turn transitions on the theme's fast-02 duration and
+    // standard productive easing
+    const rotation = Utils.isNumber(props.iconRotation) ? props.iconRotation : 0;
+    if (rotation !== 0) {
+      iconPlace.transform = [{ rotate: rotation + 'deg' }];
+    }
+    iconPlace.transitionDuration = ctx.token('motion.duration_fast_02') + 'ms';
+    iconPlace.transitionProperty = 'transform';
+    iconPlace.transitionTimingFunction = 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')';
     const icon = hasIcon ? React.createElement(View, { style: iconPlace },
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
 

@@ -2995,7 +2995,7 @@
         "version": "1.115.0",
         "export": "MenuButton"
       },
-      "description": "MenuButton is a component in the Menu family.",
+      "description": "MenuButton is a button that opens a Menu of actions below or above it, its chevron turning while the menu is open.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3014,7 +3014,7 @@
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItem",
@@ -3185,7 +3185,7 @@
         "version": "1.115.0",
         "export": "OverflowMenu"
       },
-      "description": "OverflowMenu is a component in the Menu family.",
+      "description": "OverflowMenu is a square icon button that opens a panel of options joined to it, for actions that do not fit beside the content.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3204,7 +3204,7 @@
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OverflowMenuItem",
@@ -3215,7 +3215,7 @@
         "version": "1.115.0",
         "export": "OverflowMenuItem"
       },
-      "description": "OverflowMenuItem is a component in the Menu family.",
+      "description": "OverflowMenuItem is one option row of an OverflowMenu, with an optional rule above it and a danger kind; it must be composed inside OverflowMenu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3227,14 +3227,13 @@
       ],
       "parent": null,
       "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
+        "kind": "none"
       },
       "carbon_twin": "OverflowMenuItem",
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "CopyButton",
@@ -3272,7 +3271,7 @@
         "version": "1.115.0",
         "export": "SkipToContent"
       },
-      "description": "SkipToContent is a component in the SkipToContent family; it is web-only and renders nothing on native platforms.",
+      "description": "SkipToContent is a link hidden until keyboard focus reaches it, then drawn at the top of the page to jump past the navigation to the main content; it renders nothing on native platforms.",
       "platform": {
         "support": "web",
         "fallback": "renders nothing on native"
@@ -3290,7 +3289,7 @@
       "flags": [
         "web_only"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ComposedModal",

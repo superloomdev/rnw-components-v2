@@ -156,12 +156,24 @@ image with a minimum of one pixel on each axis.
 export function cropRect (shot, x, y, width, height) {
 
   const source = PNG.sync.read(shot);
-  const cx = Math.max(0, Math.round(x));
-  const cy = Math.max(0, Math.round(y));
-  const cw = Math.max(1, Math.min(source.width - cx, Math.round(width)));
-  const ch = Math.max(1, Math.min(source.height - cy, Math.round(height)));
+  const cx = Math.round(x);
+  const cy = Math.round(y);
+  const cw = Math.max(1, Math.round(width));
+  const ch = Math.max(1, Math.round(height));
   const out = new PNG({ width: cw, height: ch });
-  PNG.bitblt(source, out, cx, cy, cw, ch, 0, 0);
+  // The requested rectangle is copied exactly: the part outside the
+  // source stays transparent (a crop that starts left of or above the
+  // picture pads instead of shifting the picture), and only the overlap
+  // is copied
+  const sx = Math.max(0, cx);
+  const sy = Math.max(0, cy);
+  const dx = Math.max(0, -cx);
+  const dy = Math.max(0, -cy);
+  const w = Math.min(source.width - sx, cw - dx);
+  const h = Math.min(source.height - sy, ch - dy);
+  if (w > 0 && h > 0) {
+    PNG.bitblt(source, out, sx, sy, w, h, dx, dy);
+  }
 
   return PNG.sync.write(out);
 

@@ -4,7 +4,8 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { unionBox, windowFor } from './harness/perceptual.js';
+import { PNG } from 'pngjs';
+import { cropRect, unionBox, windowFor } from './harness/perceptual.js';
 
 describe('perceptual harness: unionBox', function () {
 
@@ -34,6 +35,33 @@ describe('perceptual harness: windowFor', function () {
     // ours: root (10,10), union (-2..18, 12..22) relative; upstream: root (0,0), union (0..10, 0..30)
     const window = windowFor({ x: 10, y: 10 }, { x: 8, y: 12, width: 20, height: 10 }, { x: 0, y: 0 }, { x: 0, y: 0, width: 10, height: 30 });
     assert.deepEqual(window, { x: -2, y: 0, width: 20, height: 30 });
+  });
+
+});
+
+
+describe('perceptual harness: cropRect', function () {
+
+  test('cropRect pads a rectangle starting outside the source instead of shifting it', function () {
+    // A 4 x 4 source, all opaque red, cropped at (-2, -1) size 5 x 4: the
+    // copy lands offset by the negative origin and the pad is transparent
+    const source = new PNG({ height: 4, width: 4 });
+    for (let i = 0; i < source.data.length; i += 4) {
+      source.data[i] = 255;
+      source.data[i + 3] = 255;
+    }
+    const out = PNG.sync.read(cropRect(PNG.sync.write(source), -2, -1, 5, 4));
+    assert.equal(out.width, 5);
+    assert.equal(out.height, 4);
+    const at = function (x, y) {
+      const i = (y * out.width + x) * 4;
+      return [out.data[i], out.data[i + 3]];
+    };
+    assert.deepEqual(at(0, 0), [0, 0], 'left-of-source padding is transparent');
+    assert.deepEqual(at(1, 0), [0, 0], 'the second pad column is transparent');
+    assert.deepEqual(at(2, 1), [255, 255], 'the source begins two pixels in');
+    assert.deepEqual(at(2, 0), [0, 0], 'above-source padding is transparent');
+    assert.deepEqual(at(4, 3), [255, 255], 'the last source pixel is at its offset');
   });
 
 });

@@ -19,6 +19,7 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
   composition: Object.freeze({
+    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the trailing icon turns by, transitioning on the web (the menu button\'s chevron while open). Default 0.' },
     minWidth: { type: 'number', required: false, description: 'Composition prop: overrides the computed minimum width (the combo button\'s action).' },
     maxWidth: { type: 'number', required: false, description: 'Composition prop: caps the computed width (the combo button\'s action).' },
     paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' },
@@ -35,7 +36,7 @@ export default Object.freeze({
     'type.button_label', 'font.family.sans',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
     'feedback.press', 'anatomy.button_label', 'state.hover_opacity', 'state.pressed_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive'
+    'motion.duration_fast_01', 'motion.duration_fast_02', 'motion.easing_standard_productive'
   ].concat(KINDS.flatMap(function (kind) {
     // Every kind's role cells: fill and label per state, border per state, elevation per state
     return ['', '_hover', '_active', '_focus', '_disabled', '_selected'].flatMap(function (state) {

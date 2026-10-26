@@ -153,16 +153,18 @@ export default function Menu (ctx) {
     });
     const iconsShared = ctx.enum('anatomy.menu_icon_seat') === 'shared';
     const metrics = {
-      dividerSpace: ctx.metric('Menu', 'paddingBlock'),
+      dividerSpace: ctx.metric('Menu', 'dividerMargin'),
       dividerWidth: ctx.metric('Menu', 'dividerWidth'),
       iconPlace: { marginEnd: ctx.metric('Menu', 'itemGap'), width: ctx.metric('Menu', 'iconSize') },
       iconSize: ctx.metric('Menu', 'iconSize'),
       markPlace: { marginEnd: ctx.metric('Menu', 'itemGap'), width: ctx.metric('Menu', 'markSize') },
       markSize: ctx.metric('Menu', 'markSize')
     };
+    const size = Utils.inArray(['xs', 'sm', 'md', 'lg'], props.size) ? props.size : 'sm';
+    const itemHeights = { xs: 'itemHeightXsmall', sm: 'itemHeight', md: 'itemHeightMedium', lg: 'itemHeightLarge' };
     const list = ctx.listPresentation({
       dividerWidth: 0,
-      itemHeight: ctx.metric('Menu', 'itemHeight'),
+      itemHeight: ctx.metric('Menu', itemHeights[size]),
       level: ctx.metric('Menu', 'level'),
       mark: true,
       markRoom: 0,
@@ -238,7 +240,12 @@ export default function Menu (ctx) {
       role: 'menu',
       tabIndex: -1,
       style: [list.container, positioned.layerStyle, {
+        backgroundColor: props.backgroundToken === 'background' ? ctx.color('menu_container_background') : undefined,
+        maxWidth: ctx.metric('Menu', 'maxWidth'),
         minWidth: icons ? ctx.metric('Menu', 'iconMinWidth') : ctx.metric('Menu', 'minWidth'),
+        outlineColor: props.border === true ? ctx.color('menu_border') : undefined,
+        outlineStyle: props.border === true ? 'solid' : undefined,
+        outlineWidth: props.border === true ? ctx.metric('Menu', 'borderWidth') : undefined,
         // A composing parent fixes the surface's width (the combo button's
         // container); without one the surface takes its content width
         width: Utils.isNumber(props.width) ? props.width : undefined
