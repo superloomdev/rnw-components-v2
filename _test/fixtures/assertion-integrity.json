@@ -2746,12 +2746,104 @@
       "why": "a window that keeps only our side's box must fail the window test"
     },
     {
-      "name": "perceptual-crop-rect-pad",
       "file": "_test/harness/perceptual.js",
       "find": "  const sx = Math.max(0, cx);",
       "replace": "  const sx = cx;",
       "testName": "cropRect pads a rectangle starting outside the source instead of shifting it",
-      "runner": "node"
+      "runner": "node",
+      "id": "perceptual-crop-rect-pad",
+      "test": "perceptual-harness.test.js",
+      "why": "cropRect shifting instead of padding must fail the pixel-exact test"
+    },
+    {
+      "file": "component/composite/menu/menu-item.js",
+      "find": "anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd')",
+      "replace": "anchor.x + anchor.width - ctx.metric('MenuItem', 'submenuOffsetEnd')",
+      "testName": "submenu_offset_end, y = itemTop",
+      "runner": "node",
+      "id": "menu-submenu-offset-end-negated",
+      "test": "menu-item.test.js",
+      "why": "a submenu x that subtracts the offset must fail the placement assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-item.js",
+      "find": "}, ctx.metric('MenuItem', 'submenuDelay'));",
+      "replace": "}, 0);",
+      "testName": "hover opens only after the 100 ms delay: closed inside it",
+      "runner": "node",
+      "id": "menu-submenu-hover-no-delay",
+      "test": "menu-item.test.js",
+      "why": "a zero hover delay must fail the closed-inside-the-delay assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-item.js",
+      "find": "if (!disabled && danger && focused) {",
+      "replace": "if (!disabled && danger && false) {",
+      "testName": "danger focus draws fill, white label and the inset ring",
+      "runner": "node",
+      "id": "menu-danger-focus-no-inset",
+      "test": "menu.test.js",
+      "why": "a danger item that draws no inset ring on focus must fail the ring assertions"
+    },
+    {
+      "file": "component/composite/menu/menu.js",
+      "find": "subItem.label === item.selectedItem",
+      "replace": "subItem.label !== item.selectedItem",
+      "testName": "one checked radio",
+      "runner": "node",
+      "id": "menu-radio-previous-checked",
+      "test": "menu-item-radio-group.test.js",
+      "why": "a radio group that marks the wrong option checked must fail the pick assertion"
+    },
+    {
+      "file": "component/composite/menu/overflow-menu.js",
+      "find": "        opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' ? 1 : 0,",
+      "replace": "        opacity: 1,",
+      "testName": "connector shown or hidden by anatomy",
+      "runner": "node",
+      "id": "overflow-menu-connector-ignores-anatomy",
+      "test": "overflow-menu.test.js",
+      "why": "a connector painted regardless of the anatomy enum must fail the material hidden assertion"
+    },
+    {
+      "file": "component/composite/menu/overflow-menu-item.js",
+      "find": "'optionHeight')",
+      "replace": "'optionHeight') + (props.divider === true ? ctx.metric('OverflowMenuItem', 'dividerWidth') : 0)",
+      "testName": "divider: the row height cell",
+      "runner": "node",
+      "id": "overflow-menu-item-divider-adds-border",
+      "test": "overflow-menu-item.test.js",
+      "why": "a divider that adds its border to the row height must fail the divider height assertion"
+    },
+    {
+      "file": "component/molecule/skip-to-content/skip-to-content.web.js",
+      "find": "        overflow: 'hidden',",
+      "replace": "        overflow: 'visible',",
+      "testName": "the link rests hidden",
+      "runner": "node",
+      "id": "skip-to-content-rest-visible",
+      "test": "skip-to-content.test.js",
+      "why": "a skip link that stays full height at rest must fail the clipped-at-rest assertions"
+    },
+    {
+      "file": "component/composite/menu/menu-button.js",
+      "find": "minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth')",
+      "replace": "minWidth: undefined",
+      "testName": "the floor applies where measurable",
+      "runner": "node",
+      "id": "menu-button-floor-dropped",
+      "test": "menu-button.test.js",
+      "why": "a MenuButton with no minimum width floor must fail the floor assertion"
+    },
+    {
+      "file": "_test/harness/perceptual.js",
+      "find": "  let out = null;",
+      "replace": "  if (boxes.length > 0) { return boxes[0]; }\n  let out = null;",
+      "testName": "unionBox",
+      "runner": "node",
+      "id": "perceptual-union-box-first",
+      "test": "perceptual-harness.test.js",
+      "why": "a unionBox returning only the first box must fail the union assertion"
     }
   ]
 }

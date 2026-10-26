@@ -31,7 +31,7 @@ describe('MenuButton: every sample state under every template', function () {
         assert.notEqual(trigger, null, 'the trigger mounts');
         const kind = state.props.kind || 'primary';
         if (kind !== 'ghost' && state.props.disabled !== true) {
-          assert.ok(trigger.getBoundingClientRect().width >= 0, 'the floor applies where measurable');
+          assert.equal(trigger.style.minWidth, t['control.menu_button_min_width'] + 'px', 'the floor applies where measurable');
         }
         const menu = container.querySelector('[role="menu"]');
         const open = state.props.open === true;
