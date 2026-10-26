@@ -327,6 +327,7 @@ async function collect (page, component, reference, side, masks) {
     const reopened = reference.reopen !== undefined && Array.isArray(reference.reopen.states) && reference.reopen.states.indexOf(label) !== -1;
     if (reopened) {
       await reopenPanel(page, component.name, label, reference.reopen, side);
+      await page.mouse.move(0, 0);
       const reread = await readParts(page, component.name, parts, side, origin, { extended: true, only: label, pauseAnimations: pauseAnimations });
       if (reread[label] !== undefined) {
         rest[label] = reread[label];

@@ -1347,6 +1347,9 @@ export async function reopenPanel (page, name, state, reopen, side) {
     return false;
   }
   await trigger.click();
+  // Park the pointer off the cells: an upstream option paints its hover
+  // fill wherever the click left it, and the read must see rest fills
+  await page.mouse.move(0, 0);
   await page.waitForTimeout(400);
   return true;
 

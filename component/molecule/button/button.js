@@ -151,6 +151,7 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
+          paddingBottom: labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
           paddingTop: labelTop
@@ -170,6 +171,7 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
+          paddingBottom: labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
           paddingTop: labelTop

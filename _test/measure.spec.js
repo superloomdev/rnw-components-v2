@@ -93,6 +93,7 @@ async function rereadReopened (page, component, reference, side, extended, state
       continue;
     }
     await reopenPanel(page, component.name, label, reference.reopen, side);
+    await page.mouse.move(0, 0);
     const reread = await readParts(page, component.name, reference.parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true });
     if (reread[label] !== undefined) {
       states[label] = reread[label];
