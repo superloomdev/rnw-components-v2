@@ -151,3 +151,31 @@ describe('MenuButton: `open` seeds and re-syncs, never locks', function () {
   });
 
 });
+
+describe('MenuButton: the trigger press does not take focus', function () {
+
+  test('a mousedown on the trigger of an open menu calls preventDefault and leaves the menu open', async function () {
+    const container = await render(React.createElement(registryFor('carbon').MenuButton, {
+      items: SAMPLE[1].props.items,
+      label: 'Actions',
+      open: true
+    }));
+    const menu = container.querySelector('[role="menu"]');
+    assert.notEqual(menu, null, 'open: true mounts the menu');
+    const trigger = container.querySelector('button');
+    let prevented = false;
+    const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    const original = event.preventDefault.bind(event);
+    event.preventDefault = function () {
+      prevented = true;
+      original();
+    };
+    await act(async function () {
+      trigger.dispatchEvent(event);
+    });
+    assert.equal(prevented, true, 'the trigger mousedown prevented its default');
+    assert.equal(event.defaultPrevented, true, 'the DOM event records it');
+    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the menu stays open');
+  });
+
+});

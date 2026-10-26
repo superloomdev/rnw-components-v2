@@ -2904,6 +2904,16 @@
       "id": "menu-button-open-locks",
       "test": "menu-button.test.js",
       "why": "a close path that ignores the request while `open` is passed must fail the seeded-close assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-button.js",
+      "find": "          event.preventDefault();",
+      "replace": "          void event;",
+      "testName": "a mousedown on the trigger of an open menu calls preventDefault and leaves the menu open",
+      "runner": "node",
+      "id": "menu-button-mousedown-focus",
+      "test": "menu-button.test.js",
+      "why": "a mousedown that takes focus must fail the preventDefault assertion"
     }
   ]
 }

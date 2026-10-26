@@ -128,6 +128,11 @@ export default function MenuButton (ctx) {
       iconRotation: open ? 180 : 0,
       kind: kind,
       minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth'),
+      onMouseDown: function (event) {
+        if (event !== undefined && event !== null && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
+      },
       onPress: function () {
         if (open) {
           close();

@@ -55,3 +55,5 @@ an item is chosen).
 
 `md-menu` of `md-menu-item` elements (`md-divider` for separators). It has
 no danger kind, no selected marks and leading icons in `start` slots.
+
+Measured residual: the trigger glyph sits half a point higher than the reference's, which offsets the glyph by one sixteenth of a rem and back.

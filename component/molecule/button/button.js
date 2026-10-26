@@ -131,6 +131,7 @@ export default function Button (ctx) {
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : button.rootProps.accessibilityLabel,
+      onMouseDown: props.onMouseDown,
       testID: props.testID,
       style: [
         props.fill === true ? {
