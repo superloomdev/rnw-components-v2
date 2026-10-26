@@ -200,6 +200,16 @@ export default function createMenuBehaviors (deps) {
       }
     }, []);
 
+    // A tracked anchor moves on scroll and resize: re-fit the surface when
+    // the range it opens against changes
+    const rangeX = normalizeRange(options.x === undefined ? 0 : options.x);
+    const rangeY = normalizeRange(options.y === undefined ? 0 : options.y);
+    React.useEffect(function () {
+      measure();
+    }, [measure,
+      rangeX === null ? 0 : rangeX[0], rangeX === null ? 0 : rangeX[1],
+      rangeY === null ? 0 : rangeY[0], rangeY === null ? 0 : rangeY[1]]);
+
     // The style the measured surface mounts with: inside a host `absolute`
     // at host coordinates on every platform; unhosted `fixed` at viewport
     // coordinates on the web, `absolute` at window coordinates on a native

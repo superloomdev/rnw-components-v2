@@ -81,6 +81,9 @@ Menu is a list of menu items and separators that opens at a point, roves focus o
 | `open` | `boolean` | yes | Whether the menu is open; the caller owns it and closes through `onClose`. |
 | `x` | `number` | no | The viewport x coordinate (or `[min, max]` range) the menu opens at. Default 0. |
 | `y` | `number` | no | The viewport y coordinate (or `[min, max]` range) the menu opens at. Default 0. |
+| `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the item height off the size scale. Default `sm`, the menu member cell. |
+| `border` | `boolean` | no | Draws the `menu_border` outline around the surface. Default false. |
+| `backgroundToken` | `string` | no | `layer` (default) or `background`: the surface's fill token. |
 | `menuAlignment` | `string` | no | `bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the edge of `y` the menu grows from, and the `x` edge `-start`/`-end` aligns to. |
 | `width` | `number` | no | Composition prop: fixes the surface's width to a composing parent's (the combo button's container); default the content width with the menu's floors. |
 | `id` | `string` | no | Composition prop: the surface's element id, for a composing parent's `aria-controls` (the combo button's trigger). |
@@ -99,12 +102,18 @@ Menu is a list of menu items and separators that opens at a point, roves focus o
 | `iconSize` | `control.menu_icon_size` |
 | `markSize` | `size.icon_01` |
 | `dividerWidth` | `control.menu_divider_width` |
+| `dividerMargin` | `control.menu_divider_margin_block` |
 | `level` | `stacking.dropdown` |
 | `itemGap` | `control.menu_item_gap` |
 | `minWidth` | `control.menu_min_width` |
 | `iconMinWidth` | `control.menu_icon_min_width` |
 | `radius` | `control.list_radius` |
-| `spacing` | constant `8` (decision) |
+| `spacing` | `control.menu_viewport_margin` |
+| `maxWidth` | `control.menu_max_width` |
+| `borderWidth` | `border.width_01` |
+| `itemHeightXsmall` | `size.size_xsmall` |
+| `itemHeightMedium` | `size.size_medium` |
+| `itemHeightLarge` | `size.size_large` |
 
 ### States (sample.js)
 
@@ -112,3 +121,344 @@ Menu is a list of menu items and separators that opens at a point, roves focus o
 |---|---|
 | default | `{"items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
 | selectable | `{"items":[{"label":"List view","selected":false},{"label":"Grid view","selected":true},{"label":"Board view","selected":false}],"open":true,"x":240,"y":8,"accessibilityLabel":"Views"}` |
+| radio | `{"items":[{"radioGroup":"Size","items":["Small","Medium","Large"],"selectedItem":"Medium"}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| group | `{"items":[{"group":"Edit","items":[{"label":"Cut"},{"label":"Copy"}]},{"divider":true},{"group":"View","items":[{"label":"List view","selected":false},{"label":"Grid view","selected":true}]}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| submenu | `{"items":[{"label":"Share","items":[{"label":"Email"},{"label":"Copy link"}]},{"label":"Export"},{"label":"Rename"}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| danger | `{"items":[{"label":"Delete","danger":true},{"label":"Archive"}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| xs | `{"items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"open":true,"size":"xs","x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| md | `{"items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"open":true,"size":"md","x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| lg | `{"items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"open":true,"size":"lg","x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| border | `{"items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"border":true,"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+| background | `{"backgroundToken":"background","items":[{"label":"Cut","shortcut":"Ctrl+X"},{"label":"Copy","icon":"add"},{"label":"Paste","disabled":true},{"divider":true},{"label":"Delete","danger":true}],"open":true,"x":8,"y":8,"accessibilityLabel":"Actions"}` |
+
+## MenuButton
+
+MenuButton is a button that opens a Menu of actions below or above it, its chevron turning while the menu is open.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The trigger's text. |
+| `items` | `array` | yes | The menu's entries, as Menu takes. |
+| `kind` | `string` | no | The trigger's button kind: `primary` (default), `tertiary` or `ghost`. |
+| `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the trigger's and the menu's size. Default `lg`. |
+| `menuAlignment` | `string` | no | `bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the edge the menu opens from and aligns to. |
+| `open` | `boolean` | no | Whether the menu is open; when given the caller owns it, otherwise the trigger toggles it. |
+| `disabled` | `boolean` | no | Disables the trigger. Default false. |
+| `menuBorder` | `boolean` | no | Draws the menu's border variant. Forwarded to Menu's `border`. |
+| `menuBackgroundToken` | `string` | no | The menu surface's fill token (`layer` or `background`). |
+| `onChange` | `function` | no | Called with the chosen entry's data. |
+| `onClose` | `function` | no | Called when the menu closes (Escape, Tab, outside press or after a choice). |
+| `accessibilityLabel` | `string` | no | Names the menu. |
+| `testID` | `string` | no | Test identifier forwarded to the container. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `minWidth` | `control.menu_button_min_width` |
+| `spacing` | constant `8` (decision) |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions"}` |
+| open | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","open":true}` |
+| tertiary | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","kind":"tertiary"}` |
+| ghost | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","kind":"ghost"}` |
+| xs | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","size":"xs"}` |
+| sm | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","open":true,"size":"sm"}` |
+| md | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","size":"md"}` |
+| alignStart | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","menuAlignment":"bottom-start","open":true}` |
+| disabled | `{"items":[{"label":"First action"},{"label":"Second action"},{"label":"Third action"}],"label":"Actions","disabled":true}` |
+
+## MenuItem
+
+MenuItem is one action of a Menu, with an optional icon and shortcut, a danger kind and a submenu of further items; it must be composed inside Menu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The item's text. |
+| `icon` | `string` | no | Semantic icon name drawn in the icon seat. |
+| `shortcut` | `string` | no | The shortcut run drawn at the item's end. |
+| `disabled` | `boolean` | no | Draws the disabled cells and skips the roving focus. Default false. |
+| `danger` | `boolean` | no | The destructive kind: the danger cells and the focused inset ring. Default false. |
+| `items` | `array` | no | Sub-items: the item opens a submenu of them on hover. |
+| `testID` | `string` | no | Test identifier forwarded to the item. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `iconSize` | `control.menu_icon_size` |
+| `itemGap` | `control.menu_item_gap` |
+| `markSize` | `size.icon_01` |
+| `dangerInsetWidth` | `control.menu_item_danger_focus_inset_width` |
+| `optionPaddingInline` | `control.list_item_padding_inline` |
+| `submenuDelay` | constant `100` (decision) |
+| `viewportMargin` | `control.menu_viewport_margin` |
+| `submenuOffsetEnd` | `control.menu_submenu_offset_end` |
+| `submenuOffsetStart` | `control.menu_submenu_offset_start` |
+| `submenuOffsetBlock` | `control.menu_submenu_offset_block` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Edit"}` |
+
+## MenuItemDivider
+
+MenuItemDivider is a rule that separates groups of items in a Menu; it must be composed inside Menu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `dividerWidth` | `control.menu_divider_width` |
+| `dividerMargin` | `control.menu_divider_margin_block` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+
+## MenuItemGroup
+
+MenuItemGroup names a run of a Menu's items for assistive technology without drawing a heading; it must be composed inside Menu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | Names the run of items for assistive technology. |
+| `children` | `node` | no | The group's items. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Edit"}` |
+
+## MenuItemRadioGroup
+
+MenuItemRadioGroup is a named set of Menu items of which exactly one is selected and marked; it must be composed inside Menu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | Names the set for assistive technology. |
+| `children` | `node` | no | The radio options (MenuItemSelectable or MenuItem with `radio`). |
+| `selectedItem` | `string` | no | The selected option's label. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Size","selectedItem":"Medium"}` |
+
+## MenuItemSelectable
+
+MenuItemSelectable is a Menu item that toggles on and off and shows a mark while it is on; it must be composed inside Menu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The item's text. |
+| `selected` | `boolean` | no | Whether the item is on (marked). Default false. |
+| `disabled` | `boolean` | no | Draws the disabled cells and skips the roving focus. Default false. |
+| `onChange` | `function` | no | Called when the item toggles. |
+| `testID` | `string` | no | Test identifier forwarded to the item. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `markSize` | `size.icon_01` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"List view","selected":false}` |
+
+## OverflowMenu
+
+OverflowMenu is a square icon button that opens a panel of options joined to it, for actions that do not fit beside the content.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The panel's options: `{ label, disabled, danger, divider, href, onPress }` per row. |
+| `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the trigger square's side off the size scale. Default `md`. |
+| `open` | `boolean` | no | Whether the panel is open; when given the caller owns it and closes through `onClose`, otherwise the trigger toggles it. |
+| `flipped` | `boolean` | no | Align the panel's end edge to the trigger's instead of the start edge. Default false. |
+| `direction` | `string` | no | `bottom` (default) or `top`: the trigger edge the panel opens from. |
+| `iconDescription` | `string` | no | The trigger's accessible name and its tooltip label. Default `Options`. |
+| `align` | `string` | no | The trigger tooltip's alignment, forwarded to the icon button. |
+| `onChange` | `function` | no | Called with the chosen option's data. |
+| `onClose` | `function` | no | Called when the panel closes (Escape, Tab, outside press, focus leaving or after an option is chosen). |
+| `accessibilityLabel` | `string` | no | Names the panel. |
+| `testID` | `string` | no | Test identifier forwarded to the container. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `width` | `control.overflow_menu_width` |
+| `connectorSize` | `control.overflow_menu_connector_size` |
+| `iconSize` | `size.icon_01` |
+| `level` | `stacking.dropdown` |
+| `optionHeight` | `control.option_height` |
+| `optionHeightXsmall` | `size.size_xsmall` |
+| `optionHeightSmall` | `size.size_small` |
+| `optionHeightLarge` | `size.size_large` |
+| `optionMaxWidth` | `control.overflow_menu_option_max_width` |
+| `optionPaddingInline` | `control.list_item_padding_inline` |
+| `dividerWidth` | `control.menu_divider_width` |
+| `dangerInsetWidth` | `control.menu_item_danger_focus_inset_width` |
+| `spacing` | `control.menu_viewport_margin` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"iconDescription":"Options"}` |
+| xs | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"size":"xs","iconDescription":"Options"}` |
+| sm | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"size":"sm","iconDescription":"Options"}` |
+| lg | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"size":"lg","iconDescription":"Options"}` |
+| open | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"iconDescription":"Options"}` |
+| openLg | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"size":"lg","iconDescription":"Options"}` |
+| openFlipped | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"flipped":true,"iconDescription":"Options"}` |
+| openTop | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"direction":"top","iconDescription":"Options"}` |
+| openOption | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"iconDescription":"Options"}` |
+| openDanger | `{"items":[{"label":"Edit"},{"label":"Duplicate"},{"label":"Archive","disabled":true},{"label":"Delete","danger":true,"divider":true}],"open":true,"iconDescription":"Options"}` |
+
+## OverflowMenuItem
+
+OverflowMenuItem is one option row of an OverflowMenu, with an optional rule above it and a danger kind; it must be composed inside OverflowMenu.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`undefined`) |
+| Enums | none |
+| Behaviors | `overlay`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The option's text. |
+| `disabled` | `boolean` | no | Draws the disabled cells and skips the roving focus. Default false. |
+| `danger` | `boolean` | no | The destructive kind: the label in the danger colour, the hover fill on the button. Default false. |
+| `divider` | `boolean` | no | Draws the top rule on the row (`hasDivider` upstream). Default false. |
+| `href` | `string` | no | Turns the option into a link (web). |
+| `size` | `string` | no | Composition prop: the panel's size (`md` rows at the option cell, `lg` at the large size). Default `md`. |
+| `onPress` | `function` | no | Called on activation, before the panel closes. |
+| `testID` | `string` | no | Test identifier forwarded to the option pressable. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `optionHeight` | `control.option_height` |
+| `optionHeightXsmall` | `size.size_xsmall` |
+| `optionHeightSmall` | `size.size_small` |
+| `optionHeightLarge` | `size.size_large` |
+| `optionPaddingInline` | `control.list_item_padding_inline` |
+| `optionMaxWidth` | `control.overflow_menu_option_max_width` |
+| `dividerWidth` | `control.menu_divider_width` |
+| `dangerInsetWidth` | `control.menu_item_danger_focus_inset_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Edit"}` |

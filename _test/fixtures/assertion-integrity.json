@@ -2827,9 +2827,9 @@
     },
     {
       "file": "component/composite/menu/menu-button.js",
-      "find": "minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth')",
-      "replace": "minWidth: undefined",
-      "testName": "the floor applies where measurable",
+      "find": "ctx.metric('MenuButton', 'minWidth')",
+      "replace": "1",
+      "testName": "the trigger and the menu read the cells",
       "runner": "node",
       "id": "menu-button-floor-dropped",
       "test": "menu-button.test.js",

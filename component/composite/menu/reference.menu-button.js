@@ -10,7 +10,7 @@ export default Object.freeze({
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement('div', { style: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 } },
+    return React.createElement('div', { style: { position: 'relative' } },
       React.createElement(upstream.MenuButton, {
         disabled: props.disabled === true,
         kind: props.kind,

@@ -12,7 +12,7 @@ export default Object.freeze({
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement('div', { 'data-floating-menu-container': true, style: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 } },
+    return React.createElement('div', { 'data-floating-menu-container': true, style: { position: 'relative' } },
       React.createElement(upstream.OverflowMenu, {
         direction: props.direction,
         flipped: props.flipped === true,
@@ -31,15 +31,16 @@ export default Object.freeze({
       })));
   },
   // The element a person hovers, presses and focuses: the trigger while
-  // closed; the option buttons on the opened-target states
-  target: Object.freeze({ upstream: '.cds--overflow-menu', ours: '[data-testid="icon-button-face"]' }),
+  // closed; the option buttons on the opened-target states. Ours is the
+  // covering pressable, not the face it paints over (IconButton's pattern)
+  target: Object.freeze({ upstream: '.cds--overflow-menu', ours: '[role="button"]' }),
   // Re-press the trigger when an interaction closed the panel on an
   // opened state (the upstream menu unmounts its options)
   reopen: Object.freeze({
     states: Object.freeze(['open', 'openLg', 'openFlipped', 'openTop', 'openOption', 'openDanger']),
     when: Object.freeze({ upstream: '.cds--overflow-menu-options', ours: '[role="menu"]' }),
     upstream: '.cds--overflow-menu',
-    ours: '[data-testid="icon-button-face"]'
+    ours: '[role="button"]'
   }),
   body: Object.freeze({ width: 320, height: 240 }),
   parts: Object.freeze({

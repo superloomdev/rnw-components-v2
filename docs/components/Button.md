@@ -375,7 +375,7 @@ IconButton is a square button that shows one icon token and a tooltip label.
 | `iconColor` | `string` | no | The color leaf the glyph draws; default the kind's icon cell. Composing parents name their own cell (the notification's close icon). |
 | `label` | `string` | yes | The button's accessible name, which its compact tooltip shows. |
 | `kind` | `string` | no | One of `primary`, `secondary`, `ghost`, `tertiary`: the role cells the button reads. Default `primary`. |
-| `size` | `string` | no | One of `sm`, `md`, `lg`: the square's side. Default `lg`, the `icon_button` member cell. |
+| `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the square's side. Default `lg`, the `icon_button` member cell. |
 | `disabled` | `boolean` | no | Disables the button. |
 | `selected` | `boolean` | no | A toggle button's state: present makes it `aria-pressed`, true draws the kind's selected cells. |
 | `onPress` | `function` | no | Called when the button is pressed. |
@@ -387,6 +387,7 @@ IconButton is a square button that shows one icon token and a tooltip label.
 | Metric | Rule |
 |---|---|
 | `size` | `control.icon_button_size` |
+| `sizeXsmall` | `size.size_xsmall` |
 | `sizeSmall` | `size.size_small` |
 | `sizeMedium` | `size.size_medium` |
 | `iconSize` | `control.icon_button_icon_size` |
