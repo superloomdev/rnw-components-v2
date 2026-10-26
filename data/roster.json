@@ -2644,7 +2644,7 @@
         "version": "1.115.0",
         "export": "Tab"
       },
-      "description": "Tab is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "Tab draws one item of a tab list - its label, optional icon and secondary line, and its selected and disabled states; it must be composed inside Tabs.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2665,7 +2665,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabList",
@@ -2676,7 +2676,7 @@
         "version": "1.115.0",
         "export": "TabList"
       },
-      "description": "TabList is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabList lays out a row of tabs with the selection indicator, keyboard movement, optional close buttons and overflow scrolling; it must be composed inside Tabs.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2697,7 +2697,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabPanel",
@@ -2708,7 +2708,7 @@
         "version": "1.115.0",
         "export": "TabPanel"
       },
-      "description": "TabPanel is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabPanel holds the content for one tab and is labelled by it; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2723,13 +2723,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabPanel",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabPanels",
@@ -2740,7 +2741,7 @@
         "version": "1.115.0",
         "export": "TabPanels"
       },
-      "description": "TabPanels is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabPanels shows the panel of the selected tab and keeps the others linked but hidden; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2755,13 +2756,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabPanels",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "IconTab",
@@ -2772,7 +2774,7 @@
         "version": "1.115.0",
         "export": "IconTab"
       },
-      "description": "IconTab is a component in the Tabs family.",
+      "description": "IconTab is an icon-only tab whose name appears in a tooltip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2791,7 +2793,7 @@
       "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabsVertical",
@@ -2802,7 +2804,7 @@
         "version": "1.115.0",
         "export": "TabsVertical"
       },
-      "description": "TabsVertical is a component in the Tabs family.",
+      "description": "TabsVertical lists tabs in a column beside their panels, with scroll fades when the list is long.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2817,11 +2819,11 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabsVertical",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabListVertical",
@@ -2832,7 +2834,7 @@
         "version": "1.115.0",
         "export": "TabListVertical"
       },
-      "description": "TabListVertical is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabListVertical is the column of tabs inside TabsVertical; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2847,13 +2849,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabListVertical",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabsSkeleton",
@@ -2864,7 +2867,7 @@
         "version": "1.115.0",
         "export": "TabsSkeleton"
       },
-      "description": "TabsSkeleton is a component in the Tabs family.",
+      "description": "TabsSkeleton draws the placeholder shape of a tab list while its content loads.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2879,11 +2882,11 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabsSkeleton",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContentSwitcher",
@@ -2894,37 +2897,7 @@
         "version": "1.115.0",
         "export": "ContentSwitcher"
       },
-      "description": "ContentSwitcher is a component in the Tabs family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ContentSwitcher",
-      "material_twin": "md-outlined-segmented-button-set",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "Switch",
-      "family": "Tabs",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Switch"
-      },
-      "description": "Switch is a component in the Switch family.",
+      "description": "ContentSwitcher is a row of segments where exactly one is selected, for switching between views of the same content.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2936,18 +2909,52 @@
       ],
       "behaviors": [
         "controllable-state",
-        "press"
+        "roving-tab-index"
       ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "Switch",
-      "material_twin": "md-outlined-segmented-button",
+      "carbon_twin": "md-outlined-segmented-button-set",
+      "material_twin": "md-outlined-segmented-button-set",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
+    },
+    {
+      "name": "Switch",
+      "family": "Tabs",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Switch"
+      },
+      "description": "Switch is one text segment of a ContentSwitcher; no upstream visual reference.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "feedback.press"
+      ],
+      "behaviors": [
+        "controllable-state",
+        "press"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "none",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "md-outlined-segmented-button",
+      "material_twin": "md-outlined-segmented-button",
+      "diff_budget": 2,
+      "flags": [
+        "no_reference"
+      ],
+      "status": "built"
     },
     {
       "name": "IconSwitch",
@@ -2958,7 +2965,7 @@
         "version": "1.115.0",
         "export": "IconSwitch"
       },
-      "description": "IconSwitch is a component in the Tabs family; it must be composed inside ContentSwitcher.",
+      "description": "IconSwitch is one icon segment of a ContentSwitcher whose name appears in a tooltip; it must be composed inside ContentSwitcher; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2967,16 +2974,17 @@
       "behaviors": [],
       "parent": "ContentSwitcher",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
-      "carbon_twin": "IconSwitch",
+      "carbon_twin": "md-outlined-segmented-button",
       "material_twin": "md-outlined-segmented-button",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuButton",

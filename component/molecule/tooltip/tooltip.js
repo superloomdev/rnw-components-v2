@@ -219,6 +219,7 @@ export default function Tooltip (ctx) {
 
     // The anchor wrapper: pointer, focus and touch drive the open state
     return React.createElement(View, {
+      style: props.anchorStyle,
       onPointerEnter: function () {
         schedule(true, delayOpen);
       },

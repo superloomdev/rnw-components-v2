@@ -164,6 +164,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       if (!Utils.isNumber(lineHeight) || !Number.isFinite(lineHeight)) {
         throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
       }
+      if (platform.os === 'ios') {
+        if (!Utils.isFunction(pixelRatio.get)) {
+          throw new TypeError('ctx.typeStyle on ios requires Lib.ReactNative.PixelRatio.get');
+        }
+        // iOS lays a grid-aligned line height out one physical pixel taller; half a pixel below the grid rounds back onto it
+        lineHeight = lineHeight - 0.5 / pixelRatio.get();
+      }
     }
 
     // Return the style with the family token resolved

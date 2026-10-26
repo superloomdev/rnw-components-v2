@@ -35,6 +35,8 @@ import '@material/web/iconbutton/filled-icon-button.js';
 import '@material/web/iconbutton/filled-tonal-icon-button.js';
 import '@material/web/iconbutton/outlined-icon-button.js';
 import '@material/web/tabs/tabs.js';
+import '@material/web/labs/segmentedbuttonset/outlined-segmented-button-set.js';
+import '@material/web/labs/segmentedbutton/outlined-segmented-button.js';
 import '@material/web/tabs/primary-tab.js';
 import '@material/web/tabs/secondary-tab.js';
 import '@material/web/checkbox/checkbox.js';

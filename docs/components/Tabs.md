@@ -12,6 +12,12 @@ are skipped by the arrows and stay out of the order.
 
 ### Decisions
 
+- **Members.** `Tab`, `TabList`, `TabPanel`, `TabPanels` and `TabListVertical`
+  are member-only (`requires_parent`): they stand alone only under their
+  composed parent (`Tabs`, `TabPanels` or `TabsVertical`), which supplies
+  selection state, the roving focus and the layout frame. `TabPanel`,
+  `TabPanels` and `TabListVertical` have no standalone upstream reference
+  (`no_reference`); they are measured through their parents.
 - **Variants.** `line` (default) draws each tab's track, the `tab_track`
   cells per state; `contained` draws the `tab_contained` cells: a filled tab,
   an end separator between tabs, and the indicator on the top edge.
@@ -53,6 +59,437 @@ are skipped by the arrows and stay out of the order.
 `md-tabs` of `md-primary-tab` elements (the content-width indicator). It
 has no contained variant, so `contained` samples are unmeasured there.
 
+## ContentSwitcher
+
+A row of segments where exactly one is selected, for switching between
+views of the same content. `Switch` is one text segment; `IconSwitch` is the
+icon-only member whose name appears in a tooltip.
+
+### Decisions
+
+- **Selection is single.** Exactly one segment is selected at a time;
+  `selectedIndex` / `onChange` control it.
+- **The slab.** The selected segment draws `content_switcher_container_selected`
+  (or the low-contrast cells); the label and icon read their selected cells.
+- **Separators.** `anatomy.content_switcher_separator` picks `short` (a 1px
+  mark between adjacent unselected segments) or `full` (a full-height
+  outline on every segment).
+`IconSwitch` is a member-only component (`requires_parent`): it must be
+composed inside `ContentSwitcher`; the parent supplies `selected`, the roving
+focus and the separator rule. `Switch` stands alone as one segment.
+`no_reference`: the reference draws a segment only inside a content switcher,
+so it is measured through ContentSwitcher's samples.
+
+- **Icon-only segments.** `IconSwitch` draws the glyph and names itself with
+  `label`, shown as a tooltip.
+
+### Cells
+
+- `color.content_switcher_outline*` and `control.content_switcher_radius` - the container
+- `color.content_switcher_label*`, `type.content_switcher_label` - the label
+- `color.content_switcher_container_*` - the selected slab and hover fill
+- `color.content_switcher_icon*` and `control.content_switcher_icon_size*` - the icon
+- `color.content_switcher_separator*`, `control.content_switcher_separator_height` - the separator
+- `color.content_switcher_low_contrast_*` - the low-contrast variant
+- `anatomy.content_switcher_separator`, `anatomy.content_switcher_selected_mark` - structure
+
+### Accessibility
+
+- `role="tablist"` on the container, `role="tab"` with `aria-selected` on
+  each segment, `tabIndex` roved to the active one.
+
+## ContentSwitcher
+
+ContentSwitcher is a row of segments where exactly one is selected, for switching between views of the same content.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `feedback.press`, `anatomy.content_switcher_separator`, `anatomy.content_switcher_selected_mark` |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The segments: `{ text?, icon?, label?, disabled? }`; an item with `icon` and no `text` renders `IconSwitch`. |
+| `selectedIndex` | `number` | no | Controlled selection. |
+| `defaultSelectedIndex` | `number` | no | Initially selected while uncontrolled; default 0. |
+| `onChange` | `function` | no | Called with `{ selectedIndex }` when the selection changes. |
+| `size` | `string` | no | `sm` | `md` (default) | `lg`. |
+| `lowContrast` | `boolean` | no | Draws the low-contrast cells. |
+| `accessibilityLabel` | `string` | no | Names the switcher. |
+| `testID` | `string` | no | Test identifier forwarded to the switcher. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `radius` | `control.content_switcher_radius` |
+| `outlineWidth` | `control.content_switcher_outline_width` |
+| `sizeSmall` | `size.size_small` |
+| `sizeMedium` | `size.size_medium` |
+| `sizeLarge` | `size.size_large` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"text":"Section 1"},{"text":"Section 2"},{"text":"Section 3"}],"accessibilityLabel":"Views","defaultSelectedIndex":1}` |
+| icons | `{"items":[{"icon":"info","label":"Information"},{"icon":"settings","label":"Settings"},{"icon":"notification","label":"Notifications"}],"accessibilityLabel":"Views","defaultSelectedIndex":0}` |
+| small | `{"items":[{"text":"Section 1"},{"text":"Section 2"},{"text":"Section 3"}],"accessibilityLabel":"Views","size":"sm"}` |
+| large | `{"items":[{"text":"Section 1"},{"text":"Section 2"},{"text":"Section 3"}],"accessibilityLabel":"Views","size":"lg"}` |
+| low-contrast | `{"items":[{"text":"Section 1"},{"text":"Section 2"},{"text":"Section 3"}],"accessibilityLabel":"Views","lowContrast":true,"defaultSelectedIndex":1}` |
+| disabled-item | `{"items":[{"text":"One"},{"text":"Two","disabled":true},{"text":"Three"}],"accessibilityLabel":"Views"}` |
+
+## IconSwitch
+
+IconSwitch is one icon segment of a ContentSwitcher whose name appears in a tooltip; it must be composed inside ContentSwitcher; no upstream visual reference.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | none |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `icon` | `string` | yes | The icon name. |
+| `label` | `string` | yes | The accessible name, also drawn as the tooltip. |
+| `disabled` | `boolean` | no | Inert and out of the order. |
+| `testID` | `string` | no | Test identifier forwarded to the segment. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `paddingInline` | `control.content_switcher_padding_inline` |
+| `paddingInlineLarge` | `control.content_switcher_padding_inline_large` |
+| `iconSize` | `control.content_switcher_icon_size` |
+| `iconSizeLarge` | `control.content_switcher_icon_size_large` |
+| `separatorHeight` | `control.content_switcher_separator_height` |
+| `separatorWidth` | `control.content_switcher_outline_width` |
+| `heightMedium` | `size.size_medium` |
+| `radius` | `control.content_switcher_radius` |
+| `focusWidth` | `control.content_switcher_focus_width` |
+| `outlineWidth` | `control.content_switcher_outline_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"icon":"info","label":"Information"}` |
+| disabled | `{"icon":"info","label":"Information","disabled":true}` |
+
+## IconTab
+
+IconTab is an icon-only tab whose name appears in a tooltip.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `icon` | `string` | yes | The icon name. |
+| `label` | `string` | yes | The accessible name, also drawn as the tooltip. |
+| `disabled` | `boolean` | no | Out of the order and inert. |
+| `testID` | `string` | no | Test identifier forwarded to the tab. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.tab_height` |
+| `iconSize` | `control.tab_icon_size` |
+| `itemGap` | `control.tab_item_gap` |
+| `trackWidth` | `control.tab_track_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"icon":"info","label":"Information"}` |
+| disabled | `{"icon":"info","label":"Information","disabled":true}` |
+
+## Switch
+
+Switch is one text segment of a ContentSwitcher; no upstream visual reference.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | `feedback.press` |
+| Behaviors | `controllable-state`, `press` |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `text` | `string` | yes | The segment's label. |
+| `disabled` | `boolean` | no | Inert and out of the order. |
+| `testID` | `string` | no | Test identifier forwarded to the segment. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `paddingBlock` | `control.content_switcher_padding_block` |
+| `paddingInline` | `control.content_switcher_padding_inline` |
+| `iconSize` | `control.content_switcher_icon_size` |
+| `iconSizeLarge` | `control.content_switcher_icon_size_large` |
+| `iconGap` | `control.content_switcher_icon_gap` |
+| `separatorHeight` | `control.content_switcher_separator_height` |
+| `separatorWidth` | `control.content_switcher_outline_width` |
+| `heightMedium` | `size.size_medium` |
+| `radius` | `control.content_switcher_radius` |
+| `outlineWidth` | `control.content_switcher_outline_width` |
+| `focusWidth` | `control.content_switcher_focus_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"text":"Section"}` |
+| disabled | `{"text":"Section","disabled":true}` |
+
+## Tab
+
+Tab draws one item of a tab list - its label, optional icon and secondary line, and its selected and disabled states; it must be composed inside Tabs.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | yes | The tab's text. |
+| `disabled` | `boolean` | no | Out of the order and inert. |
+| `icon` | `string` | no | An icon name; leading when the tab is dismissable, trailing otherwise. |
+| `secondaryLabel` | `string` | no | A second line, drawn only on the tall contained list. |
+| `testID` | `string` | no | Test identifier forwarded to the tab. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.tab_height` |
+| `containedHeight` | `control.tab_contained_height` |
+| `containedPaddingBlock` | `control.tab_contained_padding_block` |
+| `containedTallHeight` | `control.tab_contained_tall_height` |
+| `itemGap` | `control.tab_item_gap` |
+| `paddingInline` | `control.tab_padding_inline` |
+| `dismissPaddingEnd` | `control.tab_dismiss_padding_end` |
+| `containedDismissPaddingEnd` | `control.tab_contained_dismiss_padding_end` |
+| `closeSize` | `control.tab_close_size` |
+| `closeIconSize` | `control.tab_close_icon_size` |
+| `iconSize` | `control.tab_icon_size` |
+| `iconGap` | `control.tab_icon_gap` |
+| `trackWidth` | `control.tab_track_width` |
+| `indicatorWidth` | `control.tab_indicator_width` |
+| `indicatorRadius` | `control.tab_indicator_radius` |
+| `focusWidth` | `control.tab_focus_width` |
+| `focusOffset` | `control.tab_focus_offset` |
+| `separatorWidth` | `border.width_01` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Tab label"}` |
+| disabled | `{"label":"Tab label","disabled":true}` |
+| icon | `{"label":"Tab label","icon":"info"}` |
+
+## TabList
+
+TabList lays out a row of tabs with the selection indicator, keyboard movement, optional close buttons and overflow scrolling; it must be composed inside Tabs.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The tabs: `{ label, disabled?, icon?, secondaryLabel?, iconOnly? }` entries, in order. |
+| `selectedIndex` | `number` | no | Controlled selection. Absent: the list keeps its own, starting from `defaultSelectedIndex`. |
+| `defaultSelectedIndex` | `number` | no | Initially selected while uncontrolled; default 0. |
+| `onChange` | `function` | no | Called with `{ selectedIndex }` when the selection changes. |
+| `variant` | `string` | no | `line` (default) draws the track underline; `contained` draws the contained cells. |
+| `activation` | `string` | no | `automatic` (default) selects on arrow moves; `manual` moves the active tab and selects on Enter or Space. |
+| `dismissable` | `boolean` | no | Each tab draws a close button; Delete closes the active tab. |
+| `onTabCloseRequest` | `function` | no | Called with the index when a tab asks to close. |
+| `accessibilityLabel` | `string` | no | Names the tab list. |
+| `testID` | `string` | no | Test identifier forwarded to the tab list. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.tab_height` |
+| `containedHeight` | `control.tab_contained_height` |
+| `containedPaddingBlock` | `control.tab_contained_padding_block` |
+| `containedTallHeight` | `control.tab_contained_tall_height` |
+| `itemGap` | `control.tab_item_gap` |
+| `paddingInline` | `control.tab_padding_inline` |
+| `dividerWidth` | `control.tab_divider_width` |
+| `trackWidth` | `control.tab_track_width` |
+| `indicatorWidth` | `control.tab_indicator_width` |
+| `indicatorRadius` | `control.tab_indicator_radius` |
+| `focusWidth` | `control.tab_focus_width` |
+| `focusOffset` | `control.tab_focus_offset` |
+| `separatorWidth` | `border.width_01` |
+| `overflowButtonWidth` | `control.tab_overflow_button_width` |
+| `containedOverflowButtonWidth` | `control.tab_contained_overflow_button_width` |
+| `overflowFadeWidth` | `control.tab_overflow_fade_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| line | `{"items":[{"label":"Tab 1"},{"label":"Tab 2"},{"label":"Tab 3"}],"accessibilityLabel":"Sections","defaultSelectedIndex":1}` |
+| contained | `{"items":[{"label":"Tab 1"},{"label":"Tab 2"},{"label":"Tab 3"}],"accessibilityLabel":"Sections","variant":"contained","defaultSelectedIndex":1}` |
+| contained-tall | `{"items":[{"label":"Tab 1","secondaryLabel":"Line 0"},{"label":"Tab 2","secondaryLabel":"Line 1"},{"label":"Tab 3","secondaryLabel":"Line 2"}],"accessibilityLabel":"Sections","variant":"contained"}` |
+| dismissable | `{"items":[{"label":"Tab 1"},{"label":"Tab 2"},{"label":"Tab 3"}],"accessibilityLabel":"Sections","dismissable":true}` |
+| icons | `{"items":[{"label":"Tab 1","icon":"info"},{"label":"Tab 2","icon":"info"},{"label":"Tab 3","icon":"info"}],"accessibilityLabel":"Sections"}` |
+| overflow | `{"items":[{"label":"Tab number 1"},{"label":"Tab number 2"},{"label":"Tab number 3"},{"label":"Tab number 4"},{"label":"Tab number 5"},{"label":"Tab number 6"},{"label":"Tab number 7"},{"label":"Tab number 8"},{"label":"Tab number 9"},{"label":"Tab number 10"}],"accessibilityLabel":"Sections"}` |
+| disabled-item | `{"items":[{"label":"Tab 1"},{"label":"Tab 2","disabled":true},{"label":"Tab 3"}],"accessibilityLabel":"Sections"}` |
+
+## TabListVertical
+
+TabListVertical is the column of tabs inside TabsVertical; it must be composed inside Tabs; no upstream visual reference.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The tabs: `{ label, disabled? }` entries, in order. |
+| `selectedIndex` | `number` | no | Controlled selection. |
+| `defaultSelectedIndex` | `number` | no | Initially selected while uncontrolled; default 0. |
+| `onChange` | `function` | no | Called with `{ selectedIndex }` when the selection changes. |
+| `accessibilityLabel` | `string` | no | Names the tab list. |
+| `testID` | `string` | no | Test identifier forwarded to the list. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.tab_vertical_height` |
+| `indicatorWidth` | `control.tab_vertical_indicator_width` |
+| `labelLines` | `control.tab_vertical_label_lines` |
+| `paddingInline` | `control.tab_padding_inline` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"label":"Tab 1"},{"label":"Tab 2"},{"label":"Tab 3"}],"accessibilityLabel":"Sections","defaultSelectedIndex":1}` |
+
+## TabPanel
+
+TabPanel holds the content for one tab and is labelled by it; it must be composed inside Tabs; no upstream visual reference.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `node` | yes | The panel's content. |
+| `testID` | `string` | no | Test identifier forwarded to the panel. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `focusWidth` | `control.tab_focus_width` |
+| `padding` | `control.tab_panel_padding` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"Panel content"}` |
+
+## TabPanels
+
+TabPanels shows the panel of the selected tab and keeps the others linked but hidden; it must be composed inside Tabs; no upstream visual reference.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `panels` | `array` | yes | One node or string per tab. |
+| `selectedIndex` | `number` | no | The drawn panel; default 0. |
+| `baseId` | `string` | no | The id stem shared with the tabs. |
+| `testID` | `string` | no | Test identifier forwarded to the panels region. |
+
+### Metrics
+
+None: every value this component draws is a token named in its props or listed under `tokens`.
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"panels":["First panel","Second panel","Third panel"],"selectedIndex":1,"baseId":"sample"}` |
+
 ## Tabs
 
 Tabs draws a row of tab labels on a track with roving focus; the selected tab draws the theme's indicator as its own bottom edge and the contained variant seats each label by the theme's tab_contained_* cells.
@@ -70,7 +507,11 @@ Tabs draws a row of tab labels on a track with roving focus; the selected tab dr
 
 | Prop | Type | Required | Description |
 |---|---|---|---|
-| `items` | `array` | yes | The tabs: `{ label, disabled }` entries, in order. |
+| `items` | `array` | yes | The tabs: `{ label, disabled?, icon?, secondaryLabel?, iconOnly? }` entries, in order. |
+| `panels` | `array` | no | One node or string per tab; renders `TabPanels` under the list. |
+| `activation` | `string` | no | `automatic` (default) selects on arrow moves; `manual` moves the active tab and selects on Enter or Space. |
+| `dismissable` | `boolean` | no | Each tab draws a close button; Delete closes the active tab. |
+| `onTabCloseRequest` | `function` | no | Called with the index when a tab asks to close. |
 | `selectedIndex` | `number` | no | Controlled selection. Absent: the bar keeps its own, starting from `defaultSelectedIndex`. |
 | `defaultSelectedIndex` | `number` | no | Initially selected while uncontrolled; default 0. |
 | `onChange` | `function` | no | Called with `{ selectedIndex }` when the selection changes. |
@@ -101,4 +542,80 @@ Tabs draws a row of tab labels on a track with roving focus; the selected tab dr
 |---|---|
 | default | `{"items":[{"label":"First"},{"label":"Second"},{"label":"Third"}],"accessibilityLabel":"Sections","defaultSelectedIndex":1}` |
 | contained | `{"items":[{"label":"First"},{"label":"Second"},{"label":"Third"}],"accessibilityLabel":"Sections","variant":"contained","defaultSelectedIndex":1}` |
+| with-panels | `{"items":[{"label":"First"},{"label":"Second"},{"label":"Third"}],"panels":["Panel one","Panel two","Panel three"],"accessibilityLabel":"Sections","defaultSelectedIndex":1}` |
 | disabled | `{"items":[{"label":"First"},{"label":"Second","disabled":true},{"label":"Third"}],"accessibilityLabel":"Sections"}` |
+
+## TabsSkeleton
+
+TabsSkeleton draws the placeholder shape of a tab list while its content loads.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `testID` | `string` | no | Test identifier forwarded to the skeleton. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `itemWidth` | `control.tab_skeleton_width` |
+| `barHeight` | `control.tab_skeleton_bar_height` |
+| `paddingInline` | `control.tab_padding_inline` |
+| `trackWidth` | `control.tab_track_width` |
+| `barMargin` | `control.tab_skeleton_bar_height` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{}` |
+
+## TabsVertical
+
+TabsVertical lists tabs in a column beside their panels, with scroll fades when the list is long.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `controllable-state`, `roving-tab-index` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `items` | `array` | yes | The tabs: `{ label, disabled? }` entries, in order. |
+| `panels` | `array` | no | One node or string per tab; renders `TabPanels` beside the list. |
+| `height` | `number` | no | The container height; the list scrolls with fades when content exceeds it. |
+| `selectedIndex` | `number` | no | Controlled selection. |
+| `defaultSelectedIndex` | `number` | no | Initially selected while uncontrolled; default 0. |
+| `onChange` | `function` | no | Called with `{ selectedIndex }` when the selection changes. |
+| `accessibilityLabel` | `string` | no | Names the tab list. |
+| `testID` | `string` | no | Test identifier forwarded to the list. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `listRatio` | `control.tab_vertical_list_ratio` |
+| `fadeHeight` | `control.tab_vertical_fade_height` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"items":[{"label":"Tab 1"},{"label":"Tab 2"},{"label":"Tab 3"}],"panels":["Panel one","Panel two","Panel three"],"accessibilityLabel":"Sections","defaultSelectedIndex":1}` |
+| overflow | `{"items":[{"label":"Tab number 1"},{"label":"Tab number 2"},{"label":"Tab number 3"},{"label":"Tab number 4"},{"label":"Tab number 5"},{"label":"Tab number 6"},{"label":"Tab number 7"},{"label":"Tab number 8"},{"label":"Tab number 9"},{"label":"Tab number 10"},{"label":"Tab number 11"},{"label":"Tab number 12"}],"height":320,"accessibilityLabel":"Sections"}` |

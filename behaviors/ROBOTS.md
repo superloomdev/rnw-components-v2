@@ -40,7 +40,7 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 - `useResponsiveStack({ enabled, itemCount, minItemWidth, forced })` -> `{ onLayout, state }` | state: `stacked`
 - `useControllableState({ value, defaultValue, onChange })` -> `[value, setValue]` (stateless by contract: a primitive, not a behavior surface)
 - `useAccordionItemState({ open, defaultOpen, disabled, onHeadingClick })` -> `{ toggle(event), state }` | state: `open, disabled`
-- `useTabsState({ defaultSelectedIndex, selectedIndex, onChange })` -> `{ setActiveIndex, setSelectedIndex, state }` | state: `activeIndex, selectedIndex`
+- `useTabsState({ defaultSelectedIndex, selectedIndex, onChange, activation })` -> `{ activation, moveActiveIndex, selectIndex, setActiveIndex, setSelectedIndex, state }` | state: `activeIndex, selectedIndex`; `activation: 'manual'` makes `moveActiveIndex` move without selecting; `selectIndex` selects
 
 ## Keyboard, press, focus (`keyboard.js`, `press.js`, `roving.js`, `focus.js`)
 

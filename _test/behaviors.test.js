@@ -374,6 +374,55 @@ describe('behaviors: getCompoundContext', function () {
 });
 
 
+describe('behaviors: useTabsState', function () {
+
+  test('manual activation moves the active index without selecting', async function () {
+    const hook = behaviors.useTabsState;
+    const result = {};
+    function Probe () {
+      result.h = hook({ activation: 'manual', defaultSelectedIndex: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.h.moveActiveIndex(2);
+    });
+    assert.equal(result.h.state.activeIndex, 2, 'manual: the arrow move lands on the active index');
+    assert.equal(result.h.state.selectedIndex, 0, 'manual: the selection holds until activation');
+    await act(async function () {
+      result.h.selectIndex(2);
+    });
+    assert.equal(result.h.state.selectedIndex, 2, 'manual: Enter or Space selects through selectIndex');
+  });
+
+  test('automatic activation selects on move, unchanged from before', async function () {
+    const result = {};
+    function Probe () {
+      result.h = behaviors.useTabsState({ defaultSelectedIndex: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.h.moveActiveIndex(1);
+    });
+    assert.equal(result.h.state.selectedIndex, 1);
+  });
+
+});
+
+
 describe('behaviors: useNumberInput', function () {
 
   /********************************************************************

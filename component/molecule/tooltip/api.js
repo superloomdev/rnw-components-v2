@@ -16,6 +16,7 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the anchor wrapper.' }
   }),
   composition: Object.freeze({
+    anchorStyle: { type: 'style', required: false, description: 'Composition prop: a style for the anchor wrapper, so a composing parent can size the anchor (an icon segment of a content switcher fills its share).' },
     paddingInline: { type: 'number', required: false, description: 'Composition prop: the bubble\'s inline padding override, zero included; absent or non-number falls back to the `paddingInline` role cell. A member host like the slider\'s value badge pins the tighter spacing.' }
   }),
   kinds: Object.freeze([]),

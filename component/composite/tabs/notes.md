@@ -8,6 +8,12 @@ are skipped by the arrows and stay out of the order.
 
 ## Decisions
 
+- **Members.** `Tab`, `TabList`, `TabPanel`, `TabPanels` and `TabListVertical`
+  are member-only (`requires_parent`): they stand alone only under their
+  composed parent (`Tabs`, `TabPanels` or `TabsVertical`), which supplies
+  selection state, the roving focus and the layout frame. `TabPanel`,
+  `TabPanels` and `TabListVertical` have no standalone upstream reference
+  (`no_reference`); they are measured through their parents.
 - **Variants.** `line` (default) draws each tab's track, the `tab_track`
   cells per state; `contained` draws the `tab_contained` cells: a filled tab,
   an end separator between tabs, and the indicator on the top edge.

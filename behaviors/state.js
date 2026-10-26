@@ -158,8 +158,28 @@ export default function createStateBehaviors (deps) {
         }
       }
     });
+    const manual = options.activation === 'manual';
+
+    // Move the active index only: manual activation leaves the selection
+    // untouched until the caller asks for it
+    const moveActiveIndex = function (index) {
+      if (manual === true) {
+        setActiveIndex(index);
+      } else {
+        setActiveIndex(index);
+        selected[1](index);
+      }
+    };
+
+    // Select the given index (used by manual activation on Enter or Space)
+    const selectIndex = function (index) {
+      setActiveIndex(index);
+      selected[1](index);
+    };
 
     return {
+      moveActiveIndex: moveActiveIndex,
+      selectIndex: selectIndex,
       setActiveIndex: setActiveIndex,
       setSelectedIndex: selected[1],
       state: {

@@ -28,6 +28,17 @@ export { default as PopoverContent } from './component/molecule/popover/popover-
 export { default as Toggle } from './component/molecule/switch/toggle.js';
 export { default as Tag } from './component/molecule/tag/tag.js';
 export { default as Tabs } from './component/composite/tabs/tabs.js';
+export { default as Tab } from './component/composite/tabs/tab.js';
+export { default as TabList } from './component/composite/tabs/tab-list.js';
+export { default as TabPanel } from './component/composite/tabs/tab-panel.js';
+export { default as TabPanels } from './component/composite/tabs/tab-panels.js';
+export { default as IconTab } from './component/composite/tabs/icon-tab.js';
+export { default as TabsVertical } from './component/composite/tabs/tabs-vertical.js';
+export { default as TabListVertical } from './component/composite/tabs/tab-list-vertical.js';
+export { default as TabsSkeleton } from './component/composite/tabs/tabs-skeleton.js';
+export { default as ContentSwitcher } from './component/composite/tabs/content-switcher.js';
+export { default as Switch } from './component/molecule/content-switcher/switch.js';
+export { default as IconSwitch } from './component/molecule/content-switcher/icon-switch.js';
 export { default as Menu } from './component/composite/menu/menu.js';
 export { default as Modal } from './component/composite/modal/modal.js';
 export { default as ToastNotification } from './component/molecule/notification/toast-notification.js';

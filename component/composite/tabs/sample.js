@@ -17,5 +17,6 @@ const DISABLED_ITEMS = Object.freeze([
 export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', defaultSelectedIndex: 1 }) }),
   Object.freeze({ label: 'contained', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', variant: 'contained', defaultSelectedIndex: 1 }) }),
+  Object.freeze({ label: 'with-panels', props: Object.freeze({ items: ITEMS, panels: Object.freeze(['Panel one', 'Panel two', 'Panel three']), accessibilityLabel: 'Sections', defaultSelectedIndex: 1 }) }),
   Object.freeze({ label: 'disabled', props: Object.freeze({ items: DISABLED_ITEMS, accessibilityLabel: 'Sections' }) })
 ]);

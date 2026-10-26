@@ -230,7 +230,7 @@ describe('context: textPresentation', function () {
     return Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, {
         Platform: { OS: os },
-        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: roundToNearestPixel }
       })
     });
   };
@@ -254,7 +254,7 @@ describe('context: textPresentation', function () {
       const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os, Math.round) }).Probe.ctx;
       const set = buildNative('default').tokens['type.body01'];
       const presented = ctx.textPresentation(ctx.typeStyle('body01'));
-      assert.equal(presented.lineHeight, set.lineHeight);
+      assert.equal(presented.lineHeight, os === 'ios' ? Math.round(set.lineHeight) - 1 / 6 : Math.round(set.lineHeight));
       assert.equal(typeof presented.lineHeight, 'number');
     });
   }
@@ -266,7 +266,7 @@ describe('context: textPresentation', function () {
     const web = buildSystem('default', { Probe: Probe }, { layers: layers }).Probe.ctx;
     assert.equal(web.textPresentation(web.typeStyle('body01')).lineHeight, '1.5');
     const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios', Math.round) }).Probe.ctx;
-    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15);
+    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15 - 1 / 6);
   });
 
   test('a style without numeric fontSize and lineHeight throws', function () {
@@ -285,7 +285,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     return Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, {
         Platform: { OS: os },
-        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: roundToNearestPixel }
       })
     });
   };
@@ -295,7 +295,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     assert.equal(set.lineHeight, 18.00008, 'fixture: carbon body_compact_01 must carry the fractional lineHeight');
     for (const os of ['ios', 'android']) {
       const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib(os, Math.round) }).Probe.ctx;
-      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, 18);
+      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, os === 'ios' ? 18 - 1 / 6 : 18);
     }
     assert.equal(buildNative('carbon').tokens['type.body_compact_01'].lineHeight, 18.00008);
     assert.equal(buildSystem('carbon', { Probe: Probe }).Probe.ctx.token('type.body_compact_01').lineHeight, 18.00008);
@@ -310,7 +310,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     const grid2 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return Math.round(v * 2) / 2; }) }).Probe.ctx;
     assert.equal(grid2.typeStyle('body01').lineHeight, 18.5);
     const grid3 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return Math.round(v * 3) / 3; }) }).Probe.ctx;
-    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3);
+    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3 - 1 / 6);
     assert.notEqual(grid3.typeStyle('body01').lineHeight, 18);
   });
 
@@ -326,6 +326,24 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     assert.equal(style.lineHeight, 18.00008);
     assert.equal(calls, 0);
     assert.equal(ctx.textPresentation(style).lineHeight, String(set.lineHeight / set.fontSize));
+  });
+
+  test('ios emits half a physical pixel below the grid; android emits the grid value', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 18 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const ios = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return v; }) }).Probe.ctx;
+    assert.equal(ios.typeStyle('body01').lineHeight, 18 - 1 / 6);
+    const android = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return v; }) }).Probe.ctx;
+    assert.equal(android.typeStyle('body01').lineHeight, 18);
+    const noGet = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'ios' }, PixelRatio: { roundToNearestPixel: function (v) { return v; } } })
+    });
+    assert.throws(function () {
+      buildSystem('default', { Probe: Probe }, { built: custom, lib: noGet }).Probe.ctx.typeStyle('body01');
+    }, /PixelRatio\.get/);
   });
 
   test('an integer lineHeight is unchanged; a missing or bad PixelRatio throws on native only', function () {

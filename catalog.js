@@ -79,7 +79,7 @@ import SelectItemGroupSample, { FRAME as SelectItemGroupFrame } from './componen
 import ComboBoxSample, { FRAME as ComboBoxFrame } from './component/composite/select/sample.combo-box.js';
 import FloatingActionButtonSample from './component/molecule/floating-action-button/sample.floating-action-button.js';
 import PopoverSample from './component/molecule/popover/sample.js';
-import PopoverContentSample from './component/molecule/popover/sample.popover-content.js';
+import PopoverContentSample, { FRAME as PopoverContentFrame } from './component/molecule/popover/sample.popover-content.js';
 import DefinitionTooltipSample from './component/molecule/tooltip/sample.definition-tooltip.js';
 import ToggletipSample from './component/molecule/tooltip/sample.toggletip.js';
 import ToggletipLabelSample from './component/molecule/tooltip/sample.toggletip-label.js';
@@ -87,6 +87,17 @@ import ToggletipButtonSample from './component/molecule/tooltip/sample.toggletip
 import ToggletipContentSample from './component/molecule/tooltip/sample.toggletip-content.js';
 import ToggletipActionsSample from './component/molecule/tooltip/sample.toggletip-actions.js';
 import TagSetSample, { FRAME as TagSetFrame } from './component/molecule/tag/sample.tag-set.js';
+import TabSample from './component/composite/tabs/sample.tab.js';
+import TabListSample from './component/composite/tabs/sample.tab-list.js';
+import TabPanelSample from './component/composite/tabs/sample.tab-panel.js';
+import TabPanelsSample from './component/composite/tabs/sample.tab-panels.js';
+import IconTabSample from './component/composite/tabs/sample.icon-tab.js';
+import TabsVerticalSample, { FRAME as TabsVerticalFrame } from './component/composite/tabs/sample.tabs-vertical.js';
+import TabListVerticalSample from './component/composite/tabs/sample.tab-list-vertical.js';
+import TabsSkeletonSample from './component/composite/tabs/sample.tabs-skeleton.js';
+import ContentSwitcherSample from './component/composite/tabs/sample.content-switcher.js';
+import SwitchSample from './component/molecule/content-switcher/sample.switch.js';
+import IconSwitchSample from './component/molecule/content-switcher/sample.icon-switch.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -167,12 +178,23 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ComboBox', family: 'Select', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ComboBoxFrame, sample: ComboBoxSample }),
   Object.freeze({ name: 'FloatingActionButton', family: 'FloatingActionButton', tier: 'molecule', platform: 'both', flags: Object.freeze(['superloom_decision']), frame: null, sample: FloatingActionButtonSample }),
   Object.freeze({ name: 'Popover', family: 'Popover', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: PopoverSample }),
-  Object.freeze({ name: 'PopoverContent', family: 'Popover', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: PopoverContentSample }),
+  Object.freeze({ name: 'PopoverContent', family: 'Popover', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: PopoverContentFrame, sample: PopoverContentSample }),
   Object.freeze({ name: 'DefinitionTooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: DefinitionTooltipSample }),
   Object.freeze({ name: 'Toggletip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: ToggletipSample }),
   Object.freeze({ name: 'ToggletipLabel', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipLabelSample }),
   Object.freeze({ name: 'ToggletipButton', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipButtonSample }),
   Object.freeze({ name: 'ToggletipContent', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: ToggletipContentSample }),
   Object.freeze({ name: 'ToggletipActions', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipActionsSample }),
-  Object.freeze({ name: 'TagSet', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TagSetFrame, sample: TagSetSample })
+  Object.freeze({ name: 'TagSet', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TagSetFrame, sample: TagSetSample }),
+  Object.freeze({ name: 'Tab', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: TabSample }),
+  Object.freeze({ name: 'TabList', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: TabListSample }),
+  Object.freeze({ name: 'TabPanel', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: TabPanelSample }),
+  Object.freeze({ name: 'TabPanels', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: TabPanelsSample }),
+  Object.freeze({ name: 'IconTab', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: IconTabSample }),
+  Object.freeze({ name: 'TabsVertical', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: TabsVerticalFrame, sample: TabsVerticalSample }),
+  Object.freeze({ name: 'TabListVertical', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: TabListVerticalSample }),
+  Object.freeze({ name: 'TabsSkeleton', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: TabsSkeletonSample }),
+  Object.freeze({ name: 'ContentSwitcher', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: ContentSwitcherSample }),
+  Object.freeze({ name: 'Switch', family: 'Tabs', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference']), frame: null, sample: SwitchSample }),
+  Object.freeze({ name: 'IconSwitch', family: 'Tabs', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: IconSwitchSample })
 ]);

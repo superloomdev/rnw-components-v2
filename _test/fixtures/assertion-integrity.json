@@ -2584,6 +2584,116 @@
       "test": "toggletip.test.js",
       "testName": "the target meets the theme's press floor on both axes",
       "why": "the info glyph's face is 16; the press layer must still meet control.target_min"
+    },
+    {
+      "id": "ios-line-height-half-pixel",
+      "file": "component/context.js",
+      "find": "        lineHeight = lineHeight - 0.5 / pixelRatio.get();",
+      "replace": "        lineHeight = lineHeight;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "ios emits half a physical pixel below the grid; android emits the grid value",
+      "why": "without the half-pixel term, ios emits the grid value and iOS's upward rounding re-adds a physical pixel on every line"
+    },
+    {
+      "id": "tab-manual-activation",
+      "file": "behaviors/state.js",
+      "find": "    const manual = options.activation === 'manual';",
+      "replace": "    const manual = false;",
+      "runner": "node",
+      "test": "tab-list.test.js",
+      "testName": "an arrow moves the active tab but leaves the selection",
+      "why": "manual activation must move the active index without selecting"
+    },
+    {
+      "id": "tab-dismiss-delete",
+      "file": "component/composite/tabs/tab.js",
+      "find": "      if (event.key === 'Delete' && dismissable && typeof props.onClose === 'function') {",
+      "replace": "      if (event.key === 'Backspace' && dismissable && typeof props.onClose === 'function') {",
+      "runner": "node",
+      "test": "tab-list.test.js",
+      "testName": "Delete on the active tab calls onTabCloseRequest once",
+      "why": "Delete on a dismissable tab must request its close"
+    },
+    {
+      "id": "tab-overflow-enum",
+      "file": "component/composite/tabs/tab-list.js",
+      "find": "    const overflows = overflowMode === 'buttons' && contentWidth > boxWidth + 1;",
+      "replace": "    const overflows = contentWidth > boxWidth + 1;",
+      "runner": "node",
+      "test": "tab-list.test.js",
+      "testName": "the scroll buttons draw only when the row overflows",
+      "why": "the overflow buttons must appear only under anatomy.tab_overflow: buttons"
+    },
+    {
+      "id": "tab-panel-padding",
+      "file": "component/composite/tabs/tab-panel.js",
+      "find": "        padding: ctx.metric('TabPanel', 'padding')",
+      "replace": "        padding: 0",
+      "runner": "node",
+      "test": "tab-panel.test.js",
+      "testName": "the panel draws with its role and padding",
+      "why": "the panel padding must come from the tab_panel_padding cell"
+    },
+    {
+      "id": "tab-vertical-ratio",
+      "file": "component/composite/tabs/tabs-vertical.js",
+      "find": "      React.createElement(View, { style: { position: 'relative', width: (listWidth * 100) + '%' } },",
+      "replace": "      React.createElement(View, { style: { position: 'relative' } },",
+      "runner": "node",
+      "test": "tabs-vertical.test.js",
+      "testName": "the list takes control.tab_vertical_list_ratio of the row",
+      "why": "the vertical list must take the theme's width ratio"
+    },
+    {
+      "id": "tab-skeleton-width",
+      "file": "component/composite/tabs/tabs-skeleton.js",
+      "find": "    const width = ctx.metric('TabsSkeleton', 'itemWidth');",
+      "replace": "    const width = 120;",
+      "runner": "node",
+      "test": "tabs-skeleton.test.js",
+      "testName": "five items of the theme width",
+      "why": "the skeleton item width must come from the tab_skeleton_width cell"
+    },
+    {
+      "id": "content-switcher-separator-hidden",
+      "file": "component/composite/tabs/content-switcher.js",
+      "find": "      const separator = separatorMode === 'short' && index > 0\n        && index !== selectedIndex && index - 1 !== selectedIndex;",
+      "replace": "      const separator = separatorMode === 'short' && index > 0;",
+      "runner": "node",
+      "test": "content-switcher.test.js",
+      "testName": "short separator hides beside the selected segment",
+      "why": "under short anatomy the separator must hide beside the selected segment"
+    },
+    {
+      "id": "content-switcher-selected-mark",
+      "file": "component/molecule/content-switcher/switch.js",
+      "find": "style: { display: props.selectedMark === true && selected === true ? 'flex' : 'none',",
+      "replace": "style: { display: selected === true ? 'flex' : 'none',",
+      "runner": "node",
+      "test": "content-switcher.test.js",
+      "testName": "the selected mark shows only under shown",
+      "why": "the selected mark must draw only when anatomy.content_switcher_selected_mark is shown"
+    },
+    {
+      "id": "content-switcher-roving-disabled",
+      "file": "component/composite/tabs/content-switcher.js",
+      "find": "      for (let step = 0; step < items.length && items[target] && items[target].disabled === true; step = step + 1) {\n        target = (target + dir + items.length) % items.length;\n      }\n      if (!(items[target] && items[target].disabled === true)) {\n        select(target);\n      }",
+      "replace": "      select(next);",
+      "runner": "node",
+      "test": "content-switcher.test.js",
+      "testName": "arrows, Home and End select, skipping disabled segments",
+      "why": "keyboard movement must skip disabled segments"
+    },
+    {
+      "id": "content-switcher-large-padding-icon-only",
+      "file": "component/molecule/content-switcher/icon-switch.js",
+      "find": "const padInline = size === 'lg' ? ctx.metric('IconSwitch', 'paddingInlineLarge') : ctx.metric('IconSwitch', 'paddingInline');",
+      "replace": "const padInline = ctx.metric('IconSwitch', 'paddingInline');",
+      "test": "content-switcher.test.js",
+      "runner": "node",
+      "testName": "a text segment reads 16 and an icon segment 14 at lg",
+      "why": "an icon-only segment at lg must read control.content_switcher_padding_inline_large (14), not the text padding"
     }
   ]
 }

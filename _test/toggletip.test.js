@@ -41,12 +41,12 @@ describe('Toggletip: the information bubble', function () {
   test('the icon reads the active cell while the bubble is open', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderToggletip('carbon', { defaultOpen: true });
-    const svg = parts.button.querySelector('svg');
+    const svg = parts.container.querySelector('svg');
     assert.ok(svg, 'the information icon draws');
     assert.equal(svg.getAttribute('fill'), t['color.toggletip_icon_active']);
     await cleanup();
     const closed = await renderToggletip('carbon', {});
-    assert.equal(closed.button.querySelector('svg').getAttribute('fill'), t['color.toggletip_icon']);
+    assert.equal(closed.container.querySelector('svg').getAttribute('fill'), t['color.toggletip_icon']);
     await cleanup();
   });
 
