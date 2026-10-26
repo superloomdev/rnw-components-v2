@@ -27,5 +27,27 @@ const SELECTED_ITEMS = Object.freeze([
 
 export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ items: ITEMS, open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
-  Object.freeze({ label: 'selectable', props: Object.freeze({ items: SELECTED_ITEMS, open: true, x: 240, y: 8, accessibilityLabel: 'Views' }) })
+  Object.freeze({ label: 'selectable', props: Object.freeze({ items: SELECTED_ITEMS, open: true, x: 240, y: 8, accessibilityLabel: 'Views' }) }),
+  Object.freeze({ label: 'radio', props: Object.freeze({ items: Object.freeze([
+    Object.freeze({ radioGroup: 'Size', items: Object.freeze(['Small', 'Medium', 'Large']), selectedItem: 'Medium' })
+  ]), open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'group', props: Object.freeze({ items: Object.freeze([
+    Object.freeze({ group: 'Edit', items: Object.freeze([Object.freeze({ label: 'Cut' }), Object.freeze({ label: 'Copy' })]) }),
+    Object.freeze({ divider: true }),
+    Object.freeze({ group: 'View', items: Object.freeze([Object.freeze({ label: 'List view', selected: false }), Object.freeze({ label: 'Grid view', selected: true })]) })
+  ]), open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'submenu', props: Object.freeze({ items: Object.freeze([
+    Object.freeze({ label: 'Share', items: Object.freeze([Object.freeze({ label: 'Email' }), Object.freeze({ label: 'Copy link' })]) }),
+    Object.freeze({ label: 'Export' }),
+    Object.freeze({ label: 'Rename' })
+  ]), open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'danger', props: Object.freeze({ items: Object.freeze([
+    Object.freeze({ label: 'Delete', danger: true }),
+    Object.freeze({ label: 'Archive' })
+  ]), open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'xs', props: Object.freeze({ items: ITEMS, open: true, size: 'xs', x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'md', props: Object.freeze({ items: ITEMS, open: true, size: 'md', x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'lg', props: Object.freeze({ items: ITEMS, open: true, size: 'lg', x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'border', props: Object.freeze({ items: ITEMS, border: true, open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) }),
+  Object.freeze({ label: 'background', props: Object.freeze({ backgroundToken: 'background', items: ITEMS, open: true, x: 8, y: 8, accessibilityLabel: 'Actions' }) })
 ]);

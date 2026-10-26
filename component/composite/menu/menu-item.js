@@ -83,6 +83,7 @@ export default function MenuItem (ctx) {
     const hasSub = Utils.isArray(item.items);
     const [submenuOpen, setSubmenuOpen] = React.useState(false);
     const submenuTimer = React.useRef(null);
+    const closeTimer = React.useRef(null);
     const anchored = useAnchoredPosition({ anchor: ref, offset: 0, placement: 'right', track: submenuOpen });
     const openSub = function () {
       clearTimeout(submenuTimer.current);
@@ -99,12 +100,31 @@ export default function MenuItem (ctx) {
         clearTimeout(submenuTimer.current);
       };
     }, []);
+    const [flipX, setFlipX] = React.useState(null);
+    const subRef = React.useRef(null);
     React.useEffect(function () {
       if (submenuOpen) {
         anchored.measure();
+        setFlipX(null);
       }
     }, [submenuOpen, anchored.measure]);
+    // Flip: a submenu whose right edge would pass the viewport less the
+    // margin opens at the item's start side instead (`_start`)
     const anchor = anchored.anchor;
+    React.useEffect(function () {
+      if (submenuOpen !== true || anchor === null || subRef.current === null) {
+        return;
+      }
+      const submenu = subRef.current.querySelector('[role="menu"]');
+      if (submenu === null || typeof submenu.getBoundingClientRect !== 'function') {
+        return;
+      }
+      const rect = submenu.getBoundingClientRect();
+      const viewport = typeof window === 'undefined' ? rect.right + 1 : window.innerWidth;
+      if (rect.right > viewport - ctx.metric('MenuItem', 'viewportMargin')) {
+        setFlipX(anchor.x - rect.width - ctx.metric('MenuItem', 'submenuOffsetStart'));
+      }
+    }, [submenuOpen, anchor]);
 
     // Render the item: mark seat, icon seat, label, shortcut seat (caret
     // for a submenu), then the submenu itself
@@ -117,6 +137,17 @@ export default function MenuItem (ctx) {
       'aria-haspopup': hasSub ? true : undefined,
       disabled: disabled,
       tabIndex: -1,
+      onKeyDown: function (event) {
+        if (!hasSub || event.key === undefined) {
+          return;
+        }
+        if (event.key === 'ArrowRight' || event.key === 'Enter' || event.key === ' ') {
+          if (typeof event.preventDefault === 'function') {
+            event.preventDefault();
+          }
+          setSubmenuOpen(true);
+        }
+      },
       onPress: disabled ? undefined : function () {
         if (hasSub) {
           setSubmenuOpen(true);
@@ -141,7 +172,9 @@ export default function MenuItem (ctx) {
       onPointerLeave: function () {
         setHovered(false);
         if (hasSub) {
-          closeSub();
+          closeTimer.current = setTimeout(function () {
+            setSubmenuOpen(false);
+          }, 100);
         }
       },
       onFocus: function () {
@@ -175,20 +208,53 @@ export default function MenuItem (ctx) {
         : item.shortcut === undefined ? null : React.createElement(Text, {
           style: [ctx.typeStyle('menu_item_shortcut'), { color: ctx.color(disabled || danger ? labelLeaf : active ? 'menu_item_shortcut_hover' : 'menu_item_shortcut'), marginStart: ctx.metric('MenuItem', 'itemGap') }]
         }, item.shortcut)),
-    hasSub === true && submenuOpen === true && anchor !== null ? React.createElement(ctx.Registry.Menu, {
+    hasSub === true && submenuOpen === true && anchor !== null ? React.createElement(View, {
+      ref: subRef,
+      onKeyDown: function (event) {
+        if (event.key === 'ArrowLeft') {
+          if (typeof event.preventDefault === 'function') {
+            event.preventDefault();
+          }
+          if (typeof event.stopPropagation === 'function') {
+            event.stopPropagation();
+          }
+          closeSub();
+          if (ref.current !== null && typeof ref.current.focus === 'function') {
+            ref.current.focus();
+          }
+        } else if (event.key === 'Escape' && typeof event.stopPropagation === 'function') {
+          event.stopPropagation();
+        }
+      },
+      onPointerEnter: function () {
+        clearTimeout(closeTimer.current);
+      },
+      onPointerLeave: function () {
+        closeTimer.current = setTimeout(function () {
+          setSubmenuOpen(false);
+        }, 100);
+      }
+    },
+    React.createElement(ctx.Registry.Menu, {
       accessibilityLabel: item.label,
       items: item.items,
       menuAlignment: 'bottom-start',
       open: true,
-      x: anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd'),
+      x: flipX === null ? anchor.x + anchor.width + ctx.metric('MenuItem', 'submenuOffsetEnd') : flipX,
       y: anchor.y + ctx.metric('MenuItem', 'submenuOffsetBlock'),
+      onChange: function (chosen) {
+        // A leaf choice inside the submenu closes the root
+        if (typeof props.onChoose === 'function') {
+          props.onChoose(chosen);
+        }
+      },
       onClose: function () {
         setSubmenuOpen(false);
         if (ref.current !== null && typeof ref.current.focus === 'function') {
           ref.current.focus();
         }
       }
-    }) : null);
+    })) : null);
 
   }
 

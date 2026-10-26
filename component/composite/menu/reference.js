@@ -15,28 +15,22 @@ export default Object.freeze({
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement(upstream.Menu, {
-      open: true,
-      x: props.x || 0,
-      y: props.y || 0,
-      target: null,
-      label: props.accessibilityLabel,
-      onClose: function () {
-        return undefined;
-      }
-    }, items.map(function (item, index) {
+
+    function entry (item, index) {
       if (item.divider === true) {
         return React.createElement(upstream.MenuItemDivider, { key: index });
       }
-      // A selectable item mounts the selectable element so its menu gains
-      // the `with-selectable-items` class and the selection mark seat
+      if (item.group !== undefined) {
+        return React.createElement(upstream.MenuItemGroup, { key: index, label: item.group }, item.items.map(entry));
+      }
+      if (item.radioGroup !== undefined) {
+        return React.createElement(upstream.MenuItemRadioGroup, { key: index, label: item.radioGroup, items: item.items, selectedItem: item.selectedItem });
+      }
       if (item.selected !== undefined) {
-        return React.createElement(upstream.MenuItemSelectable, {
-          disabled: item.disabled === true,
-          key: index,
-          label: item.label,
-          selected: item.selected === true
-        });
+        return React.createElement(upstream.MenuItemSelectable, { key: index, label: item.label, selected: item.selected === true });
+      }
+      if (Array.isArray(item.items)) {
+        return React.createElement(upstream.MenuItem, { key: index, label: item.label }, item.items.map(entry));
       }
       return React.createElement(upstream.MenuItem, {
         disabled: item.disabled === true,
@@ -46,26 +40,53 @@ export default Object.freeze({
         renderIcon: item.icon ? upstream.icon(item.icon) : undefined,
         shortcut: item.shortcut
       });
-    }));
+    }
+
+    return React.createElement(upstream.Menu, {
+      backgroundToken: props.backgroundToken,
+      border: props.border === true,
+      label: props.accessibilityLabel,
+      onClose: function () {
+        return undefined;
+      },
+      open: true,
+      size: props.size,
+      target: null,
+      x: props.x || 0,
+      y: props.y || 0
+    }, items.map(entry));
   },
   // The element a person hovers, presses and focuses: the first enabled item
-  target: Object.freeze({ upstream: '.cds--menu-item:not(.cds--menu-item--disabled)', ours: '[role="menuitem"], [role="menuitemcheckbox"]' }),
+  target: Object.freeze({ upstream: '.cds--menu-item:not(.cds--menu-item--disabled)', ours: '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]' }),
   // The fixed surface mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 400, height: 280, stage: true }),
   parts: Object.freeze({
     surface: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'paddingTop', 'paddingBottom', 'backgroundColor'] }),
-    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
+    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     label: Object.freeze({ upstream: '.cds--menu-item .cds--menu-item__label', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"]', measure: 'text' }),
     // The shortcut is its own text run: the item's last labelled text
     shortcut: Object.freeze({ upstream: '.cds--menu-item__shortcut', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
     icon: Object.freeze({ upstream: '.cds--menu-item__icon svg', ours: '[role="menuitem"] svg', measure: 'box', optional: true }),
     mark: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"] .cds--menu-item__selection-icon svg', ours: '[role="menuitemcheckbox"][aria-checked="true"] > div > div:first-child svg', measure: 'box', optional: true }),
-    divider: Object.freeze({ upstream: '.cds--menu-item-divider', ours: '[role="separator"]', measure: 'box', compare: ['width', 'height', 'backgroundColor', 'marginTop', 'marginBottom'] })
+    divider: Object.freeze({ upstream: '.cds--menu-item-divider', ours: '[role="separator"]', measure: 'box', compare: ['width', 'height', 'backgroundColor', 'marginTop', 'marginBottom'] }),
+    submenu: Object.freeze({ upstream: '.cds--menu .cds--menu', ours: '[role="menu"] [role="menu"]', measure: 'box', compare: ['width', 'paddingTop', 'backgroundColor'], optional: true }),
+    caret: Object.freeze({ upstream: '.cds--menu-item__shortcut svg', ours: '[aria-haspopup="true"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true }),
+    selected: Object.freeze({ upstream: '.cds--menu-item[aria-checked="true"]', ours: '[aria-checked="true"]', measure: 'box', compare: ['backgroundColor'], optional: true }),
+    // The danger states' first item is the danger one
+    danger: Object.freeze({ upstream: '.cds--menu-item--danger', ours: '[role="menuitem"]', measure: 'box', compare: ['backgroundColor', 'boxShadow'], optional: true }),
+    outline: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['outlineColor', 'outlineWidth', 'outlineStyle'] })
   }),
   second: Object.freeze({
     mount: function (React, upstream, props) {
       const items = Array.isArray(props.items) ? props.items : [];
+      // The new states name no md-menu element: size, border, background
+      // token, danger, group, radio and submenu are unmeasured there
+      if (props.size !== undefined || props.border === true || props.backgroundToken !== undefined || items.some(function (item) {
+        return item.group !== undefined || item.radioGroup !== undefined || Array.isArray(item.items) || item.danger === true;
+      })) {
+        return null;
+      }
       // The upstream menu opens against an anchor element, not a point: a
       // one-pixel anchor at the state's fixed point, both corners at the
       // start, lands the surface's top left on it
@@ -140,7 +161,7 @@ export default Object.freeze({
       surface: Object.freeze({ upstream: 'md-menu >>> .items', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopLeftRadius'] }),
       // The upstream `li` never paints (state layers live inside `md-item`);
       // `backgroundColor` on it would always read transparent
-      item: Object.freeze({ upstream: 'md-menu-item >>> li.list-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'width', 'height'] }),
+      item: Object.freeze({ upstream: 'md-menu-item >>> li.list-item', ours: '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]', measure: 'box', compare: ['x', 'y', 'width', 'height'] }),
       label: Object.freeze({ upstream: 'md-menu-item', styleOf: 'md-menu-item >>> .list-item', ours: '[role="menuitem"] [dir="auto"], [role="menuitemcheckbox"] [dir="auto"]', measure: 'text' }),
       shortcut: Object.freeze({ upstream: 'md-menu-item [slot="trailing-supporting-text"]', ours: '[role="menuitem"] [dir="auto"]:last-of-type, [role="menuitemcheckbox"] [dir="auto"]:last-of-type', measure: 'text', optional: true }),
       icon: Object.freeze({ upstream: 'md-menu-item svg[slot="start"]', ours: '[role="menuitem"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'ink'], optional: true }),

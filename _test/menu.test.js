@@ -49,7 +49,7 @@ async function renderMenu (Registry, props) {
   return {
     surface: surface,
     items: function () {
-      return surface === null ? [] : Array.from(surface.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"]'));
+      return surface === null ? [] : Array.from(surface.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]'));
     },
     option: function (item) {
       return item.children[0];
@@ -80,31 +80,64 @@ describe('Menu: every sample state under every template', function () {
 
         // The surface's container cells
         assert.notEqual(parts.surface, null);
-        assert.equal(parts.surface.style.backgroundColor, cssValue('backgroundColor', t['color.list_container']));
+        assert.equal(parts.surface.style.backgroundColor, cssValue('backgroundColor', t[props.backgroundToken === 'background' ? 'color.menu_container_background' : 'color.list_container']));
         assert.equal(parts.surface.style.paddingTop, t['control.menu_padding_block'] + 'px');
         assert.equal(parts.surface.style.paddingBottom, t['control.menu_padding_block'] + 'px');
         assert.equal(parts.surface.getAttribute('aria-label'), props.accessibilityLabel);
 
-        // Each entry: an item or a separator
-        const entries = props.items.filter(function (item) {
-          return item.divider !== true;
+        // Each entry: an item or a separator; group and radio-group
+        // entries' children are the items themselves (radio options may
+        // be strings)
+        const flatten = function (entries) {
+          return entries.reduce(function (acc, item) {
+            if (item.divider === true) {
+              return acc;
+            }
+            if (item.group !== undefined || item.radioGroup !== undefined) {
+              return acc.concat(flatten(item.items));
+            }
+            return acc.concat(item);
+          }, []);
+        };
+        const entries = flatten(props.items).map(function (item) {
+          return typeof item === 'string' ? { label: item } : item;
         });
+        const radioEntry = props.items.find(function (item) {
+          return item.radioGroup !== undefined;
+        });
+        const selectedItem = radioEntry === undefined ? undefined : radioEntry.selectedItem;
         assert.equal(items.length, entries.length);
-        assert.equal(parts.dividers().length, props.items.length - entries.length);
+        const dividerCount = function (entries) {
+          return entries.reduce(function (count, item) {
+            if (item.divider === true) {
+              return count + 1;
+            }
+            if (item.group !== undefined || item.radioGroup !== undefined) {
+              return count + dividerCount(item.items);
+            }
+            return count;
+          }, 0);
+        };
+        assert.equal(parts.dividers().length, dividerCount(props.items));
 
         for (let index = 0; index < entries.length; index = index + 1) {
           const entry = entries[index];
           const item = items[index];
           const disabled = entry.disabled === true;
           const danger = entry.danger === true;
+          const radio = radioEntry !== undefined && radioEntry.items.some(function (option) {
+            return (typeof option === 'string' ? option : option.label) === entry.label;
+          });
+          const selected = radio ? entry.label === selectedItem : entry.selected === true;
 
           // The item's height, label and role
-          assert.equal(item.style.height, t['control.menu_item_height'] + 'px');
+          const heights = { xs: 'size.size_xsmall', sm: 'control.menu_item_height', md: 'size.size_medium', lg: 'size.size_large' };
+          assert.equal(item.style.height, t[heights[props.size || 'sm']] + 'px');
           assert.equal(item.getAttribute('aria-disabled'), disabled ? 'true' : null);
-          const role = entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
+          const role = radio ? 'menuitemradio' : entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
           assert.equal(item.getAttribute('role'), role);
-          assert.equal(item.getAttribute('aria-checked'), entry.selected === undefined ? null : String(entry.selected === true));
-          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? 'menu_item_danger_label' : entry.selected === true ? 'list_item_label_selected' : 'list_item_label';
+          assert.equal(item.getAttribute('aria-checked'), radio ? String(selected) : entry.selected === undefined ? null : String(selected));
+          const labelLeaf = disabled ? 'list_item_label_disabled' : danger ? 'menu_item_danger_label' : selected ? 'list_item_label_selected' : 'list_item_label';
           const label = parts.label(item);
           assert.equal(label.textContent, entry.label);
           assert.equal(label.style.color, cssValue('color', t['color.' + labelLeaf]));
@@ -113,14 +146,18 @@ describe('Menu: every sample state under every template', function () {
           // only where the anatomy says `shown`; a non-selectable menu
           // mounts no mark seat
           const selectable = props.items.some(function (candidate) {
-            return candidate.selected !== undefined;
+            return candidate.selected !== undefined || candidate.radioGroup !== undefined;
           });
           const marked = Array.from(parts.option(item).querySelectorAll('svg path')).some(function (path) {
             return t['icon.selected_indicator'].paths.some(function (glyph) {
               return path.getAttribute('d') === glyph.d;
             });
           });
-          assert.equal(marked === selectable, true, 'the mark lands on the selected item');
+          assert.equal(marked === selectable, true, 'the mark seat mounts in a selectable menu');
+          if (selectable) {
+            const markSvg = parts.option(item).querySelector('svg');
+            assert.equal(markSvg === null ? null : markSvg.style.opacity, selected ? '1' : '0', 'the mark shows only on the selected item');
+          }
           if (selectable) {
             const mark = parts.mark(item);
             assert.equal(mark.style.display, t['anatomy.list_selected_mark'] === 'shown' ? 'flex' : 'none');

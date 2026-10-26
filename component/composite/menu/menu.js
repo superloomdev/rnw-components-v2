@@ -187,10 +187,11 @@ export default function Menu (ctx) {
       if (item.radioGroup !== undefined && Utils.isArray(item.items)) {
         return React.createElement(ctx.Registry.MenuItemRadioGroup, { key: index, label: item.radioGroup },
           item.items.map(function (sub, subIndex) {
+            const subItem = Utils.isString(sub) ? { label: sub } : sub;
             return React.createElement(ctx.Registry.MenuItem, {
               icons: icons,
               iconsShared: iconsShared,
-              item: Object.assign({ radio: true, selected: item.selectedItem !== undefined ? sub === item.selectedItem || sub.label === item.selectedItem : sub.selected === true }, sub),
+              item: Object.assign({ radio: true, selected: item.selectedItem !== undefined ? subItem.label === item.selectedItem : subItem.selected === true }, subItem),
               key: subIndex,
               list: list,
               seats: metrics,

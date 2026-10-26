@@ -9,6 +9,7 @@ export default Object.freeze({
   markSize: 'size.icon_01',
   optionPaddingInline: 'control.list_item_padding_inline',
   submenuDelay: { constant: 100 },
+  viewportMargin: 'control.menu_viewport_margin',
   submenuOffsetEnd: 'control.menu_submenu_offset_end',
   submenuOffsetStart: 'control.menu_submenu_offset_start',
   submenuOffsetBlock: 'control.menu_submenu_offset_block'

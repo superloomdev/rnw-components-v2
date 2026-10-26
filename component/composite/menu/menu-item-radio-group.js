@@ -29,7 +29,7 @@ export default function MenuItemRadioGroup (ctx) {
 
     return React.createElement(View, {
       accessibilityLabel: props.label,
-      role: 'radiogroup'
+      role: 'group'
     }, props.children);
 
   }
