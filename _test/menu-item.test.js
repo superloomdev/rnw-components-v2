@@ -202,22 +202,29 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
     }
   });
 
-  test('a disabled submenu entry ignores press and keys', async function () {
-    const Registry = buildSystem('carbon', factories);
-    const container = await render(React.createElement(Registry.Menu, {
-      accessibilityLabel: 'Actions',
-      items: [{ disabled: true, items: [{ label: 'Email' }], label: 'Share' }, { label: 'Export' }],
-      open: true
-    }));
-    const item = container.querySelector('[aria-haspopup="true"]');
+  test('a disabled entry with items ignores disabled (upstream isDisabled = disabled && !hasChildren)', async function () {
+    const { container, item } = await renderSubmenuMenu('carbon', [
+      { label: 'Share', disabled: true, items: [{ label: 'Email' }, { label: 'Copy link' }] },
+      { label: 'Export' }
+    ]);
+    assert.equal(item.getAttribute('aria-disabled'), null, 'an entry with items is not announced disabled');
+    await act(async function () {
+      item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
+    });
+    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'ArrowRight opens its submenu');
+  });
+
+  test('press then ArrowRight in one act leaves the submenu open and exits', async function () {
+    const { container, item } = await renderSubmenuMenu('carbon');
     await act(async function () {
       item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'disabled: no submenu');
+    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu is open');
   });
 
 });
+
 
 
 

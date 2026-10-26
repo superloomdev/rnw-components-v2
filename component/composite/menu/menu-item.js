@@ -35,7 +35,8 @@ export default function MenuItem (ctx) {
 
     // Init the item's ref, states and registration
     const item = props.item !== undefined ? props.item : props;
-    const disabled = item.disabled === true;
+    const hasSub = Utils.isArray(item.items);
+    const disabled = hasSub ? false : item.disabled === true;
     const ref = React.useRef(null);
     const [hovered, setHovered] = React.useState(false);
     const [pressed, setPressed] = React.useState(false);
@@ -49,7 +50,7 @@ export default function MenuItem (ctx) {
 
     // The item's state cells: a danger item reads the menu's own cells. A
     // press draws the hover's fill; a focused item carries the ring alone
-    const danger = item.danger === true;
+    const danger = hasSub ? false : item.danger === true;
     const active = hovered || pressed;
     const dangerActive = active || focused;
     const state = { disabled: disabled, hovered: active && !danger, highlighted: focused, selected: item.selected === true };
@@ -88,7 +89,6 @@ export default function MenuItem (ctx) {
 
     // A submenu item: the caret in the shortcut seat, hover opens after
     // the delay, the submenu is a Menu at the member offsets
-    const hasSub = Utils.isArray(item.items);
     const [submenuOpen, setSubmenuOpen] = React.useState(false);
     const submenuTimer = React.useRef(null);
     const closeTimer = React.useRef(null);
