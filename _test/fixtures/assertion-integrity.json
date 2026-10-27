@@ -2906,6 +2906,16 @@
       "why": "ignoring the flag must leave the clipped rest cell blank"
     },
     {
+      "file": "scripts/verify.js",
+      "find": "execFileSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', cmd], {",
+      "replace": "execFileSync('bash', ['--noprofile', '--norc', '-o', 'pipefail', '-c', cmd], {",
+      "testName": "the gate replay fails a step when any line of its run block fails",
+      "runner": "node",
+      "id": "replay-errexit-off",
+      "test": "verify-replay.test.js",
+      "why": "a replay that drops -e lets a multi-line run block pass while its first command fails, the inverse of Actions behavior"
+    },
+    {
       "id": "tab-panel-string-child",
       "file": "component/composite/tabs/tab-panel.js",
       "find": "ctx.Utils.isString(props.children) ? React.createElement(ctx.Registry.Text, {}, props.children) : props.children",

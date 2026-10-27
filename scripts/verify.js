@@ -16,7 +16,7 @@
 //                                    writes .verify-stamp, so a push to main
 //                                    still requires one full run
 
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -198,7 +198,10 @@ function runCheck (name, fn) {
 
 // Run a shell command from the repo root, surfacing its output on failure
 function sh (cmd, cwd) {
-  execSync(cmd, {
+  // Actions runs every step's run text under `bash --noprofile --norc -eo
+  // pipefail {0}`; replay with the same shell so a failing first line fails
+  // the step instead of being masked by a later command's exit
+  execFileSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', cmd], {
     cwd: cwd || REPO_ROOT,
     stdio: 'inherit'
   });

@@ -67,7 +67,10 @@ describe('docs: generated pages', function () {
       'RadioButtonGroup:320', 'RadioButtonSkeleton:320', 'ExpandableSearch:320', 'Search:320',
       'SearchSkeleton:320', 'Slider:640', 'SliderSkeleton:640', 'PasswordInput:320', 'TextAreaSkeleton:320', 'TextInputSkeleton:320',
       'TimePicker:320', 'TimePickerSelect:320', 'DropdownSkeleton:320', 'SelectSkeleton:320',
-      'MultiSelect:320', 'FilterableMultiSelect:320', 'SelectItem:320', 'SelectItemGroup:320', 'ComboBox:320', 'PopoverContent:400', 'TagSet:320', 'TabsVertical:640']);
+      'MultiSelect:320', 'FilterableMultiSelect:320', 'SelectItem:320', 'SelectItemGroup:320', 'ComboBox:320', 'PopoverContent:400', 'TagSet:320', 'TabsVertical:640',
+      'MenuButton:320', 'MenuItem:160', 'MenuItemDivider:160', 'MenuItemGroup:160', 'MenuItemRadioGroup:160',
+      'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320',
+      'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {
