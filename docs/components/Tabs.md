@@ -572,7 +572,7 @@ TabsSkeleton draws the placeholder shape of a tab list while its content loads.
 | `barHeight` | `control.tab_skeleton_bar_height` |
 | `paddingInline` | `control.tab_padding_inline` |
 | `trackWidth` | `control.tab_track_width` |
-| `barMargin` | `control.tab_skeleton_bar_height` |
+| `itemHeight` | `control.tab_height` |
 
 ### States (sample.js)
 

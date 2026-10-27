@@ -6,6 +6,7 @@ export default Object.freeze({
     return React.createElement(upstream.TabsSkeleton, {});
   },
   parts: Object.freeze({
-    item: Object.freeze({ upstream: '.cds--tabs__nav-item', ours: ':scope > div > div:first-child', measure: 'box', optional: true })
+    item: Object.freeze({ upstream: '.cds--tabs__nav-item:first-child .cds--tabs__nav-link', ours: ':scope > div > div:first-child', measure: 'box' }),
+    bar: Object.freeze({ upstream: '.cds--tabs__nav-item:first-child .cds--tabs__nav-link span', ours: ':scope > div > div:first-child > div', measure: 'box' })
   })
 });
