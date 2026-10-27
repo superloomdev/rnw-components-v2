@@ -13,6 +13,23 @@
       "request": "type.definition_term",
       "wave": "m5-amend-5",
       "why": "upstream's term carries no type; its 21px box is the ambient line-height normal - the cell waits on the definition_term type request"
+    },
+    {
+      "check": "fidelity",
+      "component": "DefinitionTooltip",
+      "part": "term",
+      "property": "height",
+      "request": "type.definition_term",
+      "wave": "m5-amend-5",
+      "why": "upstream's term carries no type; its 21px box is the ambient line-height normal - the cell waits on the definition_term type request"
+    },
+    {
+      "check": "perceptual-visible",
+      "template": "carbon",
+      "cell": "DefinitionTooltip",
+      "request": "type.definition_term",
+      "wave": "m5-amend-5",
+      "why": "the term height gap draws a visible diff under carbon until the type cell lands"
     }
   ]
 }

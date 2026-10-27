@@ -14,6 +14,10 @@ import { expect, test } from '@playwright/test';
 
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
 import { SCHEMES, runFidelity } from './harness/fidelity.js';
+import { explainDisagreements } from './harness/expected-gaps.js';
+import { readFileSync } from 'node:fs';
+
+const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
 const components = (await discoverComponents()).filter(function (component) {
   return component.reference !== null;
@@ -61,7 +65,12 @@ test.describe('fidelity', function () {
             }
           }
           expect(run.errors, 'render errors').toEqual([]);
-          expect(run.lines, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);
+          const gate = explainDisagreements(run.lines, GAPS, component.name, 'fidelity');
+          if (gate.explained.length > 0) {
+            test.info().annotations.push({ type: 'fidelity', description: component.name + ': ' + gate.explained.length + ' disagreement(s) covered by expected gaps' });
+          }
+          expect(gate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), component.name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+          expect(gate.unexplained, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);
           const over = Object.keys(run.perceptual).filter(function (key) {
             return run.perceptual[key] > BUDGET[component.name];
           }).map(function (key) {

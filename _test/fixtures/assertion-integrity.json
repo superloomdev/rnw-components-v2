@@ -2954,6 +2954,26 @@
       "id": "copy-button-align-default",
       "test": "copy-button-default-align.test.js",
       "why": "upstream's CopyButton defaults align to 'bottom'; dropping the fallback puts the tooltip above the button"
+    },
+    {
+      "file": "_test/harness/expected-gaps.js",
+      "find": "  const stale = mine.filter(function (gap) {",
+      "replace": "  const stale = [];",
+      "testName": "expected gaps: a gap that no longer reproduces is stale",
+      "runner": "node",
+      "id": "expected-gap-stale-ignored",
+      "test": "expected-gaps.test.js",
+      "why": "dropping the stale check lets a retired gap linger forever instead of failing for removal"
+    },
+    {
+      "file": "component/molecule/copy/copy-button.js",
+      "find": "      icon: 'copy',",
+      "replace": "      icon: 'copy-x',",
+      "testName": "CopyButton: the glyph renders through IconButton",
+      "runner": "node",
+      "id": "copy-button-glyph",
+      "test": "copy-button-glyph.test.js",
+      "why": "a wrong icon token draws no glyph - the button's identity disappears"
     }
   ]
 }

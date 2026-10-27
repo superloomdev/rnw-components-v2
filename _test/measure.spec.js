@@ -22,6 +22,7 @@ import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
 import { targetInteractions } from './harness/fidelity.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, reopenPanel } from './harness/page.js';
+import { explainDisagreements } from './harness/expected-gaps.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
@@ -255,7 +256,15 @@ test.describe('measure: primary reference', function () {
       expect(undrawn, name + ': parts the upstream never draws (a selector matches nothing)').toEqual([]);
 
       test.info().annotations.push({ type: 'measure', description: name + ': ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });
-      expect(findDisagreements(ours, upstream, parts), name + ' differs from the rendered upstream').toEqual([]);
+      const lines = findDisagreements(ours, upstream, parts);
+      // A disagreement an expected gap explains is set aside; a gap that no
+      // longer reproduces is stale and fails (FIDELITY RULES 5)
+      const gate = explainDisagreements(lines, GAPS, name, 'measure');
+      if (gate.explained.length > 0) {
+        test.info().annotations.push({ type: 'measure', description: name + ': ' + gate.explained.length + ' disagreement(s) covered by expected gaps' });
+      }
+      expect(gate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+      expect(gate.unexplained, name + ' differs from the rendered upstream').toEqual([]);
     });
   }
 
