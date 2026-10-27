@@ -38,7 +38,9 @@ export default function TabListVertical (ctx) {
       style: [{
         backgroundColor: ctx.color(fillLeaf),
         borderBottomColor: ctx.color('tab_vertical_divider'),
-        borderBottomWidth: 1,
+        borderBottomWidth: ctx.metric('TabListVertical', 'dividerWidth'),
+        borderRightColor: ctx.color('tab_vertical_divider'),
+        borderRightWidth: ctx.metric('TabListVertical', 'dividerWidth'),
         height: ctx.metric('TabListVertical', 'height'),
         justifyContent: 'center',
         outlineStyle: 'none',
@@ -90,7 +92,7 @@ export default function TabListVertical (ctx) {
       role: 'tablist',
       accessibilityLabel: props.accessibilityLabel,
       testID: props.testID,
-      style: { borderRightColor: ctx.color('tab_vertical_divider'), borderRightWidth: 1, flexDirection: 'column', minHeight: 0, overflow: 'hidden' }
+      style: { flexDirection: 'column', minHeight: 0, overflow: 'hidden' }
     }),
     items.map(function (item, index) {
       return React.createElement(VerticalTab, {

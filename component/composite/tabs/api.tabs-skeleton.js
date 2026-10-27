@@ -9,7 +9,7 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'control.tab_skeleton_width', 'control.tab_skeleton_bar_height', 'control.tab_padding_inline',
-    'color.skeleton_element', 'color.skeleton_background'
+    'color.skeleton_element'
   ]),
   colors: Object.freeze([])
 });

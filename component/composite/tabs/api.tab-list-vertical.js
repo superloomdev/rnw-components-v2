@@ -17,7 +17,8 @@ export default Object.freeze({
     'color.tab_vertical_container', 'color.tab_vertical_item', 'color.tab_vertical_item_hover',
     'color.tab_vertical_track', 'color.tab_vertical_track_hover', 'color.tab_vertical_divider',
     'color.tab_indicator', 'color.tab_label', 'color.tab_label_selected', 'color.tab_label_disabled',
-    'type.tab_label', 'type.tab_label_selected', 'feedback.focus_trigger'
+    'type.tab_label', 'type.tab_label_selected', 'feedback.focus_trigger',
+    'border.width_01'
   ]),
   colors: Object.freeze([])
 });
