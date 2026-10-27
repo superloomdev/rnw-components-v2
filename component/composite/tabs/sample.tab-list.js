@@ -7,6 +7,10 @@ const MANY = Object.freeze(Array.from({ length: 10 }, function (_, i) {
   return Object.freeze({ label: 'Tab number ' + (i + 1) });
 }));
 
+// The overflow sample scrolls inside a bounded box - an unbounded cell
+// shrink-wraps the overflowing row and the scroller grows to its content
+export const FRAME = Object.freeze({ width: 320 });
+
 export default Object.freeze([
   Object.freeze({ label: 'line', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', defaultSelectedIndex: 1 }) }),
   Object.freeze({ label: 'contained', props: Object.freeze({ items: ITEMS, accessibilityLabel: 'Sections', variant: 'contained', defaultSelectedIndex: 1 }) }),
