@@ -79,7 +79,7 @@ export default function AccordionItem (ctx) {
     });
     const title = React.createElement(Text, {
       numberOfLines: 1,
-      style: [ctx.typeStyle('accordion_title'), {
+      style: [ctx.textPresentation(ctx.typeStyle('accordion_title')), {
         color: ctx.color(labelLeaf),
         flexBasis: 'auto',
         flexGrow: 1,
