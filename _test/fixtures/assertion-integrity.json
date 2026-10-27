@@ -3144,6 +3144,16 @@
       "test": "structural.spec.js",
       "testName": "every drawn text run meets the contrast minimum against its backdrop",
       "why": "an off-screen run reads the page body, not its backdrop"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "face.previousElementSibling !== null && painted(face.previousElementSibling)",
+      "replace": "false",
+      "runner": "node",
+      "id": "structural-signature-press-face",
+      "test": "structural-signature-press-face.test.js",
+      "testName": "a press-layer control reads its painted face sibling",
+      "why": "a transparent press layer reads the same paint as enabled when the face is skipped"
     }
   ]
 }

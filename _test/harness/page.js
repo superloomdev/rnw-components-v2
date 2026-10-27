@@ -1310,6 +1310,12 @@ export async function readControlPaint (page) {
         return s.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
           (parseFloat(s.borderTopWidth) > 0 && s.borderTopColor !== 'rgba(0, 0, 0, 0)');
       };
+      // A press-layer control (MenuItem, Tab, Switch, AccordionItem,
+      // IconSwitch) is a transparent sibling over the painted face: read
+      // the face's paint from the layer's previous sibling
+      if (!painted(face) && face.previousElementSibling !== null && painted(face.previousElementSibling)) {
+        face = face.previousElementSibling;
+      }
       let paintedFace = face;
       if (!painted(face) && face.parentElement !== null) {
         const inner = Array.from(face.parentElement.querySelectorAll('*')).find(painted);
