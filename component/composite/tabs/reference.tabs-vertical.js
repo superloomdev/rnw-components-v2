@@ -5,13 +5,13 @@ export default Object.freeze({
   kind: 'render-web',
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement(upstream.Tabs, {
-      vertical: true,
+    return React.createElement(upstream.TabsVertical, {
+      height: '400px',
       selectedIndex: props.defaultSelectedIndex,
       onChange: function () {
         return undefined;
       }
-    }, React.createElement(upstream.TabList, {
+    }, React.createElement(upstream.TabListVertical, {
       'aria-label': props.accessibilityLabel || 'Sections',
       vertical: true
     }, items.map(function (item, index) {

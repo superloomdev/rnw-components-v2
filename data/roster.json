@@ -2819,7 +2819,7 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "none",
+      "carbon_twin": "TabsVertical",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
