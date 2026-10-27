@@ -6,6 +6,16 @@
   ],
   "rows": [
     {
+      "id": "guard-rss-inverted",
+      "file": "scripts/guard.js",
+      "find": "sample.maxRssMb > procMb",
+      "replace": "sample.maxRssMb > 1000000000",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a child past the per-process memory ceiling is killed and reported 137",
+      "why": "a per-process ceiling that cannot trip must fail the runaway kill assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",

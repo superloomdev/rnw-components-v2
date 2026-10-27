@@ -54,9 +54,12 @@ Run the row's test; report pass or fail without throwing.
 *********************************************************************/
 function runTest (row) {
 
+  // One guard (default caps) per planted run: direct node --test and
+  // npx playwright spawns are wrapped; `npm run bundle` is already
+  // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
-    ? 'npm run bundle --silent && npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    ? 'npm run bundle --silent && node ../scripts/guard.js -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
+    : 'node ../scripts/guard.js -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });

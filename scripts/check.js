@@ -48,6 +48,24 @@ function step (label, cmd, args, cwd) {
 }
 
 
+/********************************************************************
+Run one step under scripts/guard.js (D43). For direct test-runner spawns
+only: a step that is itself an npm script (npm test, npm run bundle) is
+already guarded inside its own package.json definition and is not
+guarded again here.
+
+@param {String} label - Step label
+@param {String} cmd   - Command
+@param {Array}  args  - Arguments
+@param {String} cwd   - Working directory
+*********************************************************************/
+function guardedStep (label, cmd, args, cwd) {
+
+  step(label, 'node', [join(REPO_ROOT, 'scripts', 'guard.js'), '--', cmd].concat(args), cwd);
+
+}
+
+
 // Lint the changed files (tracked changes and untracked additions)
 const changed = execSync('git diff --name-only HEAD; git ls-files --others --exclude-standard', { cwd: REPO_ROOT, encoding: 'utf8' })
   .split('\n').filter(function (file) {
@@ -60,18 +78,18 @@ if (changed.length > 0) {
 }
 
 // Purity over the shipped source
-step('purity', 'node', ['--import', './harness/register.js', '--test', 'purity.test.js'], join(REPO_ROOT, '_test'));
+guardedStep('purity', 'node', ['--import', './harness/register.js', '--test', 'purity.test.js'], join(REPO_ROOT, '_test'));
 
 // The component's own tests, when it has a file
 const own = join(REPO_ROOT, '_test', toFileStem(name) + '.test.js');
 if (existsSync(own)) {
-  step(name + ' tests', 'node', ['--import', './harness/register.js', '--test', toFileStem(name) + '.test.js'], join(REPO_ROOT, '_test'));
+  guardedStep(name + ' tests', 'node', ['--import', './harness/register.js', '--test', toFileStem(name) + '.test.js'], join(REPO_ROOT, '_test'));
 } else {
   process.stdout.write(name + ': no _test/' + toFileStem(name) + '.test.js yet\n');
 }
 
 // Its accessibility-identity rows
-step(name + ' a11y identity', 'node', ['--import', './harness/register.js', '--test', '--test-name-pattern=^' + name + ' /', 'a11y-identity.test.js'], join(REPO_ROOT, '_test'));
+guardedStep(name + ' a11y identity', 'node', ['--import', './harness/register.js', '--test', '--test-name-pattern=^' + name + ' /', 'a11y-identity.test.js'], join(REPO_ROOT, '_test'));
 
 process.stdout.write('\n' + (failed.length === 0 ? 'check: ' + name + ' passed' : 'check: ' + name + ' FAILED: ' + failed.join(', ')) + '\n');
 process.exit(failed.length === 0 ? 0 : 1);

@@ -368,7 +368,9 @@ if (!GATES_ONLY) {
   if (!FAST) {
 
     if (runCheck('browser gates', function () {
-      sh('npx playwright install --with-deps chromium', path.join(REPO_ROOT, '_test'));
+      // Direct npx playwright and node spawns go through the guard (D43);
+      // the npm scripts are already guarded in _test/package.json
+      sh('node ../scripts/guard.js -- npx playwright install --with-deps chromium', path.join(REPO_ROOT, '_test'));
       sh('npm run test:browser', path.join(REPO_ROOT, '_test'));
     })) {
       passed++;
@@ -380,7 +382,7 @@ if (!GATES_ONLY) {
     if (runCheck('fire', function () {
       // The CI 'Run fire' step's heap tripwire, mirrored so local and CI
       // see the same child-termination behavior
-      execSync('node fire.js', {
+      execSync('node ../scripts/guard.js -- node fire.js', {
         cwd: path.join(REPO_ROOT, '_test'),
         stdio: 'inherit',
         env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=3072' }
