@@ -8,8 +8,8 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/accordion/sample.accordion-item.js';
-import { TEMPLATES, buildSystem } from './harness/system.js';
-import { React, cleanup, render } from './harness/render.js';
+import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 
@@ -30,6 +30,20 @@ describe('AccordionItem: every sample state under every template', function () {
         assert.equal(heading.getAttribute('aria-expanded'), state.label === 'open' ? 'true' : 'false');
       });
     }
+  }
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': an open item colours its string body text with color.text_primary', async function () {
+      const t = buildNative(template).tokens;
+      const container = await render(React.createElement(registryFor(template).AccordionItem, {
+        title: 'Section', defaultOpen: true, children: 'body text'
+      }));
+      const region = container.querySelector('[role="region"]');
+      assert.notEqual(region, null, 'the body region mounts open');
+      const text = region.querySelector('div');
+      assert.notEqual(text, null, 'the body text mounts');
+      assert.equal(text.style.color, cssValue('color', t['color.text_primary']), 'the body text takes color.text_primary');
+    });
   }
 
 });

@@ -24,6 +24,7 @@ export default Object.freeze({
     'color.accordion_heading_label', 'color.accordion_heading_label_disabled',
     'color.accordion_heading_container_hover', 'color.accordion_focus',
     'color.accordion_icon', 'color.accordion_icon_disabled',
+    'color.text_primary',
     'type.accordion_title', 'type.body_compact_01', 'font.family.sans',
     'feedback.focus_trigger', 'feedback.press', 'motion.duration_fast_02'
   ]),

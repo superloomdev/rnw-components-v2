@@ -171,7 +171,7 @@ export default function createPositioningBehaviors (deps) {
     for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {
       const style = window.getComputedStyle(node);
       const drawn = function (value) {
-        return value !== undefined && value !== '' && value !== 'none';
+        return Utils.isString(value) === true && value.length && value !== 'none';
       };
       if (drawn(style.transform) || drawn(style.perspective) || drawn(style.filter) || drawn(style.backdropFilter) ||
           /(paint|layout|strict|content)/.test(style.contain || '') || /(transform|perspective|filter)/.test(style.willChange || '')) {

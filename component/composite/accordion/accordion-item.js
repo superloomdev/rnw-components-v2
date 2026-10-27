@@ -173,7 +173,7 @@ export default function AccordionItem (ctx) {
         paddingEnd: Math.min(ctx.metric('AccordionItem', 'contentPaddingEnd'), Math.floor(itemWidth * ctx.metric('AccordionItem', 'contentEndRatio'))),
         paddingStart: headingPadding
       }
-    }, typeof props.children === 'string' ? React.createElement(Text, { style: ctx.textPresentation(ctx.typeStyle('body_compact_01')) }, props.children) : props.children));
+    }, typeof props.children === 'string' ? React.createElement(Text, { style: [ctx.textPresentation(ctx.typeStyle('body_compact_01')), { color: ctx.color('text_primary') }] }, props.children) : props.children));
 
     return React.createElement(View, {
       onLayout: onItemLayout,
