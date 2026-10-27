@@ -519,7 +519,15 @@ export async function enterInteraction (page, name, state, selector, interaction
       }
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     } else {
-      await target.hover();
+      // A disabled control's press layer takes no pointer events, so its
+      // face's label is the element under the pointer and actionability
+      // waits would retry until the timeout. Hover it with force: a person
+      // hovering a disabled item gets no effect, and the pointer move is all
+      // the state needs
+      const disabled = await target.evaluate(function (el) {
+        return el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('disabled');
+      });
+      await target.hover(disabled === true ? { force: true } : undefined);
     }
     if (interaction === 'pressed') {
       await page.mouse.down();
