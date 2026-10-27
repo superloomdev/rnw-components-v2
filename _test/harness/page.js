@@ -56,6 +56,21 @@ export async function openShowcase (page, template, component, options) {
   const status = await page.evaluate(function () {
     return window.__showcase;
   });
+  // Every declared face finishes before any measurement reads text: an
+  // unloaded face paints the system fallback and corrupts the comparison
+  await page.evaluate(function () {
+    return Promise.all([...document.fonts].map(function (face) {
+      return face.load().catch(function () {});
+    })).then(function () {
+      return document.fonts.ready;
+    });
+  });
+  const loaded = await page.evaluate(function () {
+    return document.fonts.check('400 14px "IBM Plex Sans"');
+  });
+  if (loaded !== true) {
+    throw new Error('showcase ' + template + ': IBM Plex Sans 400 not loaded after document.fonts.ready - upstream text would measure a fallback');
+  }
 
   return { status: status, theme: status.theme, consoleErrors: consoleErrors, pageErrors: pageErrors };
 
@@ -81,6 +96,19 @@ export async function openReference (page, component, set, scheme) {
   await page.waitForFunction(function () {
     return window.__reference && window.__reference.ready === true;
   }, null, { timeout: 30000 });
+  await page.evaluate(function () {
+    return Promise.all([...document.fonts].map(function (face) {
+      return face.load().catch(function () {});
+    })).then(function () {
+      return document.fonts.ready;
+    });
+  });
+  const refLoaded = await page.evaluate(function () {
+    return document.fonts.check('400 14px "IBM Plex Sans"');
+  });
+  if (refLoaded !== true) {
+    throw new Error('reference ' + component + ': IBM Plex Sans 400 not loaded after document.fonts.ready - upstream text would measure a fallback');
+  }
 
   return page.evaluate(function () {
     return window.__reference;

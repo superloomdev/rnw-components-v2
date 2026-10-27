@@ -2934,6 +2934,16 @@
       "id": "crop-rect-pads-negative-origin",
       "test": "perceptual-harness.test.js",
       "why": "a crop that clamps a negative origin to zero shifts the picture; the padding test must fail when the offset is lost"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "    return document.fonts.check('400 14px \"IBM Plex Sans\"');",
+      "replace": "    return true;",
+      "testName": "the page opens await the declared fonts and fail when the reference sans is missing",
+      "runner": "node",
+      "id": "reference-fonts-unloaded",
+      "test": "harness-fonts.test.js",
+      "why": "without the loaded-face check an unloaded reference font measures the system fallback, silently shifting every upstream text reading"
     }
   ]
 }
