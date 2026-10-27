@@ -20,7 +20,20 @@ const manifest = JSON.parse(readFileSync(join(HERE, 'fixtures', 'assertion-integ
 const args = process.argv.slice(2);
 let selection;
 try {
-  selection = getFireSelection(manifest.rows, args);
+  // `--only` also takes a comma list: expand it in manifest order so the
+  // selection matches what repeated single-id runs would pick
+  const onlyAt = args.indexOf('--only');
+  if (onlyAt !== -1 && typeof args[onlyAt + 1] === 'string' && args[onlyAt + 1].indexOf(',') !== -1) {
+    const ids = args[onlyAt + 1].split(',');
+    selection = { help: false, rows: manifest.rows.filter(function (row) {
+      return ids.indexOf(row.id) !== -1;
+    }) };
+    if (selection.rows.length !== ids.length) {
+      throw new Error('unknown fire row in --only ' + args[onlyAt + 1] + '\n' + FIRE_USAGE);
+    }
+  } else {
+    selection = getFireSelection(manifest.rows, args);
+  }
 } catch (error) {
   process.stderr.write(error.message);
   process.exit(2);

@@ -138,6 +138,7 @@ export default function createMenuBehaviors (deps) {
     latestRef.current = options;
     const [position, setPosition] = React.useState(null);
     const capRef = React.useRef({ count: 0, since: 0, warned: false });
+    const lastRef = React.useRef(null);
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's size may arrive after mount
@@ -160,7 +161,6 @@ export default function createMenuBehaviors (deps) {
         }
         return;
       }
-      cap.count += 1;
       const current = latestRef.current;
       const menu = current.menuRef && current.menuRef.current;
       if (!menu) {
@@ -212,6 +212,14 @@ export default function createMenuBehaviors (deps) {
           actionButtonWidth: actionButtonWidth,
           fit: current.fit
         });
+        // Only a changed answer can re-render, so only a changed answer can
+        // loop: the budget spends on those, never on a re-measure that lands
+        // on the same spot
+        const last = lastRef.current;
+        if (last === null || last.left !== next.left || last.top !== next.top) {
+          cap.count += 1;
+          lastRef.current = next;
+        }
         setPosition(function (previous) {
           return previous !== null && previous.left === next.left && previous.top === next.top ? previous : next;
         });

@@ -142,6 +142,47 @@ test('useAnchoredPosition: a never-settling anchor stops after 8 measures and wa
 
 });
 
+test('an unchanged answer never spends the budget', async function () {
+
+  // The cap counts answers that change, not calls: twenty unchanged
+  // re-measures must not exhaust it, so a moved anchor still updates after
+  let top = 10;
+  const anchor = { reads: 0 };
+  anchor.getBoundingClientRect = function () {
+    anchor.reads += 1;
+    return { left: 10, top: top, right: 50, bottom: top + 40, width: 40, height: 40 };
+  };
+  const anchorRef = { current: anchor };
+  let anchored;
+  function Probe () {
+    anchored = behaviors.useAnchoredPosition({
+      anchor: anchorRef,
+      placement: 'bottom',
+      source: ANCHOR_SOURCE,
+      track: false
+    });
+    return null;
+  }
+
+  await render(React.createElement(Probe));
+  await act(async function () {
+    for (let i = 0; i < 20; i += 1) {
+      anchored.measure();
+    }
+  });
+  top = 500;
+  await act(async function () {
+    anchored.measure();
+  });
+  assert(anchored.position !== null && anchored.position.top === 548,
+    'a changed anchor must still write after 20 unchanged measures, got ' + JSON.stringify(anchored.position));
+  const hits = warnings.filter(function (message) {
+    return message.indexOf('useAnchoredPosition:') === 0;
+  });
+  assert.strictEqual(hits.length, 0, 'expected no useAnchoredPosition warning, got ' + hits.length);
+
+});
+
 test('a new open cycle measures again after the cap', async function () {
 
   const anchor = anchorStub();

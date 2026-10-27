@@ -22,7 +22,7 @@
       "replace": "const LIMIT = Infinity;",
       "runner": "node",
       "test": "update-loop-harness.test.js",
-      "testName": "an unconditional setState-in-effect loop fails render() as an update loop",
+      "testName": "an unconditional setState-in-effect loop fails render",
       "why": "a commit ceiling that cannot trip must fail the update loop assertion"
     },
     {

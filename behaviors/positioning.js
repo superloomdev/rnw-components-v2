@@ -186,6 +186,9 @@ export default function createPositioningBehaviors (deps) {
 
   function samePlacement (a, b) {
 
+    if (a === null || a === undefined || b === null || b === undefined) {
+      return a === b;
+    }
     return samePoint(a.position, b.position) &&
       a.actualPlacement === b.actualPlacement &&
       sameShift(a.shift, b.shift) &&
@@ -206,6 +209,7 @@ export default function createPositioningBehaviors (deps) {
       anchor: null
     });
     const capRef = React.useRef({ count: 0, since: 0, warned: false });
+    const lastRef = React.useRef(null);
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's origin and size may arrive after mount
@@ -229,7 +233,6 @@ export default function createPositioningBehaviors (deps) {
         }
         return;
       }
-      cap.count += 1;
 
       const anchor = resolveAnchor(options.anchor);
       if (!anchor) {
@@ -257,6 +260,12 @@ export default function createPositioningBehaviors (deps) {
           shift: computed.shift,
           anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
         };
+        // The budget spends on changed answers only: an identical measure
+        // cannot re-render, so it cannot be the loop
+        if (!samePlacement(lastRef.current, next)) {
+          cap.count += 1;
+          lastRef.current = next;
+        }
         setState(function (previous) {
           return samePlacement(previous, next) ? previous : next;
         });
@@ -298,6 +307,10 @@ export default function createPositioningBehaviors (deps) {
             shift: computed.shift,
             anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
           };
+          if (!samePlacement(lastRef.current, next)) {
+            cap.count += 1;
+            lastRef.current = next;
+          }
           setState(function (previous) {
             return samePlacement(previous, next) ? previous : next;
           });
