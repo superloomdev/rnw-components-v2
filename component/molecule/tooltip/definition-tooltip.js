@@ -75,8 +75,11 @@ export default function DefinitionTooltip (ctx) {
       },
       testID: props.testID
     },
+    // Upstream styles the term font-family: inherit / font-size: 100%,
+    // which resolves to the ambient 16px body type - body02 in the
+    // contract - so the term reads that cell
     React.createElement(Text, {
-      style: [ctx.typeStyle('body01'), { color: ctx.color('text_primary') }]
+      style: [ctx.typeStyle('body02'), { color: ctx.color('text_primary') }]
     }, props.children));
 
     // The bubble: a Popover on the inverse cells carrying the definition,

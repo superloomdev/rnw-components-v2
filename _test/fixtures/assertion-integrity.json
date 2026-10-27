@@ -2924,6 +2924,16 @@
       "runner": "node",
       "test": "tab-panel.test.js",
       "why": "a bare string child inside the View must fail the text-element assertion"
+    },
+    {
+      "file": "_test/harness/perceptual.js",
+      "find": "  const dx = Math.max(0, -cx);\n  const dy = Math.max(0, -cy);",
+      "replace": "  const dx = 0;\n  const dy = 0;",
+      "testName": "cropRect pads a rectangle starting outside the source instead of shifting it",
+      "runner": "node",
+      "id": "crop-rect-pads-negative-origin",
+      "test": "perceptual-harness.test.js",
+      "why": "a crop that clamps a negative origin to zero shifts the picture; the padding test must fail when the offset is lost"
     }
   ]
 }
