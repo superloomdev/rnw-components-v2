@@ -3124,6 +3124,26 @@
       "test": "icon-switch-press-target.test.js",
       "testName": "the icon segment press layer carries the target floor on both axes",
       "why": "the icon segment layer must cover the face on both axes"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "svg path, svg circle, svg rect",
+      "replace": "svg path",
+      "runner": "node",
+      "id": "structural-signature-svg-ink",
+      "test": "structural-signature-svg-ink.test.js",
+      "testName": "the paint signature includes svg fill and stroke",
+      "why": "an icon-only control's disabled state differs only in its svg ink"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "node.scrollIntoView({ block: 'center', inline: 'center' });",
+      "replace": "",
+      "runner": "pw",
+      "id": "contrast-backdrop-offscreen",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "an off-screen run reads the page body, not its backdrop"
     }
   ]
 }

@@ -313,7 +313,8 @@ for (const template of TEMPLATE_NAMES) {
             exception.seen = exception.seen || run.ratio < minimum;
             continue;
           }
-          expect(run.ratio, id + ' contrast ' + run.ratio + ':1 (' + run.color + ') below ' + minimum + ':1').toBeGreaterThanOrEqual(minimum);
+          const detail = ' rect=' + Math.round(run.rect.x * 10) / 10 + ',' + Math.round(run.rect.y * 10) / 10 + ' @' + run.point.x + ',' + run.point.y + ' stack=[' + (run.stack || []).join(' | ') + ']';
+          expect(run.ratio, id + ' contrast ' + run.ratio + ':1 (' + run.color + ') below ' + minimum + ':1' + detail).toBeGreaterThanOrEqual(minimum);
         }
         // A listed exception that no longer reproduces is stale
         for (const entry of exempt) {

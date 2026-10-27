@@ -1176,14 +1176,20 @@ export async function readTextContrast (page, disabledCells) {
       // The run's true backdrop: the paint stack under its centre, not its
       // ancestors - a state layer (the selected slab, a press layer) draws
       // as an absolutely positioned sibling, not an ancestor
-      const centre = function () {
-        const r = node.getBoundingClientRect();
-        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
-      };
+      let r0 = node.getBoundingClientRect();
+      let point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
+      // elementsFromPoint only hit-tests visible coordinates: a run below
+      // the fold reads the page's `body`, not its backdrop
+      if (point.x < 0 || point.x >= window.innerWidth || point.y < 0 || point.y >= window.innerHeight) {
+        node.scrollIntoView({ block: 'center', inline: 'center' });
+        r0 = node.getBoundingClientRect();
+        point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
+      }
+      point = { x: Math.round(point.x * 10) / 10, y: Math.round(point.y * 10) / 10 };
       let stack = [];
+      let stackEls = [];
       if (typeof document.elementsFromPoint === 'function') {
-        const c = centre();
-        stack = document.elementsFromPoint(c.x, c.y).filter(function (el) {
+        stack = document.elementsFromPoint(point.x, point.y).filter(function (el) {
           return el !== node && el !== body && !node.contains(el) && !undrawn(el, body) && body.contains(el);
         });
       }
@@ -1194,6 +1200,7 @@ export async function readTextContrast (page, disabledCells) {
         const fill = parse(getComputedStyle(el).backgroundColor);
         if (fill !== null && fill.a > 0) {
           layers.push(fill);
+          stackEls.push(el.tagName.toLowerCase() + (el.getAttribute('role') ? '[role=' + el.getAttribute('role') + ']' : '') + '=' + getComputedStyle(el).backgroundColor);
           if (fill.a === 1) { break; }
         }
       }
@@ -1201,7 +1208,7 @@ export async function readTextContrast (page, disabledCells) {
       for (let i = layers.length - 1; i >= 0; i--) {
         color = over(layers[i], color);
       }
-      return color;
+      return { color: color, point: point, stack: stackEls.slice(0, 4) };
     };
     const rows = [];
     for (const cell of document.querySelectorAll('.cell')) {
@@ -1219,8 +1226,13 @@ export async function readTextContrast (page, disabledCells) {
         const own = Array.from(node.childNodes).some(function (child) {
           return child.nodeType === 3 && child.textContent.trim() !== '';
         });
+        // A text run with no box paints nothing: a zero-size sizer or a
+        // detached node must not read a backdrop
         if (own) {
-          runs.push({ node: node, text: node.textContent.trim(), kind: 'text' });
+          const r = node.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) {
+            runs.push({ node: node, text: node.textContent.trim(), kind: 'text' });
+          }
         }
         if (node.tagName === 'INPUT') {
           if (node.value) {
@@ -1233,7 +1245,8 @@ export async function readTextContrast (page, disabledCells) {
       for (const run of runs) {
         const style = getComputedStyle(run.node, run.kind === 'placeholder' ? '::placeholder' : null);
         const raw = parse(style.color);
-        const fill = backdrop(run.node, body);
+        const back = backdrop(run.node, body);
+        const fill = back.color;
         const opacity = parseFloat(getComputedStyle(run.node).opacity);
         const text = over({ r: raw.r, g: raw.g, b: raw.b, a: raw.a * opacity }, fill);
         const l1 = luminance(text);
@@ -1243,6 +1256,9 @@ export async function readTextContrast (page, disabledCells) {
           state: cell.getAttribute('data-state'),
           kind: run.kind,
           text: run.text.slice(0, 40),
+          rect: (function () { const r = run.node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })(),
+          point: back.point,
+          stack: back.stack,
           color: style.color,
           fontSize: parseFloat(style.fontSize),
           fontWeight: parseInt(style.fontWeight, 10),
@@ -1321,11 +1337,19 @@ export async function readControlPaint (page) {
       for (let node = paintedFace; node !== null && node !== body; node = node.parentElement) {
         opacity *= parseFloat(getComputedStyle(node).opacity);
       }
+      // The control's drawn ink: every svg child's fill or stroke that is
+      // not none/transparent (an icon-only control's only painted part)
+      const inkScope = control.parentElement || textScope || body;
+      const ink = Array.from(inkScope.querySelectorAll('svg path, svg circle, svg rect')).map(function (el) {
+        const is = getComputedStyle(el);
+        return (is.fill !== 'none' && is.fill !== 'rgba(0, 0, 0, 0)' ? is.fill : null) ||
+          (is.stroke !== 'none' && is.stroke !== 'rgba(0, 0, 0, 0)' ? is.stroke : null);
+      }).filter(function (c) { return c !== null && c !== undefined; }).join(',') || 'none';
       out.push({
         component: cell.getAttribute('data-component'),
         state: cell.getAttribute('data-state'),
         disabled: flagged !== null && flagged !== body && body.contains(flagged),
-        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity
+        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity + ' | ink ' + ink
       });
     }
     return out;
