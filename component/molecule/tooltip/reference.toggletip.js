@@ -25,5 +25,21 @@ export default Object.freeze({
                 : React.createElement(upstream.Button, { key: i, size: 'sm' }, action.label);
             })))));
   },
-  parts: Object.freeze({})
+  // The opened states mount closed and re-open by the trigger: the seeded
+  // open is dropped so both pages open the bubble on the same click
+  reopen: Object.freeze({
+    states: Object.freeze(['open', 'with-actions', 'bottom']),
+    when: Object.freeze({ upstream: '.cds--toggletip-content', ours: '[id^="sl-toggletip"]' }),
+    upstream: '.cds--toggletip-button',
+    ours: '[aria-controls^="sl-toggletip"]'
+  }),
+  // The element a person hovers, presses and focuses: the info button
+  target: Object.freeze({ upstream: '.cds--toggletip-button', ours: '[aria-controls^="sl-toggletip"]' }),
+  parts: Object.freeze({
+    label: Object.freeze({ upstream: '.cds--toggletip-label', ours: 'div[dir="auto"]:first-of-type', measure: 'text' }),
+    button: Object.freeze({ upstream: '.cds--toggletip-button', ours: '[aria-controls^="sl-toggletip"]', measure: 'box' }),
+    // The bubble is optional: `default` mounts closed. Its x/y are left out
+    // because upstream's is a document-level portal
+    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[id^="sl-toggletip"]', measure: 'box', optional: true, compare: ['width', 'height', 'backgroundColor'] })
+  })
 });
