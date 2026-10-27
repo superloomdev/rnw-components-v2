@@ -3,7 +3,9 @@
 // container - its measured form is the panel row inside OverflowMenu's
 // opened states.
 
-export const FRAME = Object.freeze({ width: 160, height: 40 });
+// The option face is 48 at the compact form class (control.target_min);
+// the frame must hold it the way a group's own frame does
+export const FRAME = Object.freeze({ width: 160, height: 48 });
 
 export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ label: 'Edit' }) })

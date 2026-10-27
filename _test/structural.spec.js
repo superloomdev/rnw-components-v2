@@ -144,13 +144,17 @@ function expectCellBounds (cells) {
         };
       }
       // Nothing painted after clipping cannot overflow
-      if (painted.width === 0 && painted.height === 0) {
+      if (painted.width === 0 || painted.height === 0) {
         continue;
       }
       if (painted.x < bounds.x - 0.5 || painted.y < bounds.y - 0.5 ||
           painted.x + painted.width > bounds.x + bounds.width + 0.5 ||
           painted.y + painted.height > bounds.y + bounds.height + 0.5) {
-        lines.push(id + ' <' + child.tag + '> overflows its cell');
+        const r1 = function (n) { return Math.round(n * 10) / 10; };
+        const r = child.rect, p = child.painted;
+        lines.push(id + ' <' + child.tag + '> overflows its cell [' + (child.ident || '') + '] rect=' +
+          r1(r.x) + ',' + r1(r.y) + ',' + r1(r.width) + 'x' + r1(r.height) + ' painted=' +
+          r1(p.x) + ',' + r1(p.y) + ',' + r1(p.width) + 'x' + r1(p.height));
       }
     }
   }

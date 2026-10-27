@@ -872,15 +872,21 @@ export async function readCells (page) {
       // line box taller than its tag)
       const paintedRect = function (node) {
         let r = node.getBoundingClientRect();
+        const CLIPS = ['hidden', 'clip', 'auto', 'scroll'];
         for (let current = node.parentElement; current !== null && current !== body.parentElement; current = current.parentElement) {
-          const overflow = getComputedStyle(current).overflow;
-          if (overflow !== 'visible') {
-            const bounds = current.getBoundingClientRect();
+          const style = getComputedStyle(current);
+          const bounds = current.getBoundingClientRect();
+          // Clip each axis only where that axis actually clips; a scroll
+          // viewport's painted box is its own
+          if (CLIPS.indexOf(style.overflowX) !== -1) {
             const x = Math.max(r.x, bounds.x);
-            const y = Math.max(r.y, bounds.y);
             const right = Math.min(r.x + r.width, bounds.x + bounds.width);
+            r = { x: x, y: r.y, width: Math.max(0, right - x), height: r.height };
+          }
+          if (CLIPS.indexOf(style.overflowY) !== -1) {
+            const y = Math.max(r.y, bounds.y);
             const bottom = Math.min(r.y + r.height, bounds.y + bounds.height);
-            r = { x: x, y: y, width: Math.max(0, right - x), height: Math.max(0, bottom - y) };
+            r = { x: r.x, y: y, width: r.width, height: Math.max(0, bottom - y) };
           }
         }
         return r;
@@ -905,12 +911,26 @@ export async function readCells (page) {
         }
         return false;
       };
+      const identOf = function (node) {
+        const bits = [node.tagName.toLowerCase()];
+        if (node.getAttribute('role')) { bits.push('role=' + node.getAttribute('role')); }
+        const part = node.getAttribute('data-part') || node.getAttribute('data-testid');
+        if (part) { bits.push('data-part=' + part); }
+        const aria = node.getAttribute('aria-label') || node.getAttribute('aria-labelledby');
+        if (aria) { bits.push('aria=' + String(aria).slice(0, 24)); }
+        let depth = 0;
+        for (let p = node.parentElement; p !== null && p !== body.parentElement; p = p.parentElement) { depth += 1; }
+        bits.push('depth=' + depth);
+        bits.push('parent=' + (node.parentElement ? node.parentElement.tagName.toLowerCase() + (node.parentElement.getAttribute('role') ? '[role=' + node.parentElement.getAttribute('role') + ']' : '') : 'none'));
+        return bits.join(' ');
+      };
       const children = Array.from(body.querySelectorAll('*')).map(function (node) {
         const r = node.getBoundingClientRect();
         const style = getComputedStyle(node);
         const overlay = overlayOf(node);
         const overlayRect = overlay === null ? null : overlay.getBoundingClientRect();
         return {
+          ident: identOf(node),
           hidden: isHidden(node),
           undrawn: isUndrawn(node),
           tag: node.tagName.toLowerCase(),

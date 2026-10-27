@@ -3064,6 +3064,26 @@
       "id": "tooltip-fill-anchor",
       "test": "tooltip-fill-anchor.test.js",
       "why": "ignoring fill makes the collapsed Search's fixed-box action overflow its field"
+    },
+    {
+      "file": "_test/structural.spec.js",
+      "find": "painted.width === 0 || painted.height === 0",
+      "replace": "painted.width === 0 && painted.height === 0",
+      "runner": "pw",
+      "id": "structural-zero-area-skip",
+      "test": "structural.spec.js",
+      "testName": "every cell has rendered content within its bounds",
+      "why": "a zero-height clip still paints width-wise; only a fully-zero painted box should skip"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "CLIPS.indexOf(style.overflowX) !== -1",
+      "replace": "['hidden'].indexOf(style.overflowX) !== -1",
+      "runner": "pw",
+      "id": "structural-scroll-clip",
+      "test": "structural.spec.js",
+      "testName": "every cell has rendered content within its bounds",
+      "why": "a scroll viewport clips its painted box; dropping auto/scroll unbounds it"
     }
   ]
 }

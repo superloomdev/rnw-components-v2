@@ -90,7 +90,7 @@ export default function TabListVertical (ctx) {
       role: 'tablist',
       accessibilityLabel: props.accessibilityLabel,
       testID: props.testID,
-      style: { borderRightColor: ctx.color('tab_vertical_divider'), borderRightWidth: 1, flexDirection: 'column' }
+      style: { borderRightColor: ctx.color('tab_vertical_divider'), borderRightWidth: 1, flexDirection: 'column', minHeight: 0, overflow: 'hidden' }
     }),
     items.map(function (item, index) {
       return React.createElement(VerticalTab, {
