@@ -212,6 +212,10 @@ test.describe('measure: reference coverage', function () {
         return entry.name === name;
       });
       for (const state of component.sample) {
+        // A `none` reference mounts nothing by construction
+        if (component.reference.kind === 'none') {
+          continue;
+        }
         expect(component.reference.mount(React, {}, state.props), name + ' / ' + state.label + ': no primary twin but the primary mount drew something').toBeNull();
       }
     }
