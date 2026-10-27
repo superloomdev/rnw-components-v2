@@ -2944,6 +2944,16 @@
       "id": "reference-fonts-unloaded",
       "test": "harness-fonts.test.js",
       "why": "without the loaded-face check an unloaded reference font measures the system fallback, silently shifting every upstream text reading"
+    },
+    {
+      "file": "component/molecule/copy/copy-button.js",
+      "find": "align: props.align === undefined ? 'bottom' : props.align,",
+      "replace": "align: props.align,",
+      "testName": "CopyButton's tooltip reads the upstream align default",
+      "runner": "node",
+      "id": "copy-button-align-default",
+      "test": "copy-button-default-align.test.js",
+      "why": "upstream's CopyButton defaults align to 'bottom'; dropping the fallback puts the tooltip above the button"
     }
   ]
 }

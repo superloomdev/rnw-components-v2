@@ -6,7 +6,7 @@ export default Object.freeze({
     iconDescription: { type: 'string', required: true, description: 'The tooltip text at rest; it is also the button\'s accessible name.' },
     feedback: { type: 'string', required: false, description: 'The tooltip text while the copy feedback shows. Default `Copied!`.' },
     feedbackTimeout: { type: 'number', required: false, description: 'Milliseconds the feedback text stays. Default 2000.' },
-    align: { type: 'string', required: false, description: 'The tooltip\'s side and alignment (the Tooltip `align` vocabulary). Default `top`.' },
+    align: { type: 'string', required: false, description: 'The tooltip\'s side and alignment (the Tooltip `align` vocabulary). Default `bottom`.' },
     size: { type: 'string', required: false, description: 'The button\'s size: `sm`, `md`, `lg`. Default `md`.' },
     onClick: { type: 'function', required: true, description: 'Called once per press; the host does the clipboard write.' }
   }),

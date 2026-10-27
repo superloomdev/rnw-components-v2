@@ -16,8 +16,7 @@ CopyButton factory.
 export default function CopyButton (ctx) {
 
   const React = ctx.React;
-  const { Pressable } = ctx.ReactNative;
-  const { useTimedFlag, useInteractionState } = ctx.behaviors;
+  const { useTimedFlag } = ctx.behaviors;
 
 
   /********************************************************************
@@ -31,39 +30,31 @@ export default function CopyButton (ctx) {
 
     const timeout = props.feedbackTimeout || 2000;
     const feedback = useTimedFlag({ duration: timeout });
-    const interaction = useInteractionState({ disabled: props.disabled === true });
-
-    const sizeName = props.size === 'sm' ? 'sizeSmall' : props.size === 'lg' ? 'sizeLarge' : 'sizeMedium';
-    const size = ctx.metric('CopyButton', sizeName);
     const active = feedback.state.active === true;
+    // The label and leave delay follow the feedback timer the way the
+    // upstream CopyButton's does: `feedback` while it shows,
+    // `iconDescription` at rest
     const label = active ? (props.feedback || 'Copied!') : props.iconDescription;
-    const state = interaction.state;
 
-    return React.createElement(ctx.Registry.Tooltip, {
-      align: props.align,
-      compact: true,
-      label: label
-    }, React.createElement(Pressable, {
+    return React.createElement(ctx.Registry.IconButton, {
       accessibilityLabel: props.iconDescription,
-      accessibilityRole: 'button',
+      align: props.align === undefined ? 'bottom' : props.align,
+      disabled: props.disabled === true,
+      fillLeaf: 'copy_button_container',
+      fillHoverLeaf: 'copy_button_container_hover',
+      fillActiveLeaf: 'copy_button_container_active',
+      icon: 'copy',
+      kind: 'ghost',
+      label: label,
+      leaveDelayMs: active === true ? timeout : undefined,
       onPress: function () {
         feedback.activate();
         props.onClick();
       },
-      onPressIn: interaction.rootProps.onPressIn,
-      onPressOut: interaction.rootProps.onPressOut,
-      onHoverIn: interaction.rootProps.onHoverIn,
-      onHoverOut: interaction.rootProps.onHoverOut,
-      onFocus: interaction.rootProps.onFocus,
-      onBlur: interaction.rootProps.onBlur,
-      style: {
-        alignItems: 'center',
-        backgroundColor: state.pressed === true ? ctx.color('copy_button_container_active') : state.hovered === true ? ctx.color('copy_button_container_hover') : ctx.color('copy_button_container'),
-        height: size,
-        justifyContent: 'center',
-        width: size
-      }
-    }, React.createElement(ctx.Registry.Icon, { color: 'icon_primary', name: 'copy', size: 16 })));
+      size: props.size === undefined ? 'md' : props.size,
+      testID: props.testID
+    });
+
   }
 
   CopyButtonComponent.displayName = 'CopyButton';

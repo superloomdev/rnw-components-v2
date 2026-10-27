@@ -46,7 +46,7 @@ export default function IconButton (ctx) {
   function IconButtonComponent (props) {
 
     // Init the behavior and its state; the label is the accessible name
-    const button = useButton(Object.assign({}, props, { accessibilityLabel: props.label }));
+    const button = useButton(Object.assign({}, props, { accessibilityLabel: props.accessibilityLabel !== undefined ? props.accessibilityLabel : props.label }));
     const state = button.state;
 
     // Init the kind, the square's side and the icon color's leaf
@@ -165,7 +165,8 @@ export default function IconButton (ctx) {
     return React.createElement(ctx.Registry.Tooltip, {
       align: props.align,
       compact: true,
-      label: props.label
+      label: props.label,
+      leaveDelayMs: props.leaveDelayMs
     }, element);
 
   }
