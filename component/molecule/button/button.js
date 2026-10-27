@@ -49,6 +49,7 @@ export default function Button (ctx) {
   @return {Object} - React element
   *********************************************************************/
   function ButtonComponent (props) {
+    const [faceSize, onFaceLayout] = props.pressFloor === true ? ctx.useFaceSize() : [null, undefined];
 
     // Init the behavior and its state
     const button = useButton(props);
@@ -129,9 +130,13 @@ export default function Button (ctx) {
     iconPlace.transitionTimingFunction = 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')';
     const icon = hasIcon ? React.createElement(View, { style: iconPlace },
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
+    // A transparent hit expander reaches the form-class floor while the
+    // face keeps its size; a press on it bubbles to the Pressable
+    const hit = props.pressFloor === true ? React.createElement(View, { 'aria-hidden': true, dataSet: { part: 'hit' }, style: ctx.pressTarget(faceSize) }) : null;
 
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      onLayout: onFaceLayout,
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : button.rootProps.accessibilityLabel,
       onMouseDown: props.onMouseDown,
       testID: props.testID,
@@ -184,6 +189,7 @@ export default function Button (ctx) {
         ring
       ]
     }),
+    hit,
     // The state layer covers the border too, as a container fill does
     React.createElement(View, {
       style: [{ borderRadius: radius, bottom: -borderWidth, left: -borderWidth, position: 'absolute', right: -borderWidth, top: -borderWidth }, press.layer]

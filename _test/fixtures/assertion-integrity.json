@@ -3154,6 +3154,26 @@
       "test": "structural-signature-press-face.test.js",
       "testName": "a press-layer control reads its painted face sibling",
       "why": "a transparent press layer reads the same paint as enabled when the face is skipped"
+    },
+    {
+      "file": "component/molecule/button/button.js",
+      "find": "dataSet: { part: 'hit' }, style: ctx.pressTarget(faceSize)",
+      "replace": "dataSet: { part: 'hit' }, style: {}",
+      "runner": "node",
+      "id": "button-press-floor",
+      "test": "button-press-floor.test.js",
+      "testName": "a pressFloor button renders a transparent hit expander at the target floor",
+      "why": "the hit expander carries the press floor; without it a compact button is undersized"
+    },
+    {
+      "file": "_test/harness/page.js",
+      "find": "hitEl === null",
+      "replace": "hitEl !== null",
+      "runner": "node",
+      "id": "structural-target-hit-expander",
+      "test": "structural-target-hit-expander.test.js",
+      "testName": "a target unions its hit expander",
+      "why": "ignoring the hit expander under-measures the effective press area"
     }
   ]
 }

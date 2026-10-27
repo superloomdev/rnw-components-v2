@@ -128,6 +128,7 @@ export default function MenuButton (ctx) {
       children: props.label,
       disabled: props.disabled === true,
       icon: 'chevron_down',
+      pressFloor: true,
       iconRotation: open ? 180 : 0,
       kind: kind,
       minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth'),

@@ -939,7 +939,7 @@ export async function readCells (page) {
           overlay: overlay !== null,
           contained: overlay !== null && hasStage(overlay),
           layerCovers: overlay !== null && overlayRect.width >= window.innerWidth && overlayRect.height >= window.innerHeight,
-          rect: { x: r.x, y: r.y, width: r.width, height: r.height },
+          rect: (function () { const hitEl = node.querySelector('[data-part="hit"]'); if (hitEl === null) { return { x: r.x, y: r.y, width: r.width, height: r.height }; } const hr = hitEl.getBoundingClientRect(); return { x: Math.min(r.x, hr.x), y: Math.min(r.y, hr.y), width: Math.max(r.x + r.width, hr.x + hr.width) - Math.min(r.x, hr.x), height: Math.max(r.y + r.height, hr.y + hr.height) - Math.min(r.y, hr.y) }; })(),
           painted: paintedRect(node),
           text: node.children.length === 0 ? (node.textContent || '').trim() : '',
           overflow: style.overflow,
