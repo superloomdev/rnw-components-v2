@@ -632,7 +632,6 @@ function cellsCheck (mount, result) {
     }
     const carbon = built.carbon[entry.cell];
     const fallback = built['default'][entry.cell];
-    const material = built.material[entry.cell];
     let mark;
     let upstream;
     if (reading === undefined || reading === null || reading.missing === true) {
@@ -659,7 +658,7 @@ function cellsCheck (mount, result) {
     counts[mark] = counts[mark] + 1;
     const label = entry.part + (index === undefined ? '' : '[' + index + ']') + '.' + entry.prop;
     lines.push(mark + '  ' + label + '  ' + state + '/' + interaction + '  ' + entry.cell +
-      '  upstream=' + upstream + '  carbon=' + display(carbon) + '  default=' + display(fallback) + '  material=' + display(material) +
+      '  upstream=' + upstream + '  carbon=' + display(carbon) + '  default=' + display(fallback) +
       (display(fallback) !== display(carbon) ? '  default!=carbon' : ''));
   }
   lines.push('MATCH ' + counts.MATCH + '  MISMATCH ' + counts.MISMATCH + '  READ ' + counts.READ + '  ABSENT ' + counts.ABSENT);
@@ -681,14 +680,12 @@ function contractCheck (names) {
   const built = {
     carbon: buildNative('carbon').tokens,
     default: buildNative('default').tokens,
-    material: buildNative('material').tokens
   };
   for (const name of names) {
     const carbon = built.carbon[name];
     const fallback = built['default'][name];
-    const material = built.material[name];
-    const ok = carbon !== undefined && carbon !== null && fallback !== undefined && fallback !== null && material !== undefined && material !== null;
-    process.stdout.write((ok ? 'OK' : 'MISSING') + ' ' + name + '  carbon=' + display(carbon) + '  default=' + display(fallback) + '  material=' + display(material) + '\n');
+    const ok = carbon !== undefined && carbon !== null && fallback !== undefined && fallback !== null;
+    process.stdout.write((ok ? 'OK' : 'MISSING') + ' ' + name + '  carbon=' + display(carbon) + '  default=' + display(fallback) + '\n');
   }
 
 }

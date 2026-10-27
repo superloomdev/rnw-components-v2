@@ -370,9 +370,7 @@ test.describe('structural: adaptive passes', function () {
       // The counterpart: at the compact width the auto build must differ
       // where the template carries form variants - otherwise the harness is
       // not applying the class at all
-      if (template !== 'material') {
-        expect(auto.theme, template + ': the compact build moves tokens off the expanded map').not.toEqual(expanded.theme);
-      }
+      expect(auto.theme, template + ': the compact build moves tokens off the expanded map').not.toEqual(expanded.theme);
     }
     await page.close();
   });

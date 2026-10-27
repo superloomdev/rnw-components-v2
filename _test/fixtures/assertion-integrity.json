@@ -312,7 +312,7 @@
       "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
       "runner": "node",
       "test": "text-input.test.js",
-      "testName": "material / unlabelled: frame, label, input and message come from the theme",
+      "testName": "carbon / unlabelled: frame, label, input and message come from the theme",
       "why": "an unlabelled field must show its placeholder under every label placement"
     },
     {
@@ -422,7 +422,7 @@
       "replace": "    const labelColor = color('field_label');",
       "runner": "node",
       "test": "text-input.test.js",
-      "testName": "material / invalid: frame, label, input and message come from the theme",
+      "testName": "carbon / invalid: frame, label, input and message come from the theme",
       "why": "a field label must read its cell for the state"
     },
     {
@@ -432,7 +432,7 @@
       "replace": "      Object.assign(frame, { borderWidth: width, paddingEnd: paddingEnd, paddingStart: paddingInline });",
       "runner": "node",
       "test": "select.test.js",
-      "testName": "material / default: frame, label, trigger, caret and message come from the theme",
+      "testName": "carbon / default: frame, label, trigger, caret and message come from the theme",
       "why": "an outline frame keeps its borders inside the inline padding so the text starts where the padding says"
     },
     {
@@ -1052,7 +1052,7 @@
       "replace": "    const icon = props.icon;",
       "runner": "node",
       "test": "selectable-tag.test.js",
-      "testName": "material / selected: the selectable cells, the outline and the mark",
+      "testName": "carbon / selected: the selectable cells, the outline and the mark",
       "why": "the selected mark shows only where the theme's mark anatomy says so"
     },
     {
@@ -1552,7 +1552,7 @@
       "replace": "          gap: 0,",
       "runner": "node",
       "test": "time-picker.test.js",
-      "testName": "material / default: label, row and message at the theme metrics",
+      "testName": "carbon / default: label, row and message at the theme metrics",
       "why": "the row spaces its members by the theme's select gap"
     },
     {
@@ -2362,7 +2362,7 @@
       "replace": "ctx.metric('FloatingActionButton', 'extendedPadding')",
       "runner": "node",
       "test": "floating-action-button.test.js",
-      "testName": "material / extended: exact geometry, paint and type from the theme",
+      "testName": "carbon / extended: exact geometry, paint and type from the theme",
       "why": "the extended form's end padding differs from its start padding"
     },
     {
@@ -2372,7 +2372,7 @@
       "replace": "'shadow.fab'",
       "runner": "node",
       "test": "floating-action-button.test.js",
-      "testName": "material: hover lifts the elevation to the hover shadow, a press reports onPress once",
+      "testName": "carbon: hover lifts the elevation to the hover shadow, a press reports onPress once",
       "why": "hover lifts the button to the hover shadow"
     },
     {
@@ -2763,7 +2763,7 @@
       "runner": "node",
       "id": "overflow-menu-connector-ignores-anatomy",
       "test": "overflow-menu.test.js",
-      "why": "a connector painted regardless of the anatomy enum must fail the material hidden assertion"
+      "why": "a connector painted regardless of the anatomy enum must fail the lessons-layer hidden assertion"
     },
     {
       "file": "component/composite/menu/overflow-menu-item.js",
