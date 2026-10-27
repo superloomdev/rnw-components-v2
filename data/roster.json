@@ -2597,14 +2597,15 @@
       ],
       "parent": "Toggletip",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipActions",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
       "status": "built"
     },

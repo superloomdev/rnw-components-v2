@@ -147,10 +147,10 @@ ToggletipActions lays out a Toggletip's link and button at the bubble's base; it
 |---|---|
 | Tier | `molecule` |
 | Platform | `both` |
-| Reference | `render-web` (`@carbon/react`) |
+| Reference | `none` (`@carbon/react`) |
 | Enums | none |
 | Behaviors | `overlay`, `anchored-position` |
-| Flags | `requires_parent` - renders only inside its parent |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
 
 ### Props
 
