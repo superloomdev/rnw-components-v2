@@ -128,7 +128,6 @@ export default function MenuItem (ctx) {
     const [faceSize, onLayout] = ctx.useFaceSize();
     const pressLayer = React.createElement(Pressable, {
       ref: ref,
-      dataSet: danger === true ? { part: 'danger' } : undefined,
       role: role,
       'aria-checked': item.selected === undefined && item.radio !== true ? undefined : item.selected === true,
       'aria-expanded': hasSub ? submenuOpen : undefined,
@@ -187,6 +186,7 @@ export default function MenuItem (ctx) {
       style: { position: 'relative' }
     },
     React.createElement(View, {
+      dataSet: danger === true ? { part: 'danger' } : undefined,
       onLayout: onLayout,
       ref: faceRef,
       style: itemStyle
