@@ -17,8 +17,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { openReference, openShowcase, pauseCellAnimations, readSampleBox } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox } from './harness/page.js';
 import { cropRect, perceptualRatio, ratio, windowFor } from './harness/perceptual.js';
+import { restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -100,8 +101,18 @@ test.describe('perceptual', function () {
       const stale = [];
       for (let i = 0; i < count; i++) {
         const cell = cells.nth(i);
-        const id = await cell.getAttribute('data-component') + ' / ' + await cell.getAttribute('data-state');
+        const state = await cell.getAttribute('data-state');
+        const id = await cell.getAttribute('data-component') + ' / ' + state;
+        // A rest-hidden sample paints nothing at rest by definition: prove
+        // it drawn under the reference's focus target instead
+        const hidden = restHiddenStates(component)[state] === true;
+        if (hidden) {
+          await enterInteraction(page, component.name, state, component.reference.target.ours, 'focus');
+        }
         const shot = await cell.locator('[data-part="body"]').screenshot({ scale: 'css' });
+        if (hidden) {
+          await leaveInteraction(page, { escape: component.reference.escapeOnLeave !== false });
+        }
         expect(ratio(shot, shot, 0.2)).toBe(0);
         const png = PNG.sync.read(shot);
         const white = new PNG({ width: png.width, height: png.height });

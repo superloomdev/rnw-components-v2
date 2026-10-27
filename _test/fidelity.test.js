@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
 
-import { compareProfiles, cropTo, maskOmitted, profileOf, samplePaint, targetInteractions } from './harness/fidelity.js';
+import { compareProfiles, cropTo, maskOmitted, profileOf, restHiddenStates, samplePaint, targetInteractions } from './harness/fidelity.js';
 
 test('additional targets use their own declared phases', function () {
   const all = ['hover', 'focus', 'pressed', 'open'];
@@ -112,4 +112,21 @@ test('a deeper focus profile still detects a wrong inner color', function () {
   const upstream = profileOf(face, PNG.sync.write(b));
   assert.equal(ours.inside.length, 5);
   assert.ok(compareProfiles(ours, upstream).some(function (line) { return line.startsWith('inside 5px:'); }));
+});
+
+
+test('a shot clipped away from the body margin still samples the measured point', function () {
+  const png = image(60, 60);
+  paint(png, 26, 13, [15, 98, 254]);
+  const state = { trigger: { _bodyX: 0, _bodyY: 0, width: 32, height: 48, visible: true } };
+  samplePaint(state, PNG.sync.write(png));
+  assert.equal(state.trigger.paint, 'rgb(255, 255, 255)', 'the unframed read lands off the part');
+  samplePaint(state, PNG.sync.write(png), undefined, { dx: 10, dy: 10 });
+  assert.equal(state.trigger.paint, 'rgb(15, 98, 254)', 'the recorded origin delta restores the measured point');
+});
+
+test('restHidden names only entries that paint nothing at rest', function () {
+  const hidden = restHiddenStates({ sample: [{ label: 'default', restHidden: true }, { label: 'open' }] });
+  assert.equal(hidden.default, true);
+  assert.equal(hidden.open, undefined);
 });

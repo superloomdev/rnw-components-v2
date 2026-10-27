@@ -60,7 +60,19 @@ border, above any centered text).
 
 @return {void}
 *********************************************************************/
-export function samplePaint (state, shot, omitted) {
+export function restHiddenStates (component) {
+
+  const hidden = {};
+  (component.sample || []).forEach(function (entry) {
+    if (entry.restHidden === true) {
+      hidden[entry.label] = true;
+    }
+  });
+  return hidden;
+
+}
+
+export function samplePaint (state, shot, omitted, frame) {
 
   if (!shot) {
     return;
@@ -83,7 +95,9 @@ export function samplePaint (state, shot, omitted) {
     })) {
       continue;
     }
-    const pixel = image.at(MARGIN + x, MARGIN + y);
+    const dx = frame === undefined || frame === null || frame.dx === undefined ? MARGIN : frame.dx;
+    const dy = frame === undefined || frame === null || frame.dy === undefined ? MARGIN : frame.dy;
+    const pixel = image.at(dx + x, dy + y);
     if (pixel !== null) {
       part.paint = 'rgb(' + pixel.r + ', ' + pixel.g + ', ' + pixel.b + ')';
     }
@@ -310,10 +324,11 @@ async function collect (page, component, reference, side, masks) {
       });
     }
     samples[key] = await readSampleBox(page, component.name, label);
-    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, true);
+    const frame = {};
+    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, true, frame);
     samplePaint(states[key], shots[key], Object.keys(masks || {}).map(function (name) {
       return states[key][name];
-    }));
+    }), frame);
     if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
       // No margin: the part's own pixels are compared, without the backdrop
       // that differs under it (a fixed layer's, a top-layered element's)
@@ -473,7 +488,13 @@ export async function runFidelity (page, component, set, scheme) {
   // Pixels: the ring and shadow profile at the anchor, and the perceptual ratio
   const perceptual = {};
   const shots = {};
+  // A rest-hidden component paints nothing at rest by definition; the
+  // budget still compares its interaction frames
+  const restHidden = restHiddenStates(component);
   for (const key of Object.keys(upstream.shots)) {
+    if (restHidden[key] === true) {
+      continue;
+    }
     if (!(upstream.shots[key] && ours.shots[key])) {
       continue;
     }

@@ -2954,6 +2954,36 @@
       "id": "menu-button-mousedown-focus",
       "test": "menu-button.test.js",
       "why": "a mousedown that takes focus must fail the preventDefault assertion"
+    },
+    {
+      "file": "component/composite/menu/menu-button.js",
+      "find": "anchored.measure();",
+      "replace": "void anchored;",
+      "testName": "open, close, move the anchor, open again: the menu follows the new anchor",
+      "runner": "node",
+      "id": "menu-reopen-stale-anchor",
+      "test": "menu-button.test.js",
+      "why": "an open transition that skips the anchor measure must fail the follow-the-anchor assertion"
+    },
+    {
+      "file": "_test/harness/fidelity.js",
+      "find": "const dx = frame === undefined || frame === null || frame.dx === undefined ? MARGIN : frame.dx;",
+      "replace": "const dx = MARGIN;",
+      "testName": "a shot clipped away from the body margin still samples the measured point",
+      "runner": "node",
+      "id": "sample-paint-frame",
+      "test": "fidelity.test.js",
+      "why": "ignoring the recorded clip delta must move the sampled pixel"
+    },
+    {
+      "file": "_test/perceptual.spec.js",
+      "find": "restHiddenStates(component)[state] === true",
+      "replace": "false",
+      "testName": "SkipToContent: the pixel pipeline discriminates: self is 0, blank is not",
+      "runner": "pw",
+      "id": "rest-hidden-ignored",
+      "test": "perceptual.spec.js",
+      "why": "ignoring the flag must leave the clipped rest cell blank"
     }
   ]
 }

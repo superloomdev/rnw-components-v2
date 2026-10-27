@@ -179,3 +179,32 @@ describe('MenuButton: the trigger press does not take focus', function () {
   });
 
 });
+
+describe('MenuButton: a re-opened menu measures the anchor at that open', function () {
+
+  test('open, close, move the anchor, open again: the menu follows the new anchor', async function () {
+    const container = await render(React.createElement(registryFor('carbon').MenuButton, {
+      items: SAMPLE[1].props.items,
+      label: 'Actions',
+      open: true
+    }));
+    const trigger = container.querySelector('button');
+    const menu = container.querySelector('[role="menu"]');
+    assert.notEqual(menu, null, 'the seeded menu mounts');
+    // Close, move the trigger, open again
+    await act(async function () {
+      menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed it');
+    trigger.getBoundingClientRect = function () {
+      return { x: 37, y: 400, width: 192, height: 48, top: 400, right: 229, bottom: 448, left: 37 };
+    };
+    await act(async function () {
+      trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    const reopened = container.querySelector('[role="menu"]');
+    assert.notEqual(reopened, null, 'the trigger re-opened it');
+    assert.equal(reopened.style.top, '448px', 'the menu positions from the anchor at this open');
+  });
+
+});

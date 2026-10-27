@@ -17,7 +17,7 @@ export default Object.freeze({
       React.useEffect(function () {
         setTarget(host.current);
       }, []);
-      return React.createElement('div', { ref: host, style: { height: 280, position: 'relative', width: 320 } },
+      return React.createElement('div', { ref: host, style: { display: 'inline-block', position: 'relative' } },
         target === null ? null : React.createElement(upstream.MenuButton, {
           disabled: props.disabled === true,
           kind: props.kind,

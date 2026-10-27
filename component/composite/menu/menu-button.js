@@ -48,6 +48,9 @@ export default function MenuButton (ctx) {
     React.useEffect(function () {
       if (props.open !== openPropRef.current) {
         openPropRef.current = props.open;
+        if (props.open === true) {
+          anchored.measure();
+        }
         setOpen(props.open === true);
       }
     }, [props.open]);
@@ -91,7 +94,7 @@ export default function MenuButton (ctx) {
       'aria-owns': open ? menuId : undefined,
       ref: containerRef,
       testID: props.testID,
-      style: { alignSelf: 'flex-start' }
+      style: { alignSelf: 'flex-start', display: 'inline-flex' }
     },
     open && anchor !== null ? React.createElement(ctx.Registry.Menu, {
       accessibilityLabel: props.accessibilityLabel,
@@ -138,6 +141,7 @@ export default function MenuButton (ctx) {
           close();
           return;
         }
+        anchored.measure();
         setOpen(true);
         if (typeof props.onOpen === 'function') {
           props.onOpen();

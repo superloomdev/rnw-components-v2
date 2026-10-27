@@ -5,5 +5,6 @@
 export const FRAME = Object.freeze({ width: 320, height: 64, stage: true });
 
 export default Object.freeze([
-  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Skip to main content', href: '#main-content' }) })
+  // A clipped one-pixel link at rest by design - drawn under focus only
+  Object.freeze({ label: 'default', props: Object.freeze({ children: 'Skip to main content', href: '#main-content' }), restHidden: true })
 ]);

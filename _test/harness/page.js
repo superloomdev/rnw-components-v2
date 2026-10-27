@@ -682,7 +682,7 @@ hidden first, so a shot carries this cell's own painting only.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell is absent
 *********************************************************************/
-export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport) {
+export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport, frame) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   if (await body.count() === 0) {
@@ -701,9 +701,16 @@ export async function shootCell (page, name, state, margin, pauseAnimations, pre
   }
   const box = await body.boundingBox();
   await hideOutsideLayers(body);
+  const clip = { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin };
+  // A clamped clip shifts the picture's origin: give the caller the real
+  // delta so the sampled pixels line up with the measured boxes
+  if (frame !== undefined && frame !== null) {
+    frame.dx = box.x - clip.x;
+    frame.dy = box.y - clip.y;
+  }
   let shot;
   try {
-    shot = await page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
+    shot = await page.screenshot({ clip: clip, animations: 'disabled', scale: 'css' });
   } finally {
     await restoreLayers(body);
   }
