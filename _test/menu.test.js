@@ -135,7 +135,7 @@ describe('Menu: every sample state under every template', function () {
 
           // The item's height, label and role
           const heights = { xs: 'size.size_xsmall', sm: 'control.menu_item_height', md: 'size.size_medium', lg: 'size.size_large' };
-          assert.equal(parts.face(item).style.height, t[heights[props.size || 'sm']] + 'px');
+          assert.equal(parts.face(item).style.minHeight, t[heights[props.size || 'sm']] + 'px');
           assert.equal(item.getAttribute('aria-disabled'), disabled ? 'true' : null);
           const role = radio ? 'menuitemradio' : entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
           assert.equal(item.getAttribute('role'), role);

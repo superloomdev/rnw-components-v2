@@ -656,7 +656,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         // The keyboard's highlight carries the control's focus ring: while
         // the list is open the field's ring moves onto the highlighted row
         const ring = state.highlighted === true ? focusRing('field', { focused: true }) : {};
-        return Object.assign({ height: options.itemHeight, justifyContent: 'stretch' }, leaf === null ? {} : { backgroundColor: color(leaf) }, ring);
+        return Object.assign({ minHeight: options.itemHeight, justifyContent: 'stretch' }, leaf === null ? {} : { backgroundColor: color(leaf) }, ring);
       },
       // The item's inner block carries the divider line at its top: the
       // caller decides it draws (the reference hides it on the first item and

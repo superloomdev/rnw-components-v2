@@ -171,7 +171,7 @@ describe('Dropdown: every sample state under every template', function () {
             const optionBlock = option.children[0];
             const mark = parts.mark(option);
             const itemSelected = item.value === props.value;
-            assert.equal(option.style.height, t[HEIGHTS[props.size || 'md']] + 'px');
+            assert.equal(option.style.minHeight, t[HEIGHTS[props.size || 'md']] + 'px');
             assert.equal(option.getAttribute('aria-selected'), String(itemSelected));
             assert.equal(option.getAttribute('aria-disabled'), item.disabled === true ? 'true' : null);
             // The divider is the inner option block's top border, inside the

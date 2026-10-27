@@ -79,7 +79,7 @@ export default function Switch (ctx) {
           borderBottomWidth: selected === true || state.focused === true || state.pressed === true ? 0 : ctx.metric('Switch', 'outlineWidth'),
           borderTopColor: live ? ctx.color(low ? 'content_switcher_low_contrast_outline' : 'content_switcher_outline') : ctx.color('content_switcher_outline_disabled'),
           borderTopWidth: selected === true || state.focused === true || state.pressed === true ? 0 : ctx.metric('Switch', 'outlineWidth'),
-          height: props.segmentHeight === undefined ? ctx.metric('Switch', 'heightMedium') : props.segmentHeight,
+          minHeight: props.segmentHeight === undefined ? ctx.metric('Switch', 'heightMedium') : props.segmentHeight,
           justifyContent: 'flex-start',
           outlineStyle: 'none',
           paddingHorizontal: padInline,

@@ -1307,14 +1307,24 @@ export async function readControlPaint (page) {
       // is the first painted descendant of the row it overlays
       const painted = function (node) {
         const s = getComputedStyle(node);
-        return s.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
-          (parseFloat(s.borderTopWidth) > 0 && s.borderTopColor !== 'rgba(0, 0, 0, 0)');
+        if (s.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+          return true;
+        }
+        // Any side's border counts: the track under a Tab's face is bottom
+        for (const side of ['Top', 'Bottom', 'Left', 'Right']) {
+          if (parseFloat(s['border' + side + 'Width']) > 0 && s['border' + side + 'Color'] !== 'rgba(0, 0, 0, 0)') {
+            return true;
+          }
+        }
+        return false;
       };
       // A press-layer control (MenuItem, Tab, Switch, AccordionItem,
       // IconSwitch) is a transparent sibling over the painted face: read
       // the face's paint from the layer's previous sibling
+      let fromLayer = false;
       if (!painted(face) && face.previousElementSibling !== null && painted(face.previousElementSibling)) {
         face = face.previousElementSibling;
+        fromLayer = true;
       }
       let paintedFace = face;
       if (!painted(face) && face.parentElement !== null) {
@@ -1326,7 +1336,7 @@ export async function readControlPaint (page) {
       const style = getComputedStyle(paintedFace);
       // The first drawn text inside the control (or its painted row for a
       // transparent interaction layer), or the control's own color
-      const textScope = paintedFace === face ? control : face.parentElement;
+      const textScope = fromLayer ? face : (paintedFace === face ? control : face.parentElement);
       const textNode = Array.from(textScope.querySelectorAll('*')).find(function (node) {
         return Array.from(node.childNodes).some(function (child) {
           return child.nodeType === 3 && child.textContent.trim() !== '';
@@ -1334,7 +1344,17 @@ export async function readControlPaint (page) {
       });
       const text = getComputedStyle(textNode || control).color;
       // A border in the fill's own color, or transparent, is not seen
-      const border = style.borderTopColor === style.backgroundColor || style.borderTopColor === 'rgba(0, 0, 0, 0)' || parseFloat(style.borderTopWidth) === 0 ? 'none' : style.borderTopColor;
+      // The first drawn border: any side whose colour differs from the
+      // fill's own (the track under a Tab's face is the bottom side)
+      let border = 'none';
+      for (const side of ['Top', 'Bottom', 'Left', 'Right']) {
+        const w = parseFloat(style['border' + side + 'Width']);
+        const c = style['border' + side + 'Color'];
+        if (w > 0 && c !== 'rgba(0, 0, 0, 0)' && c !== style.backgroundColor) {
+          border = side.toLowerCase() + ' ' + c;
+          break;
+        }
+      }
       // A cell is disabled when the measured control itself is, or an
       // ancestor of it inside the body - not when a sibling control is (a
       // mixed cell's enabled control must not read as disabled)
@@ -1345,7 +1365,7 @@ export async function readControlPaint (page) {
       }
       // The control's drawn ink: every svg child's fill or stroke that is
       // not none/transparent (an icon-only control's only painted part)
-      const inkScope = control.parentElement || textScope || body;
+      const inkScope = fromLayer ? face.parentElement : (control.parentElement || textScope || body);
       const ink = Array.from(inkScope.querySelectorAll('svg path, svg circle, svg rect')).map(function (el) {
         const is = getComputedStyle(el);
         return (is.fill !== 'none' && is.fill !== 'rgba(0, 0, 0, 0)' ? is.fill : null) ||

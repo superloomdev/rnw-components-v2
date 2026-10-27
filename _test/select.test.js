@@ -181,7 +181,7 @@ describe('Select: the list through the DOM', function () {
     assert.equal(list.style.backgroundColor, cssValue('backgroundColor', t['color.list_container']));
     const options = list.querySelectorAll('[role="option"]');
     assert.equal(options.length, ITEMS.length);
-    assert.equal(options[0].style.height, t['control.list_item_height'] + 'px');
+    assert.equal(options[0].style.minHeight, t['control.list_item_height'] + 'px');
     await act(async function () {
       options[1].click();
     });
