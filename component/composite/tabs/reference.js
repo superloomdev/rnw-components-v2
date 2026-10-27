@@ -12,7 +12,9 @@ export default Object.freeze({
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement(upstream.Tabs, {
+    // A block wrapper stacks the list over its panels, as a page does; the
+    // flex cell body would otherwise stretch the list to the panel's height
+    return React.createElement('div', null, React.createElement(upstream.Tabs, {
       selectedIndex: props.defaultSelectedIndex,
       onChange: function () {
         return undefined;
@@ -26,7 +28,7 @@ export default Object.freeze({
     // The with-panels sample draws its panels on both pages
     Array.isArray(props.panels) ? React.createElement(upstream.TabPanels, null, props.panels.map(function (text, index) {
       return React.createElement(upstream.TabPanel, { key: index }, text);
-    })) : null);
+    })) : null));
   },
   // The element a person hovers, presses and focuses: a tab's button
   target: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > [role="tab"]' }),
