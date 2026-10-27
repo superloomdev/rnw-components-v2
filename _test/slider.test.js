@@ -694,6 +694,29 @@ describe('Slider: disabled paint composition', function () {
     assert.equal(opaque.colors.track, '#e0e0e0');
   });
 
+  test('under the lessons layer the grouped pick draws one shared opacity where independent keeps per-part rgba', async function () {
+    const groupedSystem = buildSystem('carbon', factories, { built: buildNative('carbon', [LESSONS_LAYER]) });
+    const groupedBox = await render(React.createElement(groupedSystem.Slider, {
+      label: 'Volume',
+      defaultValue: 50,
+      disabled: true
+    }));
+    const groupedNode = parts(groupedBox);
+    assert.equal(Number.parseFloat(groupedNode.paintGroup.style.opacity), 0.38);
+    assert.equal(groupedNode.inactive.style.backgroundColor, 'rgba(29, 27, 32, 0.32)');
+    assert.equal(groupedNode.filled.style.backgroundColor, 'rgb(29, 27, 32)');
+    const independentSystem = buildSystem('carbon', factories, { built: buildNative('carbon', [{ name: 'enum', tokens: { 'anatomy.slider_disabled_paint': 'independent', 'color.slider_disabled': 'rgba(29, 27, 32, 0.38)', 'color.slider_track_disabled': 'rgba(29, 27, 32, 0.12)' } }]) });
+    const independentBox = await render(React.createElement(independentSystem.Slider, {
+      label: 'Volume',
+      defaultValue: 50,
+      disabled: true
+    }));
+    const independentNode = parts(independentBox);
+    assert.equal(independentNode.paintGroup.style.opacity, '1');
+    assert.equal(independentNode.inactive.style.backgroundColor, 'rgba(29, 27, 32, 0.12)');
+    assert.equal(independentNode.filled.style.backgroundColor, 'rgba(29, 27, 32, 0.38)');
+  });
+
 });
 
 

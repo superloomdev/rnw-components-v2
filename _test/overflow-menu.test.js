@@ -12,7 +12,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/menu/sample.overflow-menu.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { createRoot } from 'react-dom/client';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
@@ -21,7 +21,14 @@ const TEMPLATE_NAMES = Object.keys(TEMPLATES);
 afterEach(cleanup);
 
 function registryFor (template) {
+  if (template === 'lessons') {
+    return buildSystem('carbon', factories, { layers: [LESSONS_LAYER] });
+  }
   return buildSystem(template, factories);
+}
+
+function nativeFor (template) {
+  return buildNative(template === 'lessons' ? 'carbon' : template, template === 'lessons' ? [LESSONS_LAYER] : []);
 }
 
 async function fire (element, event) {
@@ -61,9 +68,11 @@ describe('OverflowMenu: the trigger squares off the size scale under every templ
 
 describe('OverflowMenu: the open panel', function () {
 
-  for (const template of TEMPLATE_NAMES) {
+  // 'lessons' carries the hidden-connector pin, so the row fails a plant
+  // that draws the connector regardless of the anatomy
+  for (const template of TEMPLATE_NAMES.concat('lessons')) {
     test(template + ': the panel is the overflow width on the list container, connector shown or hidden by anatomy', async function () {
-      const t = buildNative(template).tokens;
+      const t = nativeFor(template).tokens;
       const container = await render(React.createElement(registryFor(template).OverflowMenu, OPEN.props));
       const panel = container.querySelector('[role="menu"]');
       assert.notEqual(panel, null, 'the panel mounts while open');

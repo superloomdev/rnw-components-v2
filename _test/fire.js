@@ -72,8 +72,8 @@ function runTest (row) {
   // outer guard to take the whole run down. `npm run bundle` is already
   // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
-    ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
+    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
@@ -144,14 +144,21 @@ for (const row of rows) {
     continue;
   }
 
-  if (killed !== null) {
-    broken.push(row.id + ': KILLED (' + killed + ')');
-    process.stdout.write('KILLED  ' + row.id + '  (' + killed + ')\n');
-    continue;
-  }
-
   process.stdout.write('RECOVER ' + row.id + '\n');
   const recovered = runTest(row) === true;
+
+  // A guard-killed plant still proves the mutation when the clean run
+  // passes: the plant made the test not pass and the guard contained the
+  // cost (D43). A killed row whose recover fails stays a failure
+  if (killed !== null) {
+    if (!recovered) {
+      broken.push(row.id + ': KILLED (' + killed + ') and still failing restored');
+      process.stdout.write('KILLED  ' + row.id + '  (' + killed + ') -> restored (still failing)\n');
+    } else {
+      process.stdout.write('FIRED-KILLED ' + row.id + '  (' + killed + ')  (' + row.test + ')\n');
+    }
+    continue;
+  }
   let mark = 'FIRED  ';
   if (!failedUnderMutation) {
     broken.push(row.id + ': DID NOT FIRE - the planted edit did not fail "' + row.testName + '"');

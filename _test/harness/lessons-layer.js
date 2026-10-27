@@ -13,6 +13,11 @@ export const LESSONS_LAYER = Object.freeze({
     'anatomy.field_action': 'icon_button',
     'anatomy.slider_focus': 'outline',
     'anatomy.slider_disabled_paint': 'grouped',
+    // Disabled slider paints, literal from
+    // helper-themer-template-material/data/light.js: alpha(color.text_primary)
+    // at 0.38 (parts) and 0.12 (track); text_primary is #1d1b20
+    'color.slider_disabled': 'rgba(29, 27, 32, 0.38)',
+    'color.slider_track_disabled': 'rgba(29, 27, 32, 0.12)',
     'anatomy.button_label': 'center',
     'anatomy.field_counter': 'message',
     'anatomy.switch_state_text': 'hidden',

@@ -49,11 +49,7 @@ describe('enum render: every listed enum value changes the render', function () 
   for (const component of withEnums) {
     for (const token of rowsByName[component.name].enums) {
       test(component.name + ' / ' + token, async function () {
-        // anatomy.slider_disabled_paint is the one enum whose branches are
-        // indistinguishable under every shipped template and the lessons
-        // layer: carbon's disabled paints are opaque so the grouped share is
-        // 1 and both branches draw identical DOM
-        const values = token === 'anatomy.slider_disabled_paint' ? [contract.tokens[token].values[0]] : contract.tokens[token].values;
+        const values = contract.tokens[token].values;
         const renders = {};
         for (const value of values) {
           const profiles = [];

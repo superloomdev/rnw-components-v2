@@ -4,7 +4,7 @@
 // a procedural rule, so the run itself gets a wrapper that watches the whole
 // process tree once a second and kills it first.
 //
-// Usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] -- <command> [args...]
+// Usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] -- <command> [args...]
 // Defaults: seconds 1800 (GUARD_SECONDS), proc-mb 6144 (GUARD_PROC_MB),
 // tree-mb 12288 (GUARD_TREE_MB). Kills exit 137 (memory) or 124 (time); the
 // child's own exit code otherwise (1 on a signal). The child's stdio is
@@ -49,13 +49,14 @@ function numberOption (name, value) {
 const args = process.argv.slice(2);
 const separator = args.indexOf('--');
 if (separator === -1 || separator === args.length - 1) {
-  process.stderr.write('usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] -- <command> [args...]\n');
+  process.stderr.write('usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] -- <command> [args...]\n');
   process.exit(2);
 }
 
 let seconds = numberOption('--seconds', process.env.GUARD_SECONDS || 1800);
 let procMb = numberOption('--proc-mb', process.env.GUARD_PROC_MB || 6144);
 let treeMb = numberOption('--tree-mb', process.env.GUARD_TREE_MB || 12288);
+let sampleMs = numberOption('--sample-ms', process.env.GUARD_SAMPLE_MS || 1000);
 const options = args.slice(0, separator);
 for (let index = 0; index < options.length; index += 1) {
   const option = options[index];
@@ -71,6 +72,8 @@ for (let index = 0; index < options.length; index += 1) {
     procMb = numberOption(name, value);
   } else if (name === '--tree-mb') {
     treeMb = numberOption(name, value);
+  } else if (name === '--sample-ms') {
+    sampleMs = numberOption(name, value);
   } else {
     process.stderr.write('guard: unknown option ' + option + '\n');
     process.exit(2);
@@ -252,7 +255,7 @@ const timer = setInterval(function () {
     terminate('time', sample);
   }
 
-}, 1000);
+}, sampleMs);
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, function () {
