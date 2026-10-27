@@ -2736,6 +2736,26 @@
       "why": "a window that keeps only our side's box must fail the window test"
     },
     {
+      "id": "perceptual-sample-window-roots",
+      "file": "_test/harness/perceptual.js",
+      "find": "  const window = windowFor({ x: ours.rootX, y: ours.rootY }, ours, { x: upstream.rootX, y: upstream.rootY }, upstream);",
+      "replace": "  const window = windowFor(ours, ours, upstream, upstream);",
+      "runner": "node",
+      "test": "perceptual-harness.test.js",
+      "testName": "sampleWindow crops around the roots and inside both bodies",
+      "why": "a window computed with the union as its own root (the R4-2 defect) must fail"
+    },
+    {
+      "id": "perceptual-sample-window-clamp",
+      "file": "_test/harness/perceptual.js",
+      "find": "    y2 = Math.min(y2, fy + side.bodyHeight);",
+      "replace": "    y2 = y2 + 0;",
+      "runner": "node",
+      "test": "perceptual-harness.test.js",
+      "testName": "sampleWindow crops around the roots and inside both bodies",
+      "why": "a window that runs past a body must fail"
+    },
+    {
       "file": "_test/harness/perceptual.js",
       "find": "  const sx = Math.max(0, cx);",
       "replace": "  const sx = cx;",

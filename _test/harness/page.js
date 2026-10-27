@@ -1396,7 +1396,9 @@ export async function readControlPaint (page) {
 Read the sample's own painted box inside one cell: the sample root (the
 body's first element child) and every descendant element whose rect is
 non-empty and whose computed visibility is not `hidden` and opacity is
-not `0`, in viewport coordinates, unioned and expanded by RING_ROOM on
+not `0` and that is not clipped away (`clip: rect(0 0 0 0)` /
+`clip-path: inset(50%)`, the visually-hidden pattern), in viewport
+coordinates, unioned and expanded by RING_ROOM on
 each side (a focus ring or shadow drawn just outside the element). Call
 it right before a screenshot: the box is in the same scroll frame.
 
@@ -1406,7 +1408,8 @@ it right before a screenshot: the box is in the same scroll frame.
 
 @return {Promise<Object|null>} - { x, y, width, height, bodyX, bodyY }:
    the expanded union in viewport coordinates plus the cell body's
-   origin (subtract it to land inside a body-framed shot)
+   origin and the body's size (subtract the origin to land inside a
+   body-framed shot)
 *********************************************************************/
 export async function readSampleBox (page, name, state) {
 
@@ -1419,6 +1422,10 @@ export async function readSampleBox (page, name, state) {
     const collect = function (element) {
       const rect = element.getBoundingClientRect();
       const style = getComputedStyle(element);
+      const clipped = style.clip === 'rect(0px, 0px, 0px, 0px)' || style.clipPath === 'inset(50%)';
+      if (clipped) {
+        return;
+      }
       if (rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.opacity !== '0') {
         boxes.push({ x: rect.x, y: rect.y, width: rect.width, height: rect.height });
       }
@@ -1432,7 +1439,7 @@ export async function readSampleBox (page, name, state) {
     }
     const bodyRect = body.getBoundingClientRect();
     const rootRect = root === null ? null : root.getBoundingClientRect();
-    return { boxes: boxes, bodyX: bodyRect.x, bodyY: bodyRect.y, root: rootRect === null ? null : { x: rootRect.x, y: rootRect.y, width: rootRect.width, height: rootRect.height } };
+    return { boxes: boxes, bodyX: bodyRect.x, bodyY: bodyRect.y, bodyWidth: bodyRect.width, bodyHeight: bodyRect.height, root: rootRect === null ? null : { x: rootRect.x, y: rootRect.y, width: rootRect.width, height: rootRect.height } };
   }, { name: name, state: state });
   if (sample === null) {
     return null;
@@ -1442,7 +1449,7 @@ export async function readSampleBox (page, name, state) {
     return null;
   }
   return { x: box.x - RING_ROOM, y: box.y - RING_ROOM, width: box.width + 2 * RING_ROOM, height: box.height + 2 * RING_ROOM,
-    rootX: sample.root.x, rootY: sample.root.y, bodyX: sample.bodyX, bodyY: sample.bodyY };
+    rootX: sample.root.x, rootY: sample.root.y, bodyX: sample.bodyX, bodyY: sample.bodyY, bodyWidth: sample.bodyWidth, bodyHeight: sample.bodyHeight };
 
 }
 

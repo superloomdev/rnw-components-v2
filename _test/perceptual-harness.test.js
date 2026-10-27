@@ -5,7 +5,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { PNG } from 'pngjs';
-import { cropRect, unionBox, windowFor } from './harness/perceptual.js';
+import { cropRect, sampleWindow, unionBox, windowFor } from './harness/perceptual.js';
 
 describe('perceptual harness: unionBox', function () {
 
@@ -35,6 +35,15 @@ describe('perceptual harness: windowFor', function () {
     // ours: root (10,10), union (-2..18, 12..22) relative; upstream: root (0,0), union (0..10, 0..30)
     const window = windowFor({ x: 10, y: 10 }, { x: 8, y: 12, width: 20, height: 10 }, { x: 0, y: 0 }, { x: 0, y: 0, width: 10, height: 30 });
     assert.deepEqual(window, { x: -2, y: 0, width: 20, height: 30 });
+  });
+
+  test('sampleWindow crops around the roots and inside both bodies', function () {
+    const ours = { x: 6, y: 6, width: 28, height: 18, rootX: 10, rootY: 10, bodyX: 0, bodyY: 0, bodyWidth: 40, bodyHeight: 20 };
+    const upstream = { x: -4, y: -4, width: 28, height: 31, rootX: 0, rootY: 0, bodyX: 0, bodyY: 0, bodyWidth: 40, bodyHeight: 23 };
+    assert.deepEqual(sampleWindow(ours, upstream), {
+      ours: { x: 10, y: 10, width: 24, height: 10 },
+      upstream: { x: 0, y: 0, width: 24, height: 10 }
+    });
   });
 
 });

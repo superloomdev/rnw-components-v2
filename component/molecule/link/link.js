@@ -58,11 +58,11 @@ export default function Link (ctx) {
     // Underline while inline, hovered, focused or pressed, unless disabled
     const underline = !disabled && (props.inline === true || state.hovered === true || state.focused === true || state.pressed === true);
 
-    // The ring while focused or pressed: a solid outline at the edge
+    // The ring while focused (1 out) or pressed (at the edge)
     const ring = !disabled && (state.focused === true || state.pressed === true)
       ? {
         outlineColor: ctx.color(inverse === true ? 'focus_ring_inverse' : 'link_focus_ring'),
-        outlineOffset: ctx.metric('Link', 'focusOffset'),
+        outlineOffset: ctx.metric('Link', state.pressed === true ? 'pressOffset' : 'focusOffset'),
         outlineStyle: 'solid',
         outlineWidth: ctx.metric('Link', 'focusWidth')
       }

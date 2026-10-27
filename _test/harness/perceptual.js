@@ -202,3 +202,43 @@ export function windowFor (oursRoot, oursUnion, upstreamRoot, upstreamUnion) {
   return unionBox(relative);
 
 }
+
+
+/********************************************************************
+The crop rectangles for one state (D39-3): the common window around
+both sample roots (`windowFor` over each side's root and union),
+clamped to the part of the window both bodies hold, returned in each
+side's body coordinates.
+
+@param {Object} ours     - readSampleBox result (union box, rootX/Y, bodyX/Y, bodyWidth/Height)
+@param {Object} upstream - The same for the reference
+
+@return {Object|null} - { ours: { x, y, width, height }, upstream: { ... } }, or null when nothing overlaps
+*********************************************************************/
+export function sampleWindow (ours, upstream) {
+
+  const window = windowFor({ x: ours.rootX, y: ours.rootY }, ours, { x: upstream.rootX, y: upstream.rootY }, upstream);
+  if (window === null) {
+    return null;
+  }
+  let x1 = window.x;
+  let y1 = window.y;
+  let x2 = window.x + window.width;
+  let y2 = window.y + window.height;
+  for (const side of [ours, upstream]) {
+    const fx = side.bodyX - side.rootX;
+    const fy = side.bodyY - side.rootY;
+    x1 = Math.max(x1, fx);
+    y1 = Math.max(y1, fy);
+    x2 = Math.min(x2, fx + side.bodyWidth);
+    y2 = Math.min(y2, fy + side.bodyHeight);
+  }
+  if (x2 <= x1 || y2 <= y1) {
+    return null;
+  }
+  const rect = function (side) {
+    return { x: side.rootX + x1 - side.bodyX, y: side.rootY + y1 - side.bodyY, width: x2 - x1, height: y2 - y1 };
+  };
+  return { ours: rect(ours), upstream: rect(upstream) };
+
+}

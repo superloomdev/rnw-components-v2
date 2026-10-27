@@ -19,7 +19,7 @@ import { PNG } from 'pngjs';
 
 import { findDisagreements } from './compare.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, reopenPanel, shootCell, shootPart } from './page.js';
-import { perceptualRatio, windowFor } from './perceptual.js';
+import { perceptualRatio, sampleWindow } from './perceptual.js';
 import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
@@ -531,12 +531,18 @@ export async function runFidelity (page, component, set, scheme) {
       const oursSample = reference.origin === undefined ? ours.samples[key] : undefined;
       const upSample = reference.origin === undefined ? upstream.samples[key] : undefined;
       if (oursSample !== undefined && oursSample !== null && upSample !== undefined && upSample !== null) {
-        const window = windowFor(oursSample, oursSample, upSample, upSample);
-        const oursCrop = { _bodyX: oursSample.rootX + window.x - oursSample.bodyX, _bodyY: oursSample.rootY + window.y - oursSample.bodyY, width: window.width, height: window.height };
-        const upCrop = { _bodyX: upSample.rootX + window.x - upSample.bodyX, _bodyY: upSample.rootY + window.y - upSample.bodyY, width: window.width, height: window.height };
-        a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
-        b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);
-        ours.samples[key] = oursCrop;
+        const crop2 = sampleWindow(oursSample, upSample);
+        if (crop2 !== null) {
+          const oursCrop = { _bodyX: crop2.ours.x, _bodyY: crop2.ours.y, width: crop2.ours.width, height: crop2.ours.height };
+          const upCrop = { _bodyX: crop2.upstream.x, _bodyY: crop2.upstream.y, width: crop2.upstream.width, height: crop2.upstream.height };
+          a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
+          b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);
+          ours.samples[key] = oursCrop;
+        } else {
+          a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
+          b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+          ours.samples[key] = undefined;
+        }
       } else {
         a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
         b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];

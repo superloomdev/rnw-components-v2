@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox } from './harness/page.js';
-import { cropRect, perceptualRatio, ratio, windowFor } from './harness/perceptual.js';
+import { cropRect, perceptualRatio, ratio, sampleWindow } from './harness/perceptual.js';
 import { restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
 
@@ -198,9 +198,11 @@ test.describe('perceptual', function () {
         let b = upstream[state].shot;
         // D39-3: one common window aligned at each side's sample root
         if (ours[state].sample !== null && upstream[state].sample !== null) {
-          const window = windowFor(ours[state].sample, ours[state].sample, upstream[state].sample, upstream[state].sample);
-          a = cropRect(ours[state].shot, ours[state].sample.rootX + window.x - ours[state].sample.bodyX, ours[state].sample.rootY + window.y - ours[state].sample.bodyY, window.width, window.height);
-          b = cropRect(upstream[state].shot, upstream[state].sample.rootX + window.x - upstream[state].sample.bodyX, upstream[state].sample.rootY + window.y - upstream[state].sample.bodyY, window.width, window.height);
+          const crop = sampleWindow(ours[state].sample, upstream[state].sample);
+          if (crop !== null) {
+            a = cropRect(ours[state].shot, crop.ours.x, crop.ours.y, crop.ours.width, crop.ours.height);
+            b = cropRect(upstream[state].shot, crop.upstream.x, crop.upstream.y, crop.upstream.width, crop.upstream.height);
+          }
         }
         const pngA = PNG.sync.read(a);
         const pngB = PNG.sync.read(b);

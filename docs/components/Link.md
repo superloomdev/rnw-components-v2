@@ -9,7 +9,7 @@ Link draws a pressable run of text in the theme's link colors for rest, hover, p
 ### Decisions (roster flag `superloom_decision`)
 
 - **No second-system link.** The second system's nearest twin is a 40px pill button, not a link - the roster's `superloom_decision`; it records no second twin. That system's link values are its own: the family reads its primary role and label sets.
-- **The ring sits at the edge.** The focus ring draws as a solid outline in the link focus-ring color at the focus width, offset a constant 0 - the primary's focus outline draws at the edge and no reference states another.
+- **The ring.** A solid outline in the link focus-ring color at the focus width: one point outside the text while focused from the keyboard (the rendered reference's offset), at the edge while pressed.
 - **`visited` is a prop, unmeasured.** No page can drive `:visited` - a browser answers it from history - so `visited` is a plain prop, and its state is unmeasured: the reference mount returns null for it.
 
 ### Platform
@@ -49,7 +49,8 @@ Link draws a pressable run of text in the theme's link colors for rest, hover, p
 | Metric | Rule |
 |---|---|
 | `focusWidth` | `control.link_focus_width` |
-| `focusOffset` | constant `0` (decision) |
+| `focusOffset` | constant `1` (decision) |
+| `pressOffset` | constant `0` (decision) |
 | `iconGap` | `control.link_icon_gap` |
 | `iconSize` | `control.link_icon_size` |
 | `iconSizeLarge` | `control.link_icon_size_large` |
