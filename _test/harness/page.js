@@ -1575,3 +1575,58 @@ export async function refocusPanel (page, name, state, refocus, side) {
   return true;
 
 }
+
+
+/********************************************************************
+Wait until a cell's layout has settled. Every frame, sign every
+descendant's rect relative to the body's (x, y, w, h to 0.01, at most the
+first 600 elements); resolve when the signature holds for 3 consecutive
+frames after at least 2 frames, or after 60 frames - a fixed layer that
+still follows the scroll is caught in the waiting, not in the shot.
+No-op when the cell is absent; never throws.
+
+@param {Object} page  - Playwright page
+@param {String} name  - Component name
+@param {String} state - The cell's state label
+
+@return {Promise<void>}
+*********************************************************************/
+export async function settleLayout (page, name, state) {
+
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return;
+  }
+  await body.evaluate(function (element) {
+    return new Promise(function (resolve) {
+      const signature = function () {
+        const bodyRect = element.getBoundingClientRect();
+        const all = element.querySelectorAll('*');
+        const parts = [];
+        for (let i = 0; i < all.length && i < 600; i++) {
+          const rect = all[i].getBoundingClientRect();
+          parts.push([rect.x - bodyRect.x, rect.y - bodyRect.y, rect.width, rect.height].map(function (value) {
+            return Math.round(value * 100) / 100;
+          }).join(','));
+        }
+        return parts.join(';');
+      };
+      let last = signature();
+      let stable = 0;
+      let frames = 0;
+      const step = function () {
+        frames = frames + 1;
+        const next = signature();
+        stable = next === last ? stable + 1 : 0;
+        last = next;
+        if ((stable >= 3 && frames >= 2) || frames >= 60) {
+          resolve();
+          return;
+        }
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  });
+
+}

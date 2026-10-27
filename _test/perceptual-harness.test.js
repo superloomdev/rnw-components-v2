@@ -5,6 +5,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { PNG } from 'pngjs';
+import { settleLayout } from './harness/page.js';
 import { cropRect, sampleWindow, unionBox, windowFor } from './harness/perceptual.js';
 
 describe('perceptual harness: unionBox', function () {
@@ -71,6 +72,69 @@ describe('perceptual harness: cropRect', function () {
     assert.deepEqual(at(2, 1), [255, 255], 'the source begins two pixels in');
     assert.deepEqual(at(2, 0), [0, 0], 'above-source padding is transparent');
     assert.deepEqual(at(4, 3), [255, 255], 'the last source pixel is at its offset');
+  });
+
+});
+
+describe('page harness: settleLayout', function () {
+
+  test('resolves only after an element still moving for frames has settled', async function () {
+    let frames = 0;
+    const child = {
+      getBoundingClientRect: function () {
+        return { x: 0, y: frames < 3 ? 100 : 140, width: 160, height: 40 };
+      }
+    };
+    const body = {
+      getBoundingClientRect: function () {
+        return { x: 0, y: 0, width: 320, height: 200 };
+      },
+      querySelectorAll: function () {
+        return [child];
+      }
+    };
+    const page = {
+      locator: function () {
+        return {
+          first: function () {
+            return {
+              count: function () { return Promise.resolve(1); },
+              evaluate: function (fn) { return fn(body); }
+            };
+          }
+        };
+      }
+    };
+    const saved = globalThis.requestAnimationFrame;
+    globalThis.requestAnimationFrame = function (callback) {
+      return setImmediate(function () {
+        frames = frames + 1;
+        callback();
+      });
+    };
+    try {
+      await settleLayout(page, 'Panel', 'open');
+      assert.ok(frames >= 4, 'the wait outlasted the move: resolved at frame ' + frames);
+      assert.equal(child.getBoundingClientRect().y, 140, 'the moved position is what the wait saw last');
+    } finally {
+      globalThis.requestAnimationFrame = saved;
+    }
+  });
+
+  test('is a no-op when the cell is absent', async function () {
+    const page = {
+      locator: function () {
+        return {
+          first: function () {
+            return {
+              count: function () { return Promise.resolve(0); },
+              evaluate: function () { throw new Error('must not evaluate without a cell'); }
+            };
+          }
+        };
+      }
+    };
+    await settleLayout(page, 'Panel', 'open');
   });
 
 });

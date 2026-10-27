@@ -18,7 +18,7 @@
 import { PNG } from 'pngjs';
 
 import { findDisagreements } from './compare.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, refocusPanel, reopenPanel, shootCell, shootPart } from './page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, refocusPanel, reopenPanel, settleLayout, shootCell, shootPart } from './page.js';
 import { perceptualRatio, sampleWindow } from './perceptual.js';
 import { decode } from './pixels.js';
 
@@ -324,6 +324,9 @@ async function collect (page, component, reference, side, masks) {
         element.scrollIntoView({ block: 'center', inline: 'center' });
       });
     }
+    // A fixed panel lags the scroll by a frame or more: let the layout
+    // settle so the shot sees it where the anchor is, not where it was
+    await settleLayout(page, component.name, label);
     samples[key] = await readSampleBox(page, component.name, label);
     const frame = {};
     shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, true, frame);
