@@ -36,9 +36,6 @@ const FACES = [
   ['IBM Plex Sans', 700, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Bold.woff2'],
   ['IBM Plex Mono', 400, '/fonts/plex-mono/complete/woff2/IBMPlexMono-Regular.woff2'],
   ['IBM Plex Mono', 600, '/fonts/plex-mono/complete/woff2/IBMPlexMono-SemiBold.woff2'],
-  ['Roboto', 400, '/fonts/roboto/roboto-latin-400-normal.woff2'],
-  ['Roboto', 500, '/fonts/roboto/roboto-latin-500-normal.woff2'],
-  ['Roboto', 700, '/fonts/roboto/roboto-latin-700-normal.woff2'],
   // The mobile upstream names each weight as its own family, as native font files do
   ['IBMPlexSans-Light', 300, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Light.woff2'],
   ['IBMPlexSans-Regular', 400, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Regular.woff2'],
