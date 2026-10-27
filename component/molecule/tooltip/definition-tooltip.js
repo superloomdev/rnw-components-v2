@@ -79,7 +79,7 @@ export default function DefinitionTooltip (ctx) {
     // which resolves to the ambient 16px body type - body02 in the
     // contract - so the term reads that cell
     React.createElement(Text, {
-      style: [ctx.typeStyle('body02'), { color: ctx.color('text_primary') }]
+      style: [ctx.typeStyle('definition_term'), { color: ctx.color('text_primary') }]
     }, props.children));
 
     // The bubble: a Popover on the inverse cells carrying the definition,

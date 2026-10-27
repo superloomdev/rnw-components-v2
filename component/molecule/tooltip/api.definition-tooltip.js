@@ -21,7 +21,7 @@ export default Object.freeze({
     'color.tooltip_container', 'color.tooltip_label',
     'control.definition_tooltip_max_width', 'control.definition_tooltip_padding_block',
     'control.definition_tooltip_padding_inline',
-    'type.body_compact_01', 'border.width_01', 'stacking.floating'
+    'type.definition_term', 'border.width_01', 'stacking.floating'
   ]),
   colors: Object.freeze([])
 });

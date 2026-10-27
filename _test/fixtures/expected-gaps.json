@@ -4,24 +4,5 @@
     "Each entry names the check, the cell or the component part and property (optionally the states), and the request. The gate asserts the gap still reproduces; once it does not, the entry is stale and the gate fails until it is removed.",
     "An entry is added only by the reasoning tier, with the request it waits on; the execution tier never adds one."
   ],
-  "gaps": [
-    {
-      "check": "measure",
-      "component": "DefinitionTooltip",
-      "part": "term",
-      "property": "height",
-      "request": "type.definition_term",
-      "wave": "m5-amend-5",
-      "why": "upstream's term carries no type; its 21px box is the ambient line-height normal - the cell waits on the definition_term type request"
-    },
-    {
-      "check": "fidelity",
-      "component": "DefinitionTooltip",
-      "part": "term",
-      "property": "height",
-      "request": "type.definition_term",
-      "wave": "m5-amend-5",
-      "why": "upstream's term carries no type; its 21px box is the ambient line-height normal - the cell waits on the definition_term type request"
-    }
-  ]
+  "gaps": []
 }
