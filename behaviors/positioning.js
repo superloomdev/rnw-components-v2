@@ -251,7 +251,7 @@ export default function createPositioningBehaviors (deps) {
         // native branch's measured rect does
         const current = overlayRef.current;
         const hosted = current !== null && current.hosted === true;
-        const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
+        const origin = hosted && current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 };
         // No state write when the answer is unchanged: a caller's layout
         // effect may re-measure, and a same-position write would loop
         const next = {
@@ -279,7 +279,7 @@ export default function createPositioningBehaviors (deps) {
           // origin and the placement is bounded by the host's own size
           const current = overlayRef.current;
           const hosted = current !== null && current.hosted === true;
-          const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
+          const origin = hosted && current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 };
           const rect = {
             left: x - origin.x,
             top: y - origin.y,

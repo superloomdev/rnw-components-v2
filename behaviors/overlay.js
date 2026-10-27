@@ -68,7 +68,7 @@ export default function createOverlayBehaviors (deps) {
 
   @return {Object} - { contextValue, layers, setOrigin, setSize }
   *********************************************************************/
-  function useOverlayHost () {
+  function useOverlayHost (rootRef) {
 
     const nextIdRef = React.useRef(0);
     const [layers, setLayers] = React.useState([]);
@@ -93,16 +93,29 @@ export default function createOverlayBehaviors (deps) {
       });
     }, []);
 
+    // A web window scroll moves the root without a layout event, so the
+    // origin a hosted layer subtracts must read the live rect, not the
+    // layout-time state; a caller composes getOrigin over a stable dep
+    const getOrigin = React.useCallback(function () {
+      const node = rootRef !== undefined && rootRef !== null ? rootRef.current : null;
+      if (node !== null && typeof node === 'object' && typeof node.getBoundingClientRect === 'function') {
+        const r = node.getBoundingClientRect();
+        return { x: r.left, y: r.top };
+      }
+      return origin;
+    }, [rootRef, origin]);
+
     const contextValue = React.useMemo(function () {
       return {
         hosted: true,
+        getOrigin: getOrigin,
         layers: layers,
         origin: origin,
         size: size,
         register: register,
         unregister: unregister
       };
-    }, [layers, origin, size, register, unregister]);
+    }, [layers, origin, size, register, unregister, getOrigin]);
 
     return {
       contextValue: contextValue,

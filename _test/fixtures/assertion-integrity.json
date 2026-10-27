@@ -3044,6 +3044,16 @@
       "id": "menu-item-press-target",
       "test": "menu-item-press-target.test.js",
       "why": "without pressTarget the menu item's hit area is its row height, under the target floor"
+    },
+    {
+      "file": "behaviors/positioning.js",
+      "find": "typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin",
+      "replace": "current.origin",
+      "testName": "a hosted layer reads the layer root origin live through getOrigin",
+      "runner": "node",
+      "id": "hosted-origin-stale",
+      "test": "hosted-origin.test.js",
+      "why": "without the live read a window scroll leaves every hosted anchored layer at the layout-time origin"
     }
   ]
 }

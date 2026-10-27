@@ -4,7 +4,10 @@
 // menus do not sit on top of one another. 320 x 280 fits a three-item
 // menu at any size.
 
-export const FRAME = Object.freeze({ width: 320, height: 280 });
+// Staged so each cell's menu renders in its own hosted space - an
+// unhosted menu draws fixed in window coordinates and covers a sibling
+// cell's trigger, which the structural target check reads as crowding
+export const FRAME = Object.freeze({ width: 320, height: 280, stage: true });
 
 const ITEMS = Object.freeze([
   Object.freeze({ label: 'First action' }),
