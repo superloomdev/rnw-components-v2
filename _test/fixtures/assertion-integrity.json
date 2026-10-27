@@ -46,6 +46,16 @@
       "why": "a measure cap that cannot trip must fail the never-settling assertion"
     },
     {
+      "id": "reopen-seed-kept",
+      "file": "_test/harness/sample-props.js",
+      "find": "export function measuredProps (reference, label, props) {",
+      "replace": "export function measuredProps (reference, label, props) {\n  return props;",
+      "runner": "node",
+      "test": "sample-props.test.js",
+      "testName": "a reopen state drops the seeded open prop",
+      "why": "a filter that keeps the seeded open must fail the drops-the-seed assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",

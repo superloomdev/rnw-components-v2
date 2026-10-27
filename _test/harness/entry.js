@@ -23,6 +23,7 @@ import { LocaleProvider } from 'react-native-web/dist/modules/useLocale/index.js
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
 import { createSampleElement } from './sample.js';
+import { measuredProps } from './sample-props.js';
 
 // Template -> scheme name -> scheme
 const TEMPLATES = {
@@ -135,9 +136,16 @@ function Cell (props) {
   // width and height) and the layer covers it. A measurement page opens
   // unhosted
   const frame = frames[props.name];
+  // A measured cell opens its reopen states by click, as upstream does:
+  // the seeded `open` is dropped so the panel mounts at the same pinned
+  // scroll on both pages; the sheet keeps the seed
+  const filtered = measuring === true && sheeting === false
+    ? measuredProps(references[props.name], props.state.label, props.state.props)
+    : props.state.props;
+  const state = filtered === props.state.props ? props.state : Object.assign({}, props.state, { props: filtered });
   const content = hosting && frame !== null && frame !== undefined && frame.stage === true
-    ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, props.state))
-    : createSampleElement(React, Registry, props.name, props.state);
+    ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, state))
+    : createSampleElement(React, Registry, props.name, state);
 
   return React.createElement('div', {
     className: 'cell',
