@@ -1456,9 +1456,9 @@ export async function readSampleBox (page, name, state) {
 
 /********************************************************************
 Re-open a reference's panel before an interaction that needs it: on a
-state the reference's `reopen` lists, when its `when` selector of this
-side is absent in the cell body, click the side's trigger and wait for
-the panel to draw, as the probe's `prepare` does.
+state the reference's `reopen` lists, when no element its `when`
+selector names draws on this side, click the side's trigger and wait
+for the panel to draw, as the probe's `prepare` does.
 
 @param {Object} page   - Playwright page
 @param {String} name   - Component name
@@ -1481,14 +1481,23 @@ export async function reopenPanel (page, name, state, reopen, side, leave) {
   // A panel left mounted from an earlier read carries stale coordinates:
   // dismiss it so the state reads a panel opened by the click that follows
   const trigger = body.locator(reopen[side]).first();
-  if (await body.locator(reopen.when[side]).count() > 0) {
+  // A panel counts as open when it draws: a closed upstream panel may stay mounted at 0 x 0
+  const shown = async function () {
+    return body.locator(reopen.when[side]).evaluateAll(function (elements) {
+      return elements.some(function (element) {
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && getComputedStyle(element).visibility !== 'hidden';
+      });
+    });
+  };
+  if (await shown()) {
     await leaveInteraction(page, leave);
-    if (await body.locator(reopen.when[side]).count() > 0 && await trigger.count() > 0) {
+    if (await shown() && await trigger.count() > 0) {
       // Escape/blur only reach an open menu that holds focus; a seeded
       // panel whose focus was lost dismisses on the trigger toggle instead
       await trigger.click();
       await page.waitForTimeout(200);
-      if (await body.locator(reopen.when[side]).count() > 0) {
+      if (await shown()) {
         return false;
       }
     }
