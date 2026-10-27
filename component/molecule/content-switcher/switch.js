@@ -83,7 +83,6 @@ export default function Switch (ctx) {
           justifyContent: 'flex-start',
           outlineStyle: 'none',
           paddingHorizontal: padInline,
-          paddingVertical: ctx.metric('Switch', 'paddingBlock'),
           position: 'relative'
         }, press.container]
       },
