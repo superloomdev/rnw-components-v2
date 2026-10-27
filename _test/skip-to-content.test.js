@@ -45,6 +45,7 @@ describe('SkipToContent: every sample state under every template', function () {
         const text = link.querySelector('div');
         assert.notEqual(text, null);
         assert.equal(text.style.fontSize, t['type.skip_link'].fontSize + 'px', 'focused: the type set');
+        assert.equal(text.style.textDecoration, 'underline', 'focused: the link text is underlined, as the reference draws it');
       });
     }
   }

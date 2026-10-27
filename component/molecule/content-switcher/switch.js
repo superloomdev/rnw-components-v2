@@ -44,7 +44,7 @@ export default function Switch (ctx) {
         '_selected': null
       }
     });
-    const ring = state.focused === true && !(low === true && selected !== true && state.hovered === true)
+    const ring = state.focused === true
       ? React.createElement(View, { 'aria-hidden': true, pointerEvents: 'none', style: {
         borderColor: ctx.color('content_switcher_focus'),
         borderRadius: low === true || props.first !== false ? ctx.metric('Switch', 'radius') : 0,

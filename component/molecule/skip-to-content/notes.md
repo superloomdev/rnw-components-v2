@@ -19,3 +19,4 @@
   component owns no focus shift.
 - Native renders nothing (`platform.support: web`): one file,
   `ctx.platform.split({ web })` returning null for the native half.
+- The focused link is underlined, as the reference draws it (the user agent's anchor underline; the reference's own rules set no text-decoration).
