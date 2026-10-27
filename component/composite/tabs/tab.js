@@ -33,6 +33,8 @@ export default function Tab (ctx) {
 
     // Init the behavior and the state-derived cells
     const item = useButton({ disabled: props.disabled === true, onPress: props.onSelect, selected: props.selected === true });
+    const [faceSize, onFaceLayout] = ctx.useFaceSize();
+    const [closeFaceSize, onCloseFaceLayout] = ctx.useFaceSize();
     const state = item.state;
     // The list passes its resolved metrics; standing alone the tab reads
     // its own spec numbers so one item draws without a parent
@@ -106,7 +108,11 @@ export default function Tab (ctx) {
       ? React.createElement(View, { 'aria-hidden': true, style: { alignItems: 'center', height: iconSize, justifyContent: 'center', width: iconSize, [dismissable ? 'marginEnd' : 'marginStart']: ctx.metric('Tab', 'iconGap') } },
         React.createElement(ctx.Registry.Icon, { color: labelLeaf, name: props.icon, size: iconSize }))
       : null;
-    const close = dismissable
+    const closeFace = dismissable
+      ? React.createElement(View, { 'aria-hidden': true, onLayout: onCloseFaceLayout, style: { alignItems: 'center', height: ctx.metric('Tab', 'closeSize'), justifyContent: 'center', position: 'absolute', end: ctx.metric('Tab', 'closeSize') / 4, top: 0, bottom: 0, width: ctx.metric('Tab', 'closeSize') } },
+        React.createElement(ctx.Registry.Icon, { color: closeLeaf, name: 'close', size: ctx.metric('Tab', 'closeIconSize') }))
+      : null;
+    const closeLayer = dismissable
       ? React.createElement(Pressable, {
         'aria-label': 'Remove ' + props.label + ' tab',
         onPress: function () {
@@ -116,8 +122,8 @@ export default function Tab (ctx) {
         },
         role: 'button',
         tabIndex: -1,
-        style: { alignItems: 'center', height: ctx.metric('Tab', 'closeSize'), justifyContent: 'center', marginStart: 'auto', position: 'absolute', end: ctx.metric('Tab', 'closeSize') / 4, top: 0, bottom: 0, width: ctx.metric('Tab', 'closeSize') }
-      }, React.createElement(ctx.Registry.Icon, { color: closeLeaf, name: 'close', size: ctx.metric('Tab', 'closeIconSize') }))
+        style: [{ position: 'absolute', end: ctx.metric('Tab', 'closeSize') / 4, top: ctx.metric('Tab', 'closeSize') / 4 }, ctx.pressTarget(closeFaceSize)]
+      })
       : null;
 
     // The focus ring is the family's cells
@@ -126,49 +132,54 @@ export default function Tab (ctx) {
 
     // Render the tab: fill, layer, separator, icon, label, secondary label,
     // indicator seats and the close button
-    return React.createElement(Pressable, Object.assign({}, item.rootProps, props.rovingProps, {
-      onKeyDown: onCloseKey,
-      role: 'tab',
-      'aria-selected': state.selected === true,
-      disabled: !live,
-      tabIndex: props.active === true ? 0 : -1,
-      style: [
-        {
-          alignItems: 'center',
-          backgroundColor: containerLeaf === null ? 'transparent' : ctx.color(containerLeaf),
-          borderBottomColor: contained ? 'transparent' : ctx.color(edgeColor),
-          borderBottomWidth: contained ? 0 : m.trackWidth,
-          flexDirection: 'row',
-          height: props.tall === true ? ctx.metric('Tab', 'containedTallHeight') : contained ? m.containedHeight : m.height,
-          justifyContent: 'flex-start',
-          marginEnd: contained ? 0 : m.itemGap,
-          outlineStyle: 'none',
-          paddingEnd: paddingEnd,
-          paddingStart: m.paddingInline,
-          position: 'relative'
-        },
-        ring
-      ]
-    }),
-    React.createElement(View, { 'aria-hidden': true, style: [{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, { backgroundColor: layerLeaf === null ? 'transparent' : ctx.color(layerLeaf) }] }),
-    React.createElement(View, { 'aria-hidden': true, style: { bottom: 0, left: -m.separatorWidth, position: 'absolute', top: 0, width: m.separatorWidth, backgroundColor: separator ? ctx.color('tab_contained_separator') : 'transparent' } }),
-    // The label column keeps the anchor's DOM: its second child is the
-    // content indicator seat; the icon sits beside the label text inside it
-    // The label wrapper sits half a track width down on a line template (the
-    // track-less content-indicator template leaves it at zero)
-    React.createElement(View, { style: { alignSelf: 'center', justifyContent: 'center', position: 'relative', top: contained ? 0 : m.trackWidth / 2 } },
-      React.createElement(View, { style: { alignItems: 'center', flexDirection: 'row' } },
-        dismissable === true ? icon : null,
-        React.createElement(Text, {
-          style: [ctx.typeStyle(state.selected === true ? 'tab_label_selected' : 'tab_label'), { color: ctx.color(labelLeaf) }, contained && props.tall !== true ? { lineHeight: m.containedHeight - m.containedPaddingBlock * 2 } : null]
-        }, props.label),
-        dismissable !== true ? icon : null),
-      React.createElement(View, { 'aria-hidden': true, style: indicatorContent }),
-      props.secondaryLabel !== undefined && props.tall === true
-        ? React.createElement(Text, { style: [ctx.typeStyle('tab_secondary_label'), { color: ctx.color(labelLeaf) }] }, props.secondaryLabel)
-        : null),
-    React.createElement(View, { 'aria-hidden': true, style: indicatorFull }),
-    close);
+    return React.createElement(View, { style: { marginEnd: contained ? 0 : m.itemGap, position: 'relative' } },
+      React.createElement(View, {
+        onLayout: onFaceLayout,
+        style: [
+          {
+            alignItems: 'center',
+            backgroundColor: containerLeaf === null ? 'transparent' : ctx.color(containerLeaf),
+            borderBottomColor: contained ? 'transparent' : ctx.color(edgeColor),
+            borderBottomWidth: contained ? 0 : m.trackWidth,
+            flexDirection: 'row',
+            height: props.tall === true ? ctx.metric('Tab', 'containedTallHeight') : contained ? m.containedHeight : m.height,
+            justifyContent: 'flex-start',
+            outlineStyle: 'none',
+            paddingEnd: paddingEnd,
+            paddingStart: m.paddingInline,
+            position: 'relative'
+          },
+          ring
+        ]
+      },
+      React.createElement(View, { 'aria-hidden': true, style: [{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, { backgroundColor: layerLeaf === null ? 'transparent' : ctx.color(layerLeaf) }] }),
+      React.createElement(View, { 'aria-hidden': true, style: { bottom: 0, left: -m.separatorWidth, position: 'absolute', top: 0, width: m.separatorWidth, backgroundColor: separator ? ctx.color('tab_contained_separator') : 'transparent' } }),
+      // The label column keeps the anchor's DOM: its second child is the
+      // content indicator seat; the icon sits beside the label text inside it
+      // The label wrapper sits half a track width down on a line template (the
+      // track-less content-indicator template leaves it at zero)
+      React.createElement(View, { style: { alignSelf: 'center', justifyContent: 'center', position: 'relative', top: contained ? 0 : m.trackWidth / 2 } },
+        React.createElement(View, { style: { alignItems: 'center', flexDirection: 'row' } },
+          dismissable === true ? icon : null,
+          React.createElement(Text, {
+            style: [ctx.typeStyle(state.selected === true ? 'tab_label_selected' : 'tab_label'), { color: ctx.color(labelLeaf) }, contained && props.tall !== true ? { lineHeight: m.containedHeight - m.containedPaddingBlock * 2 } : null]
+          }, props.label),
+          dismissable !== true ? icon : null),
+        React.createElement(View, { 'aria-hidden': true, style: indicatorContent }),
+        props.secondaryLabel !== undefined && props.tall === true
+          ? React.createElement(Text, { style: [ctx.typeStyle('tab_secondary_label'), { color: ctx.color(labelLeaf) }] }, props.secondaryLabel)
+          : null),
+      React.createElement(View, { 'aria-hidden': true, style: indicatorFull })),
+      React.createElement(Pressable, Object.assign({}, item.rootProps, props.rovingProps, {
+        onKeyDown: onCloseKey,
+        role: 'tab',
+        'aria-selected': state.selected === true,
+        disabled: !live,
+        tabIndex: props.active === true ? 0 : -1,
+        style: ctx.pressTarget(faceSize)
+      })),
+      closeFace,
+      closeLayer);
 
   }
 

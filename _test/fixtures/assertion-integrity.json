@@ -3084,6 +3084,16 @@
       "test": "structural.spec.js",
       "testName": "every cell has rendered content within its bounds",
       "why": "a scroll viewport clips its painted box; dropping auto/scroll unbounds it"
+    },
+    {
+      "file": "component/composite/tabs/tab.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "runner": "node",
+      "id": "tab-press-target",
+      "test": "tab-press-target.test.js",
+      "testName": "the tab and close press layers carry the target floor while the face keeps the tab height",
+      "why": "the tab layer must cover the face and reach the form-class floor"
     }
   ]
 }

@@ -31,7 +31,7 @@ describe('Tab: every sample state under every template', function () {
         assert.notEqual(tab, null);
         assert.equal(tab.getAttribute('aria-selected'), 'false');
         assert.equal(tab.getAttribute('aria-disabled'), state.props.disabled === true ? 'true' : null);
-        assert.equal(tab.textContent.includes(state.props.label), true);
+        assert.equal(tab.previousElementSibling.textContent.includes(state.props.label), true);
       });
     }
   }

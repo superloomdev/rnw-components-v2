@@ -109,36 +109,37 @@ describe('Tabs: every sample state under every template', function () {
         for (let index = 0; index < props.items.length; index = index + 1) {
           const item = props.items[index];
           const tab = tabs[index];
+          const tabFace = tab.previousElementSibling;
           const disabled = item.disabled === true;
           const isSelected = index === selected;
 
           // The tab's box: track under `line` (the selected tab's track
           // carries the indicator color), a fill seat under `contained`
-          assert.equal(tab.style.height, (contained ? t['control.tab_contained_height'] : t['control.tab_height']) + 'px');
-          assert.equal(tab.style.paddingLeft, t['control.tab_padding_inline'] + 'px');
-          assert.equal(tab.style.backgroundColor, contained ? cssValue('backgroundColor', t['color.' + (disabled ? 'tab_contained_container' : isSelected ? 'tab_contained_container_selected' : 'tab_contained_container')]) : 'rgba(0, 0, 0, 0)');
+          assert.equal(tabFace.style.height, (contained ? t['control.tab_contained_height'] : t['control.tab_height']) + 'px');
+          assert.equal(tabFace.style.paddingLeft, t['control.tab_padding_inline'] + 'px');
+          assert.equal(tabFace.style.backgroundColor, contained ? cssValue('backgroundColor', t['color.' + (disabled ? 'tab_contained_container' : isSelected ? 'tab_contained_container_selected' : 'tab_contained_container')]) : 'rgba(0, 0, 0, 0)');
           assert.equal(tab.getAttribute('aria-selected'), String(isSelected));
           assert.equal(tab.getAttribute('aria-disabled'), disabled ? 'true' : null);
           assert.equal(tab.getAttribute('tabindex'), index === selected ? '0' : '-1');
           if (contained) {
-            assert.equal(tab.style.borderRightWidth === '' ? '0px' : tab.style.borderRightWidth, '0px');
-            assert.equal(tab.style.borderBottomWidth, '0px');
+            assert.equal(tabFace.style.borderRightWidth === '' ? '0px' : tabFace.style.borderRightWidth, '0px');
+            assert.equal(tabFace.style.borderBottomWidth, '0px');
             // The separator seat draws on the leading edge, save the first
             // tab (nothing leads it: upstream's clip hides the first tab's
             // leading shadow), the selected tab and the one after it
-            const separator = parts.separator(tab);
+            const separator = parts.separator(tabFace);
             const drawn = index !== 0 && isSelected !== true && index !== selected + 1;
             assert.equal(separator.style.width, t['border.width_01'] + 'px');
             assert.equal(separator.style.backgroundColor, drawn ? cssValue('backgroundColor', t['color.tab_contained_separator']) : 'rgba(0, 0, 0, 0)');
           } else {
             const content = t['anatomy.tab_indicator'] === 'content';
             const track = disabled ? 'tab_track_disabled' : isSelected && !content ? 'tab_indicator' : 'tab_track';
-            assert.equal(tab.style.borderBottomWidth, t['control.tab_track_width'] + 'px');
-            assert.equal(tab.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + track]));
+            assert.equal(tabFace.style.borderBottomWidth, t['control.tab_track_width'] + 'px');
+            assert.equal(tabFace.style.borderBottomColor, cssValue('borderBottomColor', t['color.' + track]));
           }
 
           // The label's color and type
-          const label = parts.label(tab);
+          const label = parts.label(tabFace);
           const labelLeaf = disabled ? 'tab_label_disabled' : isSelected ? 'tab_label_selected' : 'tab_label';
           const face = isSelected ? t['type.tab_label_selected'] : t['type.tab_label'];
           assert.equal(label.style.color, cssValue('color', t['color.' + labelLeaf]));
@@ -151,8 +152,8 @@ describe('Tabs: every sample state under every template', function () {
           // The indicator draws only on the selected tab, on the variant's
           // edge; the bottom one covers the track line itself
           const edge = contained ? 'top' : 'bottom';
-          const full = parts.indicatorFull(tab);
-          const content = parts.indicatorContent(tab);
+          const full = parts.indicatorFull(tabFace);
+          const content = parts.indicatorContent(tabFace);
           const contentWidth = t['anatomy.tab_indicator'] === 'content' && !contained;
           assert.equal(full.style[edge], (contained ? 0 : -t['control.tab_track_width']) + 'px');
           assert.equal(content.style[edge], '0px');
