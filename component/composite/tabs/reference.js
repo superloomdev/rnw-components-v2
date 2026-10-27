@@ -22,7 +22,11 @@ export default Object.freeze({
       contained: props.variant === 'contained'
     }, items.map(function (item, index) {
       return React.createElement(upstream.Tab, { key: index, disabled: item.disabled === true }, item.label);
-    })));
+    })),
+    // The with-panels sample draws its panels on both pages
+    Array.isArray(props.panels) ? React.createElement(upstream.TabPanels, null, props.panels.map(function (text, index) {
+      return React.createElement(upstream.TabPanel, { key: index }, text);
+    })) : null);
   },
   // The element a person hovers, presses and focuses: a tab's button
   target: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > [role="tab"]' }),
