@@ -1297,7 +1297,7 @@ export async function readControlPaint (page) {
       if (control === undefined) {
         continue;
       }
-      const face = control.getAttribute('role') === 'slider'
+      let face = control.getAttribute('role') === 'slider'
         ? body.querySelector('[data-testid="slider-thumb-face"]') : control;
       if (face === null) {
         throw new Error('A slider paint signature requires its painted thumb face');
