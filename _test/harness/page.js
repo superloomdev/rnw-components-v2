@@ -1159,23 +1159,6 @@ export async function readTextContrast (page, disabledCells) {
       return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
     };
     // The fills behind a node, nearest first, composited onto white (the page)
-    const backdrop = function (node) {
-      const layers = [];
-      for (let current = node; current !== null; current = current.parentElement) {
-        const fill = parse(getComputedStyle(current).backgroundColor);
-        if (fill !== null && fill.a > 0) {
-          layers.push(fill);
-          if (fill.a === 1) {
-            break;
-          }
-        }
-      }
-      let color = { r: 255, g: 255, b: 255, a: 1 };
-      for (let i = layers.length - 1; i >= 0; i--) {
-        color = over(layers[i], color);
-      }
-      return color;
-    };
     const undrawn = function (node, body) {
       for (let current = node; current !== null && current !== body; current = current.parentElement) {
         const style = getComputedStyle(current);
@@ -1187,6 +1170,38 @@ export async function readTextContrast (page, disabledCells) {
         }
       }
       return false;
+    };
+    const backdrop = function (node, body) {
+      const layers = [];
+      // The run's true backdrop: the paint stack under its centre, not its
+      // ancestors - a state layer (the selected slab, a press layer) draws
+      // as an absolutely positioned sibling, not an ancestor
+      const centre = function () {
+        const r = node.getBoundingClientRect();
+        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+      };
+      let stack = [];
+      if (typeof document.elementsFromPoint === 'function') {
+        const c = centre();
+        stack = document.elementsFromPoint(c.x, c.y).filter(function (el) {
+          return el !== node && el !== body && !node.contains(el) && !undrawn(el, body) && body.contains(el);
+        });
+      }
+      if (stack.length === 0) {
+        for (let current = node; current !== null; current = current.parentElement) { stack.push(current); }
+      }
+      for (const el of stack) {
+        const fill = parse(getComputedStyle(el).backgroundColor);
+        if (fill !== null && fill.a > 0) {
+          layers.push(fill);
+          if (fill.a === 1) { break; }
+        }
+      }
+      let color = { r: 255, g: 255, b: 255, a: 1 };
+      for (let i = layers.length - 1; i >= 0; i--) {
+        color = over(layers[i], color);
+      }
+      return color;
     };
     const rows = [];
     for (const cell of document.querySelectorAll('.cell')) {
@@ -1218,7 +1233,7 @@ export async function readTextContrast (page, disabledCells) {
       for (const run of runs) {
         const style = getComputedStyle(run.node, run.kind === 'placeholder' ? '::placeholder' : null);
         const raw = parse(style.color);
-        const fill = backdrop(run.node);
+        const fill = backdrop(run.node, body);
         const opacity = parseFloat(getComputedStyle(run.node).opacity);
         const text = over({ r: raw.r, g: raw.g, b: raw.b, a: raw.a * opacity }, fill);
         const l1 = luminance(text);
