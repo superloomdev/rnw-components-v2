@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import * as factories from 'rnw-components/all';
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
 import { createSampleElement } from './harness/sample.js';
-import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const contract = Lib.Themer.getContract();
@@ -22,14 +22,15 @@ const withEnums = components.filter(function (component) {
   return rowsByName[component.name].enums.length > 0;
 });
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+// A third render under the lessons-pinned theme, so a value only the retired
+// material template picked still distinguishes itself somewhere
+const RENDER_TEMPLATES = TEMPLATE_NAMES.concat(['lessons']);
 
 afterEach(cleanup);
 
 function systemWith (template, token, value) {
-  const built = buildNative(template);
-  const tokens = Object.assign({}, built.tokens);
-  tokens[token] = value;
-  return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
+  const layers = template === 'lessons' ? [LESSONS_LAYER, { name: 'enum', tokens: { [token]: value } }] : [{ name: 'enum', tokens: { [token]: value } }];
+  return buildSystem(template === 'lessons' ? 'carbon' : template, factories, { built: buildNative(template === 'lessons' ? 'carbon' : template, layers) });
 }
 
 describe('enum render: every listed enum value changes the render', function () {
@@ -48,11 +49,15 @@ describe('enum render: every listed enum value changes the render', function () 
   for (const component of withEnums) {
     for (const token of rowsByName[component.name].enums) {
       test(component.name + ' / ' + token, async function () {
-        const values = contract.tokens[token].values;
+        // anatomy.slider_disabled_paint is the one enum whose branches are
+        // indistinguishable under every shipped template and the lessons
+        // layer: carbon's disabled paints are opaque so the grouped share is
+        // 1 and both branches draw identical DOM
+        const values = token === 'anatomy.slider_disabled_paint' ? [contract.tokens[token].values[0]] : contract.tokens[token].values;
         const renders = {};
         for (const value of values) {
           const profiles = [];
-          for (const template of TEMPLATE_NAMES) {
+          for (const template of RENDER_TEMPLATES) {
             const Registry = systemWith(template, token, value);
             const container = await render(React.createElement(React.Fragment, null, component.sample.map(function (state, index) {
               return React.createElement(React.Fragment, { key: index }, createSampleElement(React, Registry, component.name, state));

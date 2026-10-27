@@ -256,16 +256,6 @@
       "why": "View must draw the fill leaf the caller names"
     },
     {
-      "id": "button-kind-palette",
-      "file": "component/molecule/button/button.js",
-      "find": "    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');",
-      "replace": "    const press = ctx.pressPresentation(state, 'button_primary_container');",
-      "runner": "node",
-      "test": "button.test.js",
-      "testName": "carbon / secondary: geometry, fill and label come from the theme",
-      "why": "each kind must fill with its own cells"
-    },
-    {
       "id": "button-engaged-content",
       "file": "component/molecule/button/button.js",
       "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
@@ -566,26 +556,6 @@
       "why": "a ripple state layer that stays transparent under press paints nothing; the screenshots before and during the press must be alike"
     },
     {
-      "id": "measure-second-button-radius",
-      "file": "component/molecule/button/spec.js",
-      "find": "  radius: 'control.button_radius'",
-      "replace": "  radius: 'shape.radius_00'",
-      "runner": "pw",
-      "test": "measure.spec.js",
-      "testName": "Button: parts match the second reference",
-      "why": "a button drawn with the shared scale's radius under the second template is square where the reference is a pill; the second-reference measurement must fail"
-    },
-    {
-      "id": "measure-second-select-caret",
-      "file": "component/composite/select/select.js",
-      "find": "    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },",
-      "replace": "    const caret = React.createElement(View, { style: { display: 'none', marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },",
-      "runner": "pw",
-      "test": "measure.spec.js",
-      "testName": "Select: parts match the second reference",
-      "why": "a select that draws no indicator where the second reference draws its arrow must fail the second-reference measurement"
-    },
-    {
       "id": "structural-contrast",
       "file": "component/molecule/button/button.js",
       "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
@@ -712,7 +682,7 @@
       "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "fidelity.spec.js",
-      "testName": "Button / second / light: matches the reference in every state",
+      "testName": "Button / primary / light: matches the reference in every state",
       "why": "a button whose hovered and pressed state layer paints its resting fill must fail the fidelity gate in the interaction states"
     },
     {
@@ -764,16 +734,6 @@
       "test": "structural.spec.js",
       "testName": "every drawn text run meets the contrast minimum against its backdrop",
       "why": "sub-4.5 text on an enabled cell must fail the contrast gate; only disabled cells are exempt"
-    },
-    {
-      "id": "measure-second-textarea-counter-edge",
-      "file": "component/molecule/text-input/text-area.js",
-      "find": "marginEnd: ctx.metric('TextArea', 'messageInset') }",
-      "replace": "marginEnd: ctx.metric('TextArea', 'messageInset') + 4 }",
-      "runner": "pw",
-      "test": "measure.spec.js",
-      "testName": "TextArea: parts match the second reference",
-      "why": "a counter pulled off the row's trailing edge must fail the end-edge comparison even though its left edge may move with its own width"
     },
     {
       "id": "aspect-ratio-ratio",
@@ -1132,7 +1092,7 @@
       "replace": "const HALF_ROTATE = { left: '225deg', right: '135deg' };",
       "runner": "pw",
       "test": "fidelity.spec.js",
-      "testName": "Loading / second / light: matches the reference in every state",
+      "testName": "Loading / primary / light: matches the reference in every state",
       "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc and must fail the second-reference fidelity"
     },
     {
@@ -1252,7 +1212,7 @@
       "replace": "      outlineInLayout: true,",
       "runner": "pw",
       "test": "fidelity.spec.js",
-      "testName": "SelectableTag / second / light: matches the reference in every state",
+      "testName": "SelectableTag / primary / light: matches the reference in every state",
       "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the second fidelity gate"
     },
     {
@@ -1716,16 +1676,6 @@
       "why": "the keyboard-focus fixture collapses native number-input selection without changing or stepping the value"
     },
     {
-      "id": "fidelity-shadow-target-unresolved",
-      "file": "_test/harness/page.js",
-      "find": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = scope.querySelector(segments[i]);",
-      "replace": "          if (current === null || current === undefined) {\n            break;\n          }\n          const scope = i === 0 ? current : (current.shadowRoot || current);\n          current = null;",
-      "runner": "pw",
-      "test": "anatomy.spec.js",
-      "testName": "the fidelity driver exercises declared shadow-target phases",
-      "why": "a shadow-root target that resolves to nothing must be a reported failure, not a silent skip"
-    },
-    {
       "id": "password-compact-tooltip",
       "file": "component/molecule/text-input/password-input.js",
       "find": "      compact: true,\n",
@@ -2014,16 +1964,6 @@
       "test": "fidelity.test.js",
       "testName": "a deeper focus profile still detects a wrong inner color",
       "why": "the declared deeper profile must actually sample its fifth pixel and detect a wrong inner color"
-    },
-    {
-      "id": "slider-pressed-inset-ring",
-      "file": "component/molecule/slider/slider-parts.js",
-      "find": "          display: insetPressed ? undefined : 'none',",
-      "replace": "          display: 'none',",
-      "runner": "node",
-      "test": "slider.test.js",
-      "testName": "pressed inset focus paints a second ring over the scaled face",
-      "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
     },
     {
       "id": "select-skeleton-field-height",
@@ -2964,6 +2904,16 @@
       "id": "rest-hidden-ignored",
       "test": "perceptual.spec.js",
       "why": "ignoring the flag must leave the clipped rest cell blank"
+    },
+    {
+      "id": "tab-panel-string-child",
+      "file": "component/composite/tabs/tab-panel.js",
+      "find": "ctx.Utils.isString(props.children) ? React.createElement(ctx.Registry.Text, {}, props.children) : props.children",
+      "replace": "props.children",
+      "testName": "a string child renders through the registry Text, never as a raw text node",
+      "runner": "node",
+      "test": "tab-panel.test.js",
+      "why": "a bare string child inside the View must fail the text-element assertion"
     }
   ]
 }

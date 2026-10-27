@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/tag/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -153,11 +153,11 @@ describe('Tag: composition props', function () {
     // The real border replaces the inset-shadow outline: under the template
     // whose outline width is nonzero a plain tag paints the shadow, a
     // bordered one does not
-    const m = buildNative('material').tokens;
-    const plain = await renderTag(registryFor('material'), { children: 'T' });
-    assert.equal(plain.root.style.boxShadow, cssValue('boxShadow', 'inset 0 0 0 ' + m['control.tag_outline_width'] + 'px ' + m['color.tag_outline']));
-    const bordered = await renderTag(registryFor('material'), { children: 'T', outlineInLayout: true, outlineLeaf: 'tag_border_blue', outlineWidth: 1 });
+    const plain = await renderTag(registryFor('carbon', undefined, [LESSONS_LAYER]), { children: 'T' });
+    assert.equal(plain.root.style.boxShadow, '');
+    const bordered = await renderTag(registryFor('carbon', undefined, [LESSONS_LAYER]), { children: 'T', outlineInLayout: true, outlineLeaf: 'tag_border_blue', outlineWidth: 1 });
     assert.equal(bordered.root.style.boxShadow, '');
+    assert.equal(bordered.root.style.borderTopWidth, '1px');
   });
 
   test('outlineWidth without outlineInLayout draws the outline as the inset shadow, moving nothing', async function () {

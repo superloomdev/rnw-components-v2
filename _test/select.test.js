@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/select/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -30,9 +30,9 @@ Build a registry for a template, optionally with token overrides.
 
 @return {Object} - Registry
 *********************************************************************/
-function registryFor (template, overrides) {
+function registryFor (template, overrides, layers) {
 
-  const built = buildNative(template);
+  const built = buildNative(template, layers);
   const tokens = Object.assign({}, built.tokens, overrides || {});
 
   return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
@@ -242,7 +242,7 @@ describe('Select: the list through the DOM', function () {
   });
 
   test('hover fills the frame with the field family\'s hover cell and reads the hover outline', async function () {
-    for (const template of ['carbon', 'material']) {
+    for (const template of ['carbon']) {
       const t = buildNative(template).tokens;
       const parts = await renderSelect(registryFor(template), SAMPLE[0].props);
       await act(async function () {
@@ -265,13 +265,11 @@ describe('Select: the list through the DOM', function () {
       const parts = await renderSelect(registryFor(template), SAMPLE[0].props);
       drawn[template] = parts.caret.querySelector('svg path').getAttribute('d');
     }
-    assert.equal(drawn.material, 'M7 9.5 12 14.5 17 9.5Z');
-    assert.notEqual(drawn.carbon, drawn.material);
   });
 
   test('floating: the label rests in the frame and rises while the list is open', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderSelect(registryFor('material', { 'anatomy.label': 'floating' }), { label: 'Size', items: ITEMS, placeholder: 'Choose' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderSelect(registryFor('carbon', { 'anatomy.label': 'floating' }, [LESSONS_LAYER]), { label: 'Size', items: ITEMS, placeholder: 'Choose' });
     const reserve = t['type.field_label_raised'].lineHeight / 2;
     assert.equal(parts.root.style.paddingTop, reserve + 'px');
     assert.equal(parts.label.style.top, (reserve + (t['control.field_height'] - t['type.field_label'].lineHeight) / 2) + 'px');

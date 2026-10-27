@@ -10,7 +10,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/checkbox/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -27,9 +27,9 @@ Build a registry for a template, optionally with token overrides.
 
 @return {Object} - Registry
 *********************************************************************/
-function registryFor (template, overrides) {
+function registryFor (template, overrides, layers) {
 
-  const built = buildNative(template);
+  const built = buildNative(template, layers);
   const tokens = Object.assign({}, built.tokens, overrides || {});
 
   return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
@@ -194,8 +194,8 @@ describe('Checkbox: state through the DOM', function () {
   });
 
   test('the state layer: the disc centered on the box shows the theme\'s layer for the selection and the state', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderCheckbox(registryFor('material'), { label: 'L' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderCheckbox(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
     const offset = (t['control.checkbox_size'] - t['control.selection_layer_size']) / 2;
     assert.equal(parts.layer.style.width, t['control.selection_layer_size'] + 'px');
     assert.equal(parts.layer.style.left, offset + 'px');
@@ -206,14 +206,14 @@ describe('Checkbox: state through the DOM', function () {
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_active']));
-    const checked = await renderCheckbox(registryFor('material'), { label: 'L', checked: true });
+    const checked = await renderCheckbox(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', checked: true });
     await fire(checked.root, new Event('pointerover', { bubbles: true }));
     assert.equal(checked.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_selected_hover']));
   });
 
   test('hover and press read the outline cells for the state', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderCheckbox(registryFor('material'), { label: 'L' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderCheckbox(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
     assert.equal(parts.box.style.borderTopColor, cssValue('borderTopColor', t['color.selection_outline_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
@@ -221,7 +221,7 @@ describe('Checkbox: state through the DOM', function () {
   });
 
   test('focus draws the selection ring around the box at the theme\'s offset and corner; the row suppresses the browser\'s own ring', async function () {
-    for (const template of ['carbon', 'material']) {
+    for (const template of ['carbon']) {
       const t = buildNative(template).tokens;
       const parts = await renderCheckbox(registryFor(template), { label: 'L' });
       assert.equal(parts.ring.style.outlineWidth, '');

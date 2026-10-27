@@ -106,7 +106,7 @@ describe('ToggletipButton: the press target floor', function () {
       }
       return React.createElement(Lib.ReactNative.View, Object.assign({}, p, { ref: ref }));
     });
-    for (const template of ['default', 'carbon', 'material']) {
+    for (const template of ['default', 'carbon']) {
       layouts.length = 0;
       const Registry = buildSystem(template, factories, {
         lib: Object.assign({}, Lib, { ReactNative: Object.assign({}, Lib.ReactNative, { View: MeasuringView }) })

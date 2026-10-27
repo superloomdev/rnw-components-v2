@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/text-input/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -176,7 +176,7 @@ describe('TextInput: state through the DOM', function () {
   });
 
   test('hover reads the text input\'s own container cell and the hover outline; focus draws the field ring and the focus outline', async function () {
-    for (const template of ['carbon', 'material']) {
+    for (const template of ['carbon']) {
       const t = buildNative(template).tokens;
       const parts = await renderField(registryFor(template), { label: 'L' });
       await act(async function () {
@@ -196,8 +196,8 @@ describe('TextInput: state through the DOM', function () {
   });
 
   test('floating: the label rests in the frame, rises over the surface on focus, and stays raised once populated', async function () {
-    const t = buildNative('material').tokens;
-    const Registry = registryFor('material', { 'anatomy.label': 'floating', 'feedback.field': 'outline' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const Registry = registryFor('carbon', { 'anatomy.label': 'floating', 'feedback.field': 'outline' }, [LESSONS_LAYER]);
     const parts = await renderField(Registry, { label: 'Name', placeholder: 'Jane', surface: 'layer_01' });
     const height = t['control.field_height'];
     const body = t['type.field_label'];
@@ -221,11 +221,11 @@ describe('TextInput: state through the DOM', function () {
   });
 
   test('the occluding surface falls back to the FIELD_SURFACE config, then to background', async function () {
-    const t = buildNative('material').tokens;
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
     const overrides = { 'anatomy.label': 'floating' };
-    const configured = await renderField(registryFor('material', overrides, { FIELD_SURFACE: 'layer_02' }), { label: 'L', value: 'v' });
+    const configured = await renderField(registryFor('carbon', Object.assign({}, LESSONS_LAYER.tokens, overrides), { FIELD_SURFACE: 'layer_02' }), { label: 'L', value: 'v' });
     assert.equal(configured.label.style.backgroundColor, cssValue('backgroundColor', t['color.layer_02']));
-    const plain = await renderField(registryFor('material', overrides), { label: 'L', value: 'v' });
+    const plain = await renderField(registryFor('carbon', overrides, [LESSONS_LAYER]), { label: 'L', value: 'v' });
     assert.equal(plain.label.style.backgroundColor, cssValue('backgroundColor', t['color.background']));
   });
 

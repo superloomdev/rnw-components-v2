@@ -29,7 +29,7 @@ function Probe (ctx) {
 /********************************************************************
 Build the native projection of one template with build options.
 
-@param {String} name    - 'default' | 'carbon' | 'material'
+@param {String} name    - 'default' | 'carbon'
 @param {Array}  layers  - Brand layers
 @param {Object} options - buildTheme options: { variant, adaptive }
 

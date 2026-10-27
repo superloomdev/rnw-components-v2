@@ -36,7 +36,9 @@ export default function TabPanel (ctx) {
         outlineWidth: ctx.metric('TabPanel', 'focusWidth'),
         padding: ctx.metric('TabPanel', 'padding')
       }
-    }, props.children);
+    // A bare string child renders through the registry Text: a raw string
+    // inside a View warns on the web and crashes a native render
+    }, ctx.Utils.isString(props.children) ? React.createElement(ctx.Registry.Text, {}, props.children) : props.children);
 
   }
 

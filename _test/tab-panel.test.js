@@ -31,6 +31,20 @@ describe('TabPanel: every sample state under every template', function () {
 
 });
 
+describe('TabPanel: a bare string child renders inside a text element', function () {
+
+  test('a string child renders through the registry Text, never as a raw text node', async function () {
+    const t = registryFor('carbon');
+    const container = await render(React.createElement(t.TabPanel, { children: 'Panel content' }));
+    const panel = container.querySelector('[role="tabpanel"]');
+    assert.notEqual(panel, null);
+    const bare = Array.prototype.filter.call(panel.childNodes, function (node) { return node.nodeType === 3; });
+    assert.equal(bare.length, 0, 'a raw string beside the View warns on web and crashes native');
+    assert.equal(panel.textContent, 'Panel content');
+  });
+
+});
+
 function registryFor (template) {
   return buildSystem(template, factories);
 }

@@ -12,7 +12,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/switch/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -28,9 +28,9 @@ Build a registry for a template, optionally with token overrides.
 
 @return {Object} - Registry
 *********************************************************************/
-function registryFor (template, overrides) {
+function registryFor (template, overrides, layers) {
 
-  const built = buildNative(template);
+  const built = buildNative(template, layers);
   const tokens = Object.assign({}, built.tokens, overrides || {});
 
   return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
@@ -236,13 +236,13 @@ describe('Toggle: state through the DOM', function () {
   });
 
   test('the state layer shows only under the ripple press presentation, centered on the zone', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderToggle(registryFor('material'), { label: 'L' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
     await fire(parts.root, new Event('mouseenter', { bubbles: false }));
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.switch_layer_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.switch_layer_active']));
-    const checked = await renderToggle(registryFor('material'), { label: 'L', checked: true });
+    const checked = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', checked: true });
     await fire(checked.root, new Event('mouseenter', { bubbles: false }));
     assert.equal(checked.layer.style.backgroundColor, cssValue('backgroundColor', t['color.switch_layer_selected_hover']));
     // Under `highlight` the track paints the state fill and the layer stays hidden
@@ -256,19 +256,19 @@ describe('Toggle: state through the DOM', function () {
   // rests invisible through opacity and the resting layer paints a
   // transparent fill, which every platform reads as nothing
   test('the resting layer paints nothing and the small mark rests at opacity 0 until checked', async function () {
-    const off = await renderToggle(registryFor('material'), { label: 'L', size: 'sm' });
+    const off = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', size: 'sm' });
     assert.equal(off.layer.style.backgroundColor, 'rgba(0, 0, 0, 0)');
     assert.notEqual(off.mark, null);
     assert.equal(off.mark.style.opacity, '0');
-    const on = await renderToggle(registryFor('material'), { label: 'L', size: 'sm', checked: true });
+    const on = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', size: 'sm', checked: true });
     assert.equal(on.mark.style.opacity, '1');
   });
 
   test('a grows switch reads the pressed and selected handle sizes; a fixed one reads the base', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderToggle(registryFor('material'), { label: 'L' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
     assert.equal(parts.handle.style.width, t['control.switch_handle_size'] + 'px');
-    const checked = await renderToggle(registryFor('material'), { label: 'L', checked: true });
+    const checked = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', checked: true });
     assert.equal(checked.handle.style.width, t['control.switch_handle_size_selected'] + 'px');
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.handle.style.width, t['control.switch_handle_size_pressed'] + 'px');
@@ -282,21 +282,21 @@ describe('Toggle: state through the DOM', function () {
   });
 
   test('hover and press read the state cells for handle and outline', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderToggle(registryFor('material'), { label: 'L' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
     await fire(parts.root, new Event('mouseenter', { bubbles: false }));
     assert.equal(parts.handle.style.backgroundColor, cssValue('backgroundColor', t['color.switch_handle_hover']));
     assert.equal(parts.track.style.borderTopColor, cssValue('borderTopColor', t['color.switch_outline_hover']));
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.handle.style.backgroundColor, cssValue('backgroundColor', t['color.switch_handle_active']));
-    const checked = await renderToggle(registryFor('material'), { label: 'L', checked: true });
+    const checked = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', checked: true });
     await fire(checked.root, new Event('mouseenter', { bubbles: false }));
     assert.equal(checked.handle.style.backgroundColor, cssValue('backgroundColor', t['color.switch_handle_selected_hover']));
     assert.equal(checked.track.style.borderTopWidth, '0px');
   });
 
   test('focus draws the ring on the track; a pointer-driven focus shows it only where the theme says any', async function () {
-    for (const template of ['carbon', 'material']) {
+    for (const template of ['carbon']) {
       const t = buildNative(template).tokens;
       const parts = await renderToggle(registryFor(template), { label: 'L' });
       assert.equal(parts.track.style.outlineWidth, '');
@@ -308,12 +308,12 @@ describe('Toggle: state through the DOM', function () {
       assert.equal(parts.track.style.outlineColor, cssValue('outlineColor', t['color.switch_focus_ring']), template);
       assert.equal(parts.root.style.outlineStyle, 'none');
     }
-    const material = await renderToggle(registryFor('material'), { label: 'L' });
-    await fire(material.root, new Event('pointerdown', { bubbles: true }));
+    const pinned = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
+    await fire(pinned.root, new Event('pointerdown', { bubbles: true }));
     await act(async function () {
-      material.root.focus();
+      pinned.root.focus();
     });
-    assert.equal(material.track.style.outlineWidth, '');
+    assert.equal(pinned.track.style.outlineWidth, '');
   });
 
   test('the ring stays drawn through a press where the theme rings on any focus', async function () {

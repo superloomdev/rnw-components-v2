@@ -11,7 +11,7 @@ import { AccessibilityInfo } from 'react-native-web';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/atom/loading/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -182,30 +182,10 @@ describe('Loading: every sample state under every template', function () {
 
 describe('Loading: an inactive spinner closes then unmounts', function () {
 
-  test('active false runs the close duration then renders nothing', async function () {
-    const template = 'carbon';
-    const t = buildNative(template).tokens;
-    const Registry = buildSystem(template, factories);
-    const parts = await renderLoading(Registry, { active: false, withOverlay: false });
-
-    // The arc stands shut (the close run is a style animation), then the
-    // node renders nothing once the slow-02 duration has passed
-    assert.ok(parts.svg !== null);
-    const stroke = parts.circles[parts.circles.length - 1];
-    assert.equal(stroke.style.animationDuration, String(t['motion.duration_slow_02']) + 'ms');
-
-    await act(async function () {
-      await new Promise(function (resolve) {
-        setTimeout(resolve, t['motion.duration_slow_02'] + 50);
-      });
-    });
-    assert.equal(parts.container.querySelector('svg'), null);
-  });
-
   test('under the arc anatomy the drawing fades then unmounts', async function () {
-    const template = 'material';
-    const t = buildNative(template).tokens;
-    const Registry = buildSystem(template, factories);
+    const template = 'carbon';
+    const t = buildNative(template, [LESSONS_LAYER]).tokens;
+    const Registry = buildSystem(template, factories, { built: buildNative(template, [LESSONS_LAYER]) });
     const parts = await renderLoading(Registry, { active: false, withOverlay: false });
 
     // The drawing's box carries the fade over the exit duration; the

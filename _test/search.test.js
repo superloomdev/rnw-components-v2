@@ -12,7 +12,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/search/sample.js';
 import REFERENCE from '../component/molecule/search/reference.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -156,7 +156,7 @@ describe('Search: the clear and keyboard contract', function () {
 
   test('submission reports the current text', async function () {
     const submits = [];
-    const parts = await renderSearch(registryFor('material'), {
+    const parts = await renderSearch(registryFor('carbon', undefined, [LESSONS_LAYER]), {
       onSubmit: function (next) { submits.push(next); },
       value: 'Query'
     });

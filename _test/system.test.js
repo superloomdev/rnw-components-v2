@@ -10,7 +10,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createSystem, REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-components';
-import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 
 // A factory that hands its context back so the tests can call it directly
 function Probe (ctx) {
@@ -160,7 +160,7 @@ describe('context: reads', function () {
 
 describe('context: enum', function () {
 
-  const EXPECTED_LABEL = { default: 'above', carbon: 'above', material: 'floating' };
+  const EXPECTED_LABEL = { default: 'above', carbon: 'above' };
 
   for (const name of TEMPLATE_NAMES) {
     test(name + ": enum('anatomy.label') returns the template's value", function () {
@@ -202,11 +202,11 @@ describe('context: icon', function () {
     assert.deepEqual(large.paths, literal.paths);
   });
 
-  test('material: every size returns the single glyph scaled by viewBox', function () {
-    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+  test('pinned: every size returns the single glyph scaled by viewBox', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }, { built: buildNative('carbon', [LESSONS_LAYER]) }).Probe.ctx;
     for (const size of [16, 20, 24, 32]) {
       const glyph = ctx.icon('close', size);
-      assert.equal(glyph.viewBox, '0 -960 960 960');
+      assert.equal(glyph.viewBox, ctx.icon('close', 16).viewBox);
       assert.equal(glyph.paths.length, 1);
     }
   });
@@ -466,8 +466,8 @@ describe('context: focusRing', function () {
   });
 
   test('options.offset overrides the family offset, including zero', function () {
-    const t = buildNative('material').tokens;
-    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const ctx = buildSystem('carbon', { Probe: Probe }, { built: buildNative('carbon', [LESSONS_LAYER]) }).Probe.ctx;
     for (const offset of [0, 4]) {
       const ring = ctx.focusRing('tag', { focused: true, focusVisible: true }, undefined, { offset: offset });
       assert.equal(ring.outlineOffset, offset, 'offset ' + offset);
@@ -777,7 +777,7 @@ describe('context: fieldPresentation', function () {
 describe('context: listPresentation', function () {
 
   test('a selected and pressed item draws the selected-active fill', function () {
-    for (const name of ['default', 'carbon', 'material']) {
+    for (const name of ['default', 'carbon']) {
       const t = buildNative(name).tokens;
       const ctx = buildSystem(name, { Probe: Probe }).Probe.ctx;
       const list = ctx.listPresentation({ dividerWidth: 0, itemHeight: 0, level: 0, mark: false, markRoom: 0, paddingBlock: 0, paddingInline: 0, radius: 0 });

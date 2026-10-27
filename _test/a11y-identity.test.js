@@ -1,6 +1,6 @@
 // Info: Accessibility identity across templates. For every component and
 // every sample state, the accessibility tree rendered under the default,
-// carbon and material templates is identical: roles, aria-* attributes,
+// carbon and default templates is identical: roles, aria-* attributes,
 // focusability and text. A theme changes appearance only.
 
 import { afterEach, describe, test } from 'node:test';
@@ -22,11 +22,11 @@ for (const name of TEMPLATE_NAMES) {
 afterEach(cleanup);
 
 
-describe('a11y identity: the accessibility tree is the same under every template', function () {
+describe('a11y identity: the accessibility tree is the same under both templates', function () {
 
   test('there are components and sample states to compare', function () {
     assert.ok(components.length >= 1);
-    assert.equal(TEMPLATE_NAMES.length, 3);
+    assert.equal(TEMPLATE_NAMES.length, 2);
   });
 
   for (const component of components) {

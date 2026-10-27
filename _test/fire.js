@@ -67,12 +67,13 @@ Run the row's test; report pass or fail without throwing.
 *********************************************************************/
 function runTest (row) {
 
-  // One guard (default caps) per planted run: direct node --test and
-  // npx playwright spawns are wrapped; `npm run bundle` is already
+  // One guard per planted run, capped below the outer `npm run fire` guard
+  // (6144 MB) so a runaway row is killed here and reported, not left to the
+  // outer guard to take the whole run down. `npm run bundle` is already
   // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
-    ? 'npm run bundle --silent && node ../scripts/guard.js -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node ../scripts/guard.js -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
+    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
@@ -80,6 +81,11 @@ function runTest (row) {
     process.stdout.write('CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
     const detail = String(error.stdout || '') + String(error.stderr || error.message);
     process.stdout.write(detail.split('\n').slice(-30).join('\n') + '\n');
+    // The inner guard's own kill codes: the planted run ran away on memory
+    // or time; the row records KILLED and the runner moves on
+    if (error.status === 137 || error.status === 124) {
+      return { killed: error.status === 137 ? 'memory' : 'time' };
+    }
     // A child that died without a normal test failure proves nothing about
     // the mutation; the caller's finally restores the file before this throw
     if (!isMutationProof(error)) {
@@ -118,10 +124,15 @@ for (const row of rows) {
 
   // Plant the edit, run, restore, verify the restore
   let failedUnderMutation;
+  let killed = null;
   try {
     writeFileSync(target, text.replaceAll(row.find, row.replace));
     process.stdout.write('MUTATE  ' + row.id + '\n');
-    failedUnderMutation = !runTest(row);
+    const result = runTest(row);
+    if (result !== null && typeof result === 'object' && result.killed) {
+      killed = result.killed;
+    }
+    failedUnderMutation = result !== true;
   } finally {
     writeFileSync(target, original);
   }
@@ -133,8 +144,14 @@ for (const row of rows) {
     continue;
   }
 
+  if (killed !== null) {
+    broken.push(row.id + ': KILLED (' + killed + ')');
+    process.stdout.write('KILLED  ' + row.id + '  (' + killed + ')\n');
+    continue;
+  }
+
   process.stdout.write('RECOVER ' + row.id + '\n');
-  const recovered = runTest(row);
+  const recovered = runTest(row) === true;
   let mark = 'FIRED  ';
   if (!failedUnderMutation) {
     broken.push(row.id + ': DID NOT FIRE - the planted edit did not fail "' + row.testName + '"');

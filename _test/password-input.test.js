@@ -11,7 +11,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/text-input/sample.password-input.js';
 import REFERENCE from '../component/molecule/text-input/reference.password-input.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -115,7 +115,7 @@ describe('PasswordInput: the reveal contract', function () {
   });
 
   test('custom names reach the action', async function () {
-    const parts = await renderField(registryFor('material'), {
+    const parts = await renderField(registryFor('carbon', undefined, [LESSONS_LAYER]), {
       hidePasswordLabel: 'Mask it',
       label: 'Password',
       showPasswordLabel: 'Reveal it',

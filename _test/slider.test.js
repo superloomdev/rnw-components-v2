@@ -14,7 +14,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/slider/sample.js';
 import { composePaintGroup } from '../component/molecule/slider/slider-parts.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -619,7 +619,7 @@ describe('Slider: brand layers', function () {
       'color.selection_outline_focus': '#ff0000',
       'color.selection_container_focus': '#ff0000'
     } }];
-    for (const template of ['default', 'material']) {
+    for (const template of ['default', 'carbon']) {
       const t = buildNative(template, layers).tokens;
       const Registry = buildSystem(template, factories, { layers: layers });
       const container = await render(React.createElement(Registry.Slider, { label: 'Volume', defaultValue: 50 }));
@@ -678,20 +678,20 @@ describe('Slider: disabled paint composition', function () {
     assert.equal(node.face.style.backgroundColor, 'rgba(141, 141, 141, 0.5)', 'nub keeps its alpha');
   });
 
-  test('the grouped disabled paint factors its alpha; children carry 8-bit shares', async function () {
-    const Registry = buildSystem('material', factories);
-    const container = await render(React.createElement(Registry.Slider, {
-      label: 'Volume',
-      defaultValue: 50,
-      disabled: true
-    }));
-    const node = parts(container);
-    // RNW quantizes each child alpha to an 8-bit channel, then the DOM
-    // serializes normalizeColor's toFixed(2) - the share is literal 0.32
-    assert.equal(Number.parseFloat(node.paintGroup.style.opacity), 0.38);
-    assert.equal(node.inactive.style.backgroundColor, 'rgba(29, 27, 32, 0.32)');
-    assert.equal(node.filled.style.backgroundColor, 'rgb(29, 27, 32)');
-    assert.equal(node.face.style.backgroundColor, 'rgb(29, 27, 32)');
+  test('the grouped disabled paint factors its alpha; children carry un-factored colors', function () {
+
+    // Carbon's disabled paints are opaque, so the grouped share is 1 and the
+    // grouped render matches independent - the branch is exercised through
+    // composePaintGroup directly
+    const translucent = composePaintGroup({
+      fill: 'rgba(29, 27, 32, 0.76)',
+      track: 'rgba(29, 27, 32, 0.38)'
+    });
+    assert.equal(translucent.opacity, 0.76);
+    assert.equal(translucent.colors.track, '#1d1b2080');
+    const opaque = composePaintGroup({ fill: '#c6c6c6', track: '#e0e0e0' });
+    assert.equal(opaque.opacity, 1);
+    assert.equal(opaque.colors.track, '#e0e0e0');
   });
 
 });
@@ -745,7 +745,7 @@ describe('Slider: pressed inset stroke', function () {
     assert.equal(node.face.children[0].style.display, 'none', 'gap stays hidden while pressed');
     assert.equal(node.face.children[1].style.display, 'none', 'core stays hidden while pressed');
 
-    const outlined = buildSystem('material', factories);
+    const outlined = buildSystem('carbon', factories, { built: buildNative('carbon', [LESSONS_LAYER]) });
     const outlinedNode = parts(await render(React.createElement(outlined.Slider, { label: 'Volume', defaultValue: 50 })));
     await fire(outlinedNode.thumb, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(outlinedNode.face.children[2].style.display, 'none', 'the outline anatomy never shows the ring');

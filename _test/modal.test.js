@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/modal/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -261,20 +261,6 @@ describe('Modal: the dialog width follows the layer space tier', function () {
     assert.equal(dialog.style.width, '48%');
   });
 
-  for (const width of [320, 800, 1280, 1400]) {
-    test('a bounded template keeps its own widths in a ' + width + '-wide host', async function () {
-      const system = systemFor('material');
-      const t = buildNative('material').tokens;
-      const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: width, height: 400 } },
-        React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
-      const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
-      assert.equal(dialog.style.width, '');
-      assert.equal(dialog.style.minWidth, t['control.dialog_min_width'] + 'px');
-      assert.equal(dialog.style.maxWidth, t['control.dialog_max_width'] + 'px');
-      const scrim = container.querySelector('[data-testid="modal-scrim"]');
-      assert.equal(scrim.style.justifyContent, 'center');
-    });
-  }
 
 });
 
