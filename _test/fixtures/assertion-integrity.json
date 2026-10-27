@@ -2977,7 +2977,7 @@
     },
     {
       "file": "component/molecule/tooltip/tooltip.js",
-      "find": "ref: anchorRef, 'aria-describedby': tooltipId, style: { alignSelf: 'flex-start' }, testID: props.testID",
+      "find": "ref: anchorRef, 'aria-describedby': tooltipId, style: props.fill === true ? undefined : { alignSelf: 'flex-start' }, testID: props.testID",
       "replace": "ref: anchorRef, 'aria-describedby': tooltipId, testID: props.testID",
       "runner": "node",
       "id": "icon-button-tooltip-centred",
@@ -3054,6 +3054,16 @@
       "id": "hosted-origin-stale",
       "test": "hosted-origin.test.js",
       "why": "without the live read a window scroll leaves every hosted anchored layer at the layout-time origin"
+    },
+    {
+      "file": "component/molecule/tooltip/tooltip.js",
+      "find": "props.fill === true ? undefined : { alignSelf: 'flex-start' }",
+      "replace": "{ alignSelf: 'flex-start' }",
+      "testName": "a Tooltip without fill hugs its trigger; the collapsed Search fills its field",
+      "runner": "node",
+      "id": "tooltip-fill-anchor",
+      "test": "tooltip-fill-anchor.test.js",
+      "why": "ignoring fill makes the collapsed Search's fixed-box action overflow its field"
     }
   ]
 }

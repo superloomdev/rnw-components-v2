@@ -280,6 +280,7 @@ Tooltip is a short label on a bubble beside the element it describes, opening af
 |---|---|---|---|
 | `children` | `node` | yes | The anchor: the tooltip opens when it is hovered, focused or pressed and describes it. |
 | `label` | `string` | yes | The tooltip's text; it describes the anchor through `aria-describedby`. |
+| `fill` | `boolean` | no | The anchor fills its parent instead of hugging its trigger, for a trigger laid out against a fixed box. Default false. |
 | `align` | `string` | no | The side and alignment the tooltip opens on: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`. Default `top`; flips at the viewport edge. |
 | `compact` | `boolean` | no | Draws the compact kind - the tooltip an icon button shows - from the `tooltip_compact` member cells. |
 | `open` | `boolean` | no | Controlled open state. Absent: the tooltip keeps its own state, starting from `defaultOpen`. |

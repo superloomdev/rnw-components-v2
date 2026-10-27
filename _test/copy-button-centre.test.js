@@ -12,6 +12,6 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const source = readFileSync(join(HERE, '..', 'component', 'molecule', 'tooltip', 'tooltip.js'), 'utf8');
 
 test("CopyButton's bubble centres on the button", function () {
-  assert.equal(source.includes("ref: anchorRef, 'aria-describedby': tooltipId, style: { alignSelf: 'flex-start' }"), true,
+  assert.equal(source.includes("props.fill === true ? undefined : { alignSelf: 'flex-start' }"), true,
     'the anchor View lost alignSelf: flex-start - it stretches to the cell and the bubble centres on the cell, not the button');
 });

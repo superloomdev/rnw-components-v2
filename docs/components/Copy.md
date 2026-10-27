@@ -38,7 +38,7 @@ CopyButton is an icon button whose tooltip confirms a copy for a moment after it
 | `iconDescription` | `string` | yes | The tooltip text at rest; it is also the button's accessible name. |
 | `feedback` | `string` | no | The tooltip text while the copy feedback shows. Default `Copied!`. |
 | `feedbackTimeout` | `number` | no | Milliseconds the feedback text stays. Default 2000. |
-| `align` | `string` | no | The tooltip's side and alignment (the Tooltip `align` vocabulary). Default `top`. |
+| `align` | `string` | no | The tooltip's side and alignment (the Tooltip `align` vocabulary). Default `bottom`. |
 | `size` | `string` | no | The button's size: `sm`, `md`, `lg`. Default `md`. |
 | `onClick` | `function` | yes | Called once per press; the host does the clipboard write. |
 

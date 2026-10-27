@@ -182,6 +182,7 @@ export default function Search (ctx) {
       React.createElement(ctx.Registry.Tooltip, {
         align: 'top',
         compact: true,
+        fill: true,
         label: name
       }, React.createElement(FieldAction, {
         button: trigger,
