@@ -113,7 +113,9 @@ export default function Button (ctx) {
       : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
     const minWidth = Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('Button', 'minWidth');
     const iconPlace = inline
-      ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
+      // An inline kind's icon centers itself on the row the way upstream's
+      // static ghost icon does (align-self: center), not by a computed top
+      ? { alignSelf: 'center', marginStart: ctx.metric('Button', 'iconGap') }
       : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
     // A composing parent turns the glyph (the menu button's chevron while
     // open); the turn transitions on the theme's fast-02 duration and

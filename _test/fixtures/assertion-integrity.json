@@ -3014,6 +3014,16 @@
       "id": "toggletip-focus-trigger",
       "test": "toggletip.test.js",
       "why": "without the focus on open the trigger loses DOM focus after a pointer press - no ring under focus_trigger any"
+    },
+    {
+      "file": "component/molecule/button/button.js",
+      "find": "? { alignSelf: 'center', marginStart: ctx.metric('Button', 'iconGap') }",
+      "replace": "? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }",
+      "testName": "the ghost kind centres its icon on the row; a primary kind does not",
+      "runner": "node",
+      "id": "ghost-icon-centred",
+      "test": "ghost-icon-centre.test.js",
+      "why": "upstream's ghost icon is static and self-centres; restoring the computed-top branch puts the ghost icon at the row top"
     }
   ]
 }
