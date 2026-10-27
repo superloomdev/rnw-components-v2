@@ -142,7 +142,7 @@ export default function Tab (ctx) {
             borderBottomColor: contained ? 'transparent' : ctx.color(edgeColor),
             borderBottomWidth: contained ? 0 : m.trackWidth,
             flexDirection: 'row',
-            height: props.tall === true ? ctx.metric('Tab', 'containedTallHeight') : contained ? m.containedHeight : m.height,
+            minHeight: props.tall === true ? ctx.metric('Tab', 'containedTallHeight') : contained ? m.containedHeight : m.height,
             justifyContent: 'flex-start',
             outlineStyle: 'none',
             paddingEnd: paddingEnd,

@@ -115,7 +115,7 @@ describe('Tabs: every sample state under every template', function () {
 
           // The tab's box: track under `line` (the selected tab's track
           // carries the indicator color), a fill seat under `contained`
-          assert.equal(tabFace.style.height, (contained ? t['control.tab_contained_height'] : t['control.tab_height']) + 'px');
+          assert.equal(tabFace.style.minHeight, (contained ? t['control.tab_contained_height'] : t['control.tab_height']) + 'px');
           assert.equal(tabFace.style.paddingLeft, t['control.tab_padding_inline'] + 'px');
           assert.equal(tabFace.style.backgroundColor, contained ? cssValue('backgroundColor', t['color.' + (disabled ? 'tab_contained_container' : isSelected ? 'tab_contained_container_selected' : 'tab_contained_container')]) : 'rgba(0, 0, 0, 0)');
           assert.equal(tab.getAttribute('aria-selected'), String(isSelected));
