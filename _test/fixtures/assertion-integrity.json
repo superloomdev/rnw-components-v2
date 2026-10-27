@@ -3094,6 +3094,16 @@
       "test": "tab-press-target.test.js",
       "testName": "the tab and close press layers carry the target floor while the face keeps the tab height",
       "why": "the tab layer must cover the face and reach the form-class floor"
+    },
+    {
+      "file": "component/composite/tabs/tab-list.js",
+      "find": "overflows && scrollLeft > 0",
+      "replace": "overflows && true",
+      "runner": "node",
+      "id": "tab-list-prev-hidden-at-start",
+      "test": "tab-list-scroll-buttons.test.js",
+      "testName": "the previous scroll button hides at scroll start and the next at the end",
+      "why": "at scroll start the previous button must hide (upstream Tabs.js:224)"
     }
   ]
 }

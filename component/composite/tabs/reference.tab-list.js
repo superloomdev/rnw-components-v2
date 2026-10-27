@@ -3,6 +3,7 @@
 
 export default Object.freeze({
   kind: 'render-web',
+  body: Object.freeze({ width: 320 }),
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];

@@ -128,7 +128,8 @@ describe('TabList: overflow seats', function () {
       });
       assert.equal(buttons.length, 2, template + ': both scroll seats mount');
       const drawn = buttons.filter(function (b) { return b.style.display !== 'none'; });
-      assert.equal(drawn.length, mode === 'buttons' ? 2 : 0, template + ' (' + mode + '): buttons show only under `buttons` and only when the row overflows');
+      // At scroll start only the next button shows; the previous waits for scrollLeft > 0
+      assert.equal(drawn.length, mode === 'buttons' ? 1 : 0, template + ' (' + mode + '): buttons show only under `buttons`, only when the row overflows, and the previous only once scrolled');
       // A row that fits keeps them hidden under every anatomy
       await act(async function () {
         parts.layouts[1](size(100));

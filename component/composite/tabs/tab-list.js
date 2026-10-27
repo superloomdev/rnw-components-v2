@@ -68,6 +68,7 @@ export default function TabList (ctx) {
     const scrollRef = React.useRef(null);
     const [boxWidth, setBoxWidth] = React.useState(0);
     const [contentWidth, setContentWidth] = React.useState(0);
+    const [scrollLeft, setScrollLeft] = React.useState(0);
     const overflows = overflowMode === 'buttons' && contentWidth > boxWidth + 1;
     const onBoxLayout = function (event) {
       const w = event.nativeEvent.layout.width;
@@ -149,9 +150,9 @@ export default function TabList (ctx) {
     // Render the bar: a scroll row of tabs inside the container
     return React.createElement(View, {
       role: 'none',
-      style: { alignSelf: 'flex-start', flexDirection: 'row', position: 'relative' }
+      style: { flexDirection: 'row', position: 'relative' }
     },
-    overflowButton(-1, !overflows),
+    overflowButton(-1, !(overflows && scrollLeft > 0)),
     React.createElement(ScrollView, Object.assign({}, roving.containerProps, {
       horizontal: true,
       onLayout: onBoxLayout,
@@ -160,12 +161,18 @@ export default function TabList (ctx) {
       showsHorizontalScrollIndicator: false,
       testID: props.testID,
       ref: scrollRef,
+      onScroll: function (event) {
+        setScrollLeft(event.nativeEvent.contentOffset.x);
+      },
+      scrollEventThrottle: 16,
       style: {
         backgroundColor: ctx.color('tab_container'),
         borderBottomColor: ctx.color('tab_divider'),
         borderBottomWidth: ctx.metric('TabList', 'dividerWidth'),
         flexDirection: 'row',
-        flexGrow: 1
+        flexGrow: 0,
+        flexShrink: 1,
+        minWidth: 0
       },
       contentContainerStyle: { flexDirection: 'row' }
     }),
@@ -205,7 +212,7 @@ export default function TabList (ctx) {
           variant: props.variant
         });
       }))),
-    overflowButton(1, !overflows));
+    overflowButton(1, !(overflows && scrollLeft + boxWidth + 1 < contentWidth)));
 
   }
 
