@@ -22,6 +22,7 @@ export default function IconSwitch (ctx) {
 
   function IconSwitchComponent (props) {
 
+    const [faceSize, onFaceLayout] = ctx.useFaceSize();
     const item = useButton({ disabled: props.disabled === true, onPress: props.onSelect, selected: props.selected === true });
     const state = item.state;
     const live = state.disabled !== true;
@@ -61,12 +62,8 @@ export default function IconSwitch (ctx) {
       : null;
 
 
-    const face = React.createElement(Pressable, Object.assign({}, item.rootProps, {
-      'aria-label': props.label,
-      role: 'tab',
-      'aria-selected': selected,
-      disabled: !live,
-      tabIndex: props.active === true ? 0 : -1,
+    const face = React.createElement(View, {
+      onLayout: onFaceLayout,
       style: [{
         alignItems: 'center',
         alignSelf: 'stretch',
@@ -87,7 +84,7 @@ export default function IconSwitch (ctx) {
         width: props.segmentHeight === undefined ? ctx.metric('IconSwitch', 'heightMedium') : props.segmentHeight,
         position: 'relative'
       }, press.container]
-    }),
+    },
     React.createElement(View, { 'aria-hidden': true, style: {
       alignSelf: 'center',
       backgroundColor: props.separator === true ? ctx.color(separatorLeaf) : 'transparent',
@@ -115,7 +112,17 @@ export default function IconSwitch (ctx) {
     React.createElement(ctx.Registry.Icon, { color: iconLeaf, name: props.icon, size: iconSize }),
     ring);
 
-    return React.createElement(ctx.Registry.Tooltip, { anchorStyle: props.flex !== false ? { alignSelf: 'stretch', flexBasis: 0, flexGrow: 1 } : { alignSelf: 'stretch' }, label: props.label }, face);
+    const pressLayer = React.createElement(Pressable, Object.assign({}, item.rootProps, {
+      'aria-label': props.label,
+      role: 'tab',
+      'aria-selected': selected,
+      disabled: !live,
+      tabIndex: props.active === true ? 0 : -1,
+      style: ctx.pressTarget(faceSize)
+    }));
+    const segment = React.createElement(View, { style: { alignSelf: 'stretch', position: 'relative' } }, face, pressLayer);
+
+    return React.createElement(ctx.Registry.Tooltip, { anchorStyle: props.flex !== false ? { alignSelf: 'stretch', flexBasis: 0, flexGrow: 1 } : { alignSelf: 'stretch' }, label: props.label }, segment);
 
   }
 

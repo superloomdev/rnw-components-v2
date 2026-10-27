@@ -3114,6 +3114,16 @@
       "test": "content-switcher-press-target.test.js",
       "testName": "the segment press layer carries the target floor while the face keeps the segment height",
       "why": "the segment layer must cover the face and reach the form-class floor"
+    },
+    {
+      "file": "component/molecule/content-switcher/icon-switch.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "runner": "node",
+      "id": "icon-switch-press-target",
+      "test": "icon-switch-press-target.test.js",
+      "testName": "the icon segment press layer carries the target floor on both axes",
+      "why": "the icon segment layer must cover the face on both axes"
     }
   ]
 }
