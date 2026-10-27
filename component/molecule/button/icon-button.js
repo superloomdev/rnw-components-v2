@@ -121,7 +121,9 @@ export default function IconButton (ctx) {
           alignItems: 'center',
           borderColor: ctx.color(borderLeaf),
           borderRadius: radius,
-          borderWidth: borderWidth,
+          // A composition fill owns the face outright: the kind's border
+          // does not draw over it (upstream paints no button border)
+          borderWidth: fillMap !== null ? 0 : borderWidth,
           height: side,
           justifyContent: 'center',
           width: side

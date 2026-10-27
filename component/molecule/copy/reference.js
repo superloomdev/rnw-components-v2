@@ -4,6 +4,9 @@
 
 export default Object.freeze({
   kind: 'render-web',
+  // The upstream bubble mounts on hover, focus or press; the harness must
+  // drive those interactions to count it drawn
+  interactions: Object.freeze(['hover', 'focus', 'pressed']),
   body: { width: 320 },
   mount: function (React, upstream, props) {
     return React.createElement(upstream.CopyButton, {
@@ -17,7 +20,7 @@ export default Object.freeze({
   },
   target: Object.freeze({ upstream: '.cds--copy-btn', ours: '[role="button"]' }),
   parts: Object.freeze({
-    button: Object.freeze({ upstream: '.cds--copy-btn', ours: 'div:has(> [role="button"])', measure: 'box' }),
+    button: Object.freeze({ upstream: '.cds--copy-btn', ours: 'div:has(> [role="button"]) > div', measure: 'box' }),
     icon: Object.freeze({ upstream: '.cds--copy-btn svg path', ours: 'div:has(> [role="button"]) svg path', measure: 'box' }),
     tooltip: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true })
   })

@@ -240,7 +240,7 @@ export default function Tooltip (ctx) {
         setShown(true);
       }
     },
-    React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, testID: props.testID },
+    React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, style: { alignSelf: 'flex-start' }, testID: props.testID },
       // A bare string anchor renders through the registry Text (the theme's
       // typography) and gets a tab stop: a tooltip opens on focus, so a
       // keyboard has to reach it; an element child brings its own
