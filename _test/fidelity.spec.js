@@ -1,6 +1,6 @@
 // Info: The fidelity gate. Every built row with a reference, against each
 // reference it has (the primary under the carbon template, the second under
-// the material template) and under each template's light and dark scheme:
+// each template) and under each template's light and dark scheme:
 // every sample state and every enabled state while hovered, keyboard focused
 // and pressed must match the reference part for part (`harness/fidelity.js`:
 // geometry, type, colors with their opacity, sampled paint, and the ring

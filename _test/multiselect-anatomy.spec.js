@@ -5,7 +5,7 @@ import reference from '../component/composite/select/reference.multi-select.js';
 import { enterInteraction, leaveInteraction, openShowcase, shootCell } from './harness/page.js';
 
 test('the root OverlayHost keeps an open menu above neighboring controls', async function ({ page }) {
-  for (const template of ['default', 'carbon', 'material']) {
+  for (const template of ['default', 'carbon']) {
     await openShowcase(page, template, 'MultiSelect', { measure: true, rootHost: true });
     const cell = page.locator('.cell[data-state="default"]');
     await cell.getByRole('combobox').click();

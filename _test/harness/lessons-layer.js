@@ -1,0 +1,41 @@
+// The values only the retired material template picked (D41): a brand
+// layer pins them over carbon so each stays rendered and asserted
+export const LESSONS_LAYER = Object.freeze({
+  name: 'lessons',
+  tokens: Object.freeze({
+    'feedback.press': 'ripple',
+    'feedback.field': 'outline',
+    'feedback.focus_trigger': 'keyboard',
+    'anatomy.label': 'floating',
+    'anatomy.switch_handle': 'grows',
+    'anatomy.status_marker': 'plain',
+    'anatomy.dialog_actions': 'trailing',
+    'anatomy.field_action': 'icon_button',
+    'anatomy.slider_focus': 'outline',
+    'anatomy.slider_disabled_paint': 'grouped',
+    'anatomy.button_label': 'center',
+    'anatomy.field_counter': 'message',
+    'anatomy.switch_state_text': 'hidden',
+    'anatomy.switch_edge': 'skin',
+    'anatomy.progress_indeterminate': 'travel',
+    'anatomy.tab_indicator': 'content',
+    'anatomy.dialog_close': 'hidden',
+    'anatomy.dialog_label': 'hidden',
+    'anatomy.list_selected_mark': 'hidden',
+    'anatomy.menu_icon_seat': 'item',
+    'anatomy.field_counter_format': 'spaced',
+    'anatomy.loading_motion': 'arc',
+    'anatomy.tag_close': 'inset',
+    'anatomy.tag_selected_mark': 'shown',
+    'anatomy.tag_interactive_outline': 'inset',
+    'anatomy.toggle_widget': 'drawn',
+    'anatomy.date_picker_widget': 'drawn',
+    'anatomy.time_picker_widget': 'drawn',
+    'anatomy.surface_material': 'solid',
+    'anatomy.tab_overflow': 'scroll',
+    'anatomy.content_switcher_separator': 'full',
+    'anatomy.content_switcher_selected_mark': 'shown',
+    'anatomy.overflow_menu_connector': 'hidden',
+    'anatomy.dialog_scroll_fade': 'hidden'
+  })
+});

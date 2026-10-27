@@ -11,7 +11,6 @@ import debug from 'helper-debug';
 import themer from 'helper-themer';
 import defaultProfile from 'helper-themer-template-default';
 import carbonProfile from 'helper-themer-template-carbon';
-import materialProfile from 'helper-themer-template-material';
 
 import { createSystem } from 'rnw-components';
 
@@ -31,9 +30,10 @@ export const Lib = Object.freeze({
 // The first scheme of each template, keyed by the profile name the demo uses
 export const TEMPLATES = Object.freeze({
   default: defaultProfile.schemes.light,
-  carbon: carbonProfile.schemes.white,
-  material: materialProfile.schemes.light
+  carbon: carbonProfile.schemes.white
 });
+
+export { LESSONS_LAYER } from './lessons-layer.js';
 
 const builtCache = {};
 
@@ -41,7 +41,7 @@ const builtCache = {};
 /********************************************************************
 Build (and cache) the native projection of one template.
 
-@param {String} name   - 'default' | 'carbon' | 'material'
+@param {String} name   - 'default' | 'carbon'
 @param {Array}  layers - Brand layers, default none
 
 @return {Object} - The built theme

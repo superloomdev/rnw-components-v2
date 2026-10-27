@@ -5,7 +5,7 @@
 
 import { unionBox } from './perceptual.js';
 
-export const TEMPLATE_NAMES = ['default', 'carbon', 'material'];
+export const TEMPLATE_NAMES = ['default', 'carbon'];
 
 // Pixels around a sample's painted union: a focus ring or shadow drawn just
 // outside the element stays in the comparison frame
@@ -46,6 +46,7 @@ export async function openShowcase (page, template, component, options) {
     (options && options.rootHost === true ? '&rootHost=1' : '') +
     (options && options.adaptive ? '&adaptive=' + options.adaptive : '') +
     (options && options.textScale !== undefined ? '&textScale=' + options.textScale : '') +
+    (options && options.pins ? '&pins=' + options.pins : '') +
     (options && options.dir === 'rtl' ? '&dir=rtl' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {

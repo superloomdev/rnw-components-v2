@@ -8,8 +8,7 @@ import { enterInteraction, leaveInteraction, openReference, openShowcase, readCo
 
 const STATES = ['minimum', 'quarter', 'default', 'maximum', 'disabled'];
 const REFERENCES = [
-  { set: 'primary', template: 'carbon', selector: '.cds--slider' },
-  { set: 'second', template: 'material', selector: 'md-slider' }
+  { set: 'primary', template: 'carbon', selector: '.cds--slider' }
 ];
 
 function cell (page, state) {

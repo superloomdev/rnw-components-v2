@@ -15,8 +15,8 @@ import { runFidelity } from './harness/fidelity.js';
 import { enterInteraction, leaveInteraction, openShowcase, readParts } from './harness/page.js';
 
 // The template whose field floats its label over an outline, and whose press is a ripple
-const FLOATING_OUTLINE_TEMPLATE = 'material';
-const RIPPLE_TEMPLATE = 'material';
+const FLOATING_OUTLINE_TEMPLATE = 'carbon';
+const RIPPLE_TEMPLATE = 'carbon';
 
 
 /********************************************************************
@@ -66,7 +66,7 @@ function differing (a, b) {
 test.describe('anatomy: floating label notch', function () {
 
   test('the raised label opens a notch in the outline: surface color under the label, border color beside it', async function ({ page }) {
-    const opened = await openShowcase(page, FLOATING_OUTLINE_TEMPLATE, 'TextInput', { measure: true });
+    const opened = await openShowcase(page, FLOATING_OUTLINE_TEMPLATE, 'TextInput', { measure: true, pins: 'lessons' });
     expect(opened.status.errors).toEqual([]);
     expect(opened.theme['anatomy.label']).toBe('floating');
     expect(opened.theme['feedback.field']).toBe('outline');
@@ -108,7 +108,7 @@ test.describe('anatomy: floating label notch', function () {
 test.describe('anatomy: ripple state layer', function () {
 
   test('a held press paints the state layer over a button and releasing it clears it', async function ({ page }) {
-    const opened = await openShowcase(page, RIPPLE_TEMPLATE, 'Button', { measure: true });
+    const opened = await openShowcase(page, RIPPLE_TEMPLATE, 'Button', { measure: true, pins: 'lessons' });
     expect(opened.status.errors).toEqual([]);
     expect(opened.theme['feedback.press']).toBe('ripple');
 
@@ -180,31 +180,6 @@ test.describe('anatomy: declared field-action phases', function () {
 });
 
 
-test.describe('anatomy: declared shadow-target phases', function () {
-
-  test('the fidelity driver exercises declared shadow-target phases', async function ({ page }) {
-    test.slow();
-    const source = (await discoverComponents()).find(function (entry) {
-      return entry.name === 'OperationalTag';
-    });
-    expect(source).toBeTruthy();
-    const component = Object.assign({}, source, {
-      sample: source.sample.filter(function (entry) {
-        return entry.label === 'default';
-      })
-    });
-    // The second system's chip button lives inside a shadow root: a driver
-    // that resolves it to nothing must fail, never silently skip
-    const run = await runFidelity(page, component, 'second', 'light');
-    expect(run.errors).toEqual([]);
-    for (const side of ['ours', 'upstream']) {
-      for (const phase of ['hover', 'focus', 'pressed']) {
-        expect(run[side]['default @' + phase], side + ' is missing default @' + phase).toBeTruthy();
-      }
-    }
-  });
-
-});
 
 
 test.describe('anatomy: part visibility', function () {
@@ -260,7 +235,7 @@ test('keyboard focus collapses numeric selection without changing its value', as
 
 test('intrinsically sized selections retain complete labels after fonts load', async function ({ page }) {
   test.slow();
-  for (const template of ['default', 'carbon', 'material']) {
+  for (const template of ['default', 'carbon']) {
     for (const scheme of ['light', 'dark']) {
       for (const component of ['TimePicker', 'TimePickerSelect']) {
         await openShowcase(page, template, component, { measure: true, sheet: true, scheme: scheme, hosted: false });

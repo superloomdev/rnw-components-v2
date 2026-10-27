@@ -2,7 +2,7 @@
 // Builds one component system per template with the real frameworks (React,
 // react-native-web, react-native-svg) exactly as a web host would, and
 // renders every component's sample states in a labelled grid. The URL picks
-// the template and its scheme: /?template=default|carbon|material and
+// the template and its scheme: /?template=default|carbon and
 // &scheme=light|dark (each template's own light and dark scheme; a dark page
 // is painted in the scheme's background). Nothing here is product code; it is
 // the page the browser gates measure.
@@ -16,9 +16,9 @@ import debug from 'helper-debug';
 import themer from 'helper-themer';
 import defaultProfile from 'helper-themer-template-default';
 import carbonProfile from 'helper-themer-template-carbon';
-import materialProfile from 'helper-themer-template-material';
 
 import { createSystem, resolveForm } from 'rnw-components';
+import { LESSONS_LAYER } from './lessons-layer.js';
 import { LocaleProvider } from 'react-native-web/dist/modules/useLocale/index.js';
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
@@ -28,8 +28,7 @@ import { measuredProps } from './sample-props.js';
 // Template -> scheme name -> scheme
 const TEMPLATES = {
   default: { light: defaultProfile.schemes.light, dark: defaultProfile.schemes.dark },
-  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 },
-  material: { light: materialProfile.schemes.light, dark: materialProfile.schemes.dark }
+  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 }
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -69,7 +68,7 @@ window.addEventListener('error', function (event) {
 
 let Registry;
 try {
-  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native', {
+  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], params.get('pins') === 'lessons' ? [LESSONS_LAYER] : [], 'native', {
     adaptive: adaptive,
     variant: { form: form, platform: 'web' }
   });
