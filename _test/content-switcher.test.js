@@ -78,7 +78,7 @@ describe('ContentSwitcher: separators and the selected mark', function () {
       const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: four, defaultSelectedIndex: 1 }));
       const segments = container.querySelectorAll('[role="tab"]');
       // The segment after the selected one and the selected one itself draw no separator
-      const sep = function (s) { return s.children[0]; };
+      const sep = function (s) { return s.previousElementSibling.children[0]; };
       assert.equal(sep(segments[1]).style.backgroundColor, 'rgba(0, 0, 0, 0)', 'selected segment: no separator');
       assert.equal(sep(segments[2]).style.backgroundColor, 'rgba(0, 0, 0, 0)', 'after selected: no separator');
       assert.notEqual(sep(segments[3]).style.backgroundColor, 'rgba(0, 0, 0, 0)', 'an unrelated segment keeps its separator');
@@ -94,7 +94,7 @@ describe('ContentSwitcher: separators and the selected mark', function () {
       const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, defaultSelectedIndex: 1 }));
       const segments = container.querySelectorAll('[role="tab"]');
       for (const s of segments) {
-        assert.notEqual(s.children[0].style.backgroundColor, 'rgba(0, 0, 0, 0)');
+        assert.notEqual(s.previousElementSibling.children[0].style.backgroundColor, 'rgba(0, 0, 0, 0)');
       }
     }
   });
@@ -105,7 +105,7 @@ describe('ContentSwitcher: separators and the selected mark', function () {
       const shown = t['anatomy.content_switcher_selected_mark'] === 'shown';
       const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, defaultSelectedIndex: 0 }));
       const selected = container.querySelector('[role="tab"][aria-selected="true"]');
-      const mark = selected.querySelector('svg');
+      const mark = selected.previousElementSibling.querySelector('svg');
       // the mark seat exists in both; `hidden` keeps it display:none
       assert.equal(mark !== null && mark.style.display !== 'none', shown, template + ': mark shown only when the enum says so');
     }
@@ -138,10 +138,10 @@ describe('ContentSwitcher: the lg segment padding', function () {
     const ITEMS_TEXT = [{ text: 'One' }, { text: 'Two' }, { text: 'Three' }];
     const ITEMS_ICON = [{ icon: 'info', label: 'Information' }, { icon: 'settings', label: 'Settings' }, { icon: 'notification', label: 'Notifications' }];
     const text = await render(React.createElement(registryFor('default').ContentSwitcher, { items: ITEMS_TEXT, size: 'lg' }));
-    assert.equal(getComputedStyle(text.querySelector('[role="tab"]')).paddingLeft, '16px');
+    assert.equal(getComputedStyle(text.querySelector('[role="tab"]').previousElementSibling).paddingLeft, '16px');
     await cleanup();
     const icon = await render(React.createElement(registryFor('default').ContentSwitcher, { items: ITEMS_ICON, size: 'lg' }));
-    assert.equal(getComputedStyle(icon.querySelector('[role="tab"]')).paddingLeft, '14px');
+    assert.equal(getComputedStyle(icon.querySelector('[role="tab"]').parentElement.firstElementChild).paddingLeft, '14px');
     await cleanup();
   });
 
@@ -155,8 +155,9 @@ describe('ContentSwitcher: the low-contrast pressed cell', function () {
       const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, lowContrast: true, defaultSelectedIndex: 0 }));
       const segment = container.querySelectorAll('[role="tab"]')[1];
       const want = cssValue('backgroundColor', t['color.content_switcher_low_contrast_container_active']);
+      const face = segment.previousElementSibling;
       const painted = function () {
-        return segment.style.backgroundColor === want || Array.from(segment.querySelectorAll('div')).some(function (el) {
+        return face.style.backgroundColor === want || Array.from(face.querySelectorAll('div')).some(function (el) {
           return el.style.backgroundColor === want;
         });
       };

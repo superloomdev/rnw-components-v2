@@ -35,11 +35,11 @@ export default Object.freeze({
       }, item.icon !== undefined ? React.createElement('span', { style: { display: 'inline-block', width: 16, height: 16 } }) : null);
     }));
   },
-  target: Object.freeze({ upstream: '.cds--content-switcher-btn:first-of-type', ours: '[role="tab"]' }),
+  target: Object.freeze({ upstream: '.cds--content-switcher-btn:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > [role="tab"]' }),
   parts: Object.freeze({
     container: Object.freeze({ upstream: '.cds--content-switcher', ours: '[role="tablist"]', measure: 'box' }),
-    segment: Object.freeze({ upstream: '.cds--content-switcher-btn:first-of-type', ours: '[role="tab"]', measure: 'box' }),
-    label: Object.freeze({ upstream: '.cds--content-switcher--selected .cds--content-switcher__label', ours: '[role="tab"][aria-selected="true"] [dir="auto"]', measure: 'text', optional: true }),
-    slab: Object.freeze({ upstream: '.cds--content-switcher--selected', pseudo: '::after', ours: '[role="tab"][aria-selected="true"] > div:nth-child(2)', measure: 'box', compare: ['width', 'height', 'backgroundColor'] })
+    segment: Object.freeze({ upstream: '.cds--content-switcher-btn:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > div:first-child', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--content-switcher--selected .cds--content-switcher__label', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child [dir="auto"]', measure: 'text', optional: true }),
+    slab: Object.freeze({ upstream: '.cds--content-switcher--selected', pseudo: '::after', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child > div:nth-child(2)', measure: 'box', compare: ['width', 'height', 'backgroundColor'] })
   })
 });

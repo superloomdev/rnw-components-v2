@@ -27,7 +27,7 @@ describe('Switch: every sample state under every template', function () {
         const segment = container.querySelector('[role="tab"]');
         assert.notEqual(segment, null);
         assert.equal(segment.getAttribute('aria-selected'), 'false');
-        assert.equal(segment.textContent, state.props.text);
+        assert.equal(segment.previousElementSibling.textContent, state.props.text);
       });
     }
   }

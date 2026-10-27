@@ -3104,6 +3104,16 @@
       "test": "tab-list-scroll-buttons.test.js",
       "testName": "the previous scroll button hides at scroll start and the next at the end",
       "why": "at scroll start the previous button must hide (upstream Tabs.js:224)"
+    },
+    {
+      "file": "component/molecule/content-switcher/switch.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "runner": "node",
+      "id": "content-switcher-press-target",
+      "test": "content-switcher-press-target.test.js",
+      "testName": "the segment press layer carries the target floor while the face keeps the segment height",
+      "why": "the segment layer must cover the face and reach the form-class floor"
     }
   ]
 }
