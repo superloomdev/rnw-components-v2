@@ -1509,3 +1509,69 @@ export async function reopenPanel (page, name, state, reopen, side, leave) {
   return true;
 
 }
+
+
+/********************************************************************
+Focus the first enabled item of an open panel before the state's shot:
+every mounted menu grabs focus on open, so without a refocus whichever
+cell mounted last holds the ring in its shot. Focusing the measured
+cell's item right before the read makes the focus deterministic on both
+pages. A `menu` scope, when present, selects the deepest open panel (a
+hover-opened submenu) so its first item is the one that rings.
+
+@param {Object} page    - Playwright page
+@param {String} name    - Component name
+@param {String} state   - The sample state label
+@param {Object} refocus - { states, upstream, ours, menu: { upstream, ours } }
+@param {String} side    - 'ours' | 'upstream'
+
+@return {Promise<Boolean>} - Whether an item was focused
+*********************************************************************/
+export async function refocusPanel (page, name, state, refocus, side) {
+
+  if (refocus === undefined || refocus === null || !Array.isArray(refocus.states) || refocus.states.indexOf(state) === -1 ||
+      refocus[side] === undefined) {
+    return false;
+  }
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return false;
+  }
+  const scope = refocus.menu === undefined || refocus.menu === null || refocus.menu[side] === undefined
+    ? body
+    : body.locator(refocus.menu[side]).last();
+  if (await scope.count() === 0) {
+    return false;
+  }
+  const item = scope.locator(refocus[side]).first();
+  if (await item.count() === 0) {
+    return false;
+  }
+  // The upstream library follows a programmatic focus with its own delayed
+  // re-centering (the menu scrolls its focused item into view), which lands
+  // after the caller's scrollIntoView and pushes the measured body out of
+  // frame. Focus and scrollIntoView are both pinned so no scroll can come
+  // out of the refocus; scrollIntoView is restored after the settle window
+  await page.evaluate(function () {
+    const proto = HTMLElement.prototype;
+    if (window.__refocusFocus === undefined) {
+      window.__refocusFocus = proto.focus;
+      proto.focus = function (options) {
+        return window.__refocusFocus.call(this, Object.assign({}, options || {}, { preventScroll: true }));
+      };
+    }
+    if (window.__refocusSiv === undefined) {
+      window.__refocusSiv = Element.prototype.scrollIntoView;
+    }
+    Element.prototype.scrollIntoView = function () {};
+  });
+  await item.evaluate(function (element) {
+    element.focus({ preventScroll: true });
+  });
+  await page.waitForTimeout(100);
+  await page.evaluate(function () {
+    Element.prototype.scrollIntoView = window.__refocusSiv;
+  });
+  return true;
+
+}

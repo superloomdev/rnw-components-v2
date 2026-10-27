@@ -18,7 +18,7 @@
 import { PNG } from 'pngjs';
 
 import { findDisagreements } from './compare.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, reopenPanel, shootCell, shootPart } from './page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, refocusPanel, reopenPanel, shootCell, shootPart } from './page.js';
 import { perceptualRatio, sampleWindow } from './perceptual.js';
 import { decode } from './pixels.js';
 
@@ -318,6 +318,7 @@ async function collect (page, component, reference, side, masks) {
     // The sample box is read in the same scroll frame as the shot: settle
     // the rest frame's centering first, then read, then shoot without
     // another scroll (an interaction frame is already centered)
+    await refocusPanel(page, component.name, label, reference.refocus, side);
     if (preserveViewport !== true) {
       await page.locator('.cell[data-component="' + component.name + '"][data-state="' + label + '"] [data-part="body"]').first().evaluate(function (element) {
         element.scrollIntoView({ block: 'center', inline: 'center' });

@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox, refocusPanel } from './harness/page.js';
 import { cropRect, perceptualRatio, ratio, sampleWindow } from './harness/perceptual.js';
 import { restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
@@ -65,7 +65,7 @@ dilutes the ratio.
 
 @return {Promise<Object>} - state label -> PNG buffer
 *********************************************************************/
-async function shootBodies (page, name, frozen) {
+async function shootBodies (page, name, frozen, refocus, side) {
 
   const out = {};
   const cells = page.locator('.cell[data-component="' + name + '"]');
@@ -76,6 +76,9 @@ async function shootBodies (page, name, frozen) {
       await pauseCellAnimations(cell.locator('[data-part="body"]'));
     }
     const state = await cell.getAttribute('data-state');
+    // An open panel's ring follows focus, not mount order: focus the
+    // measured cell's own item before its shot, as the fidelity run does
+    await refocusPanel(page, name, state, refocus, side);
     out[state] = { shot: await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' }), sample: await readSampleBox(page, name, state) };
   }
 
@@ -175,19 +178,20 @@ test.describe('perceptual', function () {
 
   for (const row of primaryReference) {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
+      const component = components.find(function (entry) {
+        return entry.name === row.name;
+      });
+      const refocus = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference.refocus : undefined;
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name));
+      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), refocus, 'upstream');
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
-      const ours = await shootBodies(page, row.name, pauseAnimations(row.name));
+      const ours = await shootBodies(page, row.name, pauseAnimations(row.name), refocus, 'ours');
       const ratios = [];
       const over = [];
       const crops = [];
       // A rest-hidden state paints nothing at rest by definition; the
       // budget still compares its interaction frames
-      const component = components.find(function (entry) {
-        return entry.name === row.name;
-      });
       const restHidden = component === undefined ? {} : restHiddenStates(component);
       for (const state of Object.keys(upstream)) {
         if (restHidden[state] === true) {

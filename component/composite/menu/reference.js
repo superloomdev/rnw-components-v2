@@ -58,6 +58,16 @@ export default Object.freeze({
   // The fixed surface mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 400, height: 280, stage: true }),
+  // Every open menu grabs focus on mount, so without a refocus whichever
+  // cell mounted last holds the ring at shot time; the read focuses the
+  // measured cell's own first item (the deepest panel's, for a hover-opened
+  // submenu) right before it shoots, as upstream's last-opened menu does
+  refocus: Object.freeze({
+    states: Object.freeze(['default']),
+    menu: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]' }),
+    upstream: '.cds--menu-item:not(.cds--menu-item--disabled)',
+    ours: '[role="menuitem"]:not([aria-disabled="true"]), [role="menuitemcheckbox"], [role="menuitemradio"]'
+  }),
   parts: Object.freeze({
     surface: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'paddingTop', 'paddingBottom', 'backgroundColor'] }),
     item: Object.freeze({ upstream: '.cds--menu-item', ours: 'div:has(> [role="menuitem"]) > div, div:has(> [role="menuitemcheckbox"]) > div, div:has(> [role="menuitemradio"]) > div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
