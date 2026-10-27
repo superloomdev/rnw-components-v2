@@ -48,7 +48,7 @@ Accordion stacks headed sections that open and close independently, each with a 
 
 | Prop | Type | Required | Description |
 |---|---|---|---|
-| `items` | `array` | yes | The sections, each `{ title, children, open, defaultOpen, disabled, id }` — `open` controls, `defaultOpen` seeds uncontrolled. |
+| `items` | `array` | yes | The sections, each `{ title, children, open, defaultOpen, disabled, id }`  -  `open` controls, `defaultOpen` seeds uncontrolled. |
 | `align` | `string` | no | Chevron side: `start` (before the title) or `end` (after). Default `end`, upstream's `align` prop. |
 | `size` | `string` | no | Heading size: `sm`, `md`, `lg`. Default `md`. |
 | `isFlush` | `boolean` | no | Pulls the heading text to the page edge (`control.accordion_flush_inset`). |

@@ -39,7 +39,7 @@ describe('SkipToContent: every sample state under every template', function () {
         assert.equal(link.style.height, t['control.skip_link_height'] + 'px', 'focused: the height cell');
         assert.equal(link.style.paddingLeft, t['control.skip_link_padding_inline'] + 'px', 'focused: the inline padding');
         assert.equal(link.style.borderTopWidth, t['control.skip_link_border_width'] + 'px', 'focused: the border cell');
-        assert.equal(link.style.borderTopColor, cssValue('color', t['color.skip_link_border']), 'focused: the border colour');
+        assert.equal(link.style.borderTopColor, cssValue('color', t['color.skip_link_border']), 'focused: the border color');
         assert.equal(link.style.backgroundColor, cssValue('backgroundColor', t['color.skip_link_container']), 'focused: the fill');
         assert.equal(link.style.zIndex, String(t['stacking.skip_link']), 'focused: the stacking');
         const text = link.querySelector('div');

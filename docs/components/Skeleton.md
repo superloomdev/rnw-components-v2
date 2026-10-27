@@ -9,7 +9,7 @@ SkeletonIcon and IconSkeleton draw the skeleton placeholder at the smallest icon
 ### Decisions (roster flag `superloom_decision`)
 
 - **No second-system skeleton.** The second system has no skeleton - the roster's `superloom_decision`. That system's template draws the skeleton family as `surface_container_highest` with an `on_surface` 8% shimmer and a radius of 4; the default's shimmer is one ramp step past its container.
-- **The sweep is the primary's.** The shimmer's keyframes are the primary reference's skeleton animation, verbatim stops; the paragraph's stepped line widths are its fixed sequence applied per line. Reduced motion shows the shimmer at rest at full cover, as the primary does.
+- **The sweep is the primary's.** The shimmer's keyframes are the measured reference's skeleton animation, verbatim stops; the paragraph's stepped line widths are its fixed sequence applied per line. Reduced motion shows the shimmer at rest at full cover, as the primary does.
 
 ### Platform
 
@@ -22,7 +22,7 @@ SkeletonPlaceholder draws a box in the theme's skeleton container color with a s
 ### Decisions (roster flag `superloom_decision`)
 
 - **No second-system skeleton.** The second system has no skeleton - the roster's `superloom_decision`. That system's template draws the skeleton family as `surface_container_highest` with an `on_surface` 8% shimmer and a radius of 4; the default's shimmer is one ramp step past its container. Where the second system is silent the template decides.
-- **The sweep is the primary's.** The shimmer's keyframes are the primary reference's skeleton animation, verbatim stops. Reduced motion shows the shimmer at rest at full cover, the state a static capture of the running sweep shows.
+- **The sweep is the primary's.** The shimmer's keyframes are the measured reference's skeleton animation, verbatim stops. Reduced motion shows the shimmer at rest at full cover, the state a static capture of the running sweep shows.
 
 ### Platform
 

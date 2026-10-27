@@ -3,7 +3,7 @@
 export default Object.freeze({
   name: 'Accordion',
   props: Object.freeze({
-    items: { type: 'array', required: true, description: 'The sections, each `{ title, children, open, defaultOpen, disabled, id }` — `open` controls, `defaultOpen` seeds uncontrolled.' },
+    items: { type: 'array', required: true, description: 'The sections, each `{ title, children, open, defaultOpen, disabled, id }`  -  `open` controls, `defaultOpen` seeds uncontrolled.' },
     align: { type: 'string', required: false, description: 'Chevron side: `start` (before the title) or `end` (after). Default `end`, upstream\'s `align` prop.' },
     size: { type: 'string', required: false, description: 'Heading size: `sm`, `md`, `lg`. Default `md`.' },
     isFlush: { type: 'boolean', required: false, description: 'Pulls the heading text to the page edge (`control.accordion_flush_inset`).' },

@@ -86,7 +86,7 @@ describe('OverflowMenu: the open panel', function () {
       assert.equal(rows.length, 4, 'four option rows');
       assert.equal(rows[0].style.height, t['control.option_height'] + 'px', 'the option height cell');
       assert.equal(rows[3].style.borderTopWidth, t['control.menu_divider_width'] + 'px', 'hasDivider draws the rule');
-      assert.equal(rows[3].style.borderTopColor, cssValue('color', t['color.menu_divider']), 'the divider colour');
+      assert.equal(rows[3].style.borderTopColor, cssValue('color', t['color.menu_divider']), 'the divider color');
       const buttons = panel.querySelectorAll('[role="menuitem"]');
       const third = buttons[2].querySelector('div');
       assert.equal(third.style.color, cssValue('color', t['color.list_item_label_disabled']), 'the disabled label cell');

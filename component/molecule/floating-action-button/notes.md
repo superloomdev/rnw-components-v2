@@ -5,12 +5,13 @@ primary action.
 
 ## Decisions
 
-- **Default and carbon values are Superloom decisions.** The roster flags
-  this row `superloom_decision`: Material's FAB answers the contract's
-  `fab_*` cells directly, while the default and carbon templates map
-  Carbon's action scale onto the same cells (census S). Carbon's own answer
-  to the primary screen action is BottomToolbarPrimaryAction, a separate
-  component (M9), so `carbon_twin` is `none` here.
+- **Neutral and reference values are Superloom decisions.** The roster flags
+  this row `superloom_decision`: the retired second reference's FAB answered
+  the contract's `fab_*` cells directly, while the neutral and reference
+  templates map the reference's action scale onto the same cells (census S).
+  The reference's own answer to the primary screen action is
+  BottomToolbarPrimaryAction, a separate component (M9), so the row records
+  no reference-template twin.
 
 ## Not carried
 

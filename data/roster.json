@@ -3227,7 +3227,8 @@
       ],
       "parent": null,
       "reference": {
-        "kind": "none"
+        "kind": "none",
+        "package": "@carbon/react"
       },
       "carbon_twin": "OverflowMenuItem",
       "material_twin": "md-menu",
@@ -3271,7 +3272,7 @@
         "version": "1.115.0",
         "export": "SkipToContent"
       },
-      "description": "SkipToContent is a link hidden until keyboard focus reaches it, then drawn at the top of the page to jump past the navigation to the main content; it renders nothing on native platforms.",
+      "description": "A visually hidden link that appears on keyboard focus and moves focus past the page's navigation to its main content; web-only, because native screens have no tab order to skip.",
       "platform": {
         "support": "web",
         "fallback": "renders nothing on native"

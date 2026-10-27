@@ -50,7 +50,7 @@ are skipped by the arrows and stay out of the order.
   `aria-selected` and `aria-disabled` on each tab, `tabIndex` roved to the
   active one; decorative seats are `aria-hidden`.
 
-## Second reference
+## Retired second reference
 
 `md-tabs` of `md-primary-tab` elements (the content-width indicator). It
 has no contained variant, so `contained` samples are unmeasured there.

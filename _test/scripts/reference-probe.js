@@ -396,14 +396,14 @@ async function probeRow (page, row, mount) {
 
 
 /********************************************************************
-Normalise a colour to lowercase `#rrggbb`, or `rgba(r,g,b,a)` with the
+Normalize a color to lowercase `#rrggbb`, or `rgba(r,g,b,a)` with the
 alpha to 3 places when it is under 1.
 
 @param {*} value - A computed style or token value
 
-@return {String|null} - The normalised colour, or null
+@return {String|null} - The normalized color, or null
 *********************************************************************/
-function toColour (value) {
+function toColor (value) {
 
   if (typeof value !== 'string') {
     return null;
@@ -437,7 +437,7 @@ function toColour (value) {
 
 
 /********************************************************************
-Normalise a length to a number: `40px` -> 40, `normal` -> 0 (the
+Normalize a length to a number: `40px` -> 40, `normal` -> 0 (the
 letterSpacing keyword), a bare number passes through.
 
 @param {*} value - A computed style or token value
@@ -478,7 +478,7 @@ function isCompound (value) {
   if (typeof value !== 'string') {
     return false;
   }
-  if (toColour(value) !== null || toLength(value) !== null) {
+  if (toColor(value) !== null || toLength(value) !== null) {
     return false;
   }
   return value.indexOf(' ') !== -1 || value.indexOf(',') !== -1 || value.indexOf('(') !== -1;
@@ -487,7 +487,7 @@ function isCompound (value) {
 
 
 /********************************************************************
-A value as one printable token: colours and lengths normalised, a type
+A value as one printable token: colors and lengths normalized, a type
 token as `size/line/weight/tracking`, a shadow token as its string, an
 icon token as `icon`.
 
@@ -500,9 +500,9 @@ function display (value) {
   if (value === undefined || value === null) {
     return '<missing>';
   }
-  const colour = toColour(value);
-  if (colour !== null) {
-    return colour;
+  const color = toColor(value);
+  if (color !== null) {
+    return color;
   }
   const length = toLength(value);
   if (length !== null) {
@@ -545,7 +545,7 @@ function displayType (type) {
 
 /********************************************************************
 Compare an upstream read with the carbon built value: MATCH (lengths
-within 0.5, colours equal), MISMATCH, or READ when the value is a shadow
+within 0.5, colors equal), MISMATCH, or READ when the value is a shadow
 or other compound string a single-token check cannot compare.
 
 @param {*} upstream - The probe reading's field value
@@ -555,8 +555,8 @@ or other compound string a single-token check cannot compare.
 *********************************************************************/
 function verdict (upstream, built) {
 
-  const uc = toColour(upstream);
-  const cc = toColour(built);
+  const uc = toColor(upstream);
+  const cc = toColor(built);
   if (uc !== null || cc !== null) {
     return uc !== null && cc !== null && uc === cc ? 'MATCH' : 'MISMATCH';
   }

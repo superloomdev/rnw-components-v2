@@ -38,7 +38,7 @@ describe('OverflowMenuItem: the row height reads the option cells per size', fun
           assert.equal(row.style.height, t[heights[size]] + 'px', 'the row height cell');
           if (divider) {
             assert.equal(row.style.borderTopWidth, t['control.menu_divider_width'] + 'px', 'the divider sits inside the height');
-            assert.equal(row.style.borderTopColor, cssValue('color', t['color.menu_divider']), 'the divider colour');
+            assert.equal(row.style.borderTopColor, cssValue('color', t['color.menu_divider']), 'the divider color');
           } else {
             assert.equal(row.style.borderTopWidth, '0px', 'no rule without hasDivider');
           }
@@ -64,7 +64,7 @@ describe('OverflowMenuItem: state cells', function () {
       button.focus();
     });
     assert.equal(button.style.boxShadow.includes('inset'), true, 'the inset ring on focus');
-    assert.equal(button.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring colour');
+    assert.equal(button.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring color');
   });
 
   test('a disabled option takes no hover fill', async function () {

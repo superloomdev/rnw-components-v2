@@ -50,7 +50,7 @@ above it on hover, focus or touch.
   it; the caret is `aria-hidden`.
 - Escape closes while open.
 
-### Second reference
+### Retired second reference
 
 `none` - the compact geometry comes from the theme's `tooltip_compact`
 cells.

@@ -58,7 +58,7 @@ theme.
   `accessibilityLabel` names it; Escape and focus trap; focus returns on
   close.
 
-## Second reference
+## Retired second reference
 
 `md-dialog` with `headline`, content and `actions` slots of
 `md-text-button`. No eyebrow label, no close control, and bounded

@@ -341,7 +341,7 @@ describe('Menu: a focused danger item draws the ring, the fill and the label cel
       const label = parts.label(item);
       assert.equal(label.style.color, cssValue('color', t['color.menu_item_danger_label_hover']), 'the danger label on focus');
       assert.equal(item.style.boxShadow.includes('inset'), true, 'the inset ring draws');
-      assert.equal(item.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring colour');
+      assert.equal(item.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring color');
       assert.equal(item.style.boxShadow.includes(' ' + t['control.menu_item_danger_focus_inset_width'] + 'px '), true, 'the ring width');
     });
   }

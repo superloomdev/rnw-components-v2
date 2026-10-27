@@ -8,7 +8,7 @@ export default Object.freeze({
   props: Object.freeze({
     label: { type: 'string', required: true, description: 'The option\'s text.' },
     disabled: { type: 'boolean', required: false, description: 'Draws the disabled cells and skips the roving focus. Default false.' },
-    danger: { type: 'boolean', required: false, description: 'The destructive kind: the label in the danger colour, the hover fill on the button. Default false.' },
+    danger: { type: 'boolean', required: false, description: 'The destructive kind: the label in the danger color, the hover fill on the button. Default false.' },
     divider: { type: 'boolean', required: false, description: 'Draws the top rule on the row (`hasDivider` upstream). Default false.' },
     href: { type: 'string', required: false, description: 'Turns the option into a link (web).' },
     size: { type: 'string', required: false, description: 'Composition prop: the panel\'s size (`md` rows at the option cell, `lg` at the large size). Default `md`.' },

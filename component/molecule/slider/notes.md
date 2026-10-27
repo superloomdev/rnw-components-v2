@@ -27,10 +27,10 @@ enum picks the focus answer: `inset` draws concentric ring/gap/core discs
 on the face, `outline` a separate focus circle through the slider's own
 focus cells. The `anatomy.slider_disabled_paint` enum picks the disabled
 composition policy: `grouped` fades the track, fill and nub as one
-composed group, matching the second reference's single host opacity with
+composed group, matching the retired second reference's single host opacity with
 each layer compensated inside it - so their overlap never paints a
 darker stripe. `independent` keeps every layer's own alpha exactly as
-the primary reference paints it, where each disabled part carries its
+the measured reference paints it, where each disabled part carries its
 own translucent border/track color and overlaps stay un-compensated.
 
 ## The second reference's value badge

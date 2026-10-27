@@ -8,6 +8,8 @@ an item is chosen).
 
 ## Decisions
 
+- **`requires_parent`: MenuItem must be composed inside Menu; its standalone render is for the showcase and the gates only.**
+
 - **The `list` family draws the list.** Container fill, corner, elevation
   and the per-state item fills and label colors are the `list` cells; the
   menu's own member cells give the item height, the container's block
@@ -51,7 +53,7 @@ an item is chosen).
   with `aria-checked` on selectable items; `role="separator"` on dividers;
   disabled items are out of the focus order.
 
-## Second reference
+## Retired second reference
 
 `md-menu` of `md-menu-item` elements (`md-divider` for separators). It has
 no danger kind, no selected marks and leading icons in `start` slots.

@@ -18,7 +18,7 @@
 
 ## Progress (checkpoint)
 - Popover + PopoverContent: DONE (check x2 green, 3 fire rows fire)
-- DefinitionTooltip: files written (definition-tooltip.js, api/spec/sample/reference.definition-tooltip.js, _test/definition-tooltip.test.js 3/3 standalone green); contract.js updated w/ DEFINITION_TOOLTIP_REQUIRED; `check -- DefinitionTooltip` FAILS on purity + tests + a11y-identity — diagnose next.
+- DefinitionTooltip: files written (definition-tooltip.js, api/spec/sample/reference.definition-tooltip.js, _test/definition-tooltip.test.js 3/3 standalone green); contract.js updated w/ DEFINITION_TOOLTIP_REQUIRED; `check -- DefinitionTooltip` FAILS on purity + tests + a11y-identity  -  diagnose next.
 - Fire rows pending: definition-underline-hover, definition-max-width (added to fixture, not yet fired)
 - Remaining: Toggletip+4 members (needs Link.inverse + Button.focusRingLeaf composition props), TagSet, roster descriptions (brief item 5 verbatim), docs/catalog regen, focused playwright runs, closing batch
 - Watches: shell 7ce77c = lib CI 40257364829 -> s1-native-3/ci-watch.log; shell ed2848 = gate 40257387447 -> watch.log

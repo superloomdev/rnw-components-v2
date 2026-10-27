@@ -13,7 +13,9 @@
   `control.skip_link_padding_inline` (16) inline padding, a
   `control.skip_link_border_width` (4) border in `color.skip_link_border`,
   on `color.skip_link_container` with `color.skip_link_label` text in
-  `type.skip_link` (16/16/400/0 under carbon), at `stacking.skip_link`
+  `type.skip_link` (16/16/400/0 under the reference template)
+
+- **Flagged `web_only`.** Native screens have no tab order to skip; the link exists for the web platform's keyboard navigation, so the roster carries `web_only` and the component renders on web only., at `stacking.skip_link`
   (9999), content centred vertically.
 - Upstream marks its tokens unspecified (`_header.scss:462`); the cell
   values come from the probe's computed readings, not the stylesheet.
@@ -24,7 +26,7 @@
 
 ## SkipToContent
 
-SkipToContent is a link hidden until keyboard focus reaches it, then drawn at the top of the page to jump past the navigation to the main content; it renders nothing on native platforms.
+A visually hidden link that appears on keyboard focus and moves focus past the page's navigation to its main content; web-only, because native screens have no tab order to skip.
 
 | | |
 |---|---|

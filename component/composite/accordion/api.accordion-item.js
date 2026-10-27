@@ -13,8 +13,8 @@ export default Object.freeze({
     onOpenChange: { type: 'function', required: false, description: 'Called with the next open state.' }
   }),
   composition: Object.freeze({
-    align: { type: 'string', description: '`start` | `end` — the chevron side the parent passes.' },
-    size: { type: 'string', description: '`sm` | `md` | `lg` — the heading height the parent passes.' },
+    align: { type: 'string', description: '`start` | `end`  -  the chevron side the parent passes.' },
+    size: { type: 'string', description: '`sm` | `md` | `lg`  -  the heading height the parent passes.' },
     flush: { type: 'boolean', description: 'The heading reads the flush inset the parent passes.' },
     dividerHover: { type: 'boolean', description: 'This heading is hovered; the item\'s top rule reads the hover cell.' },
     previousHover: { type: 'boolean', description: 'The previous item\'s heading is hovered; the item\'s top rule reads the hover cell.' },

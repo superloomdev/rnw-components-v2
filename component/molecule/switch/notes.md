@@ -32,7 +32,7 @@ the theme shows it - the on/off text beside the track.
   `for` the track-sized `.switch`), so one element carries it. The
   primary draws the ring on `:active` too, so a press keeps the ring;
   under the `keyboard` focus trigger a pointer press still shows none,
-  matching the second reference.
+  matching the retired second reference.
 
 ## State cells
 
@@ -63,7 +63,7 @@ value. The web press responder activates on Enter only, so Space is
 handled here. The role is `switch` with `aria-checked`, `aria-disabled`
 and `aria-labelledby` to the label.
 
-## Second reference
+## Retired second reference
 
 `md-switch` is the control alone: no label, no on/off text, no small
 variant (those samples are not mounted there). Its track and handle colors

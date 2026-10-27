@@ -12,6 +12,8 @@ an item is chosen).
 
 ### Decisions
 
+- **`requires_parent`: MenuItem must be composed inside Menu; its standalone render is for the showcase and the gates only.**
+
 - **The `list` family draws the list.** Container fill, corner, elevation
   and the per-state item fills and label colors are the `list` cells; the
   menu's own member cells give the item height, the container's block
@@ -55,7 +57,7 @@ an item is chosen).
   with `aria-checked` on selectable items; `role="separator"` on dividers;
   disabled items are out of the focus order.
 
-### Second reference
+### Retired second reference
 
 `md-menu` of `md-menu-item` elements (`md-divider` for separators). It has
 no danger kind, no selected marks and leading icons in `start` slots.
@@ -432,7 +434,7 @@ OverflowMenuItem is one option row of an OverflowMenu, with an optional rule abo
 |---|---|
 | Tier | `composite` |
 | Platform | `both` |
-| Reference | `none` (`undefined`) |
+| Reference | `none` (`@carbon/react`) |
 | Enums | none |
 | Behaviors | `overlay`, `roving-tab-index` |
 | Flags | none |
@@ -443,7 +445,7 @@ OverflowMenuItem is one option row of an OverflowMenu, with an optional rule abo
 |---|---|---|---|
 | `label` | `string` | yes | The option's text. |
 | `disabled` | `boolean` | no | Draws the disabled cells and skips the roving focus. Default false. |
-| `danger` | `boolean` | no | The destructive kind: the label in the danger colour, the hover fill on the button. Default false. |
+| `danger` | `boolean` | no | The destructive kind: the label in the danger color, the hover fill on the button. Default false. |
 | `divider` | `boolean` | no | Draws the top rule on the row (`hasDivider` upstream). Default false. |
 | `href` | `string` | no | Turns the option into a link (web). |
 | `size` | `string` | no | Composition prop: the panel's size (`md` rows at the option cell, `lg` at the large size). Default `md`. |
