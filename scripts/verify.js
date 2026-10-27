@@ -382,7 +382,7 @@ if (!GATES_ONLY) {
     if (runCheck('fire', function () {
       // The CI 'Run fire' step's heap tripwire, mirrored so local and CI
       // see the same child-termination behavior
-      execSync('node ../scripts/guard.js -- node fire.js', {
+      execSync('node ../scripts/guard.js --seconds 3600 -- node fire.js', {
         cwd: path.join(REPO_ROOT, '_test'),
         stdio: 'inherit',
         env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=3072' }

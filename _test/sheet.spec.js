@@ -52,7 +52,7 @@ test('contact sheet: one stacked PNG per family and scheme across the three temp
 
   // Two schemes x three templates over every family of cells: one
   // screenshot per family and scheme
-  test.setTimeout(300000);
+  test.slow();
   mkdirSync(OUT, { recursive: true });
   const index = [];
 

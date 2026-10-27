@@ -13,12 +13,18 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   forbidOnly: true,
+  // The config owns every cap (D43): 120 s per test, 45 min for the run,
+  // 15 s per action; a spec needing more calls test.slow(), never
+  // test.setTimeout (gate G17)
+  timeout: 120000,
+  globalTimeout: 2700000,
   reporter: [['list'], ['json', { outputFile: 'test-results/browser.json' }]],
   // Text is rasterized the same on every OS: grayscale antialiasing (Linux
   // Chromium otherwise draws colored subpixel fringes) and no hinting (macOS
   // never hints), so a pixel gate compares components, not font rasterizers
   use: {
     baseURL: 'http://localhost:5299',
+    actionTimeout: 15000,
     viewport: { width: 1280, height: 720 },
     reducedMotion: 'reduce',
     launchOptions: { args: ['--disable-lcd-text', '--font-render-hinting=none'] }

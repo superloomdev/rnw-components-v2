@@ -78,18 +78,18 @@ if (changed.length > 0) {
 }
 
 // Purity over the shipped source
-guardedStep('purity', 'node', ['--import', './harness/register.js', '--test', 'purity.test.js'], join(REPO_ROOT, '_test'));
+guardedStep('purity', 'node', ['--import', './harness/register.js', '--test', '--test-concurrency=4', '--test-timeout=60000', 'purity.test.js'], join(REPO_ROOT, '_test'));
 
 // The component's own tests, when it has a file
 const own = join(REPO_ROOT, '_test', toFileStem(name) + '.test.js');
 if (existsSync(own)) {
-  guardedStep(name + ' tests', 'node', ['--import', './harness/register.js', '--test', toFileStem(name) + '.test.js'], join(REPO_ROOT, '_test'));
+  guardedStep(name + ' tests', 'node', ['--import', './harness/register.js', '--test', '--test-concurrency=4', '--test-timeout=60000', toFileStem(name) + '.test.js'], join(REPO_ROOT, '_test'));
 } else {
   process.stdout.write(name + ': no _test/' + toFileStem(name) + '.test.js yet\n');
 }
 
 // Its accessibility-identity rows
-guardedStep(name + ' a11y identity', 'node', ['--import', './harness/register.js', '--test', '--test-name-pattern=^' + name + ' /', 'a11y-identity.test.js'], join(REPO_ROOT, '_test'));
+guardedStep(name + ' a11y identity', 'node', ['--import', './harness/register.js', '--test', '--test-concurrency=4', '--test-timeout=60000', '--test-name-pattern=^' + name + ' /', 'a11y-identity.test.js'], join(REPO_ROOT, '_test'));
 
 process.stdout.write('\n' + (failed.length === 0 ? 'check: ' + name + ' passed' : 'check: ' + name + ' FAILED: ' + failed.join(', ')) + '\n');
 process.exit(failed.length === 0 ? 0 : 1);

@@ -87,7 +87,6 @@ for (const reference of REFERENCES) {
   for (const scheme of ['light', 'dark']) {
     test('Slider painted track / ' + reference.set + ' / ' + scheme +
       ': fill coverage and disabled overlap match the actual source pixels', async function ({ page }) {
-      test.setTimeout(120000);
       const mounted = await openReference(page, 'Slider', reference.set, scheme);
       expect(mounted.errors).toEqual([]);
       const upstream = {};

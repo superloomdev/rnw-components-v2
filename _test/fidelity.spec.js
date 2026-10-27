@@ -37,7 +37,7 @@ test.describe('fidelity', function () {
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme + ': matches the reference in every state', async function ({ page }) {
-          test.setTimeout(300000);
+          test.slow();
           if (NO_PRIMARY.has(component.name)) {
             test.info().annotations.push({ type: 'fidelity', description: component.name + ': primary set skipped (no primary twin)' });
           }

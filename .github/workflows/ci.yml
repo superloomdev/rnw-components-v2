@@ -277,6 +277,15 @@ jobs:
       - name: G15 - CI step map covers every workflow step
         run: |
           node scripts/ci-census.js --check-map
+      - name: G17 - No per-spec Playwright timeout override
+        run: |
+          hits=$(git grep -n "test\.setTimeout(" -- _test || true)
+          if [ -n "$hits" ]; then
+            echo "FAIL: G17 no per-spec timeout override: the Playwright config owns the cap (D43)"
+            echo "$hits"
+            exit 1
+          fi
+          echo "PASS: the Playwright config owns the cap"
 
   publish:
     name: Publish

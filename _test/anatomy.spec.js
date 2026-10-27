@@ -143,7 +143,7 @@ test.describe('anatomy: ripple state layer', function () {
 test.describe('anatomy: declared field-action phases', function () {
 
   test('the fidelity driver exercises every declared field-action phase', async function ({ page }) {
-    test.setTimeout(300000);
+    test.slow();
     const source = (await discoverComponents()).find(function (entry) {
       return entry.name === 'PasswordInput';
     });
@@ -183,7 +183,7 @@ test.describe('anatomy: declared field-action phases', function () {
 test.describe('anatomy: declared shadow-target phases', function () {
 
   test('the fidelity driver exercises declared shadow-target phases', async function ({ page }) {
-    test.setTimeout(300000);
+    test.slow();
     const source = (await discoverComponents()).find(function (entry) {
       return entry.name === 'OperationalTag';
     });
@@ -259,7 +259,7 @@ test('keyboard focus collapses numeric selection without changing its value', as
 
 
 test('intrinsically sized selections retain complete labels after fonts load', async function ({ page }) {
-  test.setTimeout(120000);
+  test.slow();
   for (const template of ['default', 'carbon', 'material']) {
     for (const scheme of ['light', 'dark']) {
       for (const component of ['TimePicker', 'TimePickerSelect']) {

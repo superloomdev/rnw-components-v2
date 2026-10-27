@@ -16,6 +16,16 @@
       "why": "a per-process ceiling that cannot trip must fail the runaway kill assertion"
     },
     {
+      "id": "update-loop-threshold-off",
+      "file": "_test/harness/render.js",
+      "find": "const LIMIT = 2000;",
+      "replace": "const LIMIT = Infinity;",
+      "runner": "node",
+      "test": "update-loop-harness.test.js",
+      "testName": "an unconditional setState-in-effect loop fails render() as an update loop",
+      "why": "a commit ceiling that cannot trip must fail the update loop assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",
