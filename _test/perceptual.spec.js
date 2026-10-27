@@ -183,7 +183,16 @@ test.describe('perceptual', function () {
       const ratios = [];
       const over = [];
       const crops = [];
+      // A rest-hidden state paints nothing at rest by definition; the
+      // budget still compares its interaction frames
+      const component = components.find(function (entry) {
+        return entry.name === row.name;
+      });
+      const restHidden = component === undefined ? {} : restHiddenStates(component);
       for (const state of Object.keys(upstream)) {
+        if (restHidden[state] === true) {
+          continue;
+        }
         expect(ours[state], row.name + ' / ' + state + ' is drawn upstream but not here').toBeDefined();
         let a = ours[state].shot;
         let b = upstream[state].shot;
