@@ -17,6 +17,7 @@ export default function createMenuBehaviors (deps) {
   const Utils = deps.Utils;
   const React = deps.React;
   const ReactNative = deps.ReactNative;
+  const Debug = deps.Debug;
   const platform = deps.platform;
   // Inside a host the layer mounts `absolute` at the host's own
   // coordinates; unhosted keeps the window answer
@@ -124,11 +125,19 @@ export default function createMenuBehaviors (deps) {
 
   }
 
+  // A fit that never converges loops a measure per commit (the surface's
+  // own layout event re-fires measure, and a changed answer re-renders).
+  // The cap ends the loop inside the open it started in: measures per
+  // cycle, not the hook's life (D43)
+  const MEASURE_CAP = 8;
+  const CAP_WINDOW_MS = 1000;
+
   function useMenuPosition (options = {}) {
 
     const latestRef = React.useRef(options);
     latestRef.current = options;
     const [position, setPosition] = React.useState(null);
+    const capRef = React.useRef({ count: 0, since: 0, warned: false });
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's size may arrive after mount
@@ -137,6 +146,21 @@ export default function createMenuBehaviors (deps) {
     overlayRef.current = overlay;
 
     const measure = React.useCallback(function () {
+      const cap = capRef.current;
+      const now = Date.now();
+      if (now - cap.since > CAP_WINDOW_MS) {
+        cap.count = 0;
+        cap.since = now;
+        cap.warned = false;
+      }
+      if (cap.count >= MEASURE_CAP) {
+        if (!cap.warned) {
+          cap.warned = true;
+          Debug.warn('useMenuPosition: 8 re-measures in one open; the fit did not converge');
+        }
+        return;
+      }
+      cap.count += 1;
       const current = latestRef.current;
       const menu = current.menuRef && current.menuRef.current;
       if (!menu) {
@@ -219,6 +243,16 @@ export default function createMenuBehaviors (deps) {
     }, [measure,
       rangeX === null ? 0 : rangeX[0], rangeX === null ? 0 : rangeX[1],
       rangeY === null ? 0 : rangeY[0], rangeY === null ? 0 : rangeY[1]]);
+
+    // A new open cycle gets a fresh measure budget
+    React.useEffect(function () {
+      if (options.active === true) {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+      }
+    }, [options.active]);
 
     // The style the measured surface mounts with: inside a host `absolute`
     // at host coordinates on every platform; unhosted `fixed` at viewport

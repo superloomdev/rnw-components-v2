@@ -17,6 +17,7 @@ export default function createPositioningBehaviors (deps) {
   const Utils = deps.Utils;
   const React = deps.React;
   const ReactNative = deps.ReactNative;
+  const Debug = deps.Debug;
   const platform = deps.platform;
   // The overlay host's context carries `origin`, the layer root's window
   // position; a native layer computes window coordinates and must shift
@@ -150,6 +151,48 @@ export default function createPositioningBehaviors (deps) {
 
   }
 
+  // A measure whose answer never converges loops a write per commit; the
+  // cap ends it inside the track cycle it started in (D43)
+  const MEASURE_CAP = 8;
+  const CAP_WINDOW_MS = 1000;
+
+  function samePoint (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined && a.left === b.left && a.top === b.top;
+
+  }
+
+  function sameShift (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined && a.x === b.x && a.y === b.y;
+
+  }
+
+  function sameAnchorRect (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined &&
+      a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+
+  }
+
+  function samePlacement (a, b) {
+
+    return samePoint(a.position, b.position) &&
+      a.actualPlacement === b.actualPlacement &&
+      sameShift(a.shift, b.shift) &&
+      sameAnchorRect(a.anchor, b.anchor);
+
+  }
+
   function useAnchoredPosition (options = {}) {
 
     const placement = options.placement === undefined ? 'bottom' : options.placement;
@@ -162,6 +205,7 @@ export default function createPositioningBehaviors (deps) {
       shift: null,
       anchor: null
     });
+    const capRef = React.useRef({ count: 0, since: 0, warned: false });
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's origin and size may arrive after mount
@@ -170,6 +214,22 @@ export default function createPositioningBehaviors (deps) {
     overlayRef.current = overlay;
 
     const measure = React.useCallback(function () {
+
+      const cap = capRef.current;
+      const now = Date.now();
+      if (now - cap.since > CAP_WINDOW_MS) {
+        cap.count = 0;
+        cap.since = now;
+        cap.warned = false;
+      }
+      if (cap.count >= MEASURE_CAP) {
+        if (!cap.warned) {
+          cap.warned = true;
+          Debug.warn('useAnchoredPosition: 8 re-measures in one open; the fit did not converge');
+        }
+        return;
+      }
+      cap.count += 1;
 
       const anchor = resolveAnchor(options.anchor);
       if (!anchor) {
@@ -189,11 +249,16 @@ export default function createPositioningBehaviors (deps) {
         const current = overlayRef.current;
         const hosted = current !== null && current.hosted === true;
         const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
-        setState({
+        // No state write when the answer is unchanged: a caller's layout
+        // effect may re-measure, and a same-position write would loop
+        const next = {
           position: computed.position,
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
           anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
+        };
+        setState(function (previous) {
+          return samePlacement(previous, next) ? previous : next;
         });
         return;
       }
@@ -227,29 +292,50 @@ export default function createPositioningBehaviors (deps) {
               : currentViewport();
           }
           const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset);
-          setState({
+          const next = {
             position: computed.position,
             actualPlacement: computed.actualPlacement,
             shift: computed.shift,
             anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
+          };
+          setState(function (previous) {
+            return samePlacement(previous, next) ? previous : next;
           });
         });
       }
 
     }, [options.anchor, options.source, placement, offset, flip, alignmentAxisOffset]);
 
+    // A new track cycle gets a fresh measure budget
+    React.useEffect(function () {
+      if (options.track === true) {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+      }
+    }, [options.track]);
+
     // A fixed surface does not scroll with its anchor: while tracking, every
-    // scroll (any ancestor, so capture) or viewport resize re-measures it
+    // scroll (any ancestor, so capture) or viewport resize re-measures it.
+    // An external event is never a loop, so it restarts the cap's cycle
     React.useEffect(function () {
       if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
           typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
         return undefined;
       }
-      window.addEventListener('scroll', measure, true);
-      window.addEventListener('resize', measure);
+      const onReflow = function () {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+        measure();
+      };
+      window.addEventListener('scroll', onReflow, true);
+      window.addEventListener('resize', onReflow);
       return function () {
-        window.removeEventListener('scroll', measure, true);
-        window.removeEventListener('resize', measure);
+        window.removeEventListener('scroll', onReflow, true);
+        window.removeEventListener('resize', onReflow);
       };
     }, [options.track, measure]);
 

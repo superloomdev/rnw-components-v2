@@ -26,6 +26,26 @@
       "why": "a commit ceiling that cannot trip must fail the update loop assertion"
     },
     {
+      "id": "menu-position-cap-off",
+      "file": "behaviors/menu.js",
+      "find": "  const MEASURE_CAP = 8;",
+      "replace": "  const MEASURE_CAP = Infinity;",
+      "runner": "node",
+      "test": "behaviors-measure-cap.test.js",
+      "testName": "useMenuPosition: a never-settling fit stops after 8 measures and warns once",
+      "why": "a measure cap that cannot trip must fail the never-settling assertion"
+    },
+    {
+      "id": "anchored-position-cap-off",
+      "file": "behaviors/positioning.js",
+      "find": "  const MEASURE_CAP = 8;",
+      "replace": "  const MEASURE_CAP = Infinity;",
+      "runner": "node",
+      "test": "behaviors-measure-cap.test.js",
+      "testName": "useAnchoredPosition: a never-settling anchor stops after 8 measures and warns once",
+      "why": "a measure cap that cannot trip must fail the never-settling assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",

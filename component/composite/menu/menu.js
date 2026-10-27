@@ -88,7 +88,8 @@ export default function Menu (ctx) {
       menuAlignment: props.menuAlignment,
       spacing: ctx.metric('Menu', 'spacing'),
       x: props.x,
-      y: props.y
+      y: props.y,
+      active: open
     });
     React.useEffect(function () {
       if (open) {

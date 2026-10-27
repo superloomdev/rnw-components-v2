@@ -109,6 +109,7 @@ export default function OverflowMenu (ctx) {
       menuAlignment: menuAlignment,
       fit: false,
       spacing: ctx.metric('OverflowMenu', 'spacing'),
+      active: open,
       x: anchor === null ? 0 : [anchor.x, anchor.x + anchor.width],
       y: anchor === null ? 0 : [anchor.y, anchor.y + anchor.height]
     });
