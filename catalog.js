@@ -88,7 +88,7 @@ import ToggletipContentSample from './component/molecule/tooltip/sample.toggleti
 import ToggletipActionsSample from './component/molecule/tooltip/sample.toggletip-actions.js';
 import TagSetSample, { FRAME as TagSetFrame } from './component/molecule/tag/sample.tag-set.js';
 import TabSample from './component/composite/tabs/sample.tab.js';
-import TabListSample from './component/composite/tabs/sample.tab-list.js';
+import TabListSample, { FRAME as TabListFrame } from './component/composite/tabs/sample.tab-list.js';
 import TabPanelSample from './component/composite/tabs/sample.tab-panel.js';
 import TabPanelsSample from './component/composite/tabs/sample.tab-panels.js';
 import IconTabSample from './component/composite/tabs/sample.icon-tab.js';
@@ -200,7 +200,7 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ToggletipActions', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipActionsSample }),
   Object.freeze({ name: 'TagSet', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TagSetFrame, sample: TagSetSample }),
   Object.freeze({ name: 'Tab', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: TabSample }),
-  Object.freeze({ name: 'TabList', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: TabListSample }),
+  Object.freeze({ name: 'TabList', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: TabListFrame, sample: TabListSample }),
   Object.freeze({ name: 'TabPanel', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: TabPanelSample }),
   Object.freeze({ name: 'TabPanels', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: TabPanelsSample }),
   Object.freeze({ name: 'IconTab', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: IconTabSample }),

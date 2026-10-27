@@ -49,7 +49,7 @@ describe('SelectItem: every sample renders under all three templates', function 
       test(name + ' / ' + sample.label + ': exact row height, padding and label type from the theme', async function () {
         const t = buildNative(name).tokens;
         const parts = await renderItem(name, sample.props);
-        assert.equal(parts.row.style.height, t['control.list_item_height'] + 'px');
+        assert.equal(parts.row.style.minHeight, t['control.list_item_height'] + 'px');
         assert.equal(parts.block.style.marginLeft, t['control.list_item_padding_inline'] + 'px');
         assert.equal(parts.block.style.marginRight, t['control.list_item_padding_inline'] + 'px');
         assert.equal(parts.label.style.fontSize, t['type.list_item'].fontSize + 'px');

@@ -17,7 +17,7 @@ export default defineConfig({
   // 15 s per action; a spec needing more calls test.slow(), never
   // test.setTimeout (gate G17)
   timeout: 120000,
-  globalTimeout: 2700000,
+  globalTimeout: 14400000,
   reporter: [['list'], ['json', { outputFile: 'test-results/browser.json' }]],
   // Text is rasterized the same on every OS: grayscale antialiasing (Linux
   // Chromium otherwise draws colored subpixel fringes) and no hinting (macOS

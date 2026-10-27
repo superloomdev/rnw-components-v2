@@ -42,7 +42,7 @@ describe('MenuButton: every sample state under every template', function () {
           const heights = { xs: 'size.size_xsmall', sm: 'control.menu_item_height', md: 'size.size_medium', lg: 'size.size_large' };
           const item = menu.querySelector('[role="menuitem"], [role="menuitemcheckbox"]');
           assert.notEqual(item, null);
-          assert.equal(item.previousElementSibling.style.height, t[heights[size]] + 'px', 'the menu takes the button size');
+          assert.equal(item.previousElementSibling.style.minHeight, t[heights[size]] + 'px', 'the menu takes the button size');
         } else {
           assert.equal(menu, null, 'closed: no menu');
         }
