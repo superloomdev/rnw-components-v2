@@ -29,7 +29,7 @@ export default Object.freeze({
     'color.content_switcher_container_hover', 'color.content_switcher_container_selected', 'color.content_switcher_container_selected_disabled',
     'color.content_switcher_separator', 'color.content_switcher_separator_disabled',
     'color.content_switcher_icon', 'color.content_switcher_icon_selected', 'color.content_switcher_icon_disabled',
-    'color.content_switcher_low_contrast_label_selected', 'color.content_switcher_low_contrast_container_active', 'color.content_switcher_low_contrast_container_selected', 'color.content_switcher_low_contrast_container_hover',
+    'color.content_switcher_low_contrast_label_selected', 'color.content_switcher_low_contrast_container_selected', 'color.content_switcher_low_contrast_container_hover',
     'color.content_switcher_focus', 'color.content_switcher_focus_inset',
     'type.content_switcher_label', 'type.content_switcher_label_selected_low_contrast', 'font.family.sans',
     'feedback.focus_trigger', 'motion.duration_fast_01'

@@ -148,8 +148,7 @@ export default function Tab (ctx) {
             paddingEnd: paddingEnd,
             paddingStart: m.paddingInline,
             position: 'relative'
-          },
-          ring
+          }
         ]
       },
       React.createElement(View, { 'aria-hidden': true, style: [{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, { backgroundColor: layerLeaf === null ? 'transparent' : ctx.color(layerLeaf) }] }),
@@ -169,7 +168,8 @@ export default function Tab (ctx) {
         props.secondaryLabel !== undefined && props.tall === true
           ? React.createElement(Text, { style: [ctx.typeStyle('tab_secondary_label'), { color: ctx.color(labelLeaf) }] }, props.secondaryLabel)
           : null),
-      React.createElement(View, { 'aria-hidden': true, style: indicatorFull })),
+      React.createElement(View, { 'aria-hidden': true, style: indicatorFull }),
+      React.createElement(View, { 'aria-hidden': true, pointerEvents: 'none', style: [{ bottom: contained ? 0 : -m.trackWidth, left: 0, position: 'absolute', right: 0, top: 0 }, ring] })),
       React.createElement(Pressable, Object.assign({}, item.rootProps, props.rovingProps, {
         onKeyDown: onCloseKey,
         role: 'tab',

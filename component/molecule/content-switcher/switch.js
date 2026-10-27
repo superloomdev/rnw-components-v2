@@ -37,20 +37,20 @@ export default function Switch (ctx) {
     const press = ctx.pressPresentation(state, 'content_switcher', {
       colors: {
         '': null,
-        '_active': low ? 'content_switcher_low_contrast_container_active' : 'content_switcher_container_hover',
+        '_active': low ? 'content_switcher_low_contrast_container_hover' : 'content_switcher_container_hover',
         '_disabled': null,
         '_focus': null,
         '_hover': hoverCell,
         '_selected': null
       }
     });
-    const ring = state.focused === true
+    const ring = state.focused === true && !(low === true && selected !== true && state.hovered === true)
       ? React.createElement(View, { 'aria-hidden': true, pointerEvents: 'none', style: {
         borderColor: ctx.color('content_switcher_focus'),
-        borderRadius: props.first !== false ? ctx.metric('Switch', 'radius') : 0,
+        borderRadius: low === true || props.first !== false ? ctx.metric('Switch', 'radius') : 0,
         borderWidth: ctx.metric('Switch', 'focusWidth'),
         bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
-      } }, React.createElement(View, { style: {
+      } }, low === true ? null : React.createElement(View, { style: {
         borderColor: ctx.color('content_switcher_focus_inset'),
         borderRadius: Math.max(0, ctx.metric('Switch', 'radius') - ctx.metric('Switch', 'focusWidth')),
         borderWidth: 1, bottom: 0, left: 0, position: 'absolute', right: 0, top: 0
@@ -101,8 +101,10 @@ export default function Switch (ctx) {
       // The selected slab draws as its own layer (upstream ::after) growing from
       // the bottom; the segment's own fill stays transparent at rest
       React.createElement(View, { 'aria-hidden': true, style: {
-        backgroundColor: selected === true ? ctx.color(!live ? 'content_switcher_container_selected_disabled' : low ? 'content_switcher_low_contrast_container_selected' : 'content_switcher_container_selected') : 'transparent',
+        backgroundColor: selected === true ? ctx.color(!live ? 'content_switcher_container_selected_disabled' : low ? 'content_switcher_low_contrast_container_selected' : 'content_switcher_container_selected') : (low === true && live === true && state.focused === true && state.hovered === true ? ctx.color('content_switcher_low_contrast_container_hover') : 'transparent'),
+        borderRadius: low === true && selected === true && live === true ? ctx.metric('Switch', 'radius') : 0,
         bottom: 0,
+        boxShadow: low === true && selected === true && live === true ? 'inset 0 0 0 ' + ctx.metric('Switch', 'outlineWidth') + 'px ' + ctx.color('content_switcher_outline') : undefined,
         left: 0,
         position: 'absolute',
         right: 0,

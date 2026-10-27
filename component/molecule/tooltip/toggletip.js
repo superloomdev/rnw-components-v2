@@ -87,7 +87,7 @@ export default function Toggletip (ctx) {
         close(false);
       },
       ref: rootRef,
-      style: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'baseline' },
+      style: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center' },
       testID: props.testID
     },
     Utils.isString(props.label) ? React.createElement(ctx.Registry.ToggletipLabel, null, props.label) : null,

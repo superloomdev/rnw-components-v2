@@ -70,7 +70,7 @@ export default function OverflowMenuItem (ctx) {
         ? 'inset 0 0 0 ' + ctx.metric('OverflowMenuItem', 'dangerInsetWidth') + 'px ' + ctx.color('menu_item_danger_focus_inset')
         : undefined,
       flexDirection: 'row',
-      height: rowStyle.height,
+      height: rowStyle.height - rowStyle.borderTopWidth,
       paddingHorizontal: ctx.metric('OverflowMenuItem', 'optionPaddingInline')
     }, !disabled && focused ? ctx.focusRing('field', { focused: true }) : {});
 

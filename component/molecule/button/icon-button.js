@@ -89,7 +89,7 @@ export default function IconButton (ctx) {
     // kind paints no face by definition) draws the ring without the theme's
     // separating line inside it
     const drawn = kind !== 'ghost';
-    const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth, { gap: drawn }));
+    const ring = Object.assign({}, ctx.focusRing('button', state, fillMap !== null ? 0 : borderWidth, { gap: drawn && fillMap === null }));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
     }

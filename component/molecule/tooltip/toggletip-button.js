@@ -37,7 +37,8 @@ export default function ToggletipButton (ctx) {
     // open (the upstream button keeps its active fill either way)
     const active = state.hovered === true || props.expanded === true;
 
-    const ring = Object.assign({}, ctx.focusRing('button', state, 0));
+    const base = ctx.focusRing('button', state, 0, { offset: ctx.metric('ToggletipButton', 'focusOffset') });
+    const ring = ctx.Utils.isEmptyObject(base) ? {} : Object.assign({}, base, { outlineWidth: ctx.metric('ToggletipButton', 'focusWidth') });
 
     return React.createElement(View, null,
       React.createElement(View, {

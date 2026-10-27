@@ -18,7 +18,7 @@ export default Object.freeze({
     'control.content_switcher_radius', 'control.content_switcher_outline_width',
     'size.size_small', 'size.size_medium', 'size.size_large',
     'color.content_switcher_outline', 'color.content_switcher_outline_disabled',
-    'color.content_switcher_low_contrast_container', 'color.content_switcher_low_contrast_container_active', 'color.content_switcher_low_contrast_outline',
+    'color.content_switcher_low_contrast_container', 'color.content_switcher_low_contrast_outline',
     'anatomy.content_switcher_separator', 'anatomy.content_switcher_selected_mark'
   ]),
   colors: Object.freeze([])

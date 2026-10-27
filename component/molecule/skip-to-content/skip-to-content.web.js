@@ -61,7 +61,6 @@ export default function SkipToContentWeb (ctx) {
       }
     },
     React.createElement(Text, {
-      numberOfLines: 1,
       style: [ctx.typeStyle('skip_link'), { color: ctx.color('skip_link_label') }]
     }, props.children === undefined ? 'Skip to main content' : props.children));
 

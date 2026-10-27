@@ -129,6 +129,27 @@ describe('Toggletip: the information bubble', function () {
 
 });
 
+describe('ToggletipButton: the focus ring', function () {
+
+  test('focus draws the member\'s own 1 px ring at the edge under every template', async function () {
+    for (const template of ['default', 'carbon']) {
+      const Registry = buildSystem(template, factories);
+      const container = await render(React.createElement(Registry.ToggletipButton, { label: 'Show information' }));
+      const button = container.querySelector('button');
+      const face = button.previousElementSibling;
+      assert.equal(face.style.outlineStyle, '', template + ': no ring before focus');
+      await act(async function () {
+        button.focus();
+      });
+      assert.equal(face.style.outlineStyle, 'solid', template + ': a 1 px outline shows on focus');
+      assert.equal(face.style.outlineWidth, '1px', template + ' ring width');
+      assert.equal(face.style.outlineOffset, '0px', template + ' ring offset');
+      await cleanup();
+    }
+  });
+
+});
+
 describe('ToggletipButton: the press target floor', function () {
 
   test('the target meets the theme\'s press floor on both axes', async function () {

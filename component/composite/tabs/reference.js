@@ -36,6 +36,6 @@ export default Object.freeze({
     bar: Object.freeze({ upstream: '.cds--tab--list', ours: '[role="tablist"]', measure: 'box' }),
     tab: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > div:first-child', measure: 'box' }),
     label: Object.freeze({ upstream: '.cds--tabs__nav-item--selected .cds--tabs__nav-item-label', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child [dir="auto"]', measure: 'text' }),
-    indicator: Object.freeze({ upstream: '.cds--tabs__nav-item--selected', strip: 'borderBottom', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child > [aria-hidden="true"]:last-of-type', measure: 'box', optional: true, compare: ['x', 'width', 'height', 'backgroundColor'] })
+    indicator: Object.freeze({ upstream: '.cds--tabs__nav-item--selected', strip: 'borderBottom', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child > [aria-hidden="true"]:nth-last-of-type(2)', measure: 'box', optional: true, compare: ['x', 'width', 'height', 'backgroundColor'] })
   })
 });

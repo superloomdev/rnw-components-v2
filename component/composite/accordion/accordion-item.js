@@ -99,22 +99,28 @@ export default function AccordionItem (ctx) {
       : null;
 
     const [faceSize, onLayout] = ctx.useFaceSize();
+    const focusWidth = ctx.metric('AccordionItem', 'focusWidth');
+    const focusColor = ctx.color('accordion_focus');
+    const focusShadow = {
+      boxShadow: ['0 -' + focusWidth / 2 + 'px 0 0 ', 'inset 0 ' + focusWidth / 2 + 'px 0 0 ', 'inset ' + focusWidth + 'px 0 0 0 ',
+        '0 ' + focusWidth / 2 + 'px 0 0 ', 'inset 0 -' + focusWidth / 2 + 'px 0 0 ', 'inset -' + focusWidth + 'px 0 0 0 '].map(function (layer) {
+        return layer + focusColor;
+      }).join(', '),
+      zIndex: 2
+    };
     const heading = React.createElement(View, {
       style: { position: 'relative' }
     },
     React.createElement(View, {
       onLayout: onLayout,
-      style: {
+      style: Object.assign({
         alignItems: 'center',
         backgroundColor: state.hovered === true ? ctx.color('accordion_heading_container_hover') : 'transparent',
         flexDirection: chevronFirst ? 'row' : 'row-reverse',
         minHeight: height,
-        outlineColor: state.focused === true ? ctx.color('accordion_focus') : 'transparent',
-        outlineOffset: -2,
-        outlineStyle: 'solid',
-        outlineWidth: state.focused === true ? ctx.metric('AccordionItem', 'focusWidth') : 0,
+        outlineStyle: 'none',
         paddingEnd: chevronFirst ? 0 : headingPadding
-      }
+      }, state.focused === true ? focusShadow : {})
     },
     chevron,
     title

@@ -2576,6 +2576,16 @@
       "why": "the info glyph's face is 16; the press layer must still meet control.target_min"
     },
     {
+      "id": "toggletip-button-focus-width",
+      "file": "component/molecule/tooltip/spec.toggletip-button.js",
+      "find": "  focusWidth: { constant: 1 },",
+      "replace": "  focusWidth: { constant: 2 },",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "focus draws the member's own 1 px ring at the edge under every template",
+      "why": "the member's ring is the upstream 1 px edge outline; a wider ring must fail the width assertion"
+    },
+    {
       "id": "ios-line-height-half-pixel",
       "file": "component/context.js",
       "find": "        lineHeight = lineHeight - 0.5 / pixelRatio.get();",
@@ -2684,6 +2694,16 @@
       "runner": "node",
       "testName": "a text segment reads 16 and an icon segment 14 at lg",
       "why": "an icon-only segment at lg must read control.content_switcher_padding_inline_large (14), not the text padding"
+    },
+    {
+      "id": "content-switcher-selected-edge",
+      "file": "component/molecule/content-switcher/switch.js",
+      "find": "        boxShadow: low === true && selected === true && live === true ? 'inset 0 0 0 ' + ctx.metric('Switch', 'outlineWidth') + 'px ' + ctx.color('content_switcher_outline') : undefined,",
+      "replace": "",
+      "runner": "node",
+      "test": "content-switcher.test.js",
+      "testName": "a selected low-contrast segment draws its 1 px edge at the radius",
+      "why": "a selected low-contrast slab without its 1 px border-inverse edge must fail the edge assertion"
     },
     {
       "id": "accordion-divider-hover-blend",

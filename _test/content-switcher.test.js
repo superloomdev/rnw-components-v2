@@ -149,26 +149,37 @@ describe('ContentSwitcher: the lg segment padding', function () {
 
 describe('ContentSwitcher: the low-contrast pressed cell', function () {
 
-  test('a pressed low-contrast segment paints the active cell under every template', async function () {
+  test('a pressed low-contrast segment paints the hover cell on its face', async function () {
     for (const template of TEMPLATE_NAMES) {
       const t = buildNative(template).tokens;
       const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, lowContrast: true, defaultSelectedIndex: 0 }));
       const segment = container.querySelectorAll('[role="tab"]')[1];
-      const want = cssValue('backgroundColor', t['color.content_switcher_low_contrast_container_active']);
+      const want = cssValue('backgroundColor', t['color.content_switcher_low_contrast_container_hover']);
       const face = segment.previousElementSibling;
-      const painted = function () {
-        return face.style.backgroundColor === want || Array.from(face.querySelectorAll('div')).some(function (el) {
-          return el.style.backgroundColor === want;
-        });
-      };
-      assert.equal(painted(), false, template + ': nothing paints the active fill at rest');
+      assert.notEqual(face.style.backgroundColor, want, template + ': the face does not paint the hover fill at rest');
       await act(async function () {
         segment.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
       });
-      assert.equal(painted(), true, template + ': a press paints ' + want);
+      assert.equal(face.style.backgroundColor, want, template + ': the pressed face paints the hover cell');
       await act(async function () {
         segment.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
       });
+      await cleanup();
+    }
+  });
+
+  test('a selected low-contrast segment draws its 1 px edge at the radius', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const t = buildNative(template).tokens;
+      const container = await render(React.createElement(registryFor(template).ContentSwitcher, { items: ITEMS, lowContrast: true, defaultSelectedIndex: 0 }));
+      const face = container.querySelectorAll('[role="tab"]')[0].previousElementSibling;
+      const slab = Array.from(face.querySelectorAll('div')).find(function (el) {
+        return el.style.position === 'absolute' && el.style.transformOrigin === 'bottom';
+      });
+      assert.ok(slab, template + ': the selected slab mounts');
+      assert.ok(slab.style.boxShadow.indexOf('inset 0 0 0 1px') !== -1, template + ': the slab paints its 1 px edge, got ' + slab.style.boxShadow);
+      assert.ok(slab.style.boxShadow.indexOf(t['color.content_switcher_outline']) !== -1, template + ': the edge reads content_switcher_outline');
+      assert.equal(slab.style.borderTopLeftRadius, cssValue('borderTopLeftRadius', t['control.content_switcher_radius']), template + ': at the segment radius');
       await cleanup();
     }
   });
