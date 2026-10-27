@@ -1,7 +1,7 @@
 // Info: expected-gap consumption for the primary gates (FIDELITY RULES 5).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { explainDisagreements } from './harness/expected-gaps.js';
+import { explainDisagreements, explainBudgetLines } from './harness/expected-gaps.js';
 
 const gaps = [
   { check: 'measure', component: 'X', part: 'term', property: 'height', request: 'type.x', wave: 'w' },
@@ -24,4 +24,13 @@ test('expected gaps: a gap that no longer reproduces is stale', function () {
   // A non-matching check consumes nothing
   const none = explainDisagreements(['default / term / height: 25 here, 21 upstream'], gaps, 'X', 'perceptual-visible');
   assert.equal(none.explained.length, 0);
+});
+
+test('expected gaps: a perceptual budget line is explained by the part-* entry', function () {
+  const lines = ['default: 8.24% > 2%', 'open: 9.24% > 2%'];
+  const out = explainBudgetLines(lines, [{ check: 'fidelity', component: 'DefinitionTooltip', part: '*', property: 'perceptual', request: 'type.x', wave: 'w' }], 'DefinitionTooltip', 'fidelity');
+  assert.equal(out.unexplained.length, 0);
+  assert.equal(out.explained.length, 2);
+  const stale = explainBudgetLines([], [{ check: 'fidelity', component: 'DefinitionTooltip', part: '*', property: 'perceptual', request: 'type.x', wave: 'w' }], 'DefinitionTooltip', 'fidelity');
+  assert.equal(stale.stale.length, 1);
 });

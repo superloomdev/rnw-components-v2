@@ -30,6 +30,15 @@
       "request": "type.definition_term",
       "wave": "m5-amend-5",
       "why": "the term height gap draws a visible diff under carbon until the type cell lands"
+    },
+    {
+      "check": "fidelity",
+      "component": "DefinitionTooltip",
+      "part": "*",
+      "property": "perceptual",
+      "request": "type.definition_term",
+      "wave": "m5-amend-5",
+      "why": "the queued definition_term type cell drives the term's 4px height gap; the perceptual budget trips until the cell lands"
     }
   ]
 }

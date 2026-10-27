@@ -32,3 +32,40 @@ export function explainDisagreements (lines, gaps, component, check) {
   });
   return { unexplained: unexplained, explained: explained, stale: stale };
 }
+
+
+/********************************************************************
+Explain perceptual-budget lines (fidelity.spec.js's 'N% > M%' over lines):
+an entry { check, component, part: '*', property: 'perceptual' } covers
+every state whose name the line leads with, or only `states` when given.
+A gap that no longer reproduces is stale and fails until removed.
+
+@param {Array}  lines     - 'state: N% > M%' strings
+@param {Array}  gaps      - expected-gaps.json entries
+@param {String} component - the component name
+@param {String} check     - the check this gate runs ('fidelity')
+
+@return {Object} - { unexplained, explained, stale }
+*********************************************************************/
+export function explainBudgetLines (lines, gaps, component, check) {
+  const mine = gaps.filter(function (gap) {
+    return gap.check === check && gap.component === component && gap.property === 'perceptual' && gap.part === '*';
+  });
+  const matches = function (line, gap) {
+    const key = String(line).split(':')[0];
+    return gap.states === undefined || gap.states.indexOf(key) !== -1;
+  };
+  const unexplained = [];
+  const explained = [];
+  for (const line of lines) {
+    if (mine.some(function (gap) { return matches(line, gap); })) {
+      explained.push(line);
+    } else {
+      unexplained.push(line);
+    }
+  }
+  const stale = mine.filter(function (gap) {
+    return lines.every(function (line) { return matches(line, gap) !== true; });
+  });
+  return { unexplained: unexplained, explained: explained, stale: stale };
+}

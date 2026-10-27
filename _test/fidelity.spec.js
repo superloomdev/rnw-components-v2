@@ -14,7 +14,7 @@ import { expect, test } from '@playwright/test';
 
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
 import { SCHEMES, runFidelity } from './harness/fidelity.js';
-import { explainDisagreements } from './harness/expected-gaps.js';
+import { explainDisagreements, explainBudgetLines } from './harness/expected-gaps.js';
 import { readFileSync } from 'node:fs';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
@@ -76,7 +76,9 @@ test.describe('fidelity', function () {
           }).map(function (key) {
             return key + ': ' + run.perceptual[key] + '% > ' + BUDGET[component.name] + '%';
           });
-          expect(over, component.name + ' states over the diff budget').toEqual([]);
+          const budgetGate = explainBudgetLines(over, GAPS, component.name, 'fidelity');
+          expect(budgetGate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), component.name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+          expect(budgetGate.unexplained, component.name + ' states over the diff budget').toEqual([]);
         });
       }
     }
