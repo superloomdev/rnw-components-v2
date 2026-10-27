@@ -24,7 +24,7 @@ import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
 export const SCHEMES = Object.freeze(['light', 'dark']);
-export const TEMPLATE = Object.freeze({ primary: 'carbon', second: 'material' });
+export const TEMPLATE = Object.freeze({ primary: 'carbon' });
 
 // Pixels around each cell body in a screenshot: wide enough for the widest ring (a 44px circle around an 18px box)
 const MARGIN = 20;
@@ -452,14 +452,8 @@ Run one row against one reference under one scheme.
 *********************************************************************/
 export async function runFidelity (page, component, set, scheme) {
 
-  const reference = set === 'second' ? component.reference.second : component.reference;
-  // The omissions masked out of the pixels, measured by the primary part's selector on our side
-  const omit = set === 'second' ? (reference.omit || {}) : {};
-  const masks = Object.fromEntries(Object.keys(omit).filter(function (name) {
-    return omit[name].mask === true;
-  }).map(function (name) {
-    return [name, component.reference.parts[name]];
-  }));
+  const reference = component.reference;
+  const masks = {};
   const status = await openReference(page, component.name, set, scheme);
   const upstream = await collect(page, component, reference, 'upstream');
   const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });

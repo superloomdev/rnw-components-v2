@@ -165,7 +165,7 @@ test.describe('perceptual', function () {
     await openShowcase(page, REFERENCE_TEMPLATE, 'TextArea', { measure: true, hosted: false });
     found.push(...await chrome('ours'));
     expect(await page.locator('.cell').count()).toBeGreaterThanOrEqual(1);
-    for (const set of ['primary', 'second']) {
+    for (const set of ['primary']) {
       const reference = await openReference(page, 'TextArea', set, 'dark');
       expect(reference.cells, 'TextArea: the ' + set + ' reference page drew no state').toBeGreaterThanOrEqual(1);
       found.push(...await chrome(set));

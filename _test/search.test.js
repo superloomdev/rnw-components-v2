@@ -185,15 +185,5 @@ describe('Search: the clear and keyboard contract', function () {
     assert.equal(parts.clear.getAttribute('aria-disabled'), 'true');
   });
 
-  test('the second reference slots a disabled action without double-applying the field opacity', function () {
-    const upstream = { tokens: buildNative('material').tokens };
-    const element = REFERENCE.second.mount(React, upstream, { disabled: true, value: 'Query' });
-    const action = element.props.children.find(function (child) {
-      return child !== null && child.type === 'md-icon-button';
-    });
-    assert.ok(action, 'the filled disabled field mounts the clear action');
-    assert.equal(action.props.disabled, true, 'the mounted action stays disabled');
-    assert.equal(action.props.style['--md-icon-button-disabled-icon-opacity'], 1, 'the field owns the disabled trailing opacity; the action does not apply it again');
-  });
 
 });

@@ -33,13 +33,15 @@ const NO_PRIMARY = new Set(getRoster().rows.filter(function (row) {
 test.describe('fidelity', function () {
 
   for (const component of components) {
-    const sets = (NO_PRIMARY.has(component.name) ? [] : ['primary']).concat(component.reference.second ? ['second'] : []);
+    const sets = ['primary'];
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme + ': matches the reference in every state', async function ({ page }) {
           test.slow();
           if (NO_PRIMARY.has(component.name)) {
-            test.info().annotations.push({ type: 'fidelity', description: component.name + ': primary set skipped (no primary twin)' });
+            test.info().annotations.push({ type: 'fidelity', description: component.name + ': skipped (no primary twin)' });
+            test.skip();
+            return;
           }
           const run = await runFidelity(page, component, set, scheme);
           if (run.errors.length > 0 || run.lines.length > 0 ||

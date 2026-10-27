@@ -616,8 +616,7 @@ function cellsCheck (mount, result) {
 
   const built = {
     carbon: buildNative('carbon').tokens,
-    default: buildNative('default').tokens,
-    material: buildNative('material').tokens
+    default: buildNative('default').tokens
   };
   const counts = { MATCH: 0, MISMATCH: 0, READ: 0, ABSENT: 0 };
   const lines = [];

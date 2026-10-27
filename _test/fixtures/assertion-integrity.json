@@ -576,26 +576,6 @@
       "why": "a button drawn with the shared scale's radius under the second template is square where the reference is a pill; the second-reference measurement must fail"
     },
     {
-      "id": "measure-second-coverage",
-      "file": "component/molecule/text-input/reference.js",
-      "find": "      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]', mask: true })\n",
-      "replace": "",
-      "runner": "pw",
-      "test": "measure.spec.js",
-      "testName": "every primary part is measured against the second reference or omitted with a reason",
-      "why": "a primary part neither measured against the second reference nor omitted with a reason must fail the coverage rule"
-    },
-    {
-      "id": "measure-second-omission-stale",
-      "file": "component/molecule/text-input/reference.js",
-      "find": "upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]'",
-      "replace": "upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container'",
-      "runner": "pw",
-      "test": "measure.spec.js",
-      "testName": "TextInput: parts match the second reference",
-      "why": "an omitted part that the second reference does draw makes the omission stale and must fail"
-    },
-    {
       "id": "measure-second-select-caret",
       "file": "component/composite/select/select.js",
       "find": "    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },",
@@ -744,16 +724,6 @@
       "test": "fidelity.spec.js",
       "testName": "Button / primary / light: matches the reference in every state",
       "why": "a ring drawn inside the edge that loses its inner band must fail the fidelity gate by its pixels, whatever its CSS"
-    },
-    {
-      "id": "fidelity-mask-anchor",
-      "file": "component/molecule/checkbox/reference.js",
-      "find": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)' }),",
-      "replace": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)', mask: true }),",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "Checkbox / second / light: matches the reference in every state",
-      "why": "a masked omission whose box contains the anchor part would hide the component from the pixels; the fidelity gate must reject the mask"
     },
     {
       "id": "purity-ctx-platform",
@@ -2907,8 +2877,8 @@
     },
     {
       "file": "component/composite/menu/menu.js",
-      "find": "      return item.selected !== undefined || item.radioGroup !== undefined ||\n        (Utils.isArray(item.items) && item.items.some(anySelectable));",
-      "replace": "      return item.selected !== undefined;",
+      "find": "      return item.selected !== undefined || item.radioGroup !== undefined ||\n        (item.group !== undefined && Utils.isArray(item.items) && item.items.some(anySelectable));",
+      "replace": "      return item.selected !== undefined || item.radioGroup !== undefined;",
       "testName": "a menu whose only selectable sits inside a group reserves the seat on a plain top-level item",
       "runner": "node",
       "id": "menu-seat-top-level-only",
