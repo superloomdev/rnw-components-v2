@@ -56,6 +56,36 @@
       "why": "a filter that keeps the seeded open must fail the drops-the-seed assertion"
     },
     {
+      "id": "list-item-height-minimum",
+      "file": "component/context.js",
+      "find": "minHeight: options.itemHeight, justifyContent: 'stretch'",
+      "replace": "height: options.itemHeight, justifyContent: 'stretch'",
+      "runner": "node",
+      "test": "list-item-height-minimum.test.js",
+      "testName": "list-item-height-minimum",
+      "why": "a fixed item height must fail the minimum-height assertion"
+    },
+    {
+      "id": "switch-height-minimum",
+      "file": "component/molecule/content-switcher/switch.js",
+      "find": "minHeight: props.segmentHeight === undefined",
+      "replace": "height: props.segmentHeight === undefined",
+      "runner": "node",
+      "test": "switch-height-minimum.test.js",
+      "testName": "switch-height-minimum",
+      "why": "a fixed segment height must fail the minimum-height assertion"
+    },
+    {
+      "id": "tab-height-minimum",
+      "file": "component/composite/tabs/tab.js",
+      "find": "minHeight: props.tall === true",
+      "replace": "height: props.tall === true",
+      "runner": "node",
+      "test": "tab-height-minimum.test.js",
+      "testName": "tab-height-minimum",
+      "why": "a fixed tab height must fail the minimum-height assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",
