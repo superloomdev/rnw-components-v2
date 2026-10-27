@@ -26,6 +26,16 @@
       "why": "a commit ceiling that cannot trip must fail the update loop assertion"
     },
     {
+      "id": "positioning-fixed-space-origin",
+      "file": "behaviors/positioning.js",
+      "find": "    for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {",
+      "replace": "    for (let node = null; node !== null && node !== undefined; node = node.parentElement) {",
+      "runner": "node",
+      "test": "behaviors.test.js",
+      "testName": "useAnchoredPosition: a fixed layer inside a transformed ancestor answers in that ancestor's space",
+      "why": "an unhosted fixed layer inside a transformed ancestor must resolve in that ancestor's space; forcing the origin to 0 must fail the shift assertions"
+    },
+    {
       "id": "menu-position-cap-off",
       "file": "behaviors/menu.js",
       "find": "  const MEASURE_CAP = 8;",

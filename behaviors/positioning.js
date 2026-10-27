@@ -151,6 +151,38 @@ export default function createPositioningBehaviors (deps) {
 
   }
 
+
+  /********************************************************************
+  The origin of the coordinate space a `position: fixed` layer resolves
+  in: the nearest ancestor that is its fixed containing block - a
+  transform, perspective, filter or backdrop-filter, a `contain` naming
+  paint, layout, strict or content, or a `will-change` naming one of
+  those - or {0, 0} when there is none. The layer mounts in the anchor's
+  own subtree, so the walk starts at the anchor.
+
+  @param {Object} element - DOM element
+  @return {Object} - { x, y }
+  *********************************************************************/
+  function fixedSpaceOrigin (element) {
+
+    if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+      return { x: 0, y: 0 };
+    }
+    for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {
+      const style = window.getComputedStyle(node);
+      const drawn = function (value) {
+        return value !== undefined && value !== '' && value !== 'none';
+      };
+      if (drawn(style.transform) || drawn(style.perspective) || drawn(style.filter) || drawn(style.backdropFilter) ||
+          /(paint|layout|strict|content)/.test(style.contain || '') || /(transform|perspective|filter)/.test(style.willChange || '')) {
+        const rect = node.getBoundingClientRect();
+        return { x: rect.left + (node.clientLeft || 0), y: rect.top + (node.clientTop || 0) };
+      }
+    }
+    return { x: 0, y: 0 };
+
+  }
+
   // A measure whose answer never converges loops a write per commit; the
   // cap ends it inside the track cycle it started in (D43)
   const MEASURE_CAP = 8;
@@ -251,11 +283,13 @@ export default function createPositioningBehaviors (deps) {
         // native branch's measured rect does
         const current = overlayRef.current;
         const hosted = current !== null && current.hosted === true;
-        const origin = hosted && current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 };
+        const origin = hosted === true
+          ? (current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 })
+          : fixedSpaceOrigin(anchor);
         // No state write when the answer is unchanged: a caller's layout
         // effect may re-measure, and a same-position write would loop
         const next = {
-          position: computed.position,
+          position: { left: computed.position.left - origin.x, top: computed.position.top - origin.y },
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
           anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
@@ -349,6 +383,39 @@ export default function createPositioningBehaviors (deps) {
       return function () {
         window.removeEventListener('scroll', onReflow, true);
         window.removeEventListener('resize', onReflow);
+      };
+    }, [options.track, measure]);
+
+    // A scrollIntoView can move the anchor a frame after the scroll
+    // event itself fired: while tracking, re-measure on the frame the
+    // anchor's rect actually changes (the cap bounds any loop)
+    React.useEffect(function () {
+      if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
+          typeof window.requestAnimationFrame !== 'function' || typeof window.cancelAnimationFrame !== 'function') {
+        return undefined;
+      }
+      let stopped = false;
+      let last = null;
+      let frame = 0;
+      const tick = function () {
+        if (stopped === true) {
+          return;
+        }
+        const anchor = resolveAnchor(options.anchor);
+        if (anchor !== null && anchor !== undefined && typeof anchor.getBoundingClientRect === 'function') {
+          const rect = anchor.getBoundingClientRect();
+          const signature = String(rect.left) + ',' + String(rect.top) + ',' + String(rect.width) + ',' + String(rect.height);
+          if (signature !== last) {
+            last = signature;
+            measure();
+          }
+        }
+        frame = window.requestAnimationFrame(tick);
+      };
+      frame = window.requestAnimationFrame(tick);
+      return function () {
+        stopped = true;
+        window.cancelAnimationFrame(frame);
       };
     }, [options.track, measure]);
 

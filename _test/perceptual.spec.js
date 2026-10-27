@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox, refocusPanel } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox, refocusPanel, reopenPanel, settleLayout } from './harness/page.js';
 import { cropRect, perceptualRatio, ratio, sampleWindow } from './harness/perceptual.js';
 import { restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
@@ -65,8 +65,12 @@ dilutes the ratio.
 
 @return {Promise<Object>} - state label -> PNG buffer
 *********************************************************************/
-async function shootBodies (page, name, frozen, refocus, side) {
+async function shootBodies (page, name, frozen, reference, side) {
 
+  const refocus = reference === undefined || reference === null ? undefined : reference.refocus;
+  const reopen = reference === undefined || reference === null ? undefined : reference.reopen;
+  const leave = reference === undefined || reference === null ? {}
+    : { escape: reference.escapeOnLeave !== false, releaseBeforeMove: reference.releaseBeforeMove === true, clickOutside: reference.clickOutsideOnLeave === true };
   const out = {};
   const cells = page.locator('.cell[data-component="' + name + '"]');
   const count = await cells.count();
@@ -76,10 +80,20 @@ async function shootBodies (page, name, frozen, refocus, side) {
       await pauseCellAnimations(cell.locator('[data-part="body"]'));
     }
     const state = await cell.getAttribute('data-state');
+    // An opened state's panel must be open for its shot, as the fidelity
+    // run re-opens it: an earlier cell's interaction can have closed it
+    if (reopen !== undefined && reopen !== null && Array.isArray(reopen.states) && reopen.states.indexOf(state) !== -1) {
+      await reopenPanel(page, name, state, reopen, side, leave);
+      await page.mouse.move(0, 0);
+    }
     // An open panel's ring follows focus, not mount order: focus the
     // measured cell's own item before its shot, as the fidelity run does
     await refocusPanel(page, name, state, refocus, side);
+    await settleLayout(page, name, state);
     out[state] = { shot: await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' }), sample: await readSampleBox(page, name, state) };
+    if (reopen !== undefined && reopen !== null && Array.isArray(reopen.states) && reopen.states.indexOf(state) !== -1) {
+      await leaveInteraction(page, leave);
+    }
   }
 
   return out;
@@ -181,12 +195,12 @@ test.describe('perceptual', function () {
       const component = components.find(function (entry) {
         return entry.name === row.name;
       });
-      const refocus = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference.refocus : undefined;
+      const componentReference = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference : undefined;
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), refocus, 'upstream');
+      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream');
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
-      const ours = await shootBodies(page, row.name, pauseAnimations(row.name), refocus, 'ours');
+      const ours = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'ours');
       const ratios = [];
       const over = [];
       const crops = [];

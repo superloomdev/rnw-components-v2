@@ -974,6 +974,49 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.equal(result.layerStyle.top, 78);
   });
 
+  test('useAnchoredPosition: a fixed layer inside a transformed ancestor answers in that ancestor\'s space', async function () {
+    const host = document.createElement('div');
+    host.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+    const anchorEl = document.createElement('div');
+    host.appendChild(anchorEl);
+    document.body.appendChild(host);
+    host.getBoundingClientRect = function () {
+      return { left: 100, top: 50, right: 300, bottom: 150, width: 200, height: 100 };
+    };
+    anchorEl.getBoundingClientRect = function () {
+      return { left: 150, top: 100, right: 170, bottom: 110, width: 20, height: 10 };
+    };
+    let result;
+    function Probe () {
+      result = behaviors.useAnchoredPosition({ anchor: anchorEl, placement: 'bottom-start', flip: false, offset: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // The ancestor's origin {100, 50} shifts the anchor and the position
+    assert.equal(result.anchor.x, 50);
+    assert.equal(result.anchor.y, 50);
+    assert.equal(result.layerStyle.left, 50);
+    assert.equal(result.layerStyle.top, 60);
+    host.style.transform = 'none';
+    await act(async function () {
+      result.measure();
+    });
+    assert.equal(result.anchor.x, 150);
+    assert.equal(result.anchor.y, 100);
+    assert.equal(result.layerStyle.left, 150);
+    assert.equal(result.layerStyle.top, 110);
+    document.body.removeChild(host);
+  });
+
   test('useViewportLayer: fixed and viewport-sized on the web', async function () {
     const layer = await renderHook(behaviors.useViewportLayer);
     assert.equal(layer.position, 'fixed');
