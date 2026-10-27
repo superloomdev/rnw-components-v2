@@ -51,14 +51,17 @@ async function renderMenu (Registry, props) {
     items: function () {
       return surface === null ? [] : Array.from(surface.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]'));
     },
+    face: function (item) {
+      return item.previousElementSibling;
+    },
     option: function (item) {
-      return item.children[0];
+      return item.previousElementSibling.children[0];
     },
     mark: function (item) {
-      return item.children[0].children[0];
+      return item.previousElementSibling.children[0].children[0];
     },
     label: function (item) {
-      return item.querySelector('[dir="auto"]');
+      return item.previousElementSibling.querySelector('[dir="auto"]');
     },
     dividers: function () {
       return surface === null ? [] : Array.from(surface.querySelectorAll('[role="separator"]'));
@@ -132,7 +135,7 @@ describe('Menu: every sample state under every template', function () {
 
           // The item's height, label and role
           const heights = { xs: 'size.size_xsmall', sm: 'control.menu_item_height', md: 'size.size_medium', lg: 'size.size_large' };
-          assert.equal(item.style.height, t[heights[props.size || 'sm']] + 'px');
+          assert.equal(parts.face(item).style.height, t[heights[props.size || 'sm']] + 'px');
           assert.equal(item.getAttribute('aria-disabled'), disabled ? 'true' : null);
           const role = radio ? 'menuitemradio' : entry.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
           assert.equal(item.getAttribute('role'), role);
@@ -200,8 +203,8 @@ describe('Menu: every sample state under every template', function () {
         if (radioEntry !== undefined || props.items.some(function (item) { return item.selected === true; }) || props.items.some(function (item) { return (item.items || []).some(function (sub) { return sub.selected === true; }); })) {
           const chosen = parts.surface.querySelector('[aria-checked="true"]');
           assert.notEqual(chosen, null, 'the selected option mounts');
-          assert.equal(chosen.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']));
-          const chosenLabel = chosen.querySelector('[dir="auto"]');
+          assert.equal(chosen.previousElementSibling.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']));
+          const chosenLabel = chosen.previousElementSibling.querySelector('[dir="auto"]');
           assert.equal(chosenLabel.style.color, cssValue('color', t['color.menu_item_label_selected']), 'the selected label cell');
         }
       });
@@ -256,7 +259,7 @@ describe('Menu: the surface floors and the item icon ink come from the theme', f
         items: [{ label: 'A', shortcut: 'Ctrl+A' }],
         open: true
       });
-      const runs = parts.items()[0].querySelectorAll('[dir="auto"]');
+      const runs = parts.face(parts.items()[0]).querySelectorAll('[dir="auto"]');
       const shortcut = runs[runs.length - 1];
       const type = t['type.menu_item_shortcut'];
       assert.equal(shortcut.style.fontSize, type.fontSize + 'px');
@@ -319,7 +322,7 @@ describe('Menu: behavior through the DOM', function () {
     await act(async function () {
       item.dispatchEvent(new Event('pointerover', { bubbles: true }));
     });
-    assert.equal(item.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']));
+    assert.equal(parts.face(item).style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']));
     assert.equal(parts.label(item).style.color, cssValue('color', t['color.menu_item_danger_label_hover']));
   });
 
@@ -337,12 +340,12 @@ describe('Menu: a focused danger item draws the ring, the fill and the label cel
       await act(async function () {
         item.dispatchEvent(new Event('focus', { bubbles: false }));
       });
-      assert.equal(item.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']), 'the danger fill');
+      assert.equal(parts.face(item).style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_danger_container_hover']), 'the danger fill');
       const label = parts.label(item);
       assert.equal(label.style.color, cssValue('color', t['color.menu_item_danger_label_hover']), 'the danger label on focus');
-      assert.equal(item.style.boxShadow.includes('inset'), true, 'the inset ring draws');
-      assert.equal(item.style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring color');
-      assert.equal(item.style.boxShadow.includes(' ' + t['control.menu_item_danger_focus_inset_width'] + 'px '), true, 'the ring width');
+      assert.equal(parts.face(item).style.boxShadow.includes('inset'), true, 'the inset ring draws');
+      assert.equal(parts.face(item).style.boxShadow.includes(String(t['color.menu_item_danger_focus_inset'])), true, 'the ring color');
+      assert.equal(parts.face(item).style.boxShadow.includes(' ' + t['control.menu_item_danger_focus_inset_width'] + 'px '), true, 'the ring width');
     });
   }
 

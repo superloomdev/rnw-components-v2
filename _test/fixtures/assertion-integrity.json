@@ -3034,6 +3034,16 @@
       "id": "accordion-press-target",
       "test": "accordion-press-target.test.js",
       "why": "without pressTarget the heading's hit area is its 40px row, under the 48px target floor"
+    },
+    {
+      "file": "component/composite/menu/menu-item.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "testName": "a menu item press layer meets the target floor; the face keeps the row height",
+      "runner": "node",
+      "id": "menu-item-press-target",
+      "test": "menu-item-press-target.test.js",
+      "why": "without pressTarget the menu item's hit area is its row height, under the target floor"
     }
   ]
 }

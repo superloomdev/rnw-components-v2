@@ -30,7 +30,7 @@ describe('MenuItemRadioGroup: the named group of radio options', function () {
       assert.equal(options.length, 3, 'three radio options');
       assert.equal(options[1].getAttribute('aria-checked'), 'true', 'the selectedItem is checked');
       assert.equal(options[0].getAttribute('aria-checked'), 'false', 'the others are unchecked');
-      assert.equal(options[1].style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']), 'the selected fill cell');
+      assert.equal(options[1].previousElementSibling.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']), 'the selected fill cell');
     });
   }
 

@@ -37,7 +37,7 @@ describe('MenuItem: a submenu entry draws the caret cell', function () {
       const { item } = await renderSubmenuMenu(template);
       assert.equal(item.getAttribute('aria-haspopup'), 'true');
       assert.equal(item.getAttribute('aria-expanded'), 'false');
-      const svg = item.querySelector('svg');
+      const svg = item.parentElement.querySelector('svg');
       assert.notEqual(svg, null, 'the caret draws');
       const path = svg.querySelector('path');
       assert.equal(t['icon.caret_right'].paths.some(function (glyph) {
@@ -158,7 +158,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
     const t = buildNative('carbon').tokens;
     const { container, item } = await renderSubmenuMenu('carbon');
     const rect = { bottom: 82, height: 32, left: 200, right: 300, top: 50, width: 100, x: 200, y: 50 };
-    Object.defineProperty(item, 'getBoundingClientRect', { value: function () { return rect; } });
+    Object.defineProperty(item.previousElementSibling, 'getBoundingClientRect', { value: function () { return rect; } });
     await act(async function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
@@ -174,7 +174,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
     const container = await render(React.createElement(Registry.Menu, { accessibilityLabel: 'Actions', items: SUB_ITEMS, open: true }));
     const item = container.querySelector('[aria-haspopup="true"]');
     const rect = { bottom: 82, height: 32, left: 900, right: 1000, top: 50, width: 100, x: 900, y: 50 };
-    Object.defineProperty(item, 'getBoundingClientRect', { value: function () { return rect; } });
+    Object.defineProperty(item.previousElementSibling, 'getBoundingClientRect', { value: function () { return rect; } });
     // The submenu measures 600 wide: its end-side right edge passes the viewport
     const original = Element.prototype.getBoundingClientRect;
     const restoreRect = function () {
@@ -184,7 +184,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
     // re-measure after a flip sees the flipped spot (a static rect would
     // flip it back and forth forever)
     Element.prototype.getBoundingClientRect = function () {
-      if (this.getAttribute && this.getAttribute('role') === 'menu' && this.parentElement && this.parentElement.parentElement && this.parentElement.parentElement.getAttribute('aria-haspopup') === 'true') {
+      if (this.getAttribute && this.getAttribute('role') === 'menu' && this.parentElement && this.parentElement.parentElement && this.parentElement.parentElement.parentElement !== null && this.parentElement.parentElement.parentElement.querySelector('[aria-haspopup]') !== null) {
         const left = Number.isFinite(parseFloat(this.style.left)) ? parseFloat(this.style.left) : 994;
         return { bottom: 256, height: 200, left: left, right: left + 600, top: 56, width: 600, x: left, y: 56 };
       }

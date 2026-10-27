@@ -37,6 +37,7 @@ export default function MenuItem (ctx) {
     const item = props.item !== undefined ? props.item : props;
     const hasSub = Utils.isArray(item.items);
     const disabled = hasSub ? false : item.disabled === true;
+    const faceRef = React.useRef(null);
     const ref = React.useRef(null);
     const [hovered, setHovered] = React.useState(false);
     const [pressed, setPressed] = React.useState(false);
@@ -92,7 +93,7 @@ export default function MenuItem (ctx) {
     const [submenuOpen, setSubmenuOpen] = React.useState(false);
     const submenuTimer = React.useRef(null);
     const closeTimer = React.useRef(null);
-    const anchored = useAnchoredPosition({ anchor: ref, offset: 0, placement: 'right', track: submenuOpen });
+    const anchored = useAnchoredPosition({ anchor: faceRef, offset: 0, placement: 'right', track: submenuOpen });
     const openSub = function () {
       clearTimeout(submenuTimer.current);
       submenuTimer.current = setTimeout(function () {
@@ -124,7 +125,8 @@ export default function MenuItem (ctx) {
     // Render the item: mark seat, icon seat, label, shortcut seat (caret
     // for a submenu), then the submenu itself
     const role = item.radio === true ? 'menuitemradio' : item.selected === undefined ? 'menuitem' : 'menuitemcheckbox';
-    return React.createElement(Pressable, {
+    const [faceSize, onLayout] = ctx.useFaceSize();
+    const pressLayer = React.createElement(Pressable, {
       ref: ref,
       dataSet: danger === true ? { part: 'danger' } : undefined,
       role: role,
@@ -179,6 +181,14 @@ export default function MenuItem (ctx) {
       onBlur: function () {
         setFocused(false);
       },
+      style: ctx.pressTarget(faceSize)
+    });
+    return React.createElement(View, {
+      style: { position: 'relative' }
+    },
+    React.createElement(View, {
+      onLayout: onLayout,
+      ref: faceRef,
       style: itemStyle
     },
     React.createElement(View, { style: [list.option(props.first !== true), { alignItems: 'center', flexDirection: 'row' }] },
@@ -257,7 +267,9 @@ export default function MenuItem (ctx) {
           ref.current.focus();
         }
       }
-    })) : null);
+    })) : null),
+    pressLayer
+    );
 
   }
 
