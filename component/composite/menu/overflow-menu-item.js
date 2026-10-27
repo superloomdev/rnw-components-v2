@@ -63,7 +63,7 @@ export default function OverflowMenuItem (ctx) {
     const labelLeaf = disabled ? 'list_item_label_disabled'
       : danger ? (active ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
         : active ? 'list_item_label_hover' : 'list_item_label';
-    const buttonStyle = {
+    const buttonStyle = Object.assign({
       alignItems: 'center',
       backgroundColor: !disabled && danger && active ? ctx.color('menu_item_danger_container_hover') : 'transparent',
       boxShadow: !disabled && danger && focused
@@ -72,7 +72,7 @@ export default function OverflowMenuItem (ctx) {
       flexDirection: 'row',
       height: rowStyle.height,
       paddingHorizontal: ctx.metric('OverflowMenuItem', 'optionPaddingInline')
-    };
+    }, !disabled && focused ? ctx.focusRing('field', { focused: true }) : {});
 
     // Render the row: the pressable fills it, the label one line ellipsized
     // at the option's width ceiling
