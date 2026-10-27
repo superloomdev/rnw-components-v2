@@ -40,7 +40,7 @@ export default function TabListVertical (ctx) {
         borderBottomColor: ctx.color('tab_vertical_divider'),
         borderBottomWidth: ctx.metric('TabListVertical', 'dividerWidth'),
         borderRightColor: ctx.color('tab_vertical_divider'),
-        borderRightWidth: ctx.metric('TabListVertical', 'dividerWidth'),
+        borderRightWidth: state.selected === true ? 0 : ctx.metric('TabListVertical', 'dividerWidth'),
         height: ctx.metric('TabListVertical', 'height'),
         justifyContent: 'center',
         outlineStyle: 'none',
