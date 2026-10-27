@@ -98,7 +98,28 @@ export default function AccordionItem (ctx) {
       } })
       : null;
 
-    const heading = React.createElement(Pressable, {
+    const [faceSize, onLayout] = ctx.useFaceSize();
+    const heading = React.createElement(View, {
+      style: { position: 'relative' }
+    },
+    React.createElement(View, {
+      onLayout: onLayout,
+      style: {
+        alignItems: 'center',
+        backgroundColor: state.hovered === true ? ctx.color('accordion_heading_container_hover') : 'transparent',
+        flexDirection: chevronFirst ? 'row' : 'row-reverse',
+        minHeight: height,
+        outlineColor: state.focused === true ? ctx.color('accordion_focus') : 'transparent',
+        outlineOffset: -2,
+        outlineStyle: 'solid',
+        outlineWidth: state.focused === true ? ctx.metric('AccordionItem', 'focusWidth') : 0,
+        paddingEnd: chevronFirst ? 0 : headingPadding
+      }
+    },
+    chevron,
+    title
+    ),
+    React.createElement(Pressable, {
       accessibilityRole: 'button',
       'aria-controls': props.contentId,
       'aria-expanded': open,
@@ -129,20 +150,8 @@ export default function AccordionItem (ctx) {
       },
       onFocus: interaction.rootProps.onFocus,
       onBlur: interaction.rootProps.onBlur,
-      style: {
-        alignItems: 'center',
-        backgroundColor: state.hovered === true ? ctx.color('accordion_heading_container_hover') : 'transparent',
-        flexDirection: chevronFirst ? 'row' : 'row-reverse',
-        minHeight: height,
-        outlineColor: state.focused === true ? ctx.color('accordion_focus') : 'transparent',
-        outlineOffset: -2,
-        outlineStyle: 'solid',
-        outlineWidth: state.focused === true ? ctx.metric('AccordionItem', 'focusWidth') : 0,
-        paddingEnd: chevronFirst ? 0 : headingPadding
-      }
-    },
-    chevron,
-    title
+      style: ctx.pressTarget(faceSize)
+    })
     );
 
     const content = React.createElement(View, {

@@ -3024,6 +3024,16 @@
       "id": "ghost-icon-centred",
       "test": "ghost-icon-centre.test.js",
       "why": "upstream's ghost icon is static and self-centres; restoring the computed-top branch puts the ghost icon at the row top"
+    },
+    {
+      "file": "component/composite/accordion/accordion-item.js",
+      "find": "style: ctx.pressTarget(faceSize)",
+      "replace": "style: {}",
+      "testName": "the heading press layer meets the target floor; the face keeps the row height",
+      "runner": "node",
+      "id": "accordion-press-target",
+      "test": "accordion-press-target.test.js",
+      "why": "without pressTarget the heading's hit area is its 40px row, under the 48px target floor"
     }
   ]
 }
