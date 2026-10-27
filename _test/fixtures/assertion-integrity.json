@@ -3004,6 +3004,16 @@
       "test": "copy-button-fill-owns-face.test.js",
       "testName": "a composition fill draws the face without the kind border",
       "why": "under a composition fill the kind's border must not draw - upstream's copy button has none"
+    },
+    {
+      "file": "component/molecule/tooltip/toggletip.js",
+      "find": "        setOpen(open !== true);\n        if (open !== true) {\n          focusButton();\n        }",
+      "replace": "        setOpen(open !== true);",
+      "testName": "a pointer open focuses the trigger and draws its ring under any",
+      "runner": "node",
+      "id": "toggletip-focus-trigger",
+      "test": "toggletip.test.js",
+      "why": "without the focus on open the trigger loses DOM focus after a pointer press - no ring under focus_trigger any"
     }
   ]
 }

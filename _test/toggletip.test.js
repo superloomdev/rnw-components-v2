@@ -38,6 +38,39 @@ describe('Toggletip: the information bubble', function () {
     await cleanup();
   });
 
+  test('a pointer open focuses the trigger and draws its ring under any', async function () {
+    const parts = await renderToggletip('carbon', {});
+    await act(async function () {
+      parts.button.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      parts.button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      parts.button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      parts.button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.equal(document.activeElement, parts.button, 'the trigger holds DOM focus after a pointer open');
+    const face = parts.button.parentElement;
+    const cs = getComputedStyle(face);
+    assert.ok(cs.outlineStyle === 'solid' || cs.boxShadow !== 'none' || cs.borderColor !== 'rgba(0, 0, 0, 0)',
+      'carbon (focus_trigger any) draws the ring on a pointer focus');
+    await cleanup();
+  });
+
+  test('a pointer open under keyboard keeps the trigger focused but draws no ring', async function () {
+    const Registry = buildSystem('carbon', factories, { layers: [{ 'feedback.focus_trigger': 'keyboard' }] });
+    const container = await render(React.createElement(Registry.Toggletip, { label: 'Toggletip label', content: 'Helpful information' }));
+    const button = container.querySelector('button');
+    await act(async function () {
+      button.dispatchEvent(new Event('pointerover', { bubbles: true }));
+      button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.equal(document.activeElement, button, 'the trigger still holds DOM focus');
+    const cs = getComputedStyle(button.parentElement);
+    const ringDrawn = cs.outlineStyle === 'solid' || (cs.boxShadow !== '' && cs.boxShadow !== 'none');
+    assert.equal(ringDrawn, false, 'keyboard: a pointer focus draws no ring');
+    await cleanup();
+  });
+
   test('the icon reads the active cell while the bubble is open', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderToggletip('carbon', { defaultOpen: true });

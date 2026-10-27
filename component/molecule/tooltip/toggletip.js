@@ -36,14 +36,21 @@ export default function Toggletip (ctx) {
     const bubbleId = useA11yId('sl-toggletip');
     const rootRef = React.useRef(null);
 
-    // Escape returns focus to the button; blur leaving the toggletip closes
-    const close = function (refocus) {
-      setOpen(false);
-      if (refocus === true && rootRef.current !== null && typeof rootRef.current.querySelector === 'function') {
+    // The trigger holds DOM focus the way upstream's HTMLButtonElement
+    // does: a press opens and focuses it, Escape refocuses it
+    const focusButton = function () {
+      if (rootRef.current !== null && typeof rootRef.current.querySelector === 'function') {
         const button = rootRef.current.querySelector('button');
         if (button !== null) {
           button.focus();
         }
+      }
+    };
+    // Escape returns focus to the button; blur leaving the toggletip closes
+    const close = function (refocus) {
+      setOpen(false);
+      if (refocus === true) {
+        focusButton();
       }
     };
     useEscapeKey(function () {
@@ -58,6 +65,9 @@ export default function Toggletip (ctx) {
       label: Utils.isString(props.buttonLabel) ? props.buttonLabel : 'Show information',
       onPress: function () {
         setOpen(open !== true);
+        if (open !== true) {
+          focusButton();
+        }
       }
     });
 
