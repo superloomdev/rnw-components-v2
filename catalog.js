@@ -81,7 +81,7 @@ import FloatingActionButtonSample from './component/molecule/floating-action-but
 import PopoverSample from './component/molecule/popover/sample.js';
 import PopoverContentSample, { FRAME as PopoverContentFrame } from './component/molecule/popover/sample.popover-content.js';
 import DefinitionTooltipSample from './component/molecule/tooltip/sample.definition-tooltip.js';
-import ToggletipSample from './component/molecule/tooltip/sample.toggletip.js';
+import ToggletipSample, { FRAME as ToggletipFrame } from './component/molecule/tooltip/sample.toggletip.js';
 import ToggletipLabelSample from './component/molecule/tooltip/sample.toggletip-label.js';
 import ToggletipButtonSample from './component/molecule/tooltip/sample.toggletip-button.js';
 import ToggletipContentSample from './component/molecule/tooltip/sample.toggletip-content.js';
@@ -193,11 +193,11 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Popover', family: 'Popover', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: PopoverSample }),
   Object.freeze({ name: 'PopoverContent', family: 'Popover', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: PopoverContentFrame, sample: PopoverContentSample }),
   Object.freeze({ name: 'DefinitionTooltip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: DefinitionTooltipSample }),
-  Object.freeze({ name: 'Toggletip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: null, sample: ToggletipSample }),
+  Object.freeze({ name: 'Toggletip', family: 'Tooltip', tier: 'molecule', platform: 'touch_degraded', flags: Object.freeze([]), frame: ToggletipFrame, sample: ToggletipSample }),
   Object.freeze({ name: 'ToggletipLabel', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipLabelSample }),
   Object.freeze({ name: 'ToggletipButton', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipButtonSample }),
   Object.freeze({ name: 'ToggletipContent', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: ToggletipContentSample }),
-  Object.freeze({ name: 'ToggletipActions', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: ToggletipActionsSample }),
+  Object.freeze({ name: 'ToggletipActions', family: 'Tooltip', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: ToggletipActionsSample }),
   Object.freeze({ name: 'TagSet', family: 'Tag', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: TagSetFrame, sample: TagSetSample }),
   Object.freeze({ name: 'Tab', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: null, sample: TabSample }),
   Object.freeze({ name: 'TabList', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: TabListFrame, sample: TabListSample }),

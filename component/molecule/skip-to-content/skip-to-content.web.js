@@ -43,6 +43,7 @@ export default function SkipToContentWeb (ctx) {
         backgroundColor: ctx.color('skip_link_container'),
         borderColor: ctx.color('skip_link_border'),
         borderWidth: ctx.metric('SkipToContent', 'borderWidth'),
+        outlineStyle: 'none',
         height: ctx.metric('SkipToContent', 'height'),
         justifyContent: 'center',
         left: offset,
