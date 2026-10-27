@@ -1,5 +1,5 @@
 // Info: TagSet measurement reference. The upstream TagSet comes from the
-// ibm-products package the roster row names; the harness mounts it with the
+// package the roster row names; the harness mounts it with the
 // same tags and frame width. Parts compare the row's gap and the overflow
 // tag's seat. The second reference is `none`.
 

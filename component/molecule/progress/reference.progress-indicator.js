@@ -22,7 +22,6 @@ export default Object.freeze({
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--progress', ours: ':scope > ul', measure: 'box' }),
     first: Object.freeze({ upstream: '.cds--progress-step:nth-child(1)', ours: ':scope > ul > li:nth-child(1)', measure: 'box' }),
-    second: Object.freeze({ upstream: '.cds--progress-step:nth-child(2)', ours: ':scope > ul > li:nth-child(2)', measure: 'box' }),
     third: Object.freeze({ upstream: '.cds--progress-step:nth-child(3)', ours: ':scope > ul > li:nth-child(3)', measure: 'box' })
   })
 });

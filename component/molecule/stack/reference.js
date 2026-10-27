@@ -27,7 +27,6 @@ export default Object.freeze({
   parts: Object.freeze({
     root: Object.freeze({ upstream: ':scope > div', ours: ':scope > div', measure: 'box' }),
     first: Object.freeze({ upstream: ':scope > div > :nth-child(1)', ours: ':scope > div > :nth-child(1)', measure: 'box' }),
-    second: Object.freeze({ upstream: ':scope > div > :nth-child(2)', ours: ':scope > div > :nth-child(2)', measure: 'box' }),
     third: Object.freeze({ upstream: ':scope > div > :nth-child(3)', ours: ':scope > div > :nth-child(3)', measure: 'box' })
   })
 });

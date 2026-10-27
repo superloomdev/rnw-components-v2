@@ -1,6 +1,6 @@
 // Info: IconTab measurement reference. Upstream's icon tab is a `Tab` with
-// `renderIcon` inside `TabList` whose `iconSize` prop is set; the material
-// twin mounts `md-primary-tab` with the `inline-icon` attribute.
+// `renderIcon` inside `TabList` whose `iconSize` prop is set; the second
+// reference was retired (batch R).
 
 export default Object.freeze({
   kind: 'render-web',

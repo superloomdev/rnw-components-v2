@@ -1,6 +1,6 @@
 // Info: ContentSwitcher measurement reference. Upstream mounts
-// `ContentSwitcher` of `Switch` segments; the material twin is
-// `md-outlined-segmented-button-set`.
+// `ContentSwitcher` of `Switch` segments; the second reference was
+// retired (batch R).
 
 export default Object.freeze({
   kind: 'render-web',
@@ -41,24 +41,5 @@ export default Object.freeze({
     segment: Object.freeze({ upstream: '.cds--content-switcher-btn:first-of-type', ours: '[role="tab"]', measure: 'box' }),
     label: Object.freeze({ upstream: '.cds--content-switcher--selected .cds--content-switcher__label', ours: '[role="tab"][aria-selected="true"] [dir="auto"]', measure: 'text', optional: true }),
     slab: Object.freeze({ upstream: '.cds--content-switcher--selected', pseudo: '::after', ours: '[role="tab"][aria-selected="true"] > div:nth-child(2)', measure: 'box', compare: ['width', 'height', 'backgroundColor'] })
-  }),
-  second: Object.freeze({
-    origin: 'container',
-    mount: function (React, upstream, props) {
-      const items = Array.isArray(props.items) ? props.items : [];
-      return React.createElement('md-outlined-segmented-button-set', null,
-        items.map(function (item, index) {
-          return React.createElement('md-outlined-segmented-button', {
-            key: index,
-            selected: index === (props.defaultSelectedIndex || 0) ? true : undefined,
-            disabled: item.disabled === true ? true : undefined,
-            label: item.text || item.label
-          });
-        }));
-    },
-    parts: Object.freeze({
-      container: Object.freeze({ upstream: 'md-outlined-segmented-button-set', ours: '[role="tablist"]', measure: 'box', compare: ['x', 'y', 'backgroundColor'] }),
-      segment: Object.freeze({ upstream: 'md-outlined-segmented-button', ours: '[role="tab"]', measure: 'box', compare: ['x', 'y', 'backgroundColor'] })
-    })
   })
 });

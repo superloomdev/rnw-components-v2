@@ -1,9 +1,7 @@
 // Info: SelectableTag measurement reference. The primary's selectable tag
 // takes `text`, `selected`, `size`, `disabled` and `renderIcon`; it renders
 // as a pressed-announced button and the button is the target. The second
-// reference is the filter chip - no sizes, so a sized sample is unmeasured
-// there; its selected leading icon is the theme's selected mark, drawn by
-// the chip itself.
+// reference was retired (batch R).
 
 export default Object.freeze({
   kind: 'render-web',
@@ -23,35 +21,5 @@ export default Object.freeze({
     root: Object.freeze({ upstream: '.cds--tag--selectable', ours: ':scope > div > div', measure: 'box' }),
     label: Object.freeze({ upstream: '.cds--tag__label', ours: ':scope > div > div > div > [dir="auto"]', measure: 'text' }),
     icon: Object.freeze({ upstream: '.cds--tag__custom-icon svg', ours: ':scope > div > div > div > svg', measure: 'box', optional: true })
-  }),
-  second: Object.freeze({
-    origin: 'root',
-    interactions: Object.freeze(['hover', 'focus', 'pressed']),
-    target: Object.freeze({ upstream: 'md-filter-chip >>> .primary.action', ours: '[role="button"]' }),
-    mount: function (React, upstream, props) {
-      if (props.size !== undefined && props.size !== 'md') {
-        return null;
-      }
-      const icon = props.icon && props.selected !== true && upstream.tokens['icon.' + props.icon]
-        ? React.createElement('svg', { slot: 'icon', viewBox: upstream.tokens['icon.' + props.icon].viewBox },
-          upstream.tokens['icon.' + props.icon].paths.map(function (path, index) {
-            return React.createElement('path', { key: index, d: path.d, fillRule: path.fillRule });
-          }))
-        : null;
-      return React.createElement('md-filter-chip', {
-        label: props.text,
-        selected: props.selected === true ? true : undefined,
-        disabled: props.disabled === true ? true : undefined
-      }, icon);
-    },
-    parts: Object.freeze({
-      // The chip paints its container on .container::before; the element
-      // itself is transparent in every state
-      root: Object.freeze({ upstream: 'md-filter-chip >>> .container', pseudo: '::before', ours: ':scope > div > div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'borderBottomColor', 'outline'] }),
-      label: Object.freeze({ upstream: 'md-filter-chip >>> .label-text', ours: ':scope > div > div > div > [dir="auto"]', measure: 'text' }),
-      // The chip draws its own checkmark while selected; ours is the
-      // selected mark icon at the same slot
-      icon: Object.freeze({ upstream: 'md-filter-chip >>> .leading.icon', ours: ':scope > div > div > div:has(> svg)', measure: 'box', optional: true })
-    })
   })
 });
