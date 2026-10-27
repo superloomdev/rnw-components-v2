@@ -445,6 +445,8 @@ pointer down on it. Wait for transitions and state layers to settle.
 @param {String} selector    - The interactive element, relative to the cell body;
                              ' >>> ' crosses shadow roots (resolved by hand)
 @param {String} interaction - 'hover' | 'focus' | 'pressed' | 'open'
+@param {Object} [options]   - point: press through the box's center point; settleBeforePress: wait for hover-delayed
+                             layers before the press
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
 *********************************************************************/
@@ -530,6 +532,9 @@ export async function enterInteraction (page, name, state, selector, interaction
       await target.hover(disabled === true ? { force: true } : undefined);
     }
     if (interaction === 'pressed') {
+      if (options && options.settleBeforePress === true) {
+        await page.waitForTimeout(400);
+      }
       await page.mouse.down();
     }
   }

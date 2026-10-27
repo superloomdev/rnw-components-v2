@@ -318,7 +318,10 @@ async function collect (page, component, reference, side, masks) {
     // The sample box is read in the same scroll frame as the shot: settle
     // the rest frame's centering first, then read, then shoot without
     // another scroll (an interaction frame is already centered)
-    await refocusPanel(page, component.name, label, reference.refocus, side);
+    // A pressed frame keeps the focus its press gave; rest and hover frames refocus the measured panel
+    if (key.indexOf(' @pressed') === -1) {
+      await refocusPanel(page, component.name, label, reference.refocus, side);
+    }
     if (preserveViewport !== true) {
       await page.locator('.cell[data-component="' + component.name + '"][data-state="' + label + '"] [data-part="body"]').first().evaluate(function (element) {
         element.scrollIntoView({ block: 'center', inline: 'center' });
@@ -393,7 +396,7 @@ async function collect (page, component, reference, side, masks) {
         releaseBeforeMove: reference.releaseBeforeMove === true,
         clickOutside: reference.clickOutsideOnLeave === true
       });
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true })) {
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true, settleBeforePress: reference.target.settleBeforePress === true })) {
           failures.push(key + ': target not found on ' + side);
           continue;
         }

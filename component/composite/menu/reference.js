@@ -54,7 +54,8 @@ export default Object.freeze({
     }, items.map(entry));
   },
   // The element a person hovers, presses and focuses: the first enabled item
-  target: Object.freeze({ upstream: '.cds--menu-item:not(.cds--menu-item--disabled)', ours: '[role="menuitem"]:not([role="menu"] [role="menu"] *), [role="menuitemcheckbox"]:not([role="menu"] [role="menu"] *), [role="menuitemradio"]:not([role="menu"] [role="menu"] *)' }),
+  // A submenu opens on a 100 ms hover delay and takes focus as it opens; the press follows it
+  target: Object.freeze({ upstream: '.cds--menu-item:not(.cds--menu-item--disabled)', ours: '[role="menuitem"]:not([role="menu"] [role="menu"] *), [role="menuitemcheckbox"]:not([role="menu"] [role="menu"] *), [role="menuitemradio"]:not([role="menu"] [role="menu"] *)', settleBeforePress: true }),
   // The fixed surface mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 400, height: 280, stage: true }),
