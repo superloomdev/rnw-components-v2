@@ -98,6 +98,19 @@ import TabsSkeletonSample from './component/composite/tabs/sample.tabs-skeleton.
 import ContentSwitcherSample from './component/composite/tabs/sample.content-switcher.js';
 import SwitchSample from './component/molecule/content-switcher/sample.switch.js';
 import IconSwitchSample from './component/molecule/content-switcher/sample.icon-switch.js';
+import MenuButtonSample, { FRAME as MenuButtonFrame } from './component/composite/menu/sample.menu-button.js';
+import MenuItemSample, { FRAME as MenuItemFrame } from './component/composite/menu/sample.menu-item.js';
+import MenuItemDividerSample, { FRAME as MenuItemDividerFrame } from './component/composite/menu/sample.menu-item-divider.js';
+import MenuItemGroupSample, { FRAME as MenuItemGroupFrame } from './component/composite/menu/sample.menu-item-group.js';
+import MenuItemRadioGroupSample, { FRAME as MenuItemRadioGroupFrame } from './component/composite/menu/sample.menu-item-radio-group.js';
+import MenuItemSelectableSample, { FRAME as MenuItemSelectableFrame } from './component/composite/menu/sample.menu-item-selectable.js';
+import OverflowMenuSample, { FRAME as OverflowMenuFrame } from './component/composite/menu/sample.overflow-menu.js';
+import OverflowMenuItemSample, { FRAME as OverflowMenuItemFrame } from './component/composite/menu/sample.overflow-menu-item.js';
+import CopyButtonSample from './component/molecule/copy/sample.js';
+import SkipToContentSample, { FRAME as SkipToContentFrame } from './component/molecule/skip-to-content/sample.js';
+import AccordionSample, { FRAME as AccordionFrame } from './component/composite/accordion/sample.accordion.js';
+import AccordionItemSample, { FRAME as AccordionItemFrame } from './component/composite/accordion/sample.accordion-item.js';
+import AccordionSkeletonSample, { FRAME as AccordionSkeletonFrame } from './component/composite/accordion/sample.accordion-skeleton.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), frame: null, sample: IconSample }),
@@ -196,5 +209,18 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'TabsSkeleton', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: TabsSkeletonSample }),
   Object.freeze({ name: 'ContentSwitcher', family: 'Tabs', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: ContentSwitcherSample }),
   Object.freeze({ name: 'Switch', family: 'Tabs', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference']), frame: null, sample: SwitchSample }),
-  Object.freeze({ name: 'IconSwitch', family: 'Tabs', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: IconSwitchSample })
+  Object.freeze({ name: 'IconSwitch', family: 'Tabs', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: IconSwitchSample }),
+  Object.freeze({ name: 'MenuButton', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: MenuButtonFrame, sample: MenuButtonSample }),
+  Object.freeze({ name: 'MenuItem', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: MenuItemFrame, sample: MenuItemSample }),
+  Object.freeze({ name: 'MenuItemDivider', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: MenuItemDividerFrame, sample: MenuItemDividerSample }),
+  Object.freeze({ name: 'MenuItemGroup', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: MenuItemGroupFrame, sample: MenuItemGroupSample }),
+  Object.freeze({ name: 'MenuItemRadioGroup', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: MenuItemRadioGroupFrame, sample: MenuItemRadioGroupSample }),
+  Object.freeze({ name: 'MenuItemSelectable', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), frame: MenuItemSelectableFrame, sample: MenuItemSelectableSample }),
+  Object.freeze({ name: 'OverflowMenu', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: OverflowMenuFrame, sample: OverflowMenuSample }),
+  Object.freeze({ name: 'OverflowMenuItem', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: OverflowMenuItemFrame, sample: OverflowMenuItemSample }),
+  Object.freeze({ name: 'CopyButton', family: 'Copy', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CopyButtonSample }),
+  Object.freeze({ name: 'SkipToContent', family: 'SkipToContent', tier: 'molecule', platform: 'web', flags: Object.freeze(['web_only']), frame: SkipToContentFrame, sample: SkipToContentSample }),
+  Object.freeze({ name: 'Accordion', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionFrame, sample: AccordionSample }),
+  Object.freeze({ name: 'AccordionItem', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: AccordionItemFrame, sample: AccordionItemSample }),
+  Object.freeze({ name: 'AccordionSkeleton', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionSkeletonFrame, sample: AccordionSkeletonSample })
 ]);

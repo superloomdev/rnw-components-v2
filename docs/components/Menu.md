@@ -60,6 +60,8 @@ an item is chosen).
 `md-menu` of `md-menu-item` elements (`md-divider` for separators). It has
 no danger kind, no selected marks and leading icons in `start` slots.
 
+Measured residual: the trigger glyph sits half a point higher than the reference's, which offsets the glyph by one sixteenth of a rem and back.
+
 ## Menu
 
 Menu is a list of menu items and separators that opens at a point, roves focus over the arrows and closes on Escape, Tab, outside press or choice.
@@ -153,7 +155,8 @@ MenuButton is a button that opens a Menu of actions below or above it, its chevr
 | `kind` | `string` | no | The trigger's button kind: `primary` (default), `tertiary` or `ghost`. |
 | `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the trigger's and the menu's size. Default `lg`. |
 | `menuAlignment` | `string` | no | `bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the edge the menu opens from and aligns to. |
-| `open` | `boolean` | no | Whether the menu is open; when given the caller owns it, otherwise the trigger toggles it. |
+| `open` | `boolean` | no | Whether the menu is open; a given value seeds it and re-syncs on change, otherwise the trigger toggles it. |
+| `onOpen` | `function` | no | Called when the menu opens (the trigger press). |
 | `disabled` | `boolean` | no | Disables the trigger. Default false. |
 | `menuBorder` | `boolean` | no | Draws the menu's border variant. Forwarded to Menu's `border`. |
 | `menuBackgroundToken` | `string` | no | The menu surface's fill token (`layer` or `background`). |
@@ -279,6 +282,7 @@ MenuItemGroup names a run of a Menu's items for assistive technology without dra
 |---|---|---|---|
 | `label` | `string` | yes | Names the run of items for assistive technology. |
 | `children` | `node` | no | The group's items. |
+| `items` | `array` | no | The group's items as data, drawn standalone or inside a Menu. |
 
 ### Metrics
 
@@ -288,7 +292,7 @@ None: every value this component draws is a token named in its props or listed u
 
 | State | Props |
 |---|---|
-| default | `{"label":"Edit"}` |
+| default | `{"items":[{"label":"Undo"},{"label":"Redo"},{"label":"Cut"}],"label":"Edit"}` |
 
 ## MenuItemRadioGroup
 
@@ -309,6 +313,7 @@ MenuItemRadioGroup is a named set of Menu items of which exactly one is selected
 |---|---|---|---|
 | `label` | `string` | yes | Names the set for assistive technology. |
 | `children` | `node` | no | The radio options (MenuItemSelectable or MenuItem with `radio`). |
+| `items` | `array` | no | The radio options as data: labels or item objects, drawn standalone or inside a Menu. |
 | `selectedItem` | `string` | no | The selected option's label. |
 
 ### Metrics
@@ -319,7 +324,7 @@ None: every value this component draws is a token named in its props or listed u
 
 | State | Props |
 |---|---|
-| default | `{"label":"Size","selectedItem":"Medium"}` |
+| default | `{"items":["Small","Medium","Large"],"label":"Size","selectedItem":"Medium"}` |
 
 ## MenuItemSelectable
 
@@ -375,7 +380,8 @@ OverflowMenu is a square icon button that opens a panel of options joined to it,
 |---|---|---|---|
 | `items` | `array` | yes | The panel's options: `{ label, disabled, danger, divider, href, onPress }` per row. |
 | `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the trigger square's side off the size scale. Default `md`. |
-| `open` | `boolean` | no | Whether the panel is open; when given the caller owns it and closes through `onClose`, otherwise the trigger toggles it. |
+| `open` | `boolean` | no | Whether the panel is open; a given value seeds it and re-syncs on change, otherwise the trigger toggles it. |
+| `onOpen` | `function` | no | Called when the panel opens (the trigger press). |
 | `flipped` | `boolean` | no | Align the panel's end edge to the trigger's instead of the start edge. Default false. |
 | `direction` | `string` | no | `bottom` (default) or `top`: the trigger edge the panel opens from. |
 | `iconDescription` | `string` | no | The trigger's accessible name and its tooltip label. Default `Options`. |

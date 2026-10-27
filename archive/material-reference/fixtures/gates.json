@@ -1,0 +1,25 @@
+{
+  "info": [
+    "gates.json entries that gate the second reference, verbatim from _test/fixtures/gates.json at 7f2bd93"
+  ],
+  "gates": [
+    {
+      "layer": 2,
+      "spec": "measure.spec.js",
+      "clause": "every row with a second twin carries a second block",
+      "title": "every row with a second twin carries a second reference block"
+    },
+    {
+      "layer": 2,
+      "spec": "measure.spec.js",
+      "clause": "every primary part measured against the second reference or omitted with a reason",
+      "title": "every primary part is measured against the second reference or omitted with a reason"
+    },
+    {
+      "layer": 2,
+      "spec": "measure.spec.js",
+      "clause": "parts match the rendered second reference; an omitted part still draws nothing there",
+      "title": ": parts match the second reference"
+    }
+  ]
+}
