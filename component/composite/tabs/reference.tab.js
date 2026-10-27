@@ -13,7 +13,7 @@ export default Object.freeze({
   },
   target: Object.freeze({ upstream: '.cds--tabs__nav-link', ours: '[role="tab"]' }),
   parts: Object.freeze({
-    tab: Object.freeze({ upstream: '.cds--tabs__nav-link', ours: '[role="tab"]', measure: 'box' }),
-    label: Object.freeze({ upstream: '.cds--tabs__nav-item-label', ours: '[dir="auto"]', measure: 'text' })
+    tab: Object.freeze({ upstream: '.cds--tabs__nav-link', ours: 'div:has(> [role="tab"]) > div:first-child', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--tabs__nav-item-label', ours: 'div:has(> [role="tab"]) > div:first-child [dir="auto"]', measure: 'text' })
   })
 });

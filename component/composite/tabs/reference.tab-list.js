@@ -24,10 +24,10 @@ export default Object.freeze({
       } : undefined }, item.label);
     })));
   },
-  target: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: '[role="tab"]:first-of-type' }),
+  target: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > [role="tab"]' }),
   parts: Object.freeze({
     bar: Object.freeze({ upstream: '.cds--tab--list', ours: '[role="tablist"]', measure: 'box' }),
-    tab: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: '[role="tab"]:first-of-type', measure: 'box' }),
-    label: Object.freeze({ upstream: '.cds--tabs__nav-item--selected .cds--tabs__nav-item-label', ours: '[role="tab"][aria-selected="true"] [dir="auto"]', measure: 'text' })
+    tab: Object.freeze({ upstream: '.cds--tabs__nav-link:first-of-type', ours: 'div:has(> [role="tab"]):first-of-type > div:first-child', measure: 'box' }),
+    label: Object.freeze({ upstream: '.cds--tabs__nav-item--selected .cds--tabs__nav-item-label', ours: 'div:has(> [role="tab"][aria-selected="true"]) > div:first-child [dir="auto"]', measure: 'text' })
   })
 });
