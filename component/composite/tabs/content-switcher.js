@@ -80,7 +80,7 @@ export default function ContentSwitcher (ctx) {
         outlineStyle: 'solid',
         outlineWidth: ctx.metric('ContentSwitcher', 'outlineWidth'),
         flexDirection: 'row',
-        height: ctx.metric('ContentSwitcher', heightKey),
+        minHeight: ctx.metric('ContentSwitcher', heightKey),
         overflow: 'hidden'
       }
     }),

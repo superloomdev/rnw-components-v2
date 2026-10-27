@@ -86,6 +86,16 @@
       "why": "a fixed tab height must fail the minimum-height assertion"
     },
     {
+      "id": "content-switcher-height-minimum",
+      "file": "component/composite/tabs/content-switcher.js",
+      "find": "minHeight: ctx.metric('ContentSwitcher', heightKey)",
+      "replace": "height: ctx.metric('ContentSwitcher', heightKey)",
+      "runner": "node",
+      "test": "content-switcher-height-minimum.test.js",
+      "testName": "content-switcher-height-minimum",
+      "why": "a fixed container height must fail the minimum-height assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",
