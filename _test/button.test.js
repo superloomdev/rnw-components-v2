@@ -244,8 +244,8 @@ describe('Button: feedback.press through the DOM', function () {
     assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']));
     assert.match(parts.root.style.boxShadow, /inset/);
     assert.equal(parts.root.style.outlineWidth, '');
-    const m = buildNative('carbon', [LESSONS_LAYER]).tokens;
-    const keyboard = await renderButton(registryFor('carbon', undefined, [LESSONS_LAYER]), { children: 'P' });
+    const m = buildNative('shapes').tokens;
+    const keyboard = await renderButton(registryFor('shapes'), { children: 'P' });
     await fire(keyboard.root, new Event('pointerdown', { bubbles: true }));
     await act(async function () {
       keyboard.root.focus();
@@ -257,8 +257,10 @@ describe('Button: feedback.press through the DOM', function () {
     await act(async function () {
       keyboard.root.focus();
     });
-    assert.equal(keyboard.root.style.borderTopColor, cssValue('borderTopColor', m['color.button_focus_ring']));
-    assert.match(keyboard.root.style.boxShadow, /inset/);
+    // A keyboard-only theme draws its ring as an outline outside the edge
+    assert.equal(keyboard.root.style.outlineColor, cssValue('outlineColor', m['color.button_focus_ring']));
+    assert.equal(keyboard.root.style.outlineWidth, m['control.button_focus_width'] + 'px');
+    assert.equal(keyboard.root.style.outlineOffset, m['control.button_focus_offset'] + 'px');
   });
 
   test('disabled: no hover or press feedback and no activation; enabled activates once per click', async function () {

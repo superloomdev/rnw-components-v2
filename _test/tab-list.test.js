@@ -11,7 +11,7 @@ import SAMPLE from '../component/composite/tabs/sample.tab-list.js';
 import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 const ITEMS = [1, 2, 3].map(function (n) { return { label: 'Tab ' + n }; });
 
 afterEach(cleanup);

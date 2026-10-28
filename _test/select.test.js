@@ -14,7 +14,7 @@ import SAMPLE from '../component/composite/select/sample.js';
 import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 // The default size is the control role; the other sizes follow the shared size scale
 const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 const ITEMS = SAMPLE[0].props.items;
@@ -265,6 +265,10 @@ describe('Select: the list through the DOM', function () {
       const parts = await renderSelect(registryFor(template), SAMPLE[0].props);
       drawn[template] = parts.caret.querySelector('svg path').getAttribute('d');
     }
+    // The two shipped templates draw the primary's chevron; the shapes theme
+    // draws the retired system's own triangle
+    assert.equal(drawn.default, drawn.carbon);
+    assert.notEqual(drawn.shapes, drawn.default);
   });
 
   test('floating: the label rests in the frame and rises while the list is open', async function () {

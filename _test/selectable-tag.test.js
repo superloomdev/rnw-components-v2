@@ -12,7 +12,7 @@ import SAMPLE from '../component/molecule/tag/sample.selectable-tag.js';
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 
 afterEach(cleanup);
 

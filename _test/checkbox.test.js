@@ -13,7 +13,7 @@ import SAMPLE from '../component/molecule/checkbox/sample.js';
 import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 const TRANSPARENT = 'rgba(0, 0, 0, 0)';
 
 afterEach(cleanup);
@@ -194,21 +194,26 @@ describe('Checkbox: state through the DOM', function () {
   });
 
   test('the state layer: the disc centered on the box shows the theme\'s layer for the selection and the state', async function () {
-    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
-    const parts = await renderCheckbox(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L' });
-    const offset = (t['control.checkbox_size'] - t['control.selection_layer_size']) / 2;
-    assert.equal(parts.layer.style.width, t['control.selection_layer_size'] + 'px');
-    assert.equal(parts.layer.style.left, offset + 'px');
-    assert.equal(parts.layer.style.top, offset + 'px');
-    assert.equal(parts.layer.style.opacity, '0');
-    await fire(parts.root, new Event('pointerover', { bubbles: true }));
-    assert.equal(parts.layer.style.opacity, '1');
-    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_hover']));
-    await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-    assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_active']));
-    const checked = await renderCheckbox(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', checked: true });
-    await fire(checked.root, new Event('pointerover', { bubbles: true }));
-    assert.equal(checked.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_selected_hover']));
+    for (const template of ['carbon', 'shapes']) {
+      const layers = template === 'carbon' ? [LESSONS_LAYER] : undefined;
+      const t = buildNative(template, layers).tokens;
+      const parts = await renderCheckbox(registryFor(template, undefined, layers), { label: 'L' });
+      const offset = (t['control.checkbox_size'] - t['control.selection_layer_size']) / 2;
+      assert.equal(parts.layer.style.width, t['control.selection_layer_size'] + 'px');
+      assert.equal(parts.layer.style.left, offset + 'px');
+      assert.equal(parts.layer.style.top, offset + 'px');
+      assert.equal(parts.layer.style.opacity, '0');
+      await fire(parts.root, new Event('pointerover', { bubbles: true }));
+      assert.equal(parts.layer.style.opacity, '1');
+      assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_hover']), template);
+      await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      assert.equal(parts.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_active']), template);
+      await fire(parts.root, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      const checked = await renderCheckbox(registryFor(template, undefined, layers), { label: 'L', checked: true });
+      await fire(checked.root, new Event('pointerover', { bubbles: true }));
+      assert.equal(checked.layer.style.backgroundColor, cssValue('backgroundColor', t['color.selection_layer_selected_hover']), template);
+      await cleanup();
+    }
   });
 
   test('hover and press read the outline cells for the state', async function () {

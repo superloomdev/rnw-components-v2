@@ -14,7 +14,7 @@ import SAMPLE from '../component/molecule/text-input/sample.js';
 import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 // The default size is the control role; the other sizes follow the shared size scale
 const HEIGHTS = { sm: 'size.size_small', md: 'control.field_height', lg: 'size.size_large' };
 

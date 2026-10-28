@@ -10,10 +10,10 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/tag/sample.dismissible-tag.js';
-import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 
 afterEach(cleanup);
 
@@ -190,14 +190,16 @@ describe('DismissibleTag: the close control interacts', function () {
   });
 
   test('the inset close uses its own zero focus offset', async function () {
-    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
-    const parts = await renderDismissible(registryFor('carbon', undefined, [LESSONS_LAYER]), { text: 'T', title: 'Dismiss' });
+    const t = buildNative('shapes').tokens;
+    const parts = await renderDismissible(registryFor('shapes'), { text: 'T', title: 'Dismiss' });
     await fire(parts.close, new KeyboardEvent('keydown', { bubbles: true, key: 'Tab' }));
     await act(async function () {
       parts.close.focus();
     });
-    assert.notEqual(parts.face.style.boxShadow, '');
-    assert.match(parts.face.style.boxShadow, /inset/);
+    // Under `inset` the face carries the tag family's outline ring at the
+    // close's own offset - pinned to the edge (0), not the family's
+    assert.equal(parts.face.style.outlineWidth, t['control.tag_focus_width'] + 'px');
+    assert.equal(parts.face.style.outlineOffset, t['control.tag_close_focus_offset'] + 'px');
   });
 
 });

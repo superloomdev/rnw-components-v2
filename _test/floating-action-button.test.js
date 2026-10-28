@@ -14,7 +14,7 @@ import SAMPLE from '../component/molecule/floating-action-button/sample.floating
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 
 afterEach(cleanup);
 

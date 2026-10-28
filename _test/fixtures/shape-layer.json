@@ -1,0 +1,116 @@
+{
+  "info": [
+    "Test-only 'shapes' theme layer for the batch-15 fire restore (plan 0160, __dev__/wip/batch-15-fire-restore.md).",
+    "Every token below is copied verbatim from archive/material-reference/template-package/js-client-helper-themer-template-material/data/light.js - the registry 1.0.0 (source commit 95cc029). The layer pins the retired system's shapes, opacity cells and member cells the surviving fire rows observe; palette and geometry stay the default template's.",
+    "harness/system.js builds 'shapes' as the default template plus this layer. It is never shipped, never a measurement reference and never a TEMPLATES entry."
+  ],
+  "name": "shapes",
+  "tokens": {
+    "anatomy.label": "floating",
+    "anatomy.loading_motion": "arc",
+    "anatomy.tab_overflow": "scroll",
+    "anatomy.tag_close": "inset",
+    "anatomy.tag_interactive_outline": "inset",
+    "feedback.field": "outline",
+    "feedback.focus_trigger": "keyboard",
+    "feedback.press": "ripple",
+    "color.button_focus_ring": "{color.focus}",
+    "control.button_focus_offset": 2,
+    "control.button_focus_width": 3,
+    "color.button_primary_container": "{color.interactive}",
+    "color.button_primary_container_active": {
+      "op": "mix",
+      "args": [
+        "color.text_on_color",
+        "color.interactive",
+        19.04
+      ]
+    },
+    "color.button_primary_container_hover": {
+      "op": "mix",
+      "args": [
+        "color.text_on_color",
+        "color.interactive",
+        8
+      ]
+    },
+    "color.field_label": "{color.text_secondary}",
+    "color.field_label_invalid": "{color.support_error}",
+    "color.icon_primary": "#1d1b20",
+    "color.list_item_container_active": {
+      "op": "mix",
+      "args": [
+        "color.text_primary",
+        "color.layer_02",
+        19.04
+      ]
+    },
+    "color.list_item_container_selected_active": {
+      "op": "mix",
+      "args": [
+        "color.text_primary",
+        "color.button_secondary_hover",
+        19.04
+      ]
+    },
+    "color.selection_layer_active": "rgba(74, 64, 102, 0.19)",
+    "color.selection_layer_hover": {
+      "op": "alpha",
+      "args": [
+        "color.text_primary",
+        0.08
+      ]
+    },
+    "color.selection_layer_selected_active": "rgba(56, 48, 73, 0.19)",
+    "color.selection_layer_selected_hover": {
+      "op": "alpha",
+      "args": [
+        "color.interactive",
+        0.08
+      ]
+    },
+    "color.tag_close_layer_active": {
+      "op": "alpha",
+      "args": [
+        "color.text_secondary",
+        0.12
+      ]
+    },
+    "color.tag_interactive_layer_active": {
+      "op": "alpha",
+      "args": [
+        "color.text_primary",
+        0.12
+      ]
+    },
+    "color.tag_selectable_layer_active": {
+      "op": "alpha",
+      "args": [
+        "color.text_secondary",
+        0.12
+      ]
+    },
+    "color.tag_selectable_layer_unselected_active": {
+      "op": "alpha",
+      "args": [
+        "color.text_on_button_tonal",
+        0.12
+      ]
+    },
+    "control.fab_extended_padding": 16,
+    "control.fab_extended_padding_end": 20,
+    "control.tag_close_focus_offset": 0,
+    "control.tag_focus_offset": 2,
+    "icon.dropdown_indicator": {
+      "icon": true,
+      "viewBox": "0 0 24 24",
+      "paths": [
+        {
+          "d": "M7 9.5 12 14.5 17 9.5Z"
+        }
+      ]
+    },
+    "shadow.fab": "{shadow.level_03}",
+    "shadow.fab_hover": "{shadow.level_04}"
+  }
+}
