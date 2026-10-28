@@ -3274,6 +3274,16 @@
       "test": "fidelity.spec.js",
       "testName": "Menu / primary / light: matches the reference in every state",
       "why": "an open menu whose shot skips the per-cell refocus keeps the ring on whichever cell mounted last and must fail the Menu fidelity gate"
+    },
+    {
+      "id": "menu-item-submenu-dismiss-root",
+      "file": "component/composite/menu/menu-item.js",
+      "find": "      dismissRootRef: itemRef,",
+      "replace": "      dismissRootRef: undefined,",
+      "runner": "node",
+      "test": "menu-item.test.js",
+      "testName": "a press on the parent keeps the submenu open; a press outside the item closes it",
+      "why": "a submenu must dismiss against its parent item wrapper, not its own surface; undefined falls back to the surface and a parent press closes it"
     }
   ]
 }

@@ -14,6 +14,7 @@ export default Object.freeze({
     menuAlignment: { type: 'string', required: false, description: '`bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the edge of `y` the menu grows from, and the `x` edge `-start`/`-end` aligns to.' },
     width: { type: 'number', required: false, description: 'Composition prop: fixes the surface\'s width to a composing parent\'s (the combo button\'s container); default the content width with the menu\'s floors.' },
     id: { type: 'string', required: false, description: 'Composition prop: the surface\'s element id, for a composing parent\'s `aria-controls` (the combo button\'s trigger).' },
+    dismissRootRef: { type: 'object', required: false, description: 'Composition prop: the element whose inside keeps the menu open on a blur or a press - a submenu passes its parent item.' },
     onClose: { type: 'function', required: false, description: 'Called on Escape, Tab, outside press or after an item is chosen.' },
     onChange: { type: 'function', required: false, description: 'Called with the chosen item\'s data.' },
     accessibilityLabel: { type: 'string', required: false, description: 'Names the menu.' },

@@ -79,7 +79,7 @@ export default function Menu (ctx) {
     });
     const collection = useMenuCollection({
       onRequestClose: props.onClose,
-      rootRef: menuRef
+      rootRef: props.dismissRootRef !== undefined && props.dismissRootRef !== null ? props.dismissRootRef : menuRef
     });
 
     // The surface: measured for placement, dismissed on outside press
@@ -102,7 +102,7 @@ export default function Menu (ctx) {
       contentRef: menuRef,
       onRequestClose: props.onClose,
       open: open,
-      rootRef: menuRef
+      rootRef: props.dismissRootRef !== undefined && props.dismissRootRef !== null ? props.dismissRootRef : menuRef
     });
 
     // Arrows rove the enabled items; Escape and Tab close through the collection

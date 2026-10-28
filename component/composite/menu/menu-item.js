@@ -38,6 +38,7 @@ export default function MenuItem (ctx) {
     const hasSub = Utils.isArray(item.items);
     const disabled = hasSub ? false : item.disabled === true;
     const faceRef = React.useRef(null);
+    const itemRef = React.useRef(null);
     const ref = React.useRef(null);
     const [hovered, setHovered] = React.useState(false);
     const [pressed, setPressed] = React.useState(false);
@@ -183,6 +184,7 @@ export default function MenuItem (ctx) {
       style: ctx.pressTarget(faceSize)
     });
     return React.createElement(View, {
+      ref: itemRef,
       style: { position: 'relative' }
     },
     React.createElement(View, {
@@ -253,6 +255,7 @@ export default function MenuItem (ctx) {
       items: item.items,
       menuAlignment: 'bottom-start',
       open: true,
+      dismissRootRef: itemRef,
       x: subX,
       y: subY,
       onChange: function (chosen) {

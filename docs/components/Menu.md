@@ -91,6 +91,7 @@ Menu is a list of menu items and separators that opens at a point, roves focus o
 | `menuAlignment` | `string` | no | `bottom` (default), `top`, `bottom-start`, `bottom-end`, `top-start` or `top-end`: the edge of `y` the menu grows from, and the `x` edge `-start`/`-end` aligns to. |
 | `width` | `number` | no | Composition prop: fixes the surface's width to a composing parent's (the combo button's container); default the content width with the menu's floors. |
 | `id` | `string` | no | Composition prop: the surface's element id, for a composing parent's `aria-controls` (the combo button's trigger). |
+| `dismissRootRef` | `object` | no | Composition prop: the element whose inside keeps the menu open on a blur or a press - a submenu passes its parent item. |
 | `onClose` | `function` | no | Called on Escape, Tab, outside press or after an item is chosen. |
 | `onChange` | `function` | no | Called with the chosen item's data. |
 | `accessibilityLabel` | `string` | no | Names the menu. |

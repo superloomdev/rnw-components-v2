@@ -191,7 +191,10 @@ ToggletipButton is the information button that opens and closes a Toggletip; it 
 
 ### Metrics
 
-None: every value this component draws is a token named in its props or listed under `tokens`.
+| Metric | Rule |
+|---|---|
+| `focusWidth` | constant `1` (decision) |
+| `focusOffset` | constant `0` (decision) |
 
 ### States (sample.js)
 

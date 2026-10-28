@@ -97,6 +97,31 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'after 100 ms the submenu opens');
   });
 
+  test('a press on the parent keeps the submenu open; a press outside the item closes it', async function () {
+    const { container, item } = await renderSubmenuMenu('carbon');
+    await act(async function () {
+      item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
+    });
+    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu opened');
+    const subItem = container.querySelector('[role="menu"] [role="menu"] [role="menuitem"]');
+    // The press moves focus from the sub-item back to the parent: the parent
+    // sits inside the item's dismissal root, so the submenu survives both
+    await act(async function () {
+      const leave = new Event('focusout', { bubbles: true });
+      leave.relatedTarget = item;
+      subItem.dispatchEvent(leave);
+    });
+    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'focusing the parent leaves the submenu open');
+    await act(async function () {
+      item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'a press on the parent leaves the submenu open');
+    await act(async function () {
+      document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'a press outside the item closes the submenu');
+  });
+
   test('a leaf choice inside the submenu reports, closes the submenu and leaves the controlled root open', async function () {
     let closed = 0;
     const chosen = [];
