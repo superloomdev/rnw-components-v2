@@ -112,12 +112,60 @@ describe('page harness: settleLayout', function () {
         callback();
       });
     };
+    const savedStyle = globalThis.getComputedStyle;
+    globalThis.getComputedStyle = function (node) { return { position: node === child ? 'fixed' : 'static' }; };
     try {
       await settleLayout(page, 'Panel', 'open');
       assert.ok(frames >= 4, 'the wait outlasted the move: resolved at frame ' + frames);
       assert.equal(child.getBoundingClientRect().y, 140, 'the moved position is what the wait saw last');
     } finally {
       globalThis.requestAnimationFrame = saved;
+      globalThis.getComputedStyle = savedStyle;
+    }
+  });
+
+  test('resolves at once when the cell holds no fixed layer', async function () {
+    let frames = 0;
+    const child = {
+      getBoundingClientRect: function () {
+        return { x: 0, y: 0, width: 160, height: 40 };
+      }
+    };
+    const body = {
+      getBoundingClientRect: function () {
+        return { x: 0, y: 0, width: 320, height: 200 };
+      },
+      querySelectorAll: function () {
+        return [child];
+      }
+    };
+    const page = {
+      locator: function () {
+        return {
+          first: function () {
+            return {
+              count: function () { return Promise.resolve(1); },
+              evaluate: function (fn) { return fn(body); }
+            };
+          }
+        };
+      }
+    };
+    const saved = globalThis.requestAnimationFrame;
+    globalThis.requestAnimationFrame = function (callback) {
+      return setImmediate(function () {
+        frames = frames + 1;
+        callback();
+      });
+    };
+    const savedStyle = globalThis.getComputedStyle;
+    globalThis.getComputedStyle = function () { return { position: 'static' }; };
+    try {
+      await settleLayout(page, 'Panel', 'open');
+      assert.equal(frames, 0, 'a cell with no fixed layer does not wait: resolved at frame ' + frames);
+    } finally {
+      globalThis.requestAnimationFrame = saved;
+      globalThis.getComputedStyle = savedStyle;
     }
   });
 

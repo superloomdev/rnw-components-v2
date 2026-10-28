@@ -1357,7 +1357,7 @@ export async function readControlPaint (page) {
       });
       const text = getComputedStyle(textNode || control).color;
       // A border in the fill's own color, or transparent, is not seen
-      // The first drawn border: any side whose colour differs from the
+      // The first drawn border: any side whose color differs from the
       // fill's own (the track under a Tab's face is the bottom side)
       let border = 'none';
       for (const side of ['Top', 'Bottom', 'Left', 'Right']) {

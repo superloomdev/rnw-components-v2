@@ -335,7 +335,7 @@ for (const template of TEMPLATE_NAMES) {
             if (other.component !== cell.component) {
               continue;
             }
-            expect(cell.paint, cell.component + ' / ' + cell.state + ' paints exactly like disabled state "' + other.state + '" — enabled [' + cell.paint + '] vs disabled [' + other.paint + ']').not.toBe(other.paint);
+            expect(cell.paint, cell.component + ' / ' + cell.state + ' paints exactly like disabled state "' + other.state + '" - enabled [' + cell.paint + '] vs disabled [' + other.paint + ']').not.toBe(other.paint);
           }
         }
       });

@@ -33,7 +33,7 @@ describe('AccordionItem: every sample state under every template', function () {
   }
 
   for (const template of TEMPLATE_NAMES) {
-    test(template + ': an open item colours its string body text with color.text_primary', async function () {
+    test(template + ': an open item colors its string body text with color.text_primary', async function () {
       const t = buildNative(template).tokens;
       const container = await render(React.createElement(registryFor(template).AccordionItem, {
         title: 'Section', defaultOpen: true, children: 'body text'

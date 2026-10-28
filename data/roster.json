@@ -2585,7 +2585,7 @@
         "version": "1.115.0",
         "export": "ToggletipActions"
       },
-      "description": "ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip.",
+      "description": "ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip and has no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"

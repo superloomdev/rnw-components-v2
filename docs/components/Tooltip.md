@@ -141,7 +141,7 @@ Toggletip pairs a label with an information button that toggles an inverse bubbl
 
 ## ToggletipActions
 
-ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip.
+ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip and has no upstream visual reference.
 
 | | |
 |---|---|
