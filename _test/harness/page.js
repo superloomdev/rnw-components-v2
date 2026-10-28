@@ -1597,6 +1597,7 @@ descendant's rect relative to the body's (x, y, w, h to 0.01, at most the
 first 600 elements); resolve when the signature holds for 3 consecutive
 frames after at least 2 frames, or after 60 frames - a fixed layer that
 still follows the scroll is caught in the waiting, not in the shot.
+Only a cell holding a `position: fixed` element waits.
 No-op when the cell is absent; never throws.
 
 @param {Object} page  - Playwright page
@@ -1613,6 +1614,11 @@ export async function settleLayout (page, name, state) {
   }
   await body.evaluate(function (element) {
     return new Promise(function (resolve) {
+      // Only a fixed layer can lag the scroll; a cell without one is already settled
+      if (!Array.prototype.some.call(element.querySelectorAll('*'), function (node) { return getComputedStyle(node).position === 'fixed'; })) {
+        resolve();
+        return;
+      }
       const signature = function () {
         const bodyRect = element.getBoundingClientRect();
         const all = element.querySelectorAll('*');
