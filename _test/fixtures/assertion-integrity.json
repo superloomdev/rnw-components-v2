@@ -730,10 +730,10 @@
       "file": "component/context.js",
       "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "Button / primary / light: matches the reference in every state",
-      "why": "a button whose hovered and pressed state layer paints its resting fill must fail the fidelity gate in the interaction states"
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "the state layer paints the interaction cell, not the resting fill",
+      "why": "a button whose hovered and pressed state layer paints its resting fill must fail the ripple layer's per-interaction cell assertions"
     },
     {
       "id": "fidelity-ring-pixels",
@@ -1140,10 +1140,10 @@
       "file": "component/atom/loading/loading.js",
       "find": "const HALF_ROTATE = { left: '135deg', right: '100deg' };",
       "replace": "const HALF_ROTATE = { left: '225deg', right: '135deg' };",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "Loading / primary / light: matches the reference in every state",
-      "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc and must fail the second-reference fidelity"
+      "runner": "node",
+      "test": "loading.test.js",
+      "testName": "the arc halves seat their circles at the resting rotations",
+      "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc"
     },
     {
       "id": "inline-loading-label",
@@ -1260,10 +1260,10 @@
       "file": "component/molecule/tag/selectable-tag.js",
       "find": "      outlineInLayout: ctx.enum('anatomy.tag_interactive_outline') === 'border',",
       "replace": "      outlineInLayout: true,",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "SelectableTag / primary / light: matches the reference in every state",
-      "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the second fidelity gate"
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "shapes / default: the selectable cells, the outline and the mark",
+      "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the inset assertions"
     },
     {
       "id": "purity-composition-prop",

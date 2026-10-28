@@ -233,6 +233,17 @@ describe('Button: feedback.press through the DOM', function () {
     assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary_container'));
   });
 
+  test('the state layer paints the interaction cell, not the resting fill', async function () {
+    const t = buildNative('shapes').tokens;
+    const parts = await renderButton(registryFor('shapes'), { children: 'P' });
+    assert.equal(parts.layer.style.opacity, '0');
+    await fire(parts.root, new Event('pointerover', { bubbles: true }));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_hover'));
+    await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_active'));
+    await fire(parts.root, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+  });
+
   test('focus draws the button ring from its cells; a keyboard-only theme draws it for keyboard focus, not for a pointer press', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderButton(registryFor('carbon'), { children: 'P' });

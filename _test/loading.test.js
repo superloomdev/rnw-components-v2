@@ -182,6 +182,20 @@ describe('Loading: every sample state under every template', function () {
 
 describe('Loading: an inactive spinner closes then unmounts', function () {
 
+  test('the arc halves seat their circles at the resting rotations', async function () {
+    const Registry = buildSystem('shapes', factories);
+    const parts = await renderLoading(Registry, { withOverlay: false });
+    assert.ok(parts.drawing !== null);
+    const halves = parts.drawing.firstElementChild.children;
+    assert.equal(halves.length, 2);
+    // Each half's mask holds one side of the ring; the seat inside carries
+    // the static rotation that seats the drawn quarter
+    assert.equal(halves[0].style.right, '50%');
+    assert.equal(halves[1].style.left, '50%');
+    assert.equal(halves[0].firstElementChild.style.transform, 'rotate(135deg)');
+    assert.equal(halves[1].firstElementChild.style.transform, 'rotate(100deg)');
+  });
+
   test('under the arc anatomy the drawing fades then unmounts', async function () {
     const template = 'carbon';
     const t = buildNative(template, [LESSONS_LAYER]).tokens;
