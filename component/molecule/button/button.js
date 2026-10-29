@@ -65,10 +65,24 @@ export default function Button (ctx) {
     const borderWidth = ctx.metric('Button', 'borderWidth');
 
     // Read the theme's press presentation over the kind's fill cells; the label,
-    // border and elevation follow the same state
-    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');
-    const contentLeaf = 'button_' + kind + '_label' + press.phase;
-    const borderLeaf = 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+    // border and elevation follow the same state. A composing parent may
+    // re-colour the fills and the label (the notification action's ghost
+    // and tertiary-inverse maps) and point the border at another leaf
+    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined
+      ? {
+        '': props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container',
+        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_hover'),
+        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : 'button_' + kind + '_container_active'),
+        _focus: props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus',
+        _disabled: 'button_' + kind + '_container_disabled',
+        _selected: 'button_' + kind + '_container_selected'
+      }
+      : null;
+    const press = ctx.pressPresentation(state, 'button_' + kind + '_container', fillMap !== null ? { colors: fillMap } : undefined);
+    const contentLeaf = Utils.isString(props.labelLeaf)
+      ? ((state.hovered === true || state.pressed === true) && Utils.isString(props.labelHoverLeaf) ? props.labelHoverLeaf : props.labelLeaf)
+      : 'button_' + kind + '_label' + press.phase;
+    const borderLeaf = Utils.isString(props.borderLeaf) ? props.borderLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
     const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
 
     // The focus ring; a ring drawn with the border gives way to a pressed border
@@ -137,6 +151,7 @@ export default function Button (ctx) {
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
       onLayout: onFaceLayout,
+      ref: props.buttonRef,
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : button.rootProps.accessibilityLabel,
       onMouseDown: props.onMouseDown,
       testID: props.testID,
@@ -159,10 +174,10 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
-          paddingBottom: labelTop,
+          paddingBottom: Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
-          paddingTop: labelTop
+          paddingTop: Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop
         } : {
           alignItems: 'flex-start',
           alignSelf: 'flex-start',
@@ -179,10 +194,10 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
-          paddingBottom: labelTop,
+          paddingBottom: Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
-          paddingTop: labelTop
+          paddingTop: Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop
         },
         press.container,
         shadow,

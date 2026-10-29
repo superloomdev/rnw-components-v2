@@ -24,11 +24,14 @@ export default Object.freeze({
     'anatomy.status_marker', 'shadow.notification',
     'color.notification_container', 'color.notification_text', 'color.notification_close_icon', 'color.notification_action', 'color.notification_action_hover',
     'color.text_primary', 'color.icon_primary', 'font.family.sans',
-    'control.notification_width', 'control.notification_radius', 'control.notification_marker_width', 'control.notification_icon_size', 'control.icon_button_size',
-    'spacing.spacing_03', 'spacing.spacing_05',
+    'control.notification_width', 'control.notification_radius', 'control.notification_min_height', 'control.notification_marker_width',
+    'control.notification_outline_width', 'control.notification_icon_size', 'control.notification_icon_top', 'control.notification_toast_icon_top',
+    'control.notification_icon_gap', 'control.notification_text_padding_block', 'control.notification_toast_text_padding_bottom', 'control.notification_title_gap',
+    'control.notification_details_inset', 'control.notification_details_inset_end', 'control.icon_button_size',
+    'spacing.spacing_03',
     'type.notification_title', 'type.notification_body',
     'icon.error_filled', 'icon.checkmark_filled', 'icon.information_filled', 'icon.warning_filled', 'icon.close'
   ].concat(KINDS.flatMap(function (kind) {
-    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.support_' + kind];
+    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.notification_outline_' + kind, 'color.support_' + kind];
   })))
 });

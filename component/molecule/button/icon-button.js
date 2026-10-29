@@ -151,6 +151,7 @@ export default function IconButton (ctx) {
     },
     React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf }))),
     React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      ref: props.buttonRef,
       // A composing parent's trigger announcements (the combo button's menu)
       'aria-controls': props['aria-controls'],
       'aria-expanded': props['aria-expanded'],

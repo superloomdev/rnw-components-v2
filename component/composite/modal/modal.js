@@ -1,28 +1,16 @@
-// Info: Modal composite. A `role="dialog"` container on a `dialog_scrim`
-// layer: header (an eyebrow label gated by `anatomy.dialog_label` and a
-// heading), body, an actions row, and a close button whose seat exists only
-// where `anatomy.dialog_close` says `shown`. `anatomy.dialog_actions` picks
-// the row: `stretched` fills the
-// actions height edge to edge with equal buttons, `trailing` rows them
-// right with the gap and padding cells. Escape and focus trap come from
-// the focus-trap behavior; outside press closes unless
+// Info: Modal composite. A `role="dialog"` container assembled from the
+// ModalHeader, ModalBody and ModalFooter members over a `dialog_scrim`
+// layer - the same members `ComposedModal` renders, so the anchor's
+// element tree is unchanged. Escape and focus trap come from the
+// focus-trap behavior; outside press closes unless
 // `preventCloseOnClickOutside`. Where the cells give no width bounds the
-// width is the size's percentage of the space the layer covers (the host's
-// when hosted, else the viewport) at the theme's `breakpoint.*` tier - the
-// reference's own responsive rule; below `md` the dialog spans the space
-// and sits at the top. Where the cells give bounds, the dialog sizes to
-// its content inside them.
+// width is the size's `control.dialog_width_ratio*` of the layer space it
+// covers (the host's when hosted, else the viewport) - the ratio rule
+// replaces the reference's breakpoint tiers (D23/D24: the form variants
+// carry the compact values); where the cells give bounds, the dialog
+// sizes to its content inside them.
 
 import SPEC from './spec.js';
-
-
-// The width steps: the reference's per-size percentages of the space the
-// layer covers, one table per `breakpoint.*` tier of that space's width
-const WIDTHS = Object.freeze({
-  md: Object.freeze({ xs: 48, sm: 60, md: 84, lg: 96 }),
-  lg: Object.freeze({ xs: 32, sm: 42, md: 60, lg: 84 }),
-  xlg: Object.freeze({ xs: 24, sm: 36, md: 48, lg: 72 })
-});
 
 
 /********************************************************************
@@ -36,7 +24,7 @@ export default function Modal (ctx) {
 
   const React = ctx.React;
   const Utils = ctx.Utils;
-  const { Pressable, Text, View } = ctx.ReactNative;
+  const { Pressable, View } = ctx.ReactNative;
   const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useViewportLayer } = ctx.behaviors;
 
 
@@ -52,29 +40,18 @@ export default function Modal (ctx) {
     // Init the metrics, the anatomy reads and the a11y ids
     const open = props.open === true;
     const metrics = {
-      actionsGap: ctx.metric('Modal', 'actionsGap'),
-      actionsHeight: ctx.metric('Modal', 'actionsHeight'),
-      actionsPadding: ctx.metric('Modal', 'actionsPadding'),
-      actionsTopSpace: ctx.metric('Modal', 'actionsTopSpace'),
-      bodyPaddingBottom: ctx.metric('Modal', 'bodyPaddingBottom'),
-      bodyPaddingTop: ctx.metric('Modal', 'bodyPaddingTop'),
       borderWidth: ctx.metric('Modal', 'borderWidth'),
-      closeIconSize: ctx.metric('Modal', 'closeIconSize'),
-      closeSize: ctx.metric('Modal', 'closeSize'),
-      headerGap: ctx.metric('Modal', 'headerGap'),
-      headerPaddingTop: ctx.metric('Modal', 'headerPaddingTop'),
-      headerSpace: ctx.metric('Modal', 'headerSpace'),
+      level: ctx.metric('Modal', 'level'),
       maxWidth: ctx.metric('Modal', 'maxWidth'),
       minHeight: ctx.metric('Modal', 'minHeight'),
       minWidth: ctx.metric('Modal', 'minWidth'),
       paddingInline: ctx.metric('Modal', 'paddingInline'),
-      radius: ctx.metric('Modal', 'radius')
+      radius: ctx.metric('Modal', 'radius'),
+      stacking: ctx.metric('Modal', 'stacking')
     };
-    const stretched = ctx.enum('anatomy.dialog_actions') === 'stretched';
-    const closeShown = ctx.enum('anatomy.dialog_close') === 'shown';
-    const labelShown = ctx.enum('anatomy.dialog_label') === 'shown';
     const headingId = useA11yId('modal-heading');
     const bodyId = useA11yId('modal-body');
+    const fadeId = useA11yId('modal-fade');
 
     // The close button asks for a close
     const requestClose = function () {
@@ -89,27 +66,29 @@ export default function Modal (ctx) {
       onClose: requestClose
     });
 
-    // The width: the size's percentage where the cells give no bounds,
-    // else content-sized inside the bounds. The percentage is read at the
-    // tier the space's own width falls in; below `breakpoint.md` the
-    // dialog spans the space, and an unknown width reads the `lg` table,
-    // matching a desktop viewport
+    // The width: the size's ratio of the layer space where the cells give
+    // no bounds, else content-sized inside the bounds
     const bounded = metrics.minWidth > 0 || metrics.maxWidth > 0;
     const size = Utils.inArray(['xs', 'sm', 'md', 'lg'], props.size) ? props.size : 'md';
+    const suffix = size === 'md' ? '' : '_' + size;
     const space = useLayerSpace();
-    const tier = space.width <= 0 ? 'lg'
-      : space.width < ctx.token('breakpoint.md') ? 'full'
-        : space.width < ctx.token('breakpoint.lg') ? 'md'
-          : space.width < ctx.token('breakpoint.xlg') ? 'lg'
-            : 'xlg';
-    const width = (tier === 'full' ? 100 : WIDTHS[tier][size]) + '%';
-    const actions = Utils.isArray(props.actions) && props.passive !== true ? props.actions : [];
+    const widthRatio = ctx.token('control.dialog_width_ratio' + suffix);
+    const heightRatio = ctx.token('control.dialog_height_ratio' + suffix);
+    const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * widthRatio : undefined);
+    const dialogHeight = bounded ? undefined : (Utils.isNumber(space.height) && space.height > 0 ? space.height * heightRatio : undefined);
+    const passive = props.passive === true;
+    const actions = !passive && Utils.isArray(props.actions) ? props.actions : [];
 
-    // The body's bottom padding falls to the header gap where a trailing
-    // row follows it (the second reference's layout)
-    const bodyPaddingBottom = !Utils.isEmptyArray(actions) && !stretched ? metrics.headerGap : metrics.bodyPaddingBottom;
+    // The prose gutter: `control.dialog_text_gutter_ratio` of the
+    // container width minus the close seat; none under `xs`/`sm`
+    const gutterRatio = ctx.token('control.dialog_text_gutter_ratio');
+    const guttered = size === 'md' || size === 'lg';
+    const textGutter = {
+      body: guttered && Utils.isNumber(dialogWidth) ? gutterRatio * dialogWidth - ctx.token('spacing.spacing_07') : undefined,
+      header: guttered && Utils.isNumber(dialogWidth) ? gutterRatio * dialogWidth - ctx.token('control.icon_button_size') : undefined
+    };
 
-    // Render the container: header, body, close seat and the actions row
+    // Render the container through the members
     const container = React.createElement(View, {
       ref: trap.containerRef,
       'aria-describedby': props.alert === true ? bodyId : undefined,
@@ -124,87 +103,38 @@ export default function Modal (ctx) {
         backgroundColor: ctx.color('dialog_container'),
         borderColor: ctx.color('dialog_border'),
         borderRadius: metrics.radius,
-        borderWidth: metrics.borderWidth,
-        margin: !bounded && tier === 'full' ? 0 : metrics.paddingInline,
+        borderTopWidth: metrics.borderWidth,
+        borderTopColor: ctx.color('dialog_border'),
+        margin: bounded || widthRatio < 1 ? metrics.paddingInline : 0,
+        maxHeight: bounded ? undefined : dialogHeight,
         maxWidth: bounded ? metrics.maxWidth : undefined,
         minHeight: metrics.minHeight > 0 ? metrics.minHeight : undefined,
         minWidth: bounded ? metrics.minWidth : undefined,
         outlineStyle: 'none',
         position: 'relative',
-        width: bounded ? undefined : width
-      }, ctx.metric('Modal', 'level')]
+        width: bounded ? undefined : dialogWidth
+      }, metrics.level]
     },
-    React.createElement(View, {
-      style: {
-        marginBottom: metrics.headerSpace,
-        paddingEnd: closeShown ? metrics.closeSize : metrics.paddingInline,
-        paddingStart: metrics.paddingInline,
-        paddingTop: metrics.headerPaddingTop
-      }
-    },
-    Utils.isString(props.label) ? React.createElement(Text, {
-      style: [ctx.typeStyle('label01'), { color: ctx.color('text_secondary'), display: labelShown ? undefined : 'none', marginBottom: metrics.headerGap }]
-    }, props.label) : null,
-    React.createElement(Text, {
-      nativeID: headingId,
-      style: [ctx.typeStyle('dialog_heading'), { color: ctx.color('dialog_heading') }]
-    }, props.title)),
-    React.createElement(View, {
-      nativeID: bodyId,
-      style: {
-        flexGrow: 1,
-        paddingBottom: bodyPaddingBottom,
-        paddingInline: metrics.paddingInline,
-        paddingTop: metrics.bodyPaddingTop
-      }
-    },
-    Utils.isString(props.children) ? React.createElement(Text, {
-      style: [ctx.typeStyle('dialog_body'), { color: ctx.color('dialog_body') }]
-    }, props.children) : props.children),
-    React.createElement(View, {
-      style: {
-        display: closeShown ? 'flex' : 'none',
-        end: 0,
-        position: 'absolute',
-        top: 0
-      }
-    },
-    React.createElement(ctx.Registry.IconButton, {
-      icon: 'close',
-      iconSize: metrics.closeIconSize,
-      kind: 'ghost',
-      label: Utils.isString(props.closeLabel) ? props.closeLabel : 'Close',
-      onPress: requestClose
-    })),
-    Utils.isEmptyArray(actions) ? null : React.createElement(View, {
-      testID: 'modal-actions',
-      style: {
-        alignItems: stretched ? 'stretch' : 'center',
-        flexDirection: 'row',
-        gap: metrics.actionsGap,
-        height: metrics.actionsHeight > 0 ? metrics.actionsHeight : undefined,
-        justifyContent: stretched ? 'flex-start' : 'flex-end',
-        paddingBottom: metrics.actionsPadding,
-        paddingInline: metrics.actionsPadding,
-        paddingTop: stretched ? 0 : metrics.actionsTopSpace
-      }
-    }, actions.map(function (action, index) {
-      const last = index === actions.length - 1;
-      return React.createElement(ctx.Registry.Button, {
-        disabled: action.disabled === true,
-        fill: stretched,
-        key: index,
-        kind: Utils.isString(action.kind) ? action.kind : last ? (stretched ? 'primary' : 'ghost') : (stretched ? 'secondary' : 'ghost'),
-        onPress: typeof action.onPress === 'function' ? action.onPress : undefined
-      }, action.label);
-    })));
+    React.createElement(ctx.Registry.ModalHeader, {
+      buttonOnClick: requestClose,
+      headingId: headingId,
+      iconDescription: props.closeLabel,
+      label: props.label,
+      textGutter: textGutter.header,
+      title: props.title
+    }),
+    React.createElement(ctx.Registry.ModalBody, {
+      bodyId: bodyId,
+      fadeId: fadeId,
+      textGutter: textGutter.body
+    }, props.children),
+    passive || Utils.isEmptyArray(actions) ? null : React.createElement(ctx.Registry.ModalFooter, {
+      actions: actions,
+      onRequestClose: requestClose
+    }));
 
     // The scrim layer covers the space it lives in and centers the
-    // container in it: hosted it mounts `absolute` inset 0 inside the
-    // host's bounds on every platform (a staged cell, the app root);
-    // unhosted it mounts `fixed` and sized to the viewport on the web and
-    // `absolute` inset 0 on a native platform. Below the `md` tier the
-    // dialog spans the space and sits at the top
+    // container in it
     const layerStyle = useViewportLayer();
     const scrim = React.createElement(Pressable, {
       testID: 'modal-scrim',
@@ -216,8 +146,8 @@ export default function Modal (ctx) {
       style: [layerStyle, {
         alignItems: 'center',
         backgroundColor: ctx.color('dialog_scrim'),
-        justifyContent: !bounded && tier === 'full' ? 'flex-start' : 'center',
-        zIndex: ctx.metric('Modal', 'stacking')
+        justifyContent: !bounded && widthRatio === 1 ? 'flex-start' : 'center',
+        zIndex: metrics.stacking
       }]
     }, container);
 

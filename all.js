@@ -45,7 +45,15 @@ export { default as AccordionItem } from './component/composite/accordion/accord
 export { default as AccordionSkeleton } from './component/composite/accordion/accordion-skeleton.js';
 export { default as Menu } from './component/composite/menu/menu.js';
 export { default as Modal } from './component/composite/modal/modal.js';
+export { default as ComposedModal } from './component/composite/modal/composed-modal.js';
+export { default as ModalHeader } from './component/composite/modal/modal-header.js';
+export { default as ModalBody } from './component/composite/modal/modal-body.js';
+export { default as ModalFooter } from './component/composite/modal/modal-footer.js';
 export { default as ToastNotification } from './component/molecule/notification/toast-notification.js';
+export { default as InlineNotification } from './component/molecule/notification/inline-notification.js';
+export { default as ActionableNotification } from './component/molecule/notification/actionable-notification.js';
+export { default as Callout } from './component/molecule/notification/callout.js';
+export { default as NotificationActionButton } from './component/molecule/notification/notification-action-button.js';
 export { default as ProgressBar } from './component/molecule/progress/progress-bar.js';
 export { default as Tooltip } from './component/molecule/tooltip/tooltip.js';
 export { default as OverlayHost } from './component/provider/overlay-host/overlay-host.js';

@@ -3323,7 +3323,7 @@
       "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalHeader",
@@ -3346,18 +3346,19 @@
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalHeader",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalBody",
@@ -3380,18 +3381,19 @@
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalBody",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalFooter",
@@ -3414,18 +3416,19 @@
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalFooter",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "InlineNotification",
@@ -3454,7 +3457,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ActionableNotification",
@@ -3483,7 +3486,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Callout",
@@ -3512,7 +3515,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "NotificationActionButton",
@@ -3532,18 +3535,19 @@
         "anatomy.status_marker"
       ],
       "behaviors": [],
-      "parent": "Notification",
+      "parent": "ActionableNotification",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "NotificationActionButton",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Breadcrumb",
@@ -3590,13 +3594,14 @@
       "behaviors": [],
       "parent": "Breadcrumb",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "BreadcrumbItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
       "status": "pending"

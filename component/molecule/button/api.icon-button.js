@@ -22,6 +22,7 @@ export default Object.freeze({
   composition: Object.freeze({
     iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the glyph turns by, transitioning on the web (the combo button\'s chevron while open). Default 0.' },
     fillLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws at rest (the overflow menu\'s open-trigger fill); default the kind\'s container cell.' },
+    buttonRef: { type: 'object', required: false, description: 'Composition prop: a ref forwarded to the root pressable (a dialog\'s initial focus).' },
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws under hover (the overflow menu\'s trigger hover); default the kind\'s hover cell.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws while pressed (the copy button\'s pressed fill); default the hover leaf, then the kind\'s active cell.' },
     onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },

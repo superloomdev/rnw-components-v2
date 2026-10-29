@@ -18,6 +18,11 @@ const KINDS = Object.freeze(['info', 'success', 'warning', 'error']);
 
 afterEach(cleanup);
 
+function closeButton (seat) {
+  return seat !== null && seat.matches('[role="button"]') ? seat : seat.querySelector('[role="button"]');
+}
+
+
 
 /********************************************************************
 Build a registry for a template.
@@ -49,19 +54,19 @@ async function renderToast (Registry, props) {
   return {
     band: band,
     iconSeat: function () {
-      return band.children[0];
+      return band.children[0].children[0];
     },
     icon: function () {
-      return band.children[0].querySelector('svg');
+      return band.children[0].children[0].querySelector('svg');
     },
     details: function () {
-      return band.children[1];
+      return band.children[0];
     },
     texts: function () {
-      return Array.from(band.children[1].querySelectorAll('[dir="auto"]'));
+      return Array.from(band.children[0].children[1].querySelectorAll('[dir="auto"]'));
     },
     close: function () {
-      return band.children[2];
+      return band.children[1];
     }
   };
 
@@ -77,7 +82,7 @@ describe('ToastNotification: every sample state under every template', function 
         const props = state.props;
         const parts = await renderToast(registryFor(template), props);
         const lowContrast = props.lowContrast === true;
-        const markerLeaf = lowContrast ? 'support_' + props.kind : 'notification_marker_' + props.kind;
+        const markerLeaf = 'notification_marker_' + props.kind;
         const containerLeaf = lowContrast ? 'notification_background_' + props.kind : 'notification_container';
         const textLeaf = lowContrast ? 'text_primary' : 'notification_text';
 
@@ -122,7 +127,7 @@ describe('ToastNotification: every sample state under every template', function 
       const t = buildNative('carbon').tokens;
       const parts = await renderToast(registryFor('carbon'), { kind: kind, title: 'T', lowContrast: true });
       assert.equal(parts.band.style.backgroundColor, cssValue('backgroundColor', t['color.notification_background_' + kind]));
-      assert.equal(parts.icon().getAttribute('fill'), t['color.support_' + kind]);
+      assert.equal(parts.icon().getAttribute('fill'), t['color.notification_marker_' + kind]);
     });
   }
 
@@ -149,7 +154,7 @@ describe('ToastNotification: behavior through the DOM', function () {
       title: 'T'
     });
     await act(async function () {
-      parts.close().querySelector('[role="button"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      closeButton(parts.close()).dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     assert.equal(closed, 1);
 
