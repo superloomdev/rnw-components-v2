@@ -73,7 +73,12 @@ describe('ActionableNotification: every sample state under every template', func
         const band = parts.band;
         assert.notEqual(band, null);
         assert.equal(band.getAttribute('role'), 'alertdialog');
-        assert.equal(band.style.width, (inline ? t['control.notification_inline_width'] : t['control.notification_width']) + 'px');
+        if (inline) {
+          assert.equal(band.style.width, '100%');
+          assert.equal(band.style.maxWidth, t['control.notification_inline_width'] + 'px');
+        } else {
+          assert.equal(band.style.width, t['control.notification_width'] + 'px');
+        }
         assert.equal(band.style.borderLeftWidth, t['control.notification_marker_width'] + 'px');
         assert.equal(band.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + kind]));
         assert.equal(band.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + kind : 'color.notification_container']));

@@ -59,7 +59,7 @@ export default function InlineNotification (ctx) {
 
     // Render the band: details (icon + text), the close in flow at the end
     const role = Utils.inArray(['status', 'alert', 'log'], props.role) ? props.role : 'status';
-    return parts.frame({ kind: kind, lowContrast: lowContrast, owner: owner, role: role, testID: props.testID, width: ctx.metric(owner, 'width') }, [
+    return parts.frame({ kind: kind, lowContrast: lowContrast, owner: owner, role: role, testID: props.testID, fluid: true, width: ctx.metric(owner, 'width') }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }),
         parts.textBlock({ owner: owner }, [

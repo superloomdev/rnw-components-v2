@@ -29,6 +29,12 @@ theme.
   `ghost`. An action's `kind` overrides.
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
+- **Heading overlay.** Upstream's heading, and the label's lower edge with
+  it, overlays the content region's top padding - the content box starts
+  `dialog_body_padding_top` below where the heading's own row would put it.
+  The header carries a negative bottom margin (`dialog_header_space` less
+  the heading's line height, less the label's line height and gap beyond
+  the body top padding when a label shows) to reproduce that geometry.
 - **Scrim** centers the container, paints `dialog_scrim`, sits at
   `stacking.overlay`, and a press that lands on it (not inside the
   container) asks for a close unless `preventCloseOnClickOutside`.

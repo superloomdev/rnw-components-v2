@@ -89,7 +89,7 @@ export default function ActionableNotification (ctx) {
       owner: owner,
       role: role === 'status' ? 'status' : role,
       testID: props.testID,
-      width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, 'toastWidth')
+      fluid: inline, width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, 'toastWidth')
     }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         parts.icon({ iconTop: inline ? undefined : ctx.metric(owner, 'toastIconTop'), kind: kind, lowContrast: lowContrast, owner: owner }),
@@ -97,10 +97,12 @@ export default function ActionableNotification (ctx) {
           parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title })
         ])
       ]),
+      // Inline's action sits between the text and the close, after the
+      // `notification_action_inset` gap; the toast's action is a
+      // full-width row under the content
+      inline ? action : null,
       props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner }),
-      // The toast's action is a full-width row under the content, not a
-      // third item on the first line; inline keeps it in flow
-      inline ? action : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: '100%' } }, action)
+      inline ? null : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: '100%' } }, action)
     ]);
 
     // The alertdialog trap wraps the band in its container ref

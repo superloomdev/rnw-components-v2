@@ -86,6 +86,12 @@ function runTest (row) {
     if (error.status === 137 || error.status === 124) {
       return { killed: error.status === 137 ? 'memory' : 'time' };
     }
+    // A Playwright `-g` that matches nothing exits 1 with `No tests
+    // found`: name it, do not let it read as an assertion failure
+    const combined = String(error.stdout || '') + String(error.stderr || '');
+    if (/No tests found/.test(combined)) {
+      throw new Error(row.id + ': the test pattern "' + row.testName + '" matched no test in ' + row.test);
+    }
     // A child that died without a normal test failure proves nothing about
     // the mutation; the caller's finally restores the file before this throw
     if (!isMutationProof(error)) {
@@ -94,8 +100,12 @@ function runTest (row) {
     return false;
   }
 
-  // A pattern that matched no test is not a pass: the row names nothing
-  if (/tests 0\b/.test(output) || /No tests found/.test(output)) {
+  // A pattern that matched no test is not a pass: the row names nothing.
+  // `node --test` reports a zero-match pattern as `tests 1` (the file's own
+  // synthetic pass), never `tests 0`; a real match prints an indented
+  // `  ✔ <name>` line, a zero-match prints only the top-level file line.
+  // Playwright answers a zero match with its own `No tests found` error
+  if (/tests 0\b/.test(output) || /No tests found/.test(output) || (row.runner === 'node' && !/^ +[✔✖x]|^ +not ok /m.test(output))) {
     throw new Error(row.id + ': the test pattern "' + row.testName + '" matched no test in ' + row.test);
   }
 

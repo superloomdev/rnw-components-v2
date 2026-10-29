@@ -77,8 +77,11 @@ export default function createNotificationParts (ctx) {
         borderStartWidth: opts.marker === false ? 0 : ctx.metric(opts.owner, 'markerWidth'),
         flexDirection: 'row',
         flexWrap: 'wrap',
+        maxWidth: opts.fluid === true ? opts.width : undefined,
         minHeight: ctx.metric(opts.owner, 'minHeight'),
-        width: opts.width
+        // Inline bands are `inline-size: 100%` capped at the cell; toast
+        // bands take the cell outright
+        width: opts.fluid === true ? '100%' : opts.width
       }, opts.level !== undefined ? opts.level : null]
     }, children);
 

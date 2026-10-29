@@ -105,7 +105,10 @@ describe('Modal: every sample state under every template', function () {
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
         // Upstream's heading overlays the content region's top padding:
         // the header's bottom margin is the space cell less the heading's line height
-        assert.equal(header.style.marginBottom, (t['control.dialog_header_space'] - t['type.dialog_heading'].lineHeight) + 'px');
+        // Upstream's heading, and the label's lower edge with it, overlays
+        // the content region's top padding
+        const labelOverlay = props.label === undefined ? 0 : (t['type.label01'].lineHeight + t['control.dialog_header_gap'] - t['control.dialog_body_padding_top']);
+        assert.equal(header.style.marginBottom, (t['control.dialog_header_space'] - t['type.dialog_heading'].lineHeight - labelOverlay) + 'px');
         const heading = header.children[props.label === undefined ? 0 : 1];
         assert.equal(heading.textContent, props.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');

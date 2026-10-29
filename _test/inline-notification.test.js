@@ -70,7 +70,8 @@ describe('InlineNotification: every sample state under every template', function
         const container = parts.container;
         assert.notEqual(container, null);
         assert.equal(container.getAttribute('role'), 'status');
-        assert.equal(container.style.width, t['control.notification_inline_width'] + 'px');
+        assert.equal(container.style.width, '100%');
+        assert.equal(container.style.maxWidth, t['control.notification_inline_width'] + 'px');
         assert.equal(container.style.minHeight, t['control.notification_min_height'] + 'px');
         assert.equal(container.style.borderLeftWidth, t['control.notification_marker_width'] + 'px');
         assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + cellKind]));
