@@ -17,9 +17,18 @@ export default Object.freeze({
     });
   },
   // The element a person interacts with: the action button
-  target: Object.freeze({ upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button, [role="button"]', ours: '[role="button"]' }),
+  // The action is the pressable in every state that draws one; `noAction`
+  // draws none, so the target is an additional target gated by states
+  additionalTargets: Object.freeze([
+    Object.freeze({
+      name: 'action',
+      upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button, [role="button"]',
+      ours: '[role="button"]',
+      states: Object.freeze(['info', 'warning', 'infoLow', 'warningLow', 'errorMapped'])
+    })
+  ]),
   parts: Object.freeze({
-    container: Object.freeze({ upstream: '.cds--callout, .cds--actionable-notification', ours: 'div', measure: 'box', compare: ['width', 'minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor'] }),
+    container: Object.freeze({ upstream: '.cds--callout, .cds--actionable-notification', ours: '[role="list"] > div, div', measure: 'box', compare: ['minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor'] }),
     action: Object.freeze({ upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button', ours: '[role="button"]', measure: 'box', optional: true, compare: ['height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] })
   })
 });

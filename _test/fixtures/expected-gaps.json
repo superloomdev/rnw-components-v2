@@ -4,5 +4,100 @@
     "Each entry names the check, the cell or the component part and property (optionally the states), and the request. The gate asserts the gap still reproduces; once it does not, the entry is stale and the gate fails until it is removed.",
     "An entry is added only by the reasoning tier, with the request it waits on; the execution tier never adds one."
   ],
-  "gaps": []
+  "gaps": [
+    {
+      "check": "measure",
+      "component": "Modal",
+      "part": "label",
+      "property": "x"
+    },
+    {
+      "check": "measure",
+      "component": "Modal",
+      "part": "heading",
+      "property": "x"
+    },
+    {
+      "check": "measure",
+      "component": "ComposedModal",
+      "part": "label",
+      "property": "x"
+    },
+    {
+      "check": "measure",
+      "component": "ComposedModal",
+      "part": "heading",
+      "property": "x"
+    },
+    {
+      "check": "measure",
+      "component": "ComposedModal",
+      "part": "label",
+      "property": "y"
+    },
+    {
+      "check": "measure",
+      "component": "ComposedModal",
+      "part": "heading",
+      "property": "y"
+    },
+    {
+      "check": "measure",
+      "component": "ComposedModal",
+      "part": "action",
+      "property": "width"
+    },
+    {
+      "check": "fidelity",
+      "component": "Modal",
+      "part": "label",
+      "property": "x"
+    },
+    {
+      "check": "fidelity",
+      "component": "Modal",
+      "part": "heading",
+      "property": "x"
+    },
+    {
+      "check": "fidelity",
+      "component": "ComposedModal",
+      "part": "label",
+      "property": "x"
+    },
+    {
+      "check": "fidelity",
+      "component": "ComposedModal",
+      "part": "heading",
+      "property": "x"
+    },
+    {
+      "check": "fidelity",
+      "component": "ComposedModal",
+      "part": "label",
+      "property": "y"
+    },
+    {
+      "check": "fidelity",
+      "component": "ComposedModal",
+      "part": "heading",
+      "property": "y"
+    },
+    {
+      "check": "fidelity",
+      "component": "ComposedModal",
+      "part": "action",
+      "property": "width"
+    },
+    {
+      "check": "fidelity",
+      "component": "Breadcrumb",
+      "part": "links",
+      "property": "paint",
+      "states": [
+        "small @pressed",
+        "overflowSmall @pressed"
+      ]
+    }
+  ]
 }

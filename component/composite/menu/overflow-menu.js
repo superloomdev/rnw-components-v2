@@ -58,6 +58,11 @@ export default function OverflowMenu (ctx) {
     const openRef = React.useRef(open);
     openRef.current = open;
     const items = Utils.isArray(props.items) ? props.items : [];
+    // A composing parent may shift the panel off the anchor edge by a
+    // constant (the breadcrumb's menuOffset) and draw a custom trigger
+    const menuOffset = Utils.isObject(props.menuOffset) ? props.menuOffset : null;
+    const [triggerFocused, setTriggerFocused] = React.useState(false);
+    const [triggerHovered, setTriggerHovered] = React.useState(false);
     const menuId = useA11yId('overflow-menu-panel');
     const containerRef = React.useRef(null);
     const panelRef = React.useRef(null);
@@ -110,8 +115,8 @@ export default function OverflowMenu (ctx) {
       fit: false,
       spacing: ctx.metric('OverflowMenu', 'spacing'),
       active: open,
-      x: anchor === null ? 0 : [anchor.x, anchor.x + anchor.width],
-      y: anchor === null ? 0 : [anchor.y, anchor.y + anchor.height]
+      x: anchor === null ? 0 : [anchor.x + (menuOffset === null ? 0 : menuOffset.left), anchor.x + anchor.width + (menuOffset === null ? 0 : menuOffset.left)],
+      y: anchor === null ? 0 : [anchor.y, anchor.y + anchor.height + (menuOffset === null ? 0 : menuOffset.top)]
     });
 
     // The collection: arrows rove the enabled options, Escape and Tab
@@ -137,6 +142,38 @@ export default function OverflowMenu (ctx) {
         }
       }
     }, [open, positioned.measure, collection.state.items]);
+    // A composing parent's underline tracks the trigger's focus: the
+    // View's onFocus prop does not reach the DOM, so native listeners do
+    React.useEffect(function () {
+      const node = containerRef.current;
+      if (node === null || !Utils.isObject(props.focusUnderline)) {
+        return undefined;
+      }
+      const onIn = function () {
+        setTriggerFocused(true);
+      };
+      const onOut = function (event) {
+        if (event.relatedTarget === null || event.relatedTarget === undefined || !node.contains(event.relatedTarget)) {
+          setTriggerFocused(false);
+        }
+      };
+      const onOver = function () {
+        setTriggerHovered(true);
+      };
+      const onOut_ = function () {
+        setTriggerHovered(false);
+      };
+      node.addEventListener('focusin', onIn);
+      node.addEventListener('focusout', onOut);
+      node.addEventListener('mouseover', onOver);
+      node.addEventListener('mouseout', onOut_);
+      return function () {
+        node.removeEventListener('focusin', onIn);
+        node.removeEventListener('focusout', onOut);
+        node.removeEventListener('mouseover', onOver);
+        node.removeEventListener('mouseout', onOut_);
+      };
+    }, [props.focusUnderline]);
     usePopoverDismiss({
       contentRef: panelRef,
       onRequestClose: close,
@@ -180,11 +217,29 @@ export default function OverflowMenu (ctx) {
         width: ctx.metric('OverflowMenu', 'width')
       }]
     },
+    // A composing parent may draw a caret above the panel (the
+    // breadcrumb's menu): a border-built triangle on the top edge
+    (Utils.isObject(props.caret) && direction === 'bottom') ? React.createElement(View, {
+      'aria-hidden': 'true',
+      style: {
+        borderBottomColor: ctx.color(props.caret.colorLeaf),
+        borderBottomWidth: props.caret.size,
+        borderLeftColor: 'transparent',
+        borderLeftWidth: props.caret.size,
+        borderRightColor: 'transparent',
+        borderRightWidth: props.caret.size,
+        height: 0,
+        left: props.caret.offsetX,
+        position: 'absolute',
+        top: -props.caret.size,
+        width: 0
+      }
+    }) : null,
     React.createElement(View, {
       'aria-hidden': 'true',
       style: {
-        backgroundColor: ctx.enum('anatomy.overflow_menu_connector') === 'shown' ? ctx.color('overflow_menu_trigger_open') : 'transparent',
-        opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' ? 1 : 0,
+        backgroundColor: ctx.enum('anatomy.overflow_menu_connector') === 'shown' && props.connector !== false ? ctx.color('overflow_menu_trigger_open') : 'transparent',
+        opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' && props.connector !== false ? 1 : 0,
         bottom: direction === 'top' ? -ctx.metric('OverflowMenu', 'connectorSize') : undefined,
         height: ctx.metric('OverflowMenu', 'connectorSize'),
         left: flipped === true ? undefined : 0,
@@ -222,7 +277,7 @@ export default function OverflowMenu (ctx) {
     return React.createElement(View, {
       ref: containerRef,
       testID: props.testID,
-      style: { alignSelf: 'flex-start', width: triggerSize }
+      style: { alignSelf: 'flex-start', width: Utils.isNumber(props.triggerWidth) ? props.triggerWidth : triggerSize }
     },
     panel !== null && overlay.hosted !== true ? panel : null,
     React.createElement(ctx.Registry.IconButton, {
@@ -231,12 +286,17 @@ export default function OverflowMenu (ctx) {
       'aria-haspopup': true,
       align: props.align,
       disabled: props.disabled === true,
-      fillActiveLeaf: open === true ? 'overflow_menu_trigger_open' : 'overflow_menu_trigger_hover',
-      fillHoverLeaf: open === true ? 'overflow_menu_trigger_open' : 'overflow_menu_trigger_hover',
-      fillLeaf: triggerFill,
-      icon: 'overflow_vertical',
-      iconColor: 'overflow_menu_icon',
-      iconSize: ctx.metric('OverflowMenu', 'iconSize'),
+      fillActiveLeaf: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (open === true ? 'overflow_menu_trigger_open' : 'overflow_menu_trigger_hover'),
+      fillHoverLeaf: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (open === true ? 'overflow_menu_trigger_open' : 'overflow_menu_trigger_hover'),
+      fillLeaf: props.fillLeaf !== undefined ? props.fillLeaf : triggerFill,
+      focusRingLeaf: props.focusRingLeaf,
+      height: props.triggerHeight,
+      icon: Utils.isString(props.icon) ? props.icon : 'overflow_vertical',
+      iconActiveLeaf: props.iconActiveLeaf,
+      iconColor: Utils.isString(props.iconColor) ? props.iconColor : 'overflow_menu_icon',
+      iconHoverLeaf: props.iconHoverLeaf,
+      iconOffset: props.iconOffset,
+      iconSize: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('OverflowMenu', 'iconSize'),
       kind: 'ghost',
       label: props.iconDescription === undefined ? 'Options' : props.iconDescription,
       onPress: function () {
@@ -249,8 +309,24 @@ export default function OverflowMenu (ctx) {
           props.onOpen();
         }
       },
-      size: size
-    }));
+      size: size,
+      width: props.triggerWidth
+    }),
+    // A composing parent's focus underline (the breadcrumb's overflow
+    // trigger): a 1 px bar inside the box while the trigger holds focus
+    Utils.isObject(props.focusUnderline) ? React.createElement(View, {
+      'aria-hidden': 'true',
+      dataSet: { part: 'focusUnderline' },
+      style: {
+        backgroundColor: ctx.color(triggerFocused ? props.focusUnderline.colorLeaf : Utils.isString(props.focusUnderline.hoverLeaf) ? props.focusUnderline.hoverLeaf : props.focusUnderline.colorLeaf),
+        opacity: triggerFocused || triggerHovered ? 1 : 0,
+        height: 1,
+        left: props.focusUnderline.offsetStart,
+        position: 'absolute',
+        top: props.focusUnderline.offsetTop,
+        width: props.focusUnderline.width
+      }
+    }) : null);
 
   }
 

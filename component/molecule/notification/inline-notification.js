@@ -66,7 +66,7 @@ export default function InlineNotification (ctx) {
           parts.text({ lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title })
         ])
       ]),
-      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose })
+      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner })
     ]);
 
   }

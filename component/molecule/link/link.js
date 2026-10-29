@@ -88,7 +88,7 @@ export default function Link (ctx) {
     },
     React.createElement(View, {
       onLayout: onLayout,
-      style: [{ alignItems: 'center', flexDirection: 'row' }, ring]
+      style: [{ alignItems: 'center', flexDirection: 'row', minWidth: Utils.isNumber(props.minWidth) ? props.minWidth : undefined }, ring]
     },
     React.createElement(Text, {
       style: [ctx.typeStyle(size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label'), {

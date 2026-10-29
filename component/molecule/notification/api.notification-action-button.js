@@ -20,6 +20,7 @@ export default Object.freeze({
     'color.notification_container', 'color.notification_text', 'color.notification_close_icon', 'color.notification_action',
     'color.notification_action_hover', 'color.notification_action_container_hover', 'color.notification_action_tertiary_inverse',
     'color.notification_action_tertiary_inverse_hover', 'color.notification_action_tertiary_inverse_active', 'color.notification_action_tertiary_inverse_text',
+    'color.button_tertiary', 'color.button_tertiary_hover', 'color.button_tertiary_active', 'color.button_tertiary_label_hover',
     'color.notification_warning_icon_inner', 'color.text_primary', 'color.icon_primary', 'color.focus', 'color.focus_ring_inverse', 'font.family.sans',
     'control.notification_inline_width', 'control.notification_width', 'control.notification_min_height', 'control.notification_marker_width',
     'control.notification_outline_width', 'control.notification_details_inset', 'control.notification_details_inset_end', 'control.notification_icon_top',
@@ -30,6 +31,6 @@ export default Object.freeze({
     'type.notification_title', 'type.notification_body',
     'icon.error_filled', 'icon.success', 'icon.information_filled', 'icon.warning_filled', 'icon.information_square_filled', 'icon.warning_alt_filled', 'icon.close'
   ].concat(KINDS.flatMap(function (kind) {
-    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.notification_outline_' + kind];
+    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.notification_outline_' + kind, 'color.support_' + kind];
   })))
 });

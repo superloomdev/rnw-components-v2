@@ -54,6 +54,9 @@ export { default as InlineNotification } from './component/molecule/notification
 export { default as ActionableNotification } from './component/molecule/notification/actionable-notification.js';
 export { default as Callout } from './component/molecule/notification/callout.js';
 export { default as NotificationActionButton } from './component/molecule/notification/notification-action-button.js';
+export { default as Breadcrumb } from './component/molecule/breadcrumb/breadcrumb.js';
+export { default as BreadcrumbItem } from './component/molecule/breadcrumb/breadcrumb-item.js';
+export { default as BreadcrumbSkeleton } from './component/molecule/breadcrumb/breadcrumb-skeleton.js';
 export { default as ProgressBar } from './component/molecule/progress/progress-bar.js';
 export { default as Tooltip } from './component/molecule/tooltip/tooltip.js';
 export { default as OverlayHost } from './component/provider/overlay-host/overlay-host.js';

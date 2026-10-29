@@ -34,14 +34,24 @@ async function renderActionable (Registry, props) {
   return {
     band: band,
     action: function () {
-      return band === null ? null : band.querySelector('[role="button"]');
+      // The action is the labelled Button; the close's pressable carries no text
+      const buttons = band === null ? [] : Array.from(band.querySelectorAll('[role="button"]'));
+      const labelled = buttons.filter(function (button) {
+        return button.querySelector('[dir="auto"]') !== null;
+      });
+      return labelled.length > 0 ? labelled[0] : null;
     },
     close: function () {
       if (band === null) {
         return null;
       }
-      const buttons = band.querySelectorAll('[role="button"]');
-      return buttons.length > 1 ? buttons[buttons.length - 1] : null;
+      // The close is the icon-only button: the action seat is a labelled
+      // Button, the close's pressable carries no text
+      const buttons = Array.from(band.querySelectorAll('[role="button"]'));
+      const iconOnly = buttons.filter(function (button) {
+        return button.querySelector('[dir="auto"]') === null;
+      });
+      return iconOnly.length > 0 ? iconOnly[iconOnly.length - 1] : null;
     },
     rendered: rendered
   };
@@ -68,7 +78,9 @@ describe('ActionableNotification: every sample state under every template', func
         assert.equal(band.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + kind]));
         assert.equal(band.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + kind : 'color.notification_container']));
         if (inline) {
-          assert.equal(band.style.boxShadow, '');
+          // The inline band draws no elevation; a low-contrast one draws
+          // the kind outline as upstream's inset box-shadow
+          assert.equal(band.style.boxShadow, low ? 'inset 0px 0px 0px ' + t['control.notification_outline_width'] + 'px ' + t['color.notification_outline_' + kind] : '');
         } else {
           assert.equal(band.style.boxShadow, t['shadow.notification'].boxShadow);
         }
@@ -83,8 +95,11 @@ describe('ActionableNotification: every sample state under every template', func
           assert.equal(action.style.backgroundColor, 'rgba(0, 0, 0, 0)', 'the ghost rests transparent');
           assert.equal(action.style.boxShadow, '0px 0px 0px rgba(0, 0, 0, 0)', 'the ghost draws no elevation');
         } else {
-          assert.equal(action.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse']), 'the tertiary-inverse label');
-          assert.equal(action.style.borderTopColor, cssValue('borderColor', t['color.notification_action_tertiary_inverse']), 'the tertiary-inverse border');
+          // The toast action is upstream's tertiary button: tertiary-inverse
+          // on the dark band, the standard tertiary map under lowContrast
+          const labelLeaf = low ? 'button_tertiary' : 'notification_action_tertiary_inverse';
+          assert.equal(action.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.' + labelLeaf]), 'the action label');
+          assert.equal(action.style.borderTopColor, cssValue('borderColor', t['color.' + labelLeaf]), 'the action border');
         }
 
         // The toast insets: icon top and text bottom padding

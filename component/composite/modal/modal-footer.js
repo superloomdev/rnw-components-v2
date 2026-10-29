@@ -75,6 +75,7 @@ export default function ModalFooter (ctx) {
     // anchor's ghost buttons to the end
     if (stretched) {
       return React.createElement(View, {
+        dataSet: { part: 'modalFooter' },
         style: {
           alignItems: 'stretch',
           flexDirection: 'row',
@@ -101,6 +102,7 @@ export default function ModalFooter (ctx) {
     }
 
     return React.createElement(View, {
+      dataSet: { part: 'modalFooter' },
       style: {
         alignItems: 'center',
         flexDirection: 'row',

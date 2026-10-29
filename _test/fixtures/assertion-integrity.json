@@ -3284,6 +3284,86 @@
       "test": "menu-item.test.js",
       "testName": "a press on the parent keeps the submenu open; a press outside the item closes it",
       "why": "a submenu must dismiss against its parent item wrapper, not its own surface; undefined falls back to the surface and a parent press closes it"
+    },
+    {
+      "id": "modal-width-fixed-tier",
+      "file": "component/composite/modal/modal.js",
+      "find": "    const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * widthRatio : undefined);",
+      "replace": "    const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * 0.5 : undefined);",
+      "runner": "node",
+      "test": "modal.test.js",
+      "testName": "carbon size md in a 1280-wide host draws the width ratio of it",
+      "why": "a dialog that reads a fixed whole-space tier instead of the width-ratio cells must fail the ratio assertions"
+    },
+    {
+      "id": "modal-footer-three-ratio",
+      "file": "component/composite/modal/modal-footer.js",
+      "find": "          style: { flexBasis: (ratio * 100) + '%' }",
+      "replace": "          style: { flexBasis: '100%' }",
+      "runner": "node",
+      "test": "modal-footer.test.js",
+      "testName": "carbon: the three-button layout takes the three ratio, pushed to the end",
+      "why": "a three-button layout that reads the two-button ratio must fail the `_three` cell assertions"
+    },
+    {
+      "id": "modal-body-fade-hidden",
+      "file": "component/composite/modal/modal-body.js",
+      "find": "    const fade = scrolling && fadeShown && (size.height === 0 || size.height > metrics.fadeMinHeight);",
+      "replace": "    const fade = scrolling && false && (size.height === 0 || size.height > metrics.fadeMinHeight);",
+      "runner": "node",
+      "test": "modal-body.test.js",
+      "testName": "shapes: hasScrollingContent makes a region with the end space and the fade per the anatomy",
+      "why": "a fade drawn regardless of the scroll-fade anatomy must fail the hidden-anatomy assertion"
+    },
+    {
+      "id": "callout-error-maps-warning",
+      "file": "component/molecule/notification/callout.js",
+      "find": "    const kind = Utils.inArray(['info', 'success', 'warning', 'error', 'info-square', 'warning-alt'], props.kind) ? props.kind : 'info';",
+      "replace": "    const kind = props.kind === 'error' ? 'warning' : (Utils.inArray(['info', 'success', 'warning', 'error', 'info-square', 'warning-alt'], props.kind) ? props.kind : 'info');",
+      "runner": "node",
+      "test": "callout.test.js",
+      "testName": "carbon / errorMapped: the band draws the given kind with no close",
+      "why": "the upstream deprecation only warns; a callout that remaps error to warning must fail the given-kind assertion"
+    },
+    {
+      "id": "notification-end-inset-ignored",
+      "file": "component/molecule/notification/notification-parts.js",
+      "find": "        marginStart: ctx.metric(opts.owner, 'detailsInset'),",
+      "replace": "        marginStart: 0,",
+      "runner": "node",
+      "test": "inline-notification.test.js",
+      "testName": "carbon / default: the band comes from the theme",
+      "why": "a details inset that ignores the start cell must fail the `details_inset` assertion"
+    },
+    {
+      "id": "toast-action-fill-at-rest",
+      "file": "component/molecule/notification/notification-action-button.js",
+      "find": "      fillLeaf: null,",
+      "replace": "      fillLeaf: 'notification_action_tertiary_inverse_hover',",
+      "runner": "node",
+      "test": "notification-action-button.test.js",
+      "testName": "carbon: the toast action is the tertiary-inverse map",
+      "why": "a tertiary-inverse action that fills at rest must fail the rests-transparent assertion"
+    },
+    {
+      "id": "breadcrumb-separator-after-last",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "    const separator = props.last === true && props.noTrailingSlash === true ? null",
+      "replace": "    const separator = null",
+      "runner": "node",
+      "test": "breadcrumb.test.js",
+      "testName": "carbon / default: the trail comes from the theme",
+      "why": "a separator drawn after the last item must fail the last-item no-separator assertion"
+    },
+    {
+      "id": "breadcrumb-menu-offset-ignored",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "        menuOffset: { left: -13, top: 10 },",
+      "replace": "        menuOffset: { left: 0, top: 0 },",
+      "runner": "node",
+      "test": "breadcrumb.test.js",
+      "testName": "the menu opens 10 below and 13 left of the trigger with the caret",
+      "why": "a menu that ignores the constant offset must fail the position assertions"
     }
   ]
 }

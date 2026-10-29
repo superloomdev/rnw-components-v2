@@ -9,9 +9,18 @@
 export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
-  targets: Object.freeze({
-    close: Object.freeze({ upstream: '.cds--actionable-notification__close-button', ours: '[role="button"]:last-child' })
-  }),
+  // Escape is the band's own close: skip it on leave or every later
+  // interaction finds an unmounted cell
+  escapeOnLeave: false,
+  additionalTargets: Object.freeze([
+    Object.freeze({
+      name: 'close',
+      upstream: '.cds--actionable-notification__close-button',
+      ours: '[role="alertdialog"] [data-testid="notification-close"], [role="alert"] [data-testid="notification-close"], [role="status"] [data-testid="notification-close"]',
+      interactions: Object.freeze(['hover', 'focus']),
+      states: Object.freeze(['inline', 'inlineLow', 'toast', 'toastLow'])
+    })
+  ]),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.ActionableNotification, {
       actionButtonLabel: props.actionButtonLabel,
@@ -25,10 +34,10 @@ export default Object.freeze({
     });
   },
   // The element a person interacts with: the action button
-  target: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]' }),
+  target: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])' }),
   parts: Object.freeze({
-    container: Object.freeze({ upstream: '.cds--actionable-notification', ours: '[role="alertdialog"], [role="alert"], [role="status"]', measure: 'box', compare: ['width', 'minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor', 'boxShadow'] }),
-    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]', measure: 'box', compare: ['height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] }),
-    close: Object.freeze({ upstream: '.cds--actionable-notification__close-button', ours: '[role="button"]:last-child', measure: 'box', optional: true, compare: ['width', 'height'] })
+    container: Object.freeze({ upstream: '.cds--actionable-notification', ours: '[role="alertdialog"], [role="alert"], [role="status"]', measure: 'box', compare: ['minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor', 'boxShadow'] }),
+    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])', measure: 'box', compare: ['height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] }),
+    close: Object.freeze({ upstream: '.cds--actionable-notification__close-button', ours: '[role="alertdialog"] [data-testid="notification-close"], [role="alert"] [data-testid="notification-close"], [role="status"] [data-testid="notification-close"]', measure: 'box', optional: true, compare: ['width', 'height'] })
   })
 });

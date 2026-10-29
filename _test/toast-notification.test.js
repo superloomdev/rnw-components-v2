@@ -101,7 +101,9 @@ describe('ToastNotification: every sample state under every template', function 
         assert.equal(seat.style.display, barIcon ? 'flex' : 'none');
         const icon = parts.icon();
         assert.equal(icon.getAttribute('width'), String(t['control.notification_icon_size']));
-        assert.equal(icon.getAttribute('fill'), t['color.' + markerLeaf]);
+        // Low-contrast icons use upstream's darker `support_*` cells; the bar keeps the marker
+        const iconLeaf = props.lowContrast === true ? 'support_' + props.kind : markerLeaf;
+        assert.equal(icon.getAttribute('fill'), t['color.' + iconLeaf]);
 
         // The texts: title, then the given subtitle, action label and caption
         const texts = parts.texts();
@@ -127,7 +129,8 @@ describe('ToastNotification: every sample state under every template', function 
       const t = buildNative('carbon').tokens;
       const parts = await renderToast(registryFor('carbon'), { kind: kind, title: 'T', lowContrast: true });
       assert.equal(parts.band.style.backgroundColor, cssValue('backgroundColor', t['color.notification_background_' + kind]));
-      assert.equal(parts.icon().getAttribute('fill'), t['color.notification_marker_' + kind]);
+      // Low-contrast icons use upstream's darker `support_*` cells, not the marker cells
+      assert.equal(parts.icon().getAttribute('fill'), t['color.support_' + kind]);
     });
   }
 

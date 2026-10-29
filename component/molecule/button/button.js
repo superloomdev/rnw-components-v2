@@ -68,12 +68,12 @@ export default function Button (ctx) {
     // border and elevation follow the same state. A composing parent may
     // re-colour the fills and the label (the notification action's ghost
     // and tertiary-inverse maps) and point the border at another leaf
-    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined
+    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined || props.fillFocusLeaf !== undefined
       ? {
         '': props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container',
         _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_hover'),
         _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : 'button_' + kind + '_container_active'),
-        _focus: props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus',
+        _focus: props.fillFocusLeaf !== undefined ? props.fillFocusLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus'),
         _disabled: 'button_' + kind + '_container_disabled',
         _selected: 'button_' + kind + '_container_selected'
       }

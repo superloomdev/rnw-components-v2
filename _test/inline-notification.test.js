@@ -76,10 +76,10 @@ describe('InlineNotification: every sample state under every template', function
         assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + cellKind]));
         assert.equal(container.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + cellKind : 'color.notification_container']));
         if (low) {
-          assert.equal(container.style.borderTopWidth, t['control.notification_outline_width'] + 'px');
-          assert.equal(container.style.borderTopColor, cssValue('borderTopColor', t['color.notification_outline_' + kind]));
+          // Upstream draws the low-contrast outline as an inset box-shadow
+          assert.equal(container.style.boxShadow, 'inset 0px 0px 0px ' + t['control.notification_outline_width'] + 'px ' + t['color.notification_outline_' + kind]);
         } else {
-          assert.equal(container.style.borderTopWidth, '0px');
+          assert.equal(container.style.boxShadow, '');
         }
 
         // The details inset cells

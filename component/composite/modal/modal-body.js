@@ -86,6 +86,7 @@ export default function ModalBody (ctx) {
 
     if (scrolling) {
       return React.createElement(View, {
+        dataSet: { part: 'modalBody' },
         nativeID: props.bodyId,
         onLayout: function (event) {
           const height = event.nativeEvent && event.nativeEvent.layout ? event.nativeEvent.layout.height : 0;
@@ -111,6 +112,7 @@ export default function ModalBody (ctx) {
     }
 
     return React.createElement(View, {
+      dataSet: { part: 'modalBody' },
       nativeID: props.bodyId,
       onLayout: function (event) {
         const height = event.nativeEvent && event.nativeEvent.layout ? event.nativeEvent.layout.height : 0;

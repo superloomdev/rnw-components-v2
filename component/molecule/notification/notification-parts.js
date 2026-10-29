@@ -72,12 +72,7 @@ export default function createNotificationParts (ctx) {
         alignItems: 'stretch',
         backgroundColor: ctx.color(containerLeaf),
         borderRadius: ctx.metric(opts.owner, 'radius'),
-        borderEndColor: lowContrast ? ctx.color(outlineLeaf) : undefined,
-        borderEndWidth: lowContrast ? ctx.metric(opts.owner, 'outlineWidth') : 0,
-        borderBottomColor: lowContrast ? ctx.color(outlineLeaf) : undefined,
-        borderBottomWidth: lowContrast ? ctx.metric(opts.owner, 'outlineWidth') : 0,
-        borderTopColor: lowContrast ? ctx.color(outlineLeaf) : undefined,
-        borderTopWidth: lowContrast ? ctx.metric(opts.owner, 'outlineWidth') : 0,
+        boxShadow: lowContrast ? 'inset 0px 0px 0px ' + ctx.metric(opts.owner, 'outlineWidth') + 'px ' + ctx.color(outlineLeaf) : undefined,
         borderStartColor: ctx.color('notification_marker_' + cellKind),
         borderStartWidth: opts.marker === false ? 0 : ctx.metric(opts.owner, 'markerWidth'),
         flexDirection: 'row',
@@ -138,7 +133,7 @@ export default function createNotificationParts (ctx) {
       }
     },
     React.createElement(ctx.Registry.Icon, {
-      color: 'notification_marker_' + cellKind,
+      color: opts.lowContrast === true ? 'support_' + cellKind : 'notification_marker_' + cellKind,
       name: GLYPHS[kind],
       size: ctx.metric(opts.owner, 'iconSize')
     }));
@@ -160,10 +155,11 @@ export default function createNotificationParts (ctx) {
     return React.createElement(View, {
       key: 'textBlock',
       style: {
+        flexBasis: 0,
         flexGrow: 1,
         flexShrink: 1,
         minWidth: 0,
-        paddingTop: ctx.metric(opts.owner, 'textPaddingBlock'),
+        paddingTop: Utils.isNumber(opts.paddingTop) ? opts.paddingTop : ctx.metric(opts.owner, 'textPaddingBlock'),
         paddingBottom: Utils.isNumber(opts.paddingBottom) ? opts.paddingBottom : ctx.metric(opts.owner, 'textPaddingBlock')
       }
     }, children);
@@ -222,12 +218,15 @@ export default function createNotificationParts (ctx) {
   function close (opts) {
 
     return React.createElement(ctx.Registry.IconButton, {
-      key: 'close',
+      fillActiveLeaf: null,
+      fillHoverLeaf: null,
       icon: 'close',
       iconColor: opts.lowContrast === true ? 'icon_primary' : 'notification_close_icon',
+      iconSize: ctx.metric(opts.owner, 'closeIconSize'),
       kind: 'ghost',
       label: Utils.isString(opts.label) ? opts.label : 'Close',
-      onPress: opts.onPress
+      onPress: opts.onPress,
+      testID: 'notification-close'
     });
 
   }

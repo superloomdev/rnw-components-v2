@@ -29,6 +29,7 @@ export default Object.freeze({
     fillLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws at rest (the notification action); default the kind\'s container cell.' },
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on hover (the notification action); default the kind\'s hover cell.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on press (the notification action); default the kind\'s active cell.' },
+    fillFocusLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on focus (the notification action); default the kind\'s focus cell.' },
     labelLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws at rest (the notification action); default the kind\'s label cell.' },
     labelHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws on hover or press (the notification action); default the label cell\'s phase.' },
     borderLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the border draws (the notification action); default the kind\'s border cell.' },

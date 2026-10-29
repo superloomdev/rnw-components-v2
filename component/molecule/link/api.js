@@ -17,7 +17,8 @@ export default Object.freeze({
     accessibilityLabel: { type: 'string', required: false, description: 'The accessible name when it should differ from the children.' }
   }),
   composition: Object.freeze({
-    inverse: { type: 'boolean', required: false, description: 'Composition prop: draws the inverse cells - `link_label_inverse` and its hover - with the inverse focus ring; a dark surface asks for it.' }
+    inverse: { type: 'boolean', required: false, description: 'Composition prop: draws the inverse cells - `link_label_inverse` and its hover - with the inverse focus ring; a dark surface asks for it.' },
+    minWidth: { type: 'number', required: false, description: 'Composition prop: a minimum width on the face (the breadcrumb\'s small links read `control.breadcrumb_link_min_width_small`).' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),

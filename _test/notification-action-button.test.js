@@ -67,6 +67,7 @@ describe('NotificationActionButton: the two colour maps', function () {
       const button = seat.querySelector('[role="button"]');
       assert.equal(seat.style.marginLeft, t['control.notification_toast_action_inset'] + 'px');
       // Rest: transparent fill, the inverse label and border
+      assert.equal(button.style.backgroundColor, 'rgba(0, 0, 0, 0)', 'the tertiary-inverse rests transparent');
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse']));
       assert.equal(button.style.borderTopColor, cssValue('borderColor', t['color.notification_action_tertiary_inverse']));
       await fire(button, new Event('pointerover', { bubbles: true }));

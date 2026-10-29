@@ -97,9 +97,9 @@ export default function ToastNotification (ctx) {
     }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         iconSeat,
-        parts.textBlock({ owner: owner, paddingBottom: ctx.metric(owner, 'textPaddingBottom') }, rows)
+        parts.textBlock({ owner: owner, paddingBottom: ctx.metric(owner, 'textPaddingBottom'), paddingTop: ctx.metric(owner, 'textPaddingTop') }, rows)
       ]),
-      parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose })
+      parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner })
     ]);
 
   }

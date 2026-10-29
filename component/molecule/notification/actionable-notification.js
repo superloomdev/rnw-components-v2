@@ -97,8 +97,10 @@ export default function ActionableNotification (ctx) {
           parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title })
         ])
       ]),
-      action,
-      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose })
+      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner }),
+      // The toast's action is a full-width row under the content, not a
+      // third item on the first line; inline keeps it in flow
+      inline ? action : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: '100%' } }, action)
     ]);
 
     // The alertdialog trap wraps the band in its container ref

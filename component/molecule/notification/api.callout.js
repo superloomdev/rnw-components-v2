@@ -32,6 +32,6 @@ export default Object.freeze({
     'type.notification_title', 'type.notification_body',
     'icon.error_filled', 'icon.success', 'icon.information_filled', 'icon.warning_filled', 'icon.information_square_filled', 'icon.warning_alt_filled', 'icon.close'
   ].concat(['info', 'success', 'warning', 'error'].flatMap(function (kind) {
-    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.notification_outline_' + kind];
+    return ['color.notification_marker_' + kind, 'color.notification_background_' + kind, 'color.notification_outline_' + kind, 'color.support_' + kind];
   })))
 });

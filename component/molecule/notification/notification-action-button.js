@@ -42,12 +42,13 @@ export default function NotificationActionButton (ctx) {
     const toast = props.variant === 'toast';
     const lowContrast = props.lowContrast === true;
     const recolour = toast ? {
-      borderLeaf: 'notification_action_tertiary_inverse',
-      fillActiveLeaf: 'notification_action_tertiary_inverse_active',
-      fillHoverLeaf: 'notification_action_tertiary_inverse_hover',
+      borderLeaf: lowContrast ? 'button_tertiary' : 'notification_action_tertiary_inverse',
+      fillActiveLeaf: lowContrast ? 'button_tertiary_active' : 'notification_action_tertiary_inverse_active',
+      fillFocusLeaf: lowContrast ? 'button_tertiary' : 'notification_action_tertiary_inverse',
+      fillHoverLeaf: lowContrast ? 'button_tertiary_hover' : 'notification_action_tertiary_inverse_hover',
       fillLeaf: null,
-      labelHoverLeaf: 'notification_action_tertiary_inverse_text',
-      labelLeaf: 'notification_action_tertiary_inverse'
+      labelHoverLeaf: lowContrast ? 'button_tertiary_label_hover' : 'notification_action_tertiary_inverse_text',
+      labelLeaf: lowContrast ? 'button_tertiary' : 'notification_action_tertiary_inverse'
     } : {
       fillHoverLeaf: lowContrast ? 'notification_action_hover' : 'notification_action_container_hover',
       labelLeaf: 'notification_action'

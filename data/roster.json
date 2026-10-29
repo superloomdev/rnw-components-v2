@@ -3574,7 +3574,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "BreadcrumbItem",
@@ -3604,7 +3604,7 @@
         "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "BreadcrumbSkeleton",
@@ -3631,7 +3631,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Accordion",
