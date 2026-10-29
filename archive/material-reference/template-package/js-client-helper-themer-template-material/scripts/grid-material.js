@@ -485,7 +485,7 @@ export default function buildMaterialGrid (options) {
     'color.menu_item_icon_hover': required(colorToken(listItem, 'list-item-hover-leading-icon-icon-color'), 'menu item hover icon'),
     'color.menu_item_icon_disabled': translucent(listItem, 'list-item-disabled-leading-icon-color', 'list-item-disabled-leading-icon-opacity'),
     // `_md-comp-list.scss`: the trailing supporting text takes its own
-    // type and color slots; the upstream list item states no hover colour
+    // type and color slots; the upstream list item states no hover color
     // for it (the state layer carries hover)
     'type.menu_item_shortcut': options.typeSet(required(read(listItem, 'list-item-trailing-supporting-text-font'), 'menu shortcut type').typescale),
     'color.menu_item_shortcut': required(colorToken(listItem, 'list-item-trailing-supporting-text-color'), 'menu shortcut'),
@@ -627,7 +627,7 @@ export default function buildMaterialGrid (options) {
     'color.tooltip_container': required(colorToken(tooltipFile, 'container-color'), 'tooltip container'),
     'color.tooltip_label': required(colorToken(tooltipFile, 'supporting-text-color'), 'tooltip label'),
     'type.tooltip_label': tooltipLabel,
-    // The token file ships colour, shape and type only, and @material/web has
+    // The token file ships color, shape and type only, and @material/web has
     // no tooltip element; the geometry is Google's own M3 implementation,
     // Compose Material 3 (androidx 00709418ece1) `Tooltip.kt`:
     // PlainTooltipVerticalPadding 4, PlainTooltipHorizontalPadding 8,
@@ -1178,7 +1178,7 @@ export default function buildMaterialGrid (options) {
 
   // ~~~~~~~~~~~~~~~~~~~~ v8: the fab family (md-fab) ~~~~~~~~~~~~~~~~~~~~~~~
   // census FloatingActionButton: variants surface / primary / secondary /
-  // tertiary, a state layer in the icon colour at the hover and pressed
+  // tertiary, a state layer in the icon color at the hover and pressed
   // opacities, elevation 3 rising to 4 while hovered
   const fabFiles = Object.freeze({
     surface: 'fab-surface',
