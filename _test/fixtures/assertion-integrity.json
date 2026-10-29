@@ -3328,12 +3328,12 @@
     {
       "id": "notification-end-inset-ignored",
       "file": "component/molecule/notification/notification-parts.js",
-      "find": "        marginStart: ctx.metric(opts.owner, 'detailsInset'),",
-      "replace": "        marginStart: 0,",
+      "find": "        marginEnd: ctx.metric(opts.owner, 'detailsInsetEnd'),",
+      "replace": "        marginEnd: 0,",
       "runner": "node",
       "test": "inline-notification.test.js",
-      "testName": "carbon / default: the band comes from the theme",
-      "why": "a details inset that ignores the start cell must fail the `details_inset` assertion"
+      "testName": "carbon / info: the band comes from the theme",
+      "why": "a details inset that ignores the end cell must fail the `details_inset_end` assertion"
     },
     {
       "id": "toast-action-fill-at-rest",

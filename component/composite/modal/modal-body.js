@@ -75,9 +75,15 @@ export default function ModalBody (ctx) {
     scrolling ? React.createElement(View, { style: { height: metrics.scrollEndSpace } }) : null);
 
     // Render the body: a plain box, or the scrolling region with its fade
+    // `minHeight: 0` lets the body shrink inside the `maxHeight`-clipped
+    // container so the footer stays in the painted box, as upstream's
+    // `overflow-y` region does; scrolling bodies scroll, others clip
     const bodyStyle = {
+      backgroundColor: ctx.color('dialog_container'),
       flexGrow: 1,
       flexShrink: 1,
+      minHeight: 0,
+      overflow: scrolling ? 'auto' : 'hidden',
       paddingBottom: metrics.paddingBottom,
       paddingInline: metrics.paddingInline,
       paddingTop: metrics.paddingTop

@@ -103,7 +103,9 @@ describe('Modal: every sample state under every template', function () {
         // The header: label when given, heading always, close seat gated by the anatomy
         const header = parts.header();
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
-        assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px');
+        // Upstream's heading overlays the content region's top padding:
+        // the header's bottom margin is the space cell less the heading's line height
+        assert.equal(header.style.marginBottom, (t['control.dialog_header_space'] - t['type.dialog_heading'].lineHeight) + 'px');
         const heading = header.children[props.label === undefined ? 0 : 1];
         assert.equal(heading.textContent, props.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');

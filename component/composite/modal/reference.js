@@ -16,6 +16,10 @@ export default Object.freeze({
     // containing block; the injected rule demotes it to absolute and pins
     // its size to the cell - upstream sizes it `100vw` x `100vh`, which
     // would keep covering every other cell and intercepting their close
+    // Our own cell renders the modal hosted so `useLayerSpace` reads the
+    // same cell box this pins the upstream layer to (`oursHosted` below);
+    // the measure page opens unhosted, so without it ours would keep a
+    // viewport-relative layer and measure double
     return React.createElement('div', { style: { height: '100%', transform: 'scale(1)', width: '100%' } },
       React.createElement('style', null, '.cds--modal { position: absolute !important; inset: 0 !important; inline-size: 100% !important; block-size: 100% !important; width: 100% !important; height: 100% !important; }'),
       React.createElement(upstream.Modal, {
@@ -36,6 +40,7 @@ export default Object.freeze({
   // The fixed scrim mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 640, height: 400, stage: true }),
+  oursHosted: true,
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.cds--modal', ours: '[data-testid="modal-scrim"]', measure: 'box', compare: ['backgroundColor'] }),
     container: Object.freeze({ upstream: '.cds--modal-container', ours: '[role="dialog"], [role="alertdialog"]', measure: 'box', compare: ['width', 'backgroundColor', 'borderWidth', 'borderColor', 'borderRadius', 'boxShadow'] }),

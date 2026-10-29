@@ -142,7 +142,10 @@ function Cell (props) {
     ? measuredProps(references[props.name], props.state.label, props.state.props)
     : props.state.props;
   const state = filtered === props.state.props ? props.state : Object.assign({}, props.state, { props: filtered });
-  const content = hosting && frame !== null && frame !== undefined && frame.stage === true
+  // A staged cell renders in the host whenever the page hosts, and also
+  // on the unhosted measurement page when the reference needs ours in the
+  // same cell box its mount pins the upstream layer to (`oursHosted`)
+  const content = (hosting || (references[props.name] && references[props.name].oursHosted === true)) && frame !== null && frame !== undefined && frame.stage === true
     ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, state))
     : createSampleElement(React, Registry, props.name, state);
 

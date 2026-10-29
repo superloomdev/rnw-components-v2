@@ -33,6 +33,7 @@ export default function ModalHeader (ctx) {
   function ModalHeaderComponent (props) {
 
     // Init the metrics and the anatomy reads
+    const headingLineHeight = (ctx.token('type.dialog_heading') || {}).lineHeight || 0;
     const metrics = {
       closeIconSize: ctx.metric('ModalHeader', 'closeIconSize'),
       closeSize: ctx.metric('ModalHeader', 'closeSize'),
@@ -49,7 +50,9 @@ export default function ModalHeader (ctx) {
     return React.createElement(React.Fragment, null,
       React.createElement(View, {
         style: {
-          marginBottom: metrics.headerSpace,
+          // Upstream's heading overlays the content region's top padding:
+          // pull the body up under it by the heading's line height
+          marginBottom: metrics.headerSpace - headingLineHeight,
           paddingEnd: closeShown ? metrics.closeSize : metrics.paddingInline,
           paddingStart: metrics.paddingInline,
           paddingTop: metrics.paddingTop

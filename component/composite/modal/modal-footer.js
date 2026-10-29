@@ -78,7 +78,9 @@ export default function ModalFooter (ctx) {
         dataSet: { part: 'modalFooter' },
         style: {
           alignItems: 'stretch',
+          backgroundColor: ctx.color('dialog_container'),
           flexDirection: 'row',
+          flexShrink: 0,
           height: metrics.height > 0 ? metrics.height : undefined,
           justifyContent: 'flex-end'
         }
@@ -105,6 +107,7 @@ export default function ModalFooter (ctx) {
       dataSet: { part: 'modalFooter' },
       style: {
         alignItems: 'center',
+        backgroundColor: ctx.color('dialog_container'),
         flexDirection: 'row',
         gap: metrics.actionsGap,
         height: metrics.height > 0 ? metrics.height : undefined,

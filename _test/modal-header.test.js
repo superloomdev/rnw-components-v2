@@ -26,7 +26,7 @@ describe('ModalHeader: the member draws its cells', function () {
 
       assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
       assert.equal(header.style.paddingLeft, t['control.dialog_padding_inline'] + 'px');
-      assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px');
+      assert.equal(header.style.marginBottom, (t['control.dialog_header_space'] - t['type.dialog_heading'].lineHeight) + 'px', 'the heading overlays the content padding');
       assert.equal(header.style.paddingRight, (t['anatomy.dialog_close'] === 'shown' ? t['control.icon_button_size'] : t['control.dialog_padding_inline']) + 'px');
 
       const eyebrow = header.children[0];

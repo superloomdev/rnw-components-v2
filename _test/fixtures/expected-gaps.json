@@ -32,18 +32,6 @@
     {
       "check": "measure",
       "component": "ComposedModal",
-      "part": "label",
-      "property": "y"
-    },
-    {
-      "check": "measure",
-      "component": "ComposedModal",
-      "part": "heading",
-      "property": "y"
-    },
-    {
-      "check": "measure",
-      "component": "ComposedModal",
       "part": "action",
       "property": "width"
     },
