@@ -1,0 +1,36 @@
+# LESSONS - contributor notes
+
+One line per lesson: what failed, what worked, where to look. Every working session appends; the file is tidied once
+before launch. Read this before building or converging a component; add to it when something cost more than an hour.
+American spelling, no em dashes (the tracked-content gates grep the whole repo).
+
+## Working method
+
+- One session converges one family. Longer sessions lose their context and repeat the same probes; the fix is to end the session, not to try harder.
+- Three focused guarded runs per failing test, each with a written hypothesis (part, property, upstream line or probe value, the cell or code line that changes). Then record the residual with `scripts/defects.js` and move on; a fresh session with a new hypothesis is cheaper than a fourth run.
+- Every `node`, `npx` and `node --test` runs through `scripts/guard.js`; the guard's log (`_test/test-results/last-run.log`) holds the output and only its last 60 lines are read. Test logs, screenshots and pixel dumps in a conversation are what fills a context.
+- A test file that does not exit in seconds is bisected by `--test-name-pattern`, never waited on: two React update loops (effect -> measure -> setState) were the 375 GB memory events; the jsdom harness now throws past 2000 commits in one render.
+- Playwright: `workers: 1`, one browser run at a time, no `test.setTimeout` in a spec (G17), no `--timeout` flag on the command. `--grep "<describe> <Row>[ :/]"` with one space; ` . ` matches nothing.
+- Build to the recipe and the probe (`__dev__/evidence/0160/recipes/`), never to a guess: nearly every fidelity failure in batches 12-14 was on the reference side (mount, selector, stylesheet), not in the component.
+- A published template cell can be wrong. The B0 cells check compares the probe's upstream value with the built theme's value for every cell the recipe names; a mismatch is an amendment before the build.
+- A fire-harness pattern that matches no test must fail, not pass: `_test/fire.js` looks for the indented inner result line and reports Playwright "No tests found".
+
+## Harness and measurement
+
+- A fixed-position layer (modal, menu, popover) is measured inside a transformed cell wrapper so the layer's containing block is the cell; the reference mount pins its fixed layer the same way (`oursHosted`), or the two pages measure different coordinate spaces.
+- Cells that hold an open layer are settled with `settleLayout` before a screenshot; perceptual reopens reopen the state; pressed frames keep the press's focus (`settleBeforePress` opt-in).
+- The perceptual gate compares the sample root's box on both pages (expanded to overflowing descendants), not the whole cell; a clipped layer at the cell edge otherwise dominates the percentage.
+- Positioning hooks cap their re-measures at 8 per open cycle and warn once; an anchor that moves on every read is a harness defect.
+- A hit-expander target that should be absent is asserted as `hitEl === null`, not as a size.
+
+## Component patterns
+
+- A low-contrast outline is an inset `box-shadow`, not a border: a border changes the box and shifts every inner measurement by its width.
+- Inline widths that the reference derives from its container are `100%` capped by the family's width cell (`notification_inline_width`), never a fixed width; the toast keeps the fixed cell.
+- An overlay heading that the reference pulls up over its label is a token-derived negative margin (header space minus heading line height, minus the label line height and gap relative to the body padding); never a measured constant.
+- Separators in a breadcrumb stay unless both `last` and `noTrailingSlash` hold; the reference's rule, not the obvious one.
+- Composition props (`api.composition`) exist only for a composing parent (breadcrumb overflow trigger size, icon offsets, menu offset, focus underline); a prop with no composing consumer is deleted.
+- Modal width and max height are ratios of the layer space (`control.dialog_width_ratio[_xs|_sm|_lg]`, `control.dialog_height_ratio[...]`) with the form variants holding the compact values; no breakpoint read in a component.
+- Submenus dismiss against their parent (`dismissRootRef`); a menu's own outside-press handler must not close its parent.
+- Values a template never specifies come from the reference's own scale and are marked `superloom_decision`; a derived number without an upstream line is a defect (D21c).
+- Enum values are named by behavior or shape (`floating`, `ripple`, `grows`), never by a design system; a value no shipped template picks stays when a unit test and the enum-render gate cover it (a brand layer may pin it).
