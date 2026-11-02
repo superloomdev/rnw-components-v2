@@ -98,9 +98,13 @@ export default function ActionableNotification (ctx) {
         ])
       ]),
       // Inline's action sits between the text and the close, after the
-      // `notification_action_inset` gap; the toast's action is a
-      // full-width row under the content
-      inline ? action : null,
+      // `notification_action_inset` gap; with no close it keeps the band's
+      // right end instead. The toast's action is a full-width row under
+      // the content
+      inline ? (props.hideCloseButton === true
+        ? React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'flex-end', flexDirection: 'row', flexGrow: 1 } }, action)
+        : action)
+        : null,
       props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner }),
       inline ? null : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: '100%' } }, action)
     ]);
