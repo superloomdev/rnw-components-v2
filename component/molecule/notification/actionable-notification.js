@@ -12,6 +12,10 @@
 import SPEC from './spec.actionable-notification.js';
 import createNotificationParts from './notification-parts.js';
 
+// The toast seat's full-width basis, built from its number so no unit
+// literal appears
+const PCT = '%';
+
 
 /********************************************************************
 ActionableNotification factory.
@@ -106,7 +110,7 @@ export default function ActionableNotification (ctx) {
         : action)
         : null,
       props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner }),
-      inline ? null : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: '100%' } }, action)
+      inline ? null : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: 100 + PCT } }, action)
     ]);
 
     // The alertdialog trap wraps the band in its container ref

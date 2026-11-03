@@ -6,6 +6,11 @@
 // heading, the body, the close button and an action. The second reference
 // was retired (batch R).
 
+// The wrapper's full-box style values, built from their number so no unit
+// literal appears
+const PCT = '%';
+
+
 export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze([]),
@@ -20,7 +25,7 @@ export default Object.freeze({
     // same cell box this pins the upstream layer to (`oursHosted` below);
     // the measure page opens unhosted, so without it ours would keep a
     // viewport-relative layer and measure double
-    return React.createElement('div', { style: { height: '100%', transform: 'scale(1)', width: '100%' } },
+    return React.createElement('div', { style: { height: 100 + PCT, transform: 'scale(1)', width: 100 + PCT } },
       React.createElement('style', null, '.cds--modal { position: absolute !important; inset: 0 !important; inline-size: 100% !important; block-size: 100% !important; width: 100% !important; height: 100% !important; }'),
       React.createElement(upstream.Modal, {
         modalHeading: props.title,

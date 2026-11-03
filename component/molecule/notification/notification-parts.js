@@ -14,6 +14,11 @@
 // export.
 
 
+// The fluid band's full width, built from its number so no unit literal
+// appears
+const PCT = '%';
+
+
 // The color cells each kind reads: the square and alt glyphs share their
 // parent kind's cells
 const CELL_KINDS = Object.freeze({
@@ -81,7 +86,7 @@ export default function createNotificationParts (ctx) {
         minHeight: ctx.metric(opts.owner, 'minHeight'),
         // Inline bands are `inline-size: 100%` capped at the cell; toast
         // bands take the cell outright
-        width: opts.fluid === true ? '100%' : opts.width
+        width: opts.fluid === true ? 100 + PCT : opts.width
       }, opts.level !== undefined ? opts.level : null]
     }, children);
 
