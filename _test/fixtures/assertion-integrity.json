@@ -16,6 +16,26 @@
       "why": "a per-process ceiling that cannot trip must fail the runaway kill assertion"
     },
     {
+      "id": "guard-log-tail-off",
+      "file": "scripts/guard.js",
+      "find": "const TAIL_LINES = 60;",
+      "replace": "const TAIL_LINES = 10000;",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "the child output goes to the guard log and only its tail is printed",
+      "why": "a ring that keeps every line leaks the early lines the tail must drop"
+    },
+    {
+      "id": "guard-seen-off",
+      "file": "scripts/guard.js",
+      "find": "order.unshift(pid);",
+      "replace": "order.indexOf(pid);",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a reparented grandchild past the ceiling is still killed",
+      "why": "reparented pids dropped from the kill order must fail the orphan-kill assertion"
+    },
+    {
       "id": "update-loop-threshold-off",
       "file": "_test/harness/render.js",
       "find": "const LIMIT = 2000;",

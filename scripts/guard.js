@@ -4,24 +4,31 @@
 // a procedural rule, so the run itself gets a wrapper that watches the whole
 // process tree once a second and kills it first.
 //
-// Usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] -- <command> [args...]
+// Usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] [--log FILE] -- <command> [args...]
 // Defaults: seconds 1800 (GUARD_SECONDS), proc-mb 6144 (GUARD_PROC_MB),
-// tree-mb 12288 (GUARD_TREE_MB). Kills exit 137 (memory) or 124 (time); the
-// child's own exit code otherwise (1 on a signal). The child's stdio is
-// inherited, never captured: the guard holds no buffers. When `ps` is
-// unavailable the guard logs once and keeps running the child - containment
-// degrades, it never blocks a run.
+// tree-mb 12288 (GUARD_TREE_MB), log _test/test-results/last-run.log
+// (GUARD_LOG). Kills exit 137 (memory) or 124 (time); the child's own exit
+// code otherwise (1 on a signal). The child's stdout and stderr go to the
+// log file and their last 60 lines are replayed to stderr when the run
+// ends; stdin stays inherited so an interactive child still works. When
+// `ps` is unavailable the guard logs once and keeps running the child -
+// containment degrades, it never blocks a run.
 //
-// Every kill appends one line to _test/test-results/guard.log, resolved from
-// this file's repo root rather than the caller's cwd.
+// Every kill appends one line to _test/test-results/guard.log, resolved
+// from this file's repo root rather than the caller's cwd. A pid once
+// seen under the child stays watched after a reparent, so a detached
+// grandchild that outlives its parent still counts against the ceilings
+// and still dies; the run ends only when every seen pid is gone.
 
 import { execFileSync, spawn } from 'node:child_process';
-import { appendFileSync, mkdirSync, writeSync } from 'node:fs';
-import { join } from 'node:path';
+import { appendFileSync, closeSync, mkdirSync, openSync, writeSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { StringDecoder } from 'node:string_decoder';
 import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = fileURLToPath(new URL('..', import.meta.url));
 const LOG_FILE = join(REPO_ROOT, '_test', 'test-results', 'guard.log');
+const TAIL_LINES = 60;
 
 
 /********************************************************************
@@ -49,7 +56,7 @@ function numberOption (name, value) {
 const args = process.argv.slice(2);
 const separator = args.indexOf('--');
 if (separator === -1 || separator === args.length - 1) {
-  process.stderr.write('usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] -- <command> [args...]\n');
+  process.stderr.write('usage: node scripts/guard.js [--seconds N] [--proc-mb N] [--tree-mb N] [--sample-ms N] [--log FILE] -- <command> [args...]\n');
   process.exit(2);
 }
 
@@ -57,6 +64,9 @@ let seconds = numberOption('--seconds', process.env.GUARD_SECONDS || 1800);
 let procMb = numberOption('--proc-mb', process.env.GUARD_PROC_MB || 6144);
 let treeMb = numberOption('--tree-mb', process.env.GUARD_TREE_MB || 12288);
 let sampleMs = numberOption('--sample-ms', process.env.GUARD_SAMPLE_MS || 1000);
+let logFile = process.env.GUARD_LOG === undefined
+  ? join(REPO_ROOT, '_test', 'test-results', 'last-run.log')
+  : resolve(process.env.GUARD_LOG);
 const options = args.slice(0, separator);
 for (let index = 0; index < options.length; index += 1) {
   const option = options[index];
@@ -74,6 +84,12 @@ for (let index = 0; index < options.length; index += 1) {
     treeMb = numberOption(name, value);
   } else if (name === '--sample-ms') {
     sampleMs = numberOption(name, value);
+  } else if (name === '--log') {
+    if (value === undefined || value === '') {
+      process.stderr.write('guard: --log expects a file path\n');
+      process.exit(2);
+    }
+    logFile = resolve(value);
   } else {
     process.stderr.write('guard: unknown option ' + option + '\n');
     process.exit(2);
@@ -90,15 +106,91 @@ if (!/max-old-space-size/.test(env.NODE_OPTIONS || '')) {
   env.NODE_OPTIONS = ((env.NODE_OPTIONS || '') + ' --max-old-space-size=4096').trim();
 }
 
-const child = spawn(command, commandArgs, { stdio: 'inherit', env: env });
+// stdout and stderr are piped, never inherited: every chunk goes to the
+// log file (truncated each run) and to a bounded tail replayed at the
+// end; stdin stays inherited so an interactive child still works
+let logFd;
+try {
+  mkdirSync(dirname(logFile), { recursive: true });
+  logFd = openSync(logFile, 'w');
+} catch (error) {
+  process.stderr.write('guard: cannot open ' + logFile + ' for writing: ' + error.message + '\n');
+  process.exit(2);
+}
+
+const child = spawn(command, commandArgs, { stdio: ['inherit', 'pipe', 'pipe'], detached: true, env: env });
 const started = Date.now();
 let settled = false;
 let psWarned = false;
 let lastOrder = [child.pid];
+let childDone = false;
+let childCode = null;
+let childSignal = null;
+const seen = new Set();
+const tail = [];
+const decoder = new StringDecoder('utf8');
+let pending = '';
 
 
 /********************************************************************
-Snapshot the process table and reduce it to the child's tree.
+Append one chunk of child output to the log file and to the bounded
+tail. The log gets every byte; the tail keeps the last TAIL_LINES
+complete lines, so the guard holds no unbounded buffer.
+
+@param {Buffer} chunk - Child output
+*********************************************************************/
+function record (chunk) {
+
+  writeSync(logFd, chunk);
+  pending += decoder.write(chunk);
+  const lines = pending.split('\n');
+  pending = lines.pop();
+  for (const line of lines) {
+    tail.push(line);
+    if (tail.length > TAIL_LINES) {
+      tail.shift();
+    }
+  }
+
+}
+
+
+/********************************************************************
+Flush the partial line, then write the tail to stderr and stdout behind
+one GUARD: log line naming the file, and close the log. Called on every
+exit path that let the child produce output. Stdout carries it too so a
+caller that only collects stdout (the fire runner's zero-match check)
+still sees the child's last lines.
+*********************************************************************/
+function replayTail () {
+
+  pending += decoder.end();
+  if (pending !== '') {
+    tail.push(pending);
+    if (tail.length > TAIL_LINES) {
+      tail.shift();
+    }
+    pending = '';
+  }
+  const banner = 'GUARD: log ' + logFile + ' (' + tail.length + ' lines)\n';
+  writeSync(2, banner);
+  writeSync(1, banner);
+  for (const line of tail) {
+    writeSync(2, line + '\n');
+    writeSync(1, line + '\n');
+  }
+  try {
+    closeSync(logFd);
+  } catch {
+    // Already closed
+  }
+
+}
+
+
+/********************************************************************
+Snapshot the process table and reduce it to the child's tree plus every
+pid ever seen under it that is still alive (a reparented descendant).
 
 @param {Number} rootPid - The child's pid
 
@@ -138,6 +230,20 @@ function sampleTree (rootPid) {
   };
   walk(rootPid);
 
+  // A pid once under the root stays watched after a reparent: a detached
+  // grandchild that outlives its parent still counts and still dies
+  const walked = new Set(order);
+  for (const pid of walked) {
+    seen.add(pid);
+  }
+  for (const pid of seen) {
+    if (!rssKb.has(pid)) {
+      seen.delete(pid);
+    } else if (!walked.has(pid)) {
+      order.unshift(pid);
+    }
+  }
+
   let maxPid = rootPid;
   let maxRssMb = 0;
   let treeRssKb = 0;
@@ -157,9 +263,14 @@ function sampleTree (rootPid) {
 
 /********************************************************************
 SIGKILL every pid in the order `sampleTree` returned (deepest first, the
-child last). Pids that already exited are ignored.
+child last), then the child's whole process group - the child was
+spawned detached, so anything the pid list missed still dies. Pids and
+groups already gone are ignored.
+
+@param {Array}  order   - Pids deepest-first
+@param {Number} rootPid - The child's pid, also its process group id
 *********************************************************************/
-function killTree (order) {
+function killTree (order, rootPid) {
 
   for (const pid of order) {
     try {
@@ -167,6 +278,11 @@ function killTree (order) {
     } catch {
       // Already gone
     }
+  }
+  try {
+    process.kill(-rootPid, 'SIGKILL');
+  } catch {
+    // Group already gone
   }
 
 }
@@ -198,8 +314,22 @@ function signalTree (signal) {
 
 
 /********************************************************************
+End the run with the child's own exit code: the GUARD: log line, the
+tail, then the documented code.
+*********************************************************************/
+function finish () {
+
+  settled = true;
+  clearInterval(timer);
+  replayTail();
+  process.exit(childSignal ? 1 : (childCode === null ? 1 : childCode));
+
+}
+
+
+/********************************************************************
 Report a kill and finish: one GUARD: line to stderr and the log file,
-then the documented exit code.
+the tail, then the documented exit code.
 
 @param {String} reason - 'memory' or 'time'
 @param {Object} sample - Last sampleTree result
@@ -208,7 +338,7 @@ function terminate (reason, sample) {
 
   settled = true;
   clearInterval(timer);
-  killTree(sample.order);
+  killTree(sample.order, child.pid);
   const line = 'GUARD: killed ' + reason +
     ' pid=' + sample.maxPid +
     ' rss=' + Math.round(sample.maxRssMb) +
@@ -222,6 +352,7 @@ function terminate (reason, sample) {
   } catch {
     // The log is best-effort; the kill already happened
   }
+  replayTail();
   process.exit(reason === 'memory' ? 137 : 124);
 
 }
@@ -240,9 +371,18 @@ const timer = setInterval(function () {
       psWarned = true;
       process.stderr.write('GUARD: ps failed (' + error.message + '); memory containment off, the wall clock still applies\n');
     }
+    if (childDone) {
+      finish();
+    }
     return;
   }
   lastOrder = sample.order;
+
+  // The child is gone; the run ends when every pid it ever had is gone
+  if (childDone && seen.size === 0) {
+    finish();
+    return;
+  }
 
   // The per-process ceiling names the fattest descendant; the tree ceiling
   // catches many small processes that are one runaway in aggregate
@@ -271,11 +411,27 @@ child.on('error', function (error) {
   process.exit(127);
 });
 
-child.on('exit', function (code, signal) {
+// 'close' waits for the piped streams to drain, so the last bytes of a
+// dying child still reach the log before the exit decision
+child.on('close', function (code, signal) {
   if (settled) {
     return;
   }
-  settled = true;
-  clearInterval(timer);
-  process.exit(signal ? 1 : (code === null ? 1 : code));
+  childDone = true;
+  childCode = code;
+  childSignal = signal;
+
+  // A detached descendant can outlive the child; one last sample tells
+  // whether the run ends now or keeps watching the orphans until they go
+  try {
+    sampleTree(child.pid);
+  } catch {
+    seen.clear();
+  }
+  if (seen.size === 0) {
+    finish();
+  }
 });
+
+child.stdout.on('data', record);
+child.stderr.on('data', record);
