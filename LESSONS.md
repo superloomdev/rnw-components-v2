@@ -14,6 +14,10 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - Build to the recipe and the probe (`__dev__/evidence/0160/recipes/`), never to a guess: nearly every fidelity failure in batches 12-14 was on the reference side (mount, selector, stylesheet), not in the component.
 - A published template cell can be wrong. The B0 cells check compares the probe's upstream value with the built theme's value for every cell the recipe names; a mismatch is an amendment before the build.
 - A fire-harness pattern that matches no test must fail, not pass: `_test/fire.js` looks for the indented inner result line and reports Playwright "No tests found".
+- A guard test's allocation must stay below the outer guard's real ceiling: `GUARD_PROC_MB` applies to the whole `npm test` tree, and an outer guard at the same ceiling wins the kill because the inner guard's first sample lands a full interval after its spawn.
+- A reparented orphan can enter the guard's `seen` set only while its parent still lives; macOS reparents before the exit event fires, so the orphan test's child idles 1.5 s before exiting.
+- A killed orphan can still answer `process.kill(pid, 0)` for a moment after the SIGKILL (a zombie awaiting launchd's reap); probe it in a poll, not once.
+- `fire.js` proves a row only from an indented result line on stdout: node tests need a `describe` wrapper for the indent, and the guard replays its tail to stdout as well as stderr so the recover run still sees it.
 
 ## Harness and measurement
 
@@ -22,6 +26,8 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - The perceptual gate compares the sample root's box on both pages (expanded to overflowing descendants), not the whole cell; a clipped layer at the cell edge otherwise dominates the percentage.
 - Positioning hooks cap their re-measures at 8 per open cycle and warn once; an anchor that moves on every read is a harness defect.
 - A hit-expander target that should be absent is asserted as `hitEl === null`, not as a size.
+- The purity scan's `unit string` rule flags `'100%'` style literals (currently `actionable-notification.js:97`, `notification-parts.js:69`, `modal/reference.js:23`, `modal/reference.composed-modal.js:27`), so `npm run check` stays red on this tree until they go.
+- Fidelity can fail where measure passes: the no-close action seat matched upstream geometry yet 28 cells were over the pixel budget, so a fidelity failure is a state-layer or colour gap, not a position one.
 
 ## Component patterns
 
