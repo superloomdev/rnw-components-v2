@@ -50,6 +50,7 @@ export default function Callout (ctx) {
         ])
       ]),
       Utils.isString(props.actionButtonLabel) ? React.createElement(ctx.Registry.NotificationActionButton, {
+        key: 'action',
         'aria-describedby': titleId,
         label: props.actionButtonLabel,
         lowContrast: lowContrast,

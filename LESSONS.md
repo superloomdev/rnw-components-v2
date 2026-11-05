@@ -21,6 +21,11 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 
 ## Harness and measurement
 
+- Edit a JSON data file in place with its existing indent - the roster was re-indented whole once (slice 4 U9) and the diff swallowed the real change.
+- Every element in a children array passed to `createElement` needs a `key`, including one rendered conditionally (`inline ? action : null`) - the structural `zero errors` gate catches it, the Node gates do not.
+- A fire row whose `find` line moved is repointed with its `why` intact; `fire.js` reports "DID NOT RECOVER" when the named test is already red on clean code.
+
+
 - A fixed-position layer (modal, menu, popover) is measured inside a transformed cell wrapper so the layer's containing block is the cell; the reference mount pins its fixed layer the same way (`oursHosted`), or the two pages measure different coordinate spaces.
 - Cells that hold an open layer are settled with `settleLayout` before a screenshot; perceptual reopens reopen the state; pressed frames keep the press's focus (`settleBeforePress` opt-in).
 - The perceptual gate compares the sample root's box on both pages (expanded to overflowing descendants), not the whole cell; a clipped layer at the cell edge otherwise dominates the percentage.
