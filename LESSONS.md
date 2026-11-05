@@ -31,6 +31,8 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - A `stage: true` cell body was squeezed to ~110 px by `.measure .grid`'s 160 px `grid-auto-rows` plus column-flex shrink; a fit made in that regime (Modal's header negative margin) was a squeeze artifact - the row spans in `harness/entry.js` and `reference-entry.js` hold the declared frame, so check a staged body's rendered height before trusting a staged fidelity number.
 - jsdom drops the `borderWidth` shorthand from `style`; assert one long-hand side (`borderBottomWidth`).
 - `docs:generate` regenerates every stale family page, not just the touched one; commit the regenerated pages with the unit.
+- `scripts/defects.js` rebuilds `__dev__/DEFECTS.md` from the last `browser.json` only: a probe run overwrites it, and a later focused run drops earlier slices' rows. Run defects.js straight after the gate run, before any probe; carry earlier residuals in NOW.md until the closing `npm run batch` regenerates the full list.
+- A part-dump probe must read colours from the innermost element holding the label text; reading the pressable root reported a label colour the screen never showed (slice 3 U5).
 
 ## Component patterns
 
@@ -44,3 +46,6 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - Values a template never specifies come from the reference's own scale and are marked `superloom_decision`; a derived number without an upstream line is a defect (D21c).
 - Enum values are named by behavior or shape (`floating`, `ripple`, `grows`), never by a design system; a value no shipped template picks stays when a unit test and the enum-render gate cover it (a brand layer may pin it).
 - A CSS flex item's automatic minimum is its min-content (Carbon modal footer buttons: `flex: 0 1 50%` plus the 15/63 padding); react-native-web defaults `minWidth: 0`, so reproduce it as `minWidth: <ratio>%` + `flexShrink: 0`.
+- A composing parent recolours a focus ring through `ctx.focusRing(..., { ringLeaf })` (outline, border and inset shadow together); `Button` `focusRingGap: false` drops the page-colour line. Overriding `outlineColor`/`borderColor` after the call misses the inset shadow.
+- A component wrapper inside a row-flex cell body is only as wide as its content: a child's `width: 100%` (Carbon `inline-size: 100%`) needs the wrapper itself at `100%` too (ActionableNotification trap wrapper, slice 3 U8).
+- Carbon notifications apply their inverse button themes only `:not(--low-contrast)`: a low-contrast action is the plain ghost/tertiary kind in every state, so pass it no recolour leaves.
