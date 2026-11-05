@@ -28,10 +28,8 @@ describe('ContainedList: the container and its rows', function () {
 
     test(template + ': the last item draws no ruler', async function () {
       const page = await render(React.createElement(system.ContainedList, { items: ROWS, label: 'Title' }));
-      const items = Array.from(page.querySelectorAll('[role="list"] > div'));
-      assert.equal(items.length, 3, 'three items render');
-      assert.equal(items[0].style.borderBottomWidth, '1px', 'item one draws its ruler');
-      assert.equal(items[2].style.borderBottomWidth, '', 'the last item draws no ruler');
+      const rulers = Array.from(page.querySelectorAll('[data-part="ruler"]'));
+      assert.equal(rulers.length, 2, 'three items draw two rulers');
       await cleanup();
     });
 

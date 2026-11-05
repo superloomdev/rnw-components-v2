@@ -55,6 +55,7 @@ export default function ContainedListItem (ctx) {
 
     // Build the content: optional icon column, label, optional end action
     const content = React.createElement(View, {
+      dataSet: { part: 'content' },
       style: [
         { alignItems: 'flex-start', flexDirection: 'row', minHeight: metrics.rowHeight, paddingEnd: props.action !== null && props.action !== undefined ? metrics.actionSpace : metrics.paddingInline, paddingStart: metrics.paddingInline },
         state.hovered === true ? { backgroundColor: ctx.color('contained_list_item_container_hover') } : null,
@@ -62,7 +63,7 @@ export default function ContainedListItem (ctx) {
         ctx.focusRing('button', state, 0, { gap: false })
       ]
     },
-    Utils.isString(props.icon) ? React.createElement(View, { style: { marginEnd: metrics.iconGap, paddingTop: metrics.iconTop, width: metrics.iconSize } },
+    Utils.isString(props.icon) ? React.createElement(View, { dataSet: { part: 'icon' }, style: { marginEnd: metrics.iconGap, paddingTop: metrics.iconTop, width: metrics.iconSize } },
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: metrics.iconSize })) : null,
     React.createElement(Text, { style: [ctx.typeStyle('contained_list_item'), { color: ctx.color(labelLeaf), flexShrink: 1 }] }, props.label));
 
@@ -89,9 +90,10 @@ export default function ContainedListItem (ctx) {
     } }, content) : content;
 
     // Return the item with its ruler
-    return React.createElement(View, { style: props.last !== true ? { borderBottomColor: ctx.color('contained_list_divider'), borderBottomWidth: ctx.token('border.width_01'), marginStart: props.inset === true ? metrics.paddingInline : 0 } : null, testID: props.testID },
+    return React.createElement(View, { dataSet: { part: 'item' }, testID: props.testID },
       body,
-      action !== null ? React.createElement(View, { style: { position: 'absolute', end: 0, top: 0 } }, action) : null);
+      action !== null ? React.createElement(View, { dataSet: { part: 'action' }, style: { position: 'absolute', end: 0, top: 0 } }, action) : null,
+      props.last !== true ? React.createElement(View, { dataSet: { part: 'ruler' }, style: { backgroundColor: ctx.color('contained_list_divider'), height: ctx.token('border.width_01'), marginStart: props.inset === true ? metrics.paddingInline : 0 } }) : null);
   }
 
   ContainedListItemComponent.displayName = 'ContainedListItem';

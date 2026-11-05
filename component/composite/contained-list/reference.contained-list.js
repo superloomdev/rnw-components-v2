@@ -4,7 +4,7 @@ export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze([]),
   additionalTargets: Object.freeze([
-    Object.freeze({ interactions: Object.freeze(['hover', 'focus', 'pressed']), name: 'clickableItem', ours: '[role="button"] > div', states: Object.freeze(['clickable']), upstream: '.cds--contained-list-item--clickable .cds--contained-list-item__content' })
+    Object.freeze({ interactions: Object.freeze(['hover', 'focus', 'pressed']), name: 'clickableItem', ours: '[data-part="content"]', states: Object.freeze(['clickable']), upstream: '.cds--contained-list-item--clickable .cds--contained-list-item__content' })
   ]),
   body: Object.freeze({ width: 400 }),
   mount: function (React, upstream, props) {
@@ -15,5 +15,18 @@ export default Object.freeze({
     });
     const action = props.action === 'search' ? React.createElement(upstream.Search, { labelText: 'Search' }) : undefined;
     return React.createElement(upstream.ContainedList, { action: action, isInset: props.isInset, kind: props.kind, label: props.label, size: props.size }, items);
-  }
+  },
+  parts: Object.freeze({
+    root: Object.freeze({ upstream: '.cds--contained-list', ours: '[data-part="root"]', measure: 'box', compare: ['width'] }),
+    header: Object.freeze({ upstream: '.cds--contained-list__header', ours: '[data-part="header"]', measure: 'box', compare: ['height', 'backgroundColor', 'borderBottomWidth', 'borderBottomColor', 'paddingLeft', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    label: Object.freeze({ upstream: '.cds--contained-list__label', ours: '[data-part="label"]', measure: 'box', compare: ['color', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    items: Object.freeze({ upstream: '.cds--contained-list-item', all: true, ours: '[data-part="item"]', measure: 'box', compare: ['width', 'minHeight'] }),
+    contents: Object.freeze({ upstream: '.cds--contained-list-item__content', all: true, ours: '[data-part="content"]', measure: 'box', compare: ['minHeight', 'paddingLeft', 'paddingRight', 'backgroundColor', 'color', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    rulers: Object.freeze({ upstream: '.cds--contained-list-item', pseudo: '::before', all: true, ours: '[data-part="ruler"]', measure: 'box', optional: true, compare: ['cssLeft', 'cssHeight', 'backgroundColor'] }),
+    icons: Object.freeze({ upstream: '.cds--contained-list-item__icon', all: true, ours: '[data-part="icon"]', measure: 'box', optional: true, compare: ['width', 'paddingTop', 'marginRight'] }),
+    actions: Object.freeze({ upstream: '.cds--contained-list-item__action', all: true, ours: '[data-part="action"]', measure: 'box', optional: true, compare: ['x', 'y'] }),
+    tags: Object.freeze({ upstream: '.cds--tag', all: true, ours: '[data-part="action"] > *', measure: 'box', optional: true, compare: ['height'] }),
+    search: Object.freeze({ upstream: '.cds--search', ours: '[data-part="search"]', measure: 'box', optional: true, compare: ['width', 'backgroundColor'] }),
+    searchInput: Object.freeze({ upstream: '.cds--search-input', ours: '[data-part="search"] input', measure: 'box', optional: true, compare: ['backgroundColor', 'borderBottomColor'] })
+  })
 });
