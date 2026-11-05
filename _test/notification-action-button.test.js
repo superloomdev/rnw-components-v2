@@ -56,6 +56,7 @@ describe('NotificationActionButton: the two colour maps', function () {
       const button = rendered.querySelector('[role="button"]');
       await fire(button, new Event('pointerover', { bubbles: true }));
       assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_hover']), 'the low-contrast hover fill');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.link_primary_hover']), 'the low-contrast hover label');
       await fire(button, new Event('pointerout', { bubbles: true }));
       await cleanup();
     });

@@ -52,7 +52,7 @@ export default function NotificationActionButton (ctx) {
     } : {
       fillHoverLeaf: lowContrast ? 'notification_action_hover' : 'notification_action_container_hover',
       focusRingGap: false,
-      labelHoverLeaf: lowContrast ? undefined : 'notification_action',
+      labelHoverLeaf: lowContrast ? 'link_primary_hover' : 'notification_action',
       labelLeaf: 'notification_action'
     };
 
