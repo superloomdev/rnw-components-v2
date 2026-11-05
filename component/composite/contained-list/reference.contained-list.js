@@ -13,7 +13,7 @@ export default Object.freeze({
         : entry.action === 'button' ? React.createElement(upstream.IconButton, { kind: 'ghost', renderIcon: upstream.icon('close') }) : undefined;
       return React.createElement(upstream.ContainedListItem, { action: action, disabled: entry.disabled, key: index, onClick: entry.onPress, renderIcon: entry.icon !== undefined ? upstream.icon(entry.icon) : undefined }, entry.label);
     });
-    const action = props.search === true ? React.createElement(upstream.Search, { labelText: 'Search' }) : undefined;
+    const action = props.action === 'search' ? React.createElement(upstream.Search, { labelText: 'Search' }) : undefined;
     return React.createElement(upstream.ContainedList, { action: action, isInset: props.isInset, kind: props.kind, label: props.label, size: props.size }, items);
   }
 });

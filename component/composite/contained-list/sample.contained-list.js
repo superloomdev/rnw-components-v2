@@ -28,5 +28,5 @@ export default Object.freeze([
   Object.freeze({ label: 'clickable', props: Object.freeze({ items: CLICKABLE, label: 'List title' }) }),
   Object.freeze({ label: 'icons', props: Object.freeze({ items: ICONS, label: 'List title' }) }),
   Object.freeze({ label: 'actions', props: Object.freeze({ items: ACTIONS, label: 'List title', size: 'md' }) }),
-  Object.freeze({ label: 'search', props: Object.freeze({ items: ROWS, label: 'List title' }) })
+  Object.freeze({ label: 'search', props: Object.freeze({ action: 'search', items: ROWS, label: 'List title' }) })
 ]);

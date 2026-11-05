@@ -2,10 +2,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { buildSystem, buildNative } from './harness/system.js';
+import { act } from 'react';
 import { React, cleanup, cssValue, render } from './harness/render.js';
-import ContainedList from '../component/composite/contained-list/contained-list.js';
-import ContainedListItem from '../component/composite/contained-list/contained-list-item.js';
-import Search from '../component/molecule/search/search.js';
+import * as factories from 'rnw-components/all';
 
 const TEMPLATES = ['carbon'];
 const ROWS = Object.freeze([Object.freeze({ label: 'One' }), Object.freeze({ label: 'Two' }), Object.freeze({ label: 'Three' })]);
@@ -14,7 +13,7 @@ const CLICKABLE = Object.freeze([Object.freeze({ label: 'One', onPress: function
 describe('ContainedList: the container and its rows', function () {
 
   for (const template of TEMPLATES) {
-    const system = buildSystem(template, { ContainedList, ContainedListItem, Search });
+    const system = buildSystem(template, factories);
     const t = buildNative(template).tokens;
 
     test(template + ': the disclosed header draws its own height', async function () {
@@ -33,6 +32,20 @@ describe('ContainedList: the container and its rows', function () {
       assert.equal(items.length, 3, 'three items render');
       assert.equal(items[0].style.borderBottomWidth, '1px', 'item one draws its ruler');
       assert.equal(items[2].style.borderBottomWidth, '', 'the last item draws no ruler');
+      await cleanup();
+    });
+
+    test(template + ': the search action filters the items by label', async function () {
+      const page = await render(React.createElement(system.ContainedList, { action: 'search', items: ROWS, label: 'Title' }));
+      const input = page.querySelector('input');
+      assert.ok(input !== null, 'the search renders an input');
+      await act(async function () {
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, 'Three');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      const labels = Array.from(page.querySelectorAll('[role="list"] div')).map(function (d) { return d.textContent; });
+      assert.equal(labels.some(function (text) { return text === 'Three'; }), true, 'the matching item stays');
+      assert.equal(labels.some(function (text) { return text === 'One'; }), false, 'a non-matching item filters out');
       await cleanup();
     });
 

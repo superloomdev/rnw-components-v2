@@ -5,6 +5,7 @@
 - **ContainedListItem** (requires_parent): must be composed inside ContainedList; measured through ContainedList's samples.
 - **ContainedListItem** (no_reference): no standalone upstream mount; measured through ContainedList's samples.
 - **ContainedList** (superloom_decision): a ContainedList draws no outer margin - adjacent on-page lists' `control.contained_list_gap` is the host's spacing. Tag `lg` queued for v10 (CONTRACT-REQUESTS).
+- **ContainedList** (superloom_decision): upstream's header is sticky inside a scroll container; a host scroll view pins it (`stickyHeaderIndices`), the list itself does not.
 
 ## ContainedList
 
@@ -27,7 +28,7 @@ ContainedList is a labelled list of rows inside a container, with a sticky heade
 | `kind` | `string` | no | `on-page` (default) or `disclosed` - the header's cells. |
 | `size` | `string` | no | `sm` | `md` | `lg` (default) | `xl` - every item's minimum height and the tag height. |
 | `isInset` | `boolean` | no | Insets the row rulers by the list's inline padding. |
-| `action` | `node` | no | A header action; a `Search`/`ExpandableSearch` renders under the header and filters the items by label. |
+| `action` | `node` | no | A header action: the string `search` draws a Search under the header filtering items by label; a node (`Search`/`ExpandableSearch`) does the same. |
 | `items` | `array` | yes | The rows: `{ label, onPress, disabled, icon, action }`. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 
@@ -53,9 +54,9 @@ ContainedList is a labelled list of rows inside a container, with a sticky heade
 | xl | `{"items":[{"label":"List item 1"},{"label":"List item 2"},{"label":"List item 3"}],"label":"List title","size":"xl"}` |
 | inset | `{"isInset":true,"items":[{"label":"List item 1"},{"label":"List item 2"},{"label":"List item 3"}],"label":"List title"}` |
 | clickable | `{"items":[{"label":"List item 1"},{"disabled":true,"label":"List item 2"},{"label":"List item 3"}],"label":"List title"}` |
-| icons | `{"items":[{"icon":"folder","label":"List item 1"},{"icon":"folder","label":"List item 2"}],"label":"List title"}` |
+| icons | `{"items":[{"icon":"add","label":"List item 1"},{"icon":"add","label":"List item 2"}],"label":"List title"}` |
 | actions | `{"items":[{"action":"tag","label":"List item 1"},{"action":"button","label":"List item 2"}],"label":"List title","size":"md"}` |
-| search | `{"items":[{"label":"List item 1"},{"label":"List item 2"},{"label":"List item 3"}],"label":"List title"}` |
+| search | `{"action":"search","items":[{"label":"List item 1"},{"label":"List item 2"},{"label":"List item 3"}],"label":"List title"}` |
 
 ## ContainedListItem
 

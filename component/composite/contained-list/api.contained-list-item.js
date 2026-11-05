@@ -24,6 +24,6 @@ export default Object.freeze({
     'control.contained_list_action_space', 'control.contained_list_icon_gap', 'control.contained_list_icon_size',
     'control.contained_list_icon_top', 'control.contained_list_padding_inline',
     'size.size_small', 'size.size_medium', 'size.size_large', 'size.size_xlarge',
-    'control.tag_height', 'control.tag_height_small'
+    'control.tag_height', 'control.tag_height_small', 'border.width_01'
   ])
 });

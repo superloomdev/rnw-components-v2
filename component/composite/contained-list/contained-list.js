@@ -44,7 +44,7 @@ export default function ContainedList (ctx) {
     };
 
     // Detect the search action: it renders under the header and filters
-    const isSearch = React.isValidElement(props.action) && (props.action.type === ctx.Registry.Search || props.action.type === ctx.Registry.ExpandableSearch);
+    const isSearch = props.action === 'search' || (React.isValidElement(props.action) && (props.action.type === ctx.Registry.Search || props.action.type === ctx.Registry.ExpandableSearch));
     const [query, setQuery] = React.useState('');
     const onQuery = function (event) {
       setQuery(event && event.target ? event.target.value : event);
@@ -52,12 +52,14 @@ export default function ContainedList (ctx) {
 
     // Build the header in the kind's cells
     const labelId = (props.testID || 'contained-list') + '-label';
-    const header = React.createElement(View, { style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: ctx.color('contained_list_divider'), borderBottomWidth: 1, height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline, position: 'sticky' } },
+    const header = React.createElement(View, { style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: ctx.color('contained_list_divider'), borderBottomWidth: ctx.token('border.width_01'), height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
       React.createElement(Text, { nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
 
     // Build the search row under the header
-    const search = isSearch === true ? React.createElement(View, { style: { backgroundColor: ctx.color('contained_list_search_container'), borderBottomColor: ctx.color('contained_list_search_border'), borderBottomWidth: 1 } },
-      React.cloneElement(props.action, { onChange: onQuery })) : null;
+    const search = isSearch === true ? React.createElement(View, { style: { backgroundColor: ctx.color('contained_list_search_container'), borderBottomColor: ctx.color('contained_list_search_border'), borderBottomWidth: ctx.token('border.width_01') } },
+      props.action === 'search'
+        ? React.createElement(ctx.Registry.Search, { label: 'Search', onChangeText: onQuery })
+        : React.cloneElement(props.action, { onChangeText: onQuery })) : null;
 
     // Build the items, filtered by the search query on the label
     const entries = Utils.isObject(props.items) ? props.items : [];
