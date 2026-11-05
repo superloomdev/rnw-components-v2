@@ -151,7 +151,9 @@ function Cell (props) {
     return null;
   }
   // A reference body may also stage a fixed layer: `stage` makes it the
-  // layer's containing block so the surface paints inside the cell
+  // layer's containing block so the surface paints inside the cell. Its
+  // declared height is not shrinkable: the measurement grid's 160 px row
+  // pitch must not squeeze the stage the layer covers
   const body = reference.body ? (function () {
     const style = { display: 'block', width: reference.body.width + 'px' };
     if (typeof reference.body.height === 'number') {
@@ -159,15 +161,23 @@ function Cell (props) {
     }
     if (reference.body.stage === true) {
       style.transform = 'translateZ(0)';
+      style.flexShrink = 0;
     }
     return style;
   })() : undefined;
+  // The rows a staged cell spans: its declared height plus its own chrome
+  // (label line, gap and padding) over the 160 px row pitch and the 24 px
+  // grid gap, so every cell still starts on a whole pixel
+  const span = reference.body !== null && reference.body !== undefined && reference.body.stage === true && typeof reference.body.height === 'number'
+    ? 'span ' + Math.ceil((reference.body.height + 16 + 8 + 24 + 24) / (160 + 24))
+    : undefined;
 
   return React.createElement('div', {
     className: 'cell',
     'data-component': props.name,
     'data-family': rows[props.name].family,
-    'data-state': props.state.label
+    'data-state': props.state.label,
+    style: span === undefined ? undefined : { gridRow: span }
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
   React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: body }, element));

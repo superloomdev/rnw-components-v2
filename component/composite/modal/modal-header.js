@@ -33,9 +33,6 @@ export default function ModalHeader (ctx) {
   function ModalHeaderComponent (props) {
 
     // Init the metrics and the anatomy reads
-    const headingLineHeight = (ctx.token('type.dialog_heading') || {}).lineHeight || 0;
-    const labelLineHeight = (ctx.token('type.label01') || {}).lineHeight || 0;
-    const bodyPaddingTop = ctx.token('control.dialog_body_padding_top') || 0;
     const metrics = {
       closeIconSize: ctx.metric('ModalHeader', 'closeIconSize'),
       closeSize: ctx.metric('ModalHeader', 'closeSize'),
@@ -52,14 +49,9 @@ export default function ModalHeader (ctx) {
     return React.createElement(React.Fragment, null,
       React.createElement(View, {
         style: {
-          // Upstream's heading, and the label's lower edge with it, overlays
-          // the content region's top padding: pull the body up under them.
-          // The label's effective cost upstream is the body top padding, so
-          // the pull covers the difference between our label slot and it
-          marginBottom: metrics.headerSpace - headingLineHeight
-            - (Utils.isString(props.label) && labelShown
-              ? labelLineHeight + metrics.headerGap - bodyPaddingTop
-              : 0),
+          // The header sits in flow, its bottom margin above the content's
+          // top padding, as upstream
+          marginBottom: metrics.headerSpace,
           paddingEnd: closeShown ? metrics.closeSize : metrics.paddingInline,
           paddingStart: metrics.paddingInline,
           paddingTop: metrics.paddingTop

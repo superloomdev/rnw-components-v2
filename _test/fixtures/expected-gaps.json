@@ -62,18 +62,6 @@
     {
       "check": "fidelity",
       "component": "ComposedModal",
-      "part": "label",
-      "property": "y"
-    },
-    {
-      "check": "fidelity",
-      "component": "ComposedModal",
-      "part": "heading",
-      "property": "y"
-    },
-    {
-      "check": "fidelity",
-      "component": "ComposedModal",
       "part": "action",
       "property": "width"
     },

@@ -393,6 +393,22 @@ OverflowMenu is a square icon button that opens a panel of options joined to it,
 | `onClose` | `function` | no | Called when the panel closes (Escape, Tab, outside press, focus leaving or after an option is chosen). |
 | `accessibilityLabel` | `string` | no | Names the panel. |
 | `testID` | `string` | no | Test identifier forwarded to the container. |
+| `icon` | `string` | no | Composition prop: the trigger glyph; default `overflow_vertical` (the breadcrumb draws `overflow`). |
+| `iconOffset` | `number` | no | Composition prop: shifts the trigger glyph down (the breadcrumb). |
+| `iconSize` | `number` | no | Composition prop: the trigger glyph's size; default the spec cell. |
+| `iconColor` | `string` | no | Composition prop: the trigger glyph's color leaf; default `overflow_menu_icon`. |
+| `iconHoverLeaf` | `string` | no | Composition prop: the trigger glyph's color leaf on hover. |
+| `iconActiveLeaf` | `string` | no | Composition prop: the trigger glyph's color leaf on press. |
+| `triggerWidth` | `number` | no | Composition prop: the trigger box width; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_width`). |
+| `triggerHeight` | `number` | no | Composition prop: the trigger box height; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_height`). |
+| `fillLeaf` | `string` | no | Composition prop: overrides the trigger's rest fill leaf outright; `null` draws no fill (the breadcrumb). |
+| `fillHoverLeaf` | `string` | no | Composition prop: overrides the trigger's hover fill leaf outright; `null` draws no fill. |
+| `fillActiveLeaf` | `string` | no | Composition prop: overrides the trigger's active fill leaf outright; `null` draws no fill. |
+| `focusRingLeaf` | `string` | no | Composition prop: the color leaf the trigger's focus ring draws (the breadcrumb rings `focus`). |
+| `focusUnderline` | `object` | no | Composition prop: `{ width, offsetStart, offsetTop, colorLeaf }` - a 1 px bar drawn inside the trigger box while it holds focus (the breadcrumb). |
+| `menuOffset` | `object` | no | Composition prop: `{ top, left }` constant shifting the panel off the anchor edge (the breadcrumb). |
+| `caret` | `object` | no | Composition prop: `{ size, offsetX, colorLeaf }` - a caret drawn on the panel's top edge (the breadcrumb menu). |
+| `connector` | `boolean` | no | Composition prop: `false` suppresses the connector bar even where the anatomy draws one (the breadcrumb). |
 
 ### Metrics
 

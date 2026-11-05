@@ -54,6 +54,233 @@ file and the row is measured against the primary alone.
 - `role="status"` by default, `role="alert"` under `alert`; the close
   button names itself through `closeLabel`.
 
+## ActionableNotification
+
+ActionableNotification is a component in the Notification family.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.status_marker` |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `string` | no | One of `kinds`: the status the marker, the icon and (under `lowContrast`) the fill and outline draw. Default `info`. |
+| `lowContrast` | `boolean` | no | Draws the kind fill, the kind outline and primary text instead of the inverse container. |
+| `inline` | `boolean` | no | Draws the inline layout with the ghost action; the default draws the toast layout with the tertiary-inverse action. |
+| `title` | `string` | yes | The title text. |
+| `subtitle` | `string` | no | The body text beside the title. |
+| `caption` | `string` | no | The caption text under the title and subtitle. |
+| `actionButtonLabel` | `string` | yes | The action label. |
+| `onActionButtonClick` | `function` | no | Called by the action. |
+| `hideCloseButton` | `boolean` | no | Draws no close button; the toast action then takes `control.notification_action_end_space` before the end. |
+| `onCloseButtonClick` | `function` | no | Called by the close button, before `onClose`. |
+| `onClose` | `function` | no | Called by the close button after `onCloseButtonClick`; returning `false` vetoes the close and the unmount. |
+| `closeOnEscape` | `boolean` | no | Escape asks for the close; default `true`. |
+| `closeLabel` | `string` | no | Accessible name of the close button. Default `Close`. |
+| `role` | `string` | no | `alertdialog` (the default, which traps focus), `alert` or `status`. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `detailsInset` | `control.notification_details_inset` |
+| `detailsInsetEnd` | `control.notification_details_inset_end` |
+| `iconGap` | `control.notification_icon_gap` |
+| `iconSize` | `control.notification_icon_size` |
+| `iconTop` | `control.notification_icon_top` |
+| `markerWidth` | `control.notification_marker_width` |
+| `minHeight` | `control.notification_min_height` |
+| `outlineWidth` | `control.notification_outline_width` |
+| `textPaddingBlock` | `control.notification_text_padding_block` |
+| `titleGap` | `control.notification_title_gap` |
+| `radius` | `control.notification_radius` |
+| `closeIconSize` | `size.icon_01` |
+| `closeSize` | `control.icon_button_size` |
+| `actionEndSpace` | `control.notification_action_end_space` |
+| `actionHeight` | `control.notification_action_height` |
+| `actionInset` | `control.notification_action_inset` |
+| `level` | `shadow.notification` |
+| `toastActionInset` | `control.notification_toast_action_inset` |
+| `toastIconTop` | `control.notification_toast_icon_top` |
+| `toastTextPaddingBottom` | `control.notification_toast_text_padding_bottom` |
+| `toastWidth` | `control.notification_width` |
+| `width` | `control.notification_inline_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| inline | `{"actionButtonLabel":"Retry","inline":true,"kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+| inlineLow | `{"actionButtonLabel":"Retry","inline":true,"kind":"error","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| toast | `{"actionButtonLabel":"Retry","caption":"The caption text.","kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+| toastLow | `{"actionButtonLabel":"Retry","caption":"The caption text.","kind":"error","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| noClose | `{"actionButtonLabel":"Retry","hideCloseButton":true,"inline":true,"kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+| toastNoClose | `{"actionButtonLabel":"Retry","caption":"The caption text.","hideCloseButton":true,"kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+
+## Callout
+
+Callout is a component in the Notification family.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.status_marker` |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `string` | no | One of `kinds`: drawn as given, including `error` (the upstream deprecation only warns). Default `info`. |
+| `lowContrast` | `boolean` | no | Draws the kind fill, the kind outline and primary text instead of the inverse container. |
+| `title` | `string` | yes | The title text; names the action through `titleId`. |
+| `subtitle` | `string` | no | The body text beside the title. |
+| `actionButtonLabel` | `string` | no | The action label; absent draws no action. |
+| `onActionButtonClick` | `function` | no | Called by the action. |
+| `titleId` | `string` | no | Id of the title element; the action's `aria-describedby`. Generated when absent. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `detailsInset` | `control.notification_details_inset` |
+| `detailsInsetEnd` | `control.notification_details_inset_end` |
+| `iconGap` | `control.notification_icon_gap` |
+| `iconSize` | `control.notification_icon_size` |
+| `iconTop` | `control.notification_icon_top` |
+| `markerWidth` | `control.notification_marker_width` |
+| `minHeight` | `control.notification_min_height` |
+| `outlineWidth` | `control.notification_outline_width` |
+| `textPaddingBlock` | `control.notification_text_padding_block` |
+| `titleGap` | `control.notification_title_gap` |
+| `radius` | `control.notification_radius` |
+| `closeSize` | `control.icon_button_size` |
+| `actionHeight` | `control.notification_action_height` |
+| `actionInset` | `control.notification_action_inset` |
+| `width` | `control.notification_inline_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| info | `{"actionButtonLabel":"Go to page","kind":"info","subtitle":"The notification body.","title":"Notification title."}` |
+| warning | `{"actionButtonLabel":"Go to page","kind":"warning","subtitle":"The notification body.","title":"Notification title."}` |
+| infoLow | `{"actionButtonLabel":"Go to page","kind":"info","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| warningLow | `{"actionButtonLabel":"Go to page","kind":"warning","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| noAction | `{"kind":"info","subtitle":"The notification body.","title":"Notification title."}` |
+| errorMapped | `{"actionButtonLabel":"Go to page","kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+
+## InlineNotification
+
+InlineNotification is a component in the Notification family.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.status_marker` |
+| Behaviors | none |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `string` | no | One of `kinds`: the status the marker, the icon and (under `lowContrast`) the fill and outline draw. Default `info`. |
+| `lowContrast` | `boolean` | no | Draws the kind fill, the kind outline and primary text instead of the inverse container. |
+| `title` | `string` | yes | The title text. |
+| `subtitle` | `string` | no | The body text beside the title. |
+| `hideCloseButton` | `boolean` | no | Draws no close button. |
+| `onCloseButtonClick` | `function` | no | Called by the close button, before `onClose`. |
+| `onClose` | `function` | no | Called by the close button after `onCloseButtonClick`; returning `false` vetoes the close and the unmount. |
+| `closeLabel` | `string` | no | Accessible name of the close button. Default `Close`. |
+| `role` | `string` | no | `status` (the default, polite), `alert` or `log`. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `detailsInset` | `control.notification_details_inset` |
+| `detailsInsetEnd` | `control.notification_details_inset_end` |
+| `iconGap` | `control.notification_icon_gap` |
+| `iconSize` | `control.notification_icon_size` |
+| `iconTop` | `control.notification_icon_top` |
+| `markerWidth` | `control.notification_marker_width` |
+| `minHeight` | `control.notification_min_height` |
+| `outlineWidth` | `control.notification_outline_width` |
+| `textPaddingBlock` | `control.notification_text_padding_block` |
+| `titleGap` | `control.notification_title_gap` |
+| `radius` | `control.notification_radius` |
+| `closeIconSize` | `size.icon_01` |
+| `closeSize` | `control.icon_button_size` |
+| `width` | `control.notification_inline_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| error | `{"kind":"error","subtitle":"The notification body.","title":"Notification title."}` |
+| success | `{"kind":"success","subtitle":"The notification body.","title":"Notification title."}` |
+| info | `{"kind":"info","subtitle":"The notification body.","title":"Notification title."}` |
+| warning | `{"kind":"warning","subtitle":"The notification body.","title":"Notification title."}` |
+| errorLow | `{"kind":"error","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| successLow | `{"kind":"success","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| infoLow | `{"kind":"info","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| warningLow | `{"kind":"warning","lowContrast":true,"subtitle":"The notification body.","title":"Notification title."}` |
+| noClose | `{"hideCloseButton":true,"kind":"info","subtitle":"The notification body.","title":"Notification title."}` |
+| infoSquare | `{"kind":"info-square","subtitle":"The notification body.","title":"Notification title."}` |
+| warningAlt | `{"kind":"warning-alt","subtitle":"The notification body.","title":"Notification title."}` |
+
+## NotificationActionButton
+
+NotificationActionButton is a component in the Notification family; it must be composed inside Notification.
+
+| | |
+|---|---|
+| Tier | `molecule` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | `anatomy.status_marker` |
+| Behaviors | none |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `variant` | `string` | yes | `inline` (the ghost action) or `toast` (the tertiary-inverse action). |
+| `lowContrast` | `boolean` | no | The inline action's hover reads the low-contrast fill leaf. |
+| `label` | `string` | yes | The action label. |
+| `onPress` | `function` | no | Called by the action. |
+| `aria-describedby` | `string` | no | Forwarded to the button root. |
+| `marginEnd` | `number` | no | Composition prop: the end margin a toast without a close takes (`control.notification_action_end_space`). |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.notification_action_height` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Retry","variant":"inline"}` |
+
 ## ToastNotification
 
 ToastNotification is a status band: a marker and status icon, a title, a subtitle, an optional caption and action, and a close button.
@@ -87,12 +314,22 @@ ToastNotification is a status band: a marker and status icon, a title, a subtitl
 | Metric | Rule |
 |---|---|
 | `captionSpace` | `spacing.spacing_03` |
+| `closeIconSize` | `size.icon_01` |
 | `closeSize` | `control.icon_button_size` |
+| `detailsInset` | `control.notification_details_inset` |
+| `detailsInsetEnd` | `control.notification_details_inset_end` |
+| `iconGap` | `control.notification_icon_gap` |
 | `iconSize` | `control.notification_icon_size` |
+| `iconTop` | `control.notification_toast_icon_top` |
 | `level` | `shadow.notification` |
 | `markerWidth` | `control.notification_marker_width` |
+| `minHeight` | `control.notification_min_height` |
+| `outlineWidth` | `control.notification_outline_width` |
 | `radius` | `control.notification_radius` |
-| `space` | `spacing.spacing_05` |
+| `textPaddingTop` | `spacing.spacing_05` |
+| `textPaddingBlock` | `control.notification_text_padding_block` |
+| `textPaddingBottom` | `control.notification_toast_text_padding_bottom` |
+| `titleGap` | `control.notification_title_gap` |
 | `width` | `control.notification_width` |
 
 ### States (sample.js)

@@ -86,7 +86,7 @@ describe('Modal: every sample state under every template', function () {
         assert.equal(dialog.getAttribute('aria-modal'), 'true');
         assert.equal(dialog.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_container']));
         assert.equal(dialog.style.borderTopLeftRadius, t['control.dialog_radius'] + 'px');
-        assert.equal(dialog.style.borderTopWidth, t['control.dialog_border_width'] + 'px');
+        assert.equal(dialog.style.borderBottomWidth, t['control.dialog_border_width'] + 'px', 'the border draws on all four sides');
         if (t['control.dialog_min_width'] > 0 || t['control.dialog_max_width'] > 0) {
           assert.equal(dialog.style.minWidth, t['control.dialog_min_width'] + 'px');
           assert.equal(dialog.style.maxWidth, t['control.dialog_max_width'] + 'px');
@@ -103,12 +103,7 @@ describe('Modal: every sample state under every template', function () {
         // The header: label when given, heading always, close seat gated by the anatomy
         const header = parts.header();
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
-        // Upstream's heading overlays the content region's top padding:
-        // the header's bottom margin is the space cell less the heading's line height
-        // Upstream's heading, and the label's lower edge with it, overlays
-        // the content region's top padding
-        const labelOverlay = props.label === undefined ? 0 : (t['type.label01'].lineHeight + t['control.dialog_header_gap'] - t['control.dialog_body_padding_top']);
-        assert.equal(header.style.marginBottom, (t['control.dialog_header_space'] - t['type.dialog_heading'].lineHeight - labelOverlay) + 'px');
+        assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px', 'the header sits in flow above the content');
         const heading = header.children[props.label === undefined ? 0 : 1];
         assert.equal(heading.textContent, props.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');

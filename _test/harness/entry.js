@@ -108,8 +108,27 @@ function frameStyle (frame) {
   }
   if (frame.stage === true) {
     style.transform = 'translateZ(0)';
+    // A declared height is not shrinkable: the measurement grid's 160 px
+    // row pitch must not squeeze the stage the layer covers
+    style.flexShrink = 0;
   }
   return style;
+
+}
+
+// The rows a staged cell spans on the measurement grid: its declared
+// height plus its own chrome (the 16 px label line, the 8 px gap and the
+// 12 px padding of serve.js's .cell / .cell-label) over the 160 px row
+// pitch and the 24 px grid gap, so every cell still starts on a whole
+// pixel and the grid can no longer shrink the body
+function cellSpan (name) {
+
+  const reference = references[name];
+  const frame = measuring && reference && reference.body ? reference.body : frames[name];
+  if (frame === null || frame === undefined || frame.stage !== true || typeof frame.height !== 'number') {
+    return undefined;
+  }
+  return 'span ' + Math.ceil((frame.height + 16 + 8 + 24 + 24) / (160 + 24));
 
 }
 
@@ -148,13 +167,17 @@ function Cell (props) {
   const content = (hosting || (references[props.name] && references[props.name].oursHosted === true)) && frame !== null && frame !== undefined && frame.stage === true
     ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, state))
     : createSampleElement(React, Registry, props.name, state);
+  // The row span applies only to the measurement grid's fixed 160 px pitch;
+  // the sheet's minmax rows already grow to the cell, the showcase is flex
+  const span = measuring === true && sheeting === false ? cellSpan(props.name) : undefined;
 
   return React.createElement('div', {
     className: 'cell',
     'data-component': props.name,
     'data-family': rows[props.name].family,
     'data-state': props.state.label,
-    'data-template': templateName
+    'data-template': templateName,
+    style: span === undefined ? undefined : { gridRow: span }
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
   React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: bodyStyle(props.name) },

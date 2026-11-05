@@ -73,7 +73,7 @@ describe('ComposedModal: every sample state under every template', function () {
         assert.notEqual(dialog, null);
         assert.equal(dialog.getAttribute('aria-modal'), 'true');
         assert.equal(dialog.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_container']));
-        assert.equal(dialog.style.borderTopWidth, t['control.dialog_border_width'] + 'px');
+        assert.equal(dialog.style.borderBottomWidth, t['control.dialog_border_width'] + 'px', 'the border draws on all four sides');
         assert.equal(dialog.style.borderTopColor, cssValue('borderTopColor', t['color.dialog_border']));
         const suffix = { xs: '_xs', sm: '_sm', md: '', lg: '_lg' }[props.size || 'md'];
         assert.equal(dialog.style.width, (window.innerWidth * t['control.dialog_width_ratio' + suffix]) + 'px', 'width ratio');
