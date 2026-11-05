@@ -28,6 +28,9 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - A hit-expander target that should be absent is asserted as `hitEl === null`, not as a size.
 - The purity scan's `unit string` rule flags `'100%'` style literals (currently `actionable-notification.js:97`, `notification-parts.js:69`, `modal/reference.js:23`, `modal/reference.composed-modal.js:27`), so `npm run check` stays red on this tree until they go.
 - Fidelity can fail where measure passes: the no-close action seat matched upstream geometry yet 28 cells were over the pixel budget, so a fidelity failure is a state-layer or colour gap, not a position one.
+- A `stage: true` cell body was squeezed to ~110 px by `.measure .grid`'s 160 px `grid-auto-rows` plus column-flex shrink; a fit made in that regime (Modal's header negative margin) was a squeeze artifact - the row spans in `harness/entry.js` and `reference-entry.js` hold the declared frame, so check a staged body's rendered height before trusting a staged fidelity number.
+- jsdom drops the `borderWidth` shorthand from `style`; assert one long-hand side (`borderBottomWidth`).
+- `docs:generate` regenerates every stale family page, not just the touched one; commit the regenerated pages with the unit.
 
 ## Component patterns
 
@@ -40,3 +43,4 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - Submenus dismiss against their parent (`dismissRootRef`); a menu's own outside-press handler must not close its parent.
 - Values a template never specifies come from the reference's own scale and are marked `superloom_decision`; a derived number without an upstream line is a defect (D21c).
 - Enum values are named by behavior or shape (`floating`, `ripple`, `grows`), never by a design system; a value no shipped template picks stays when a unit test and the enum-render gate cover it (a brand layer may pin it).
+- A CSS flex item's automatic minimum is its min-content (Carbon modal footer buttons: `flex: 0 1 50%` plus the 15/63 padding); react-native-web defaults `minWidth: 0`, so reproduce it as `minWidth: <ratio>%` + `flexShrink: 0`.
