@@ -1,0 +1,3 @@
+- **ContainedListItem** (requires_parent): must be composed inside ContainedList; measured through ContainedList's samples.
+- **ContainedListItem** (no_reference): no standalone upstream mount; measured through ContainedList's samples.
+- **ContainedList** (superloom_decision): a ContainedList draws no outer margin - adjacent on-page lists' `control.contained_list_gap` is the host's spacing. Tag `lg` queued for v10 (CONTRACT-REQUESTS).

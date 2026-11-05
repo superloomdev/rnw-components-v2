@@ -3514,6 +3514,36 @@
    "test": "text-list.test.js",
    "testName": "the ordered marker sits at the ordinal offset",
    "why": "an ordered marker on the unordered offset must fail the ordinal-offset assertion"
+  },
+  {
+   "id": "contained-list-disclosed-height-off",
+   "file": "component/composite/contained-list/contained-list.js",
+   "find": "height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight",
+   "replace": "height: metrics.headerHeight",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "the disclosed header draws its own height",
+   "why": "a disclosed header on the default height must fail the disclosed-height assertion"
+  },
+  {
+   "id": "contained-list-ruler-last-off",
+   "file": "component/composite/contained-list/contained-list.js",
+   "find": "last: index === shown.length - 1",
+   "replace": "last: false",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "the last item draws no ruler",
+   "why": "a ruler under the last item must fail the last-ruler assertion"
+  },
+  {
+   "id": "contained-list-disabled-static-off",
+   "file": "component/composite/contained-list/contained-list-item.js",
+   "find": "const disabled = clickable && props.disabled === true;",
+   "replace": "const disabled = props.disabled === true;",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "disabled dims only a clickable item",
+   "why": "a disabled non-clickable item must fail the static-disabled assertion"
   }
  ]
 }

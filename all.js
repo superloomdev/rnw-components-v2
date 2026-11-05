@@ -127,3 +127,5 @@ export { default as MenuItemDivider } from './component/composite/menu/menu-item
 export { default as UnorderedList } from './component/molecule/text-list/unordered-list.js';
 export { default as OrderedList } from './component/molecule/text-list/ordered-list.js';
 export { default as ListItem } from './component/molecule/text-list/list-item.js';
+export { default as ContainedList } from './component/composite/contained-list/contained-list.js';
+export { default as ContainedListItem } from './component/composite/contained-list/contained-list-item.js';

@@ -53,7 +53,7 @@ file and the row is measured against the primary alone.
 
 - `role="status"` by default, `role="alert"` under `alert`; the close
   button names itself through `closeLabel`.
-- **NotificationActionButton** (requires_parent): requires_parent: "must be composed inside ActionableNotification; measured through ActionableNotification's samples."
+- **NotificationActionButton** (requires_parent): must be composed inside ActionableNotification; measured through ActionableNotification's samples.
 
 ## ActionableNotification
 

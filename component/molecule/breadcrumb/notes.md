@@ -22,5 +22,5 @@ and no landmark.
 - **The current page is text, not a link.** Upstream's current item is a
   link-class span with `aria-current`; ours draws link-styled text in
   `color.breadcrumb_current` with no underline and no link semantics.
-- **BreadcrumbItem** (requires_parent): requires_parent: "must be composed inside Breadcrumb; measured through Breadcrumb's samples."
-- **BreadcrumbItem** (no_reference): no_reference: "no standalone upstream mount; measured through Breadcrumb's samples."
+- **BreadcrumbItem** (requires_parent): must be composed inside Breadcrumb; measured through Breadcrumb's samples.
+- **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.

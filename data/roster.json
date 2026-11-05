@@ -3807,7 +3807,7 @@
         "version": "1.115.0",
         "export": "ContainedList"
       },
-      "description": "ContainedList is a component in the ContainedList family.",
+      "description": "ContainedList is a labelled list of rows inside a container, with a sticky header, an optional search and rulers between rows.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3826,7 +3826,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContainedListItem",
@@ -3837,7 +3837,7 @@
         "version": "1.115.0",
         "export": "ContainedListItem"
       },
-      "description": "ContainedListItem is a component in the ContainedList family; it must be composed inside ContainedList.",
+      "description": "ContainedListItem is one row of a ContainedList, optionally pressable, with an icon and an end action; it must be composed inside ContainedList, with no upstream visual reference of its own - it is measured through the list's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3849,16 +3849,17 @@
       ],
       "parent": "ContainedList",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ContainedListItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Card",

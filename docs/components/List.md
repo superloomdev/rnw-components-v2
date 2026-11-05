@@ -7,7 +7,7 @@
 
 ## ListItem
 
-One row of a text list with its marker; it must be composed inside UnorderedList or OrderedList and is measured through the lists' samples (no standalone upstream mount).
+One row of a text list with its marker; it must be composed inside UnorderedList or OrderedList, with no upstream visual reference of its own - it is measured through the lists' samples.
 
 | | |
 |---|---|
