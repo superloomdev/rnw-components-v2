@@ -80,6 +80,7 @@ export default function ActionableNotification (ctx) {
     // Render the band: details (icon + text), the action, the close in
     // flow at the end - toast gets its own width, shadow and insets
     const action = React.createElement(ctx.Registry.NotificationActionButton, {
+      key: 'action',
       label: props.actionButtonLabel,
       lowContrast: lowContrast,
       marginEnd: props.hideCloseButton === true ? ctx.metric(owner, 'actionEndSpace') : undefined,

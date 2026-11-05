@@ -328,8 +328,8 @@
   {
    "id": "button-engaged-content",
    "file": "component/molecule/button/button.js",
-   "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
-   "replace": "    const contentLeaf = 'button_' + kind + '_label';",
+   "find": "      : 'button_' + kind + '_label' + press.phase;",
+   "replace": "      : 'button_' + kind + '_label';",
    "runner": "node",
    "test": "button.test.js",
    "testName": "highlight: hover, press and release paint the kind",
@@ -628,8 +628,8 @@
   {
    "id": "structural-contrast",
    "file": "component/molecule/button/button.js",
-   "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
-   "replace": "    const contentLeaf = 'button_' + kind + '_container' + press.phase;",
+   "find": "      : 'button_' + kind + '_label' + press.phase;",
+   "replace": "      : 'button_' + kind + '_container' + press.phase;",
    "runner": "pw",
    "test": "structural.spec.js",
    "testName": "every drawn text run meets the contrast minimum against its backdrop",
@@ -2558,8 +2558,8 @@
   {
    "id": "button-inverse-ring",
    "file": "component/molecule/button/button.js",
-   "find": "Utils.isString(props.focusRingLeaf)",
-   "replace": "false",
+   "find": "ringLeaf: props.focusRingLeaf",
+   "replace": "ringLeaf: undefined",
    "runner": "node",
    "test": "toggletip.test.js",
    "testName": "a link action renders the inverse link and a button action the inverse-ring button",
@@ -2857,7 +2857,7 @@
   },
   {
    "file": "component/composite/menu/overflow-menu.js",
-   "find": "        opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' ? 1 : 0,",
+   "find": "        opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' && props.connector !== false ? 1 : 0,",
    "replace": "        opacity: 1,",
    "testName": "connector shown or hidden by anatomy",
    "runner": "node",
@@ -3318,8 +3318,8 @@
   {
    "id": "modal-footer-three-ratio",
    "file": "component/composite/modal/modal-footer.js",
-   "find": "          style: { flexBasis: (ratio * 100) + '%' }",
-   "replace": "          style: { flexBasis: '100%' }",
+   "find": "          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT }",
+   "replace": "          style: { flexShrink: 0, minWidth: '100%' }",
    "runner": "node",
    "test": "modal-footer.test.js",
    "testName": "carbon: the three-button layout takes the three ratio, pushed to the end",

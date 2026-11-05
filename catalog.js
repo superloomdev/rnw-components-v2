@@ -108,6 +108,17 @@ import OverflowMenuSample, { FRAME as OverflowMenuFrame } from './component/comp
 import OverflowMenuItemSample, { FRAME as OverflowMenuItemFrame } from './component/composite/menu/sample.overflow-menu-item.js';
 import CopyButtonSample from './component/molecule/copy/sample.js';
 import SkipToContentSample, { FRAME as SkipToContentFrame } from './component/molecule/skip-to-content/sample.js';
+import ComposedModalSample, { FRAME as ComposedModalFrame } from './component/composite/modal/sample.composed-modal.js';
+import ModalHeaderSample from './component/composite/modal/sample.modal-header.js';
+import ModalBodySample from './component/composite/modal/sample.modal-body.js';
+import ModalFooterSample from './component/composite/modal/sample.modal-footer.js';
+import InlineNotificationSample from './component/molecule/notification/sample.inline-notification.js';
+import ActionableNotificationSample from './component/molecule/notification/sample.actionable-notification.js';
+import CalloutSample from './component/molecule/notification/sample.callout.js';
+import NotificationActionButtonSample from './component/molecule/notification/sample.notification-action-button.js';
+import BreadcrumbSample from './component/molecule/breadcrumb/sample.breadcrumb.js';
+import BreadcrumbItemSample from './component/molecule/breadcrumb/sample.breadcrumb-item.js';
+import BreadcrumbSkeletonSample from './component/molecule/breadcrumb/sample.breadcrumb-skeleton.js';
 import AccordionSample, { FRAME as AccordionFrame } from './component/composite/accordion/sample.accordion.js';
 import AccordionItemSample, { FRAME as AccordionItemFrame } from './component/composite/accordion/sample.accordion-item.js';
 import AccordionSkeletonSample, { FRAME as AccordionSkeletonFrame } from './component/composite/accordion/sample.accordion-skeleton.js';
@@ -220,6 +231,17 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'OverflowMenuItem', family: 'Menu', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: OverflowMenuItemFrame, sample: OverflowMenuItemSample }),
   Object.freeze({ name: 'CopyButton', family: 'Copy', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CopyButtonSample }),
   Object.freeze({ name: 'SkipToContent', family: 'SkipToContent', tier: 'molecule', platform: 'web', flags: Object.freeze(['web_only']), frame: SkipToContentFrame, sample: SkipToContentSample }),
+  Object.freeze({ name: 'ComposedModal', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ComposedModalFrame, sample: ComposedModalSample }),
+  Object.freeze({ name: 'ModalHeader', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: ModalHeaderSample }),
+  Object.freeze({ name: 'ModalBody', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: ModalBodySample }),
+  Object.freeze({ name: 'ModalFooter', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: ModalFooterSample }),
+  Object.freeze({ name: 'InlineNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: InlineNotificationSample }),
+  Object.freeze({ name: 'ActionableNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ActionableNotificationSample }),
+  Object.freeze({ name: 'Callout', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CalloutSample }),
+  Object.freeze({ name: 'NotificationActionButton', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: NotificationActionButtonSample }),
+  Object.freeze({ name: 'Breadcrumb', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: BreadcrumbSample }),
+  Object.freeze({ name: 'BreadcrumbItem', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: BreadcrumbItemSample }),
+  Object.freeze({ name: 'BreadcrumbSkeleton', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: BreadcrumbSkeletonSample }),
   Object.freeze({ name: 'Accordion', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionFrame, sample: AccordionSample }),
   Object.freeze({ name: 'AccordionItem', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: AccordionItemFrame, sample: AccordionItemSample }),
   Object.freeze({ name: 'AccordionSkeleton', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionSkeletonFrame, sample: AccordionSkeletonSample })
