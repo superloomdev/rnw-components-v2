@@ -124,7 +124,8 @@ describe('ComposedModal: every sample state under every template', function () {
           const count = three ? 3 : (props.footer.secondaryButtonText !== undefined ? 2 : 1);
           assert.equal(seats.length, count);
           for (const seat of seats) {
-            assert.equal(seat.style.flexBasis, (ratio * 100) + '%', 'button ratio');
+            assert.equal(seat.style.minWidth, (ratio * 100) + '%', 'button ratio as a floor');
+            assert.equal(seat.style.flexShrink, '0', 'a button is never narrower than its label');
           }
           const button = footer.querySelector('[role="button"]');
           assert.equal(button.style.paddingTop, t['control.dialog_action_padding_top'] + 'px');

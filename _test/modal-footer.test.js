@@ -26,7 +26,8 @@ describe('ModalFooter: the member draws its cells', function () {
       assert.equal(footer.style.height, t['control.dialog_actions_height'] + 'px');
       assert.equal(footer.children.length, 2);
       for (const seat of footer.children) {
-        assert.equal(seat.style.flexBasis, (t['control.dialog_action_ratio'] * 100) + '%', 'each action takes the ratio');
+        assert.equal(seat.style.minWidth, (t['control.dialog_action_ratio'] * 100) + '%', 'each action takes the ratio as a floor');
+        assert.equal(seat.style.flexShrink, '0', 'a button is never narrower than its label');
       }
       const buttons = footer.querySelectorAll('[role="button"]');
       assert.equal(buttons[0].textContent, 'Cancel');
@@ -48,7 +49,8 @@ describe('ModalFooter: the member draws its cells', function () {
       const footer = rendered.firstElementChild;
       assert.equal(footer.children.length, 3);
       for (const seat of footer.children) {
-        assert.equal(seat.style.flexBasis, (t['control.dialog_action_ratio_three'] * 100) + '%');
+        assert.equal(seat.style.minWidth, (t['control.dialog_action_ratio_three'] * 100) + '%');
+        assert.equal(seat.style.flexShrink, '0');
       }
       assert.equal(footer.style.justifyContent, 'flex-end', 'pushed to the end');
       await cleanup();

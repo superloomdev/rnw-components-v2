@@ -7,57 +7,9 @@
   "gaps": [
     {
       "check": "measure",
-      "component": "Modal",
-      "part": "label",
-      "property": "x"
-    },
-    {
-      "check": "measure",
-      "component": "Modal",
-      "part": "heading",
-      "property": "x"
-    },
-    {
-      "check": "measure",
-      "component": "ComposedModal",
-      "part": "label",
-      "property": "x"
-    },
-    {
-      "check": "measure",
-      "component": "ComposedModal",
-      "part": "heading",
-      "property": "x"
-    },
-    {
-      "check": "measure",
       "component": "ComposedModal",
       "part": "action",
       "property": "width"
-    },
-    {
-      "check": "fidelity",
-      "component": "Modal",
-      "part": "label",
-      "property": "x"
-    },
-    {
-      "check": "fidelity",
-      "component": "Modal",
-      "part": "heading",
-      "property": "x"
-    },
-    {
-      "check": "fidelity",
-      "component": "ComposedModal",
-      "part": "label",
-      "property": "x"
-    },
-    {
-      "check": "fidelity",
-      "component": "ComposedModal",
-      "part": "heading",
-      "property": "x"
     },
     {
       "check": "fidelity",

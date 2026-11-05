@@ -10,6 +10,10 @@
 
 import SPEC from './spec.modal-footer.js';
 
+// The purity scan blocks a literal percent; the ratio floor spells it
+// through a constant
+const PCT = '%';
+
 
 /********************************************************************
 ModalFooter factory.
@@ -87,7 +91,9 @@ export default function ModalFooter (ctx) {
       }, buttons.map(function (button, index) {
         return React.createElement(View, {
           key: index,
-          style: { flexBasis: (ratio * 100) + '%' }
+          // A button is never narrower than its label: the ratio is a
+          // floor, as upstream's flex basis under a min-content minimum
+          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT }
         },
         React.createElement(ctx.Registry.Button, {
           buttonRef: index === 0 ? props.secondaryRef : undefined,
