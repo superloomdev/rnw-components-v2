@@ -112,6 +112,15 @@ describe('ActionableNotification: every sample state under every template', func
         const icon = details.children[0];
         assert.equal(icon.style.marginTop, (inline ? t['control.notification_icon_top'] : t['control.notification_toast_icon_top']) + 'px');
 
+        // The toast text block stacks with no title gap; inline stays a
+        // wrapping row
+        const textRows = details.children[1].children[0];
+        assert.equal(textRows.style.flexDirection, inline ? 'row' : 'column', 'the toast text stacks');
+        assert.equal(textRows.children[0].style.marginRight, (inline ? t['control.notification_title_gap'] : 0) + 'px', 'the stacked title has no end gap');
+        if (textRows.children.length > 2) {
+          assert.equal(textRows.children[2].style.paddingTop, t['spacing.spacing_06'] + 'px', 'the caption sits a spacing_06 below');
+        }
+
         // The close: in flow at the end unless hidden; the toast then
         // takes the action's end space
         const close = parts.close();

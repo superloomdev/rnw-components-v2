@@ -98,7 +98,7 @@ export default function ActionableNotification (ctx) {
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         parts.icon({ iconTop: inline ? undefined : ctx.metric(owner, 'toastIconTop'), kind: kind, lowContrast: lowContrast, owner: owner }),
         parts.textBlock({ owner: owner, paddingBottom: inline ? undefined : ctx.metric(owner, 'toastTextPaddingBottom') }, [
-          parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title })
+          parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, stacked: !inline, subtitle: props.subtitle, title: props.title })
         ])
       ]),
       // Inline's action sits between the text and the close, after the

@@ -180,18 +180,19 @@ export default function createNotificationParts (ctx) {
   text under lowContrast) with the title gap, and the subtitle in
   `type.notification_body` beside it on the same line box.
 
-  @param {Object}   opts - { owner, kind, lowContrast, title, subtitle, caption }
+  @param {Object}   opts - { owner, kind, lowContrast, title, subtitle, caption, stacked }
 
   @return {Object} - React element
   *********************************************************************/
   function text (opts) {
 
     const textLeaf = opts.lowContrast === true ? 'text_primary' : 'notification_text';
+    const stacked = opts.stacked === true;
     const rows = [];
     if (Utils.isString(opts.title)) {
       rows.push(React.createElement(Text, {
         key: 'title',
-        style: [ctx.typeStyle('notification_title'), { color: ctx.color(textLeaf), marginEnd: ctx.metric(opts.owner, 'titleGap') }]
+        style: [ctx.typeStyle('notification_title'), { color: ctx.color(textLeaf), marginEnd: stacked ? 0 : ctx.metric(opts.owner, 'titleGap') }]
       }, opts.title));
     }
     if (Utils.isString(opts.subtitle)) {
@@ -203,12 +204,12 @@ export default function createNotificationParts (ctx) {
     if (Utils.isString(opts.caption)) {
       rows.push(React.createElement(Text, {
         key: 'caption',
-        style: [ctx.typeStyle('notification_body'), { color: ctx.color(textLeaf) }]
+        style: [ctx.typeStyle('notification_body'), { color: ctx.color(textLeaf), paddingTop: ctx.token('spacing.spacing_06') }]
       }, opts.caption));
     }
     return React.createElement(View, {
       key: 'text',
-      style: { flexDirection: 'row', flexWrap: 'wrap' }
+      style: { flexDirection: stacked ? 'column' : 'row', flexWrap: stacked ? 'nowrap' : 'wrap' }
     }, rows);
 
   }
