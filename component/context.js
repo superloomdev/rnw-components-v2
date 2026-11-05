@@ -354,7 +354,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {Object}  [options] - { gap }: `gap === false` draws no page-color
                               separating line inside the ring;
                               `offset` overrides the family's focus-offset cell
-                              (a member's own answer, like the tag close's 0)
+                              (a member's own answer, like the tag close's 0);
+                              `ringLeaf` replaces the family's ring leaf - a
+                              composing parent's answer
 
   @return {Object} - Style fragment, empty when no ring shows
   *********************************************************************/
@@ -370,7 +372,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     // The ring, at its offset from the edge
     const offset = options !== undefined && Utils.isNumber(options.offset) ? options.offset : token('control.' + family + '_focus_offset');
-    const ringColor = color(family + '_focus_ring');
+    const ringColor = options !== undefined && Utils.isString(options.ringLeaf) ? color(options.ringLeaf) : color(family + '_focus_ring');
     if (family !== 'button' || offset >= 0) {
       return { outlineColor: ringColor, outlineOffset: offset, outlineStyle: 'solid', outlineWidth: width };
     }

@@ -33,6 +33,7 @@ export default Object.freeze({
     labelLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws at rest (the notification action); default the kind\'s label cell.' },
     labelHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws on hover or press (the notification action); default the label cell\'s phase.' },
     borderLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the border draws (the notification action); default the kind\'s border cell.' },
+    focusRingGap: { type: 'boolean', required: false, description: 'Composition prop: false draws no page-color line inside the ring - the notification action\'s single ring.' },
     focusRingLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf the focus ring reads instead of the kind ring leaf - the inverse surface\'s `focus_ring_inverse`.' },
     onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler forwarded to the pressable root (the menu button\'s press, which prevents the default so an open menu keeps its focus).' }
   }),

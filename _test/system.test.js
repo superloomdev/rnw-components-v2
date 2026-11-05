@@ -434,6 +434,16 @@ describe('context: focusRing', function () {
     }
   });
 
+  test('ringLeaf recolors the ring: the outline, the border and the inset shadow all draw it', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon').tokens;
+    const ring = ctx.focusRing('button', { focused: true, focusVisible: true }, 1, { ringLeaf: 'focus_ring_inverse' });
+    assert.equal(ring.borderColor, t['color.focus_ring_inverse']);
+    assert.equal(ring.outlineColor, undefined);
+    const layers = ring.boxShadow.split(', ');
+    assert.equal(layers.every(function (layer) { return layer.indexOf(t['color.focus_ring_inverse']) !== -1; }), true, 'every shadow layer draws the leaf');
+  });
+
   test('feedback.focus_trigger: keyboard draws a button ring on keyboard focus only; a field ring shows on any focus', function () {
     const keyboard = probeWith({ 'feedback.focus_trigger': 'keyboard' });
     assert.deepEqual(keyboard.focusRing('button', { focused: true, focusVisible: false }), {});

@@ -117,9 +117,7 @@ describe('ActionableNotification: every sample state under every template', func
         const close = parts.close();
         if (props.hideCloseButton === true) {
           assert.equal(close, null);
-          if (!inline) {
-            assert.equal(seat.style.marginRight, t['control.notification_action_end_space'] + 'px');
-          }
+          assert.equal(seat.style.marginRight, t['control.notification_action_end_space'] + 'px', 'the action keeps the end space with no close');
         } else {
           assert.notEqual(close, null);
         }

@@ -93,15 +93,9 @@ export default function IconButton (ctx) {
     // kind paints no face by definition) draws the ring without the theme's
     // separating line inside it
     const drawn = kind !== 'ghost';
-    const ring = Object.assign({}, ctx.focusRing('button', state, fillMap !== null ? 0 : borderWidth, { gap: drawn && fillMap === null }));
     // A composing parent may point the ring at another leaf (the
     // breadcrumb's overflow trigger rings `focus`)
-    if (Utils.isString(props.focusRingLeaf)) {
-      ring.outlineColor = ctx.color(props.focusRingLeaf);
-      if (Utils.isString(ring.borderColor)) {
-        ring.borderColor = ctx.color(props.focusRingLeaf);
-      }
-    }
+    const ring = Object.assign({}, ctx.focusRing('button', state, fillMap !== null ? 0 : borderWidth, { gap: drawn && fillMap === null, ringLeaf: props.focusRingLeaf }));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
     }

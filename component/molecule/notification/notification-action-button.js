@@ -51,6 +51,8 @@ export default function NotificationActionButton (ctx) {
       labelLeaf: lowContrast ? 'button_tertiary' : 'notification_action_tertiary_inverse'
     } : {
       fillHoverLeaf: lowContrast ? 'notification_action_hover' : 'notification_action_container_hover',
+      focusRingGap: false,
+      labelHoverLeaf: lowContrast ? undefined : 'notification_action',
       labelLeaf: 'notification_action'
     };
 

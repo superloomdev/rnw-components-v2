@@ -228,6 +228,7 @@ export default function createNotificationParts (ctx) {
     return React.createElement(ctx.Registry.IconButton, {
       fillActiveLeaf: null,
       fillHoverLeaf: null,
+      focusRingLeaf: opts.lowContrast === true ? 'focus' : 'focus_ring_inverse',
       icon: 'close',
       iconColor: opts.lowContrast === true ? 'icon_primary' : 'notification_close_icon',
       iconSize: ctx.metric(opts.owner, 'closeIconSize'),

@@ -43,6 +43,7 @@ describe('NotificationActionButton: the two colour maps', function () {
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action']), 'the ghost ink');
       await fire(button, new Event('pointerover', { bubbles: true }));
       assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_container_hover']), 'the inline hover fill');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action']), 'the ghost ink stays over the hover fill');
       await fire(button, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
       await fire(button, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
       await cleanup();

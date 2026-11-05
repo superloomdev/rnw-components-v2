@@ -255,6 +255,11 @@ describe('Button: feedback.press through the DOM', function () {
     assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']));
     assert.match(parts.root.style.boxShadow, /inset/);
     assert.equal(parts.root.style.outlineWidth, '');
+    const single = await renderButton(registryFor('carbon'), { children: 'P', focusRingGap: false });
+    await act(async function () {
+      single.root.focus();
+    });
+    assert.equal(single.root.style.boxShadow.split('inset').length - 1, 1, 'focusRingGap: false draws one shadow layer');
     const m = buildNative('shapes').tokens;
     const keyboard = await renderButton(registryFor('shapes'), { children: 'P' });
     await fire(keyboard.root, new Event('pointerdown', { bubbles: true }));
