@@ -260,6 +260,8 @@ describe('Button: feedback.press through the DOM', function () {
       single.root.focus();
     });
     assert.equal(single.root.style.boxShadow.split('inset').length - 1, 1, 'focusRingGap: false draws one shadow layer');
+    const ended = await renderButton(registryFor('carbon'), { children: 'P', paddingEnd: 9 });
+    assert.equal(ended.root.style.paddingRight, '9px', 'paddingEnd overrides the computed end padding');
     const m = buildNative('shapes').tokens;
     const keyboard = await renderButton(registryFor('shapes'), { children: 'P' });
     await fire(keyboard.root, new Event('pointerdown', { bubbles: true }));

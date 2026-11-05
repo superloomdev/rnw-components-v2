@@ -112,7 +112,7 @@ export default function ActionableNotification (ctx) {
     ]);
 
     // The alertdialog trap wraps the band in its container ref
-    return React.createElement(ctx.ReactNative.View, { ref: trap.containerRef, tabIndex: -1, style: { outlineStyle: 'none', alignSelf: 'flex-start' } }, band);
+    return React.createElement(ctx.ReactNative.View, { ref: trap.containerRef, tabIndex: -1, style: { outlineStyle: 'none', alignSelf: 'flex-start', width: inline ? 100 + PCT : undefined } }, band);
 
   }
 

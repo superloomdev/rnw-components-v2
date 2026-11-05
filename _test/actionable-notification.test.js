@@ -118,6 +118,7 @@ describe('ActionableNotification: every sample state under every template', func
         if (props.hideCloseButton === true) {
           assert.equal(close, null);
           assert.equal(seat.style.marginRight, t['control.notification_action_end_space'] + 'px', 'the action keeps the end space with no close');
+          assert.equal(parts.rendered.firstElementChild.style.width, inline ? '100%' : '', 'the inline band fills its row');
         } else {
           assert.notEqual(close, null);
         }

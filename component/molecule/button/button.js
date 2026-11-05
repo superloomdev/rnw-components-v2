@@ -119,8 +119,9 @@ export default function Button (ctx) {
     const slot = ctx.metric('Button', 'iconInset') + iconSize + ctx.metric('Button', 'iconGap') - borderWidth;
     const paddingStart = Utils.isNumber(props.paddingStart) ? props.paddingStart
       : inline ? ctx.metric('Button', 'ghostPaddingStart') : ctx.metric('Button', 'paddingStart');
-    const paddingEnd = inline ? ctx.metric('Button', 'ghostPaddingEnd')
-      : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
+    const paddingEnd = Utils.isNumber(props.paddingEnd) ? props.paddingEnd
+      : inline ? ctx.metric('Button', 'ghostPaddingEnd')
+        : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
     const minWidth = Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('Button', 'minWidth');
     const iconPlace = inline
       // An inline kind's icon centers itself on the row the way upstream's

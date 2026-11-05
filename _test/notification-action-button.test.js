@@ -68,6 +68,8 @@ describe('NotificationActionButton: the two colour maps', function () {
       const seat = rendered.firstElementChild;
       const button = seat.querySelector('[role="button"]');
       assert.equal(seat.style.marginLeft, t['control.notification_toast_action_inset'] + 'px');
+      assert.equal(button.style.paddingRight, t['spacing.spacing_05'] + 'px', 'the toast action end padding');
+      assert.equal(button.style.paddingLeft, t['spacing.spacing_05'] + 'px', 'the toast action start padding');
       // Rest: transparent fill, the inverse label and border
       assert.equal(button.style.backgroundColor, 'rgba(0, 0, 0, 0)', 'the tertiary-inverse rests transparent');
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse']));
@@ -75,8 +77,20 @@ describe('NotificationActionButton: the two colour maps', function () {
       await fire(button, new Event('pointerover', { bubbles: true }));
       assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_tertiary_inverse_hover']), 'the hover fill');
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse_text']), 'the label over the fill');
+      await fire(button, new Event('pointerout', { bubbles: true }));
+      await cleanup();
+    });
+
+    test(template + ': the low-contrast toast action is the plain tertiary map', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', lowContrast: true, variant: 'toast' }));
+      const button = rendered.querySelector('[role="button"]');
+      assert.equal(button.style.paddingRight, t['spacing.spacing_05'] + 'px', 'the toast action end padding');
+      assert.equal(button.style.borderTopColor, cssValue('borderColor', t['color.button_tertiary']), 'the plain tertiary border');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.button_tertiary']), 'the plain tertiary label');
       await fire(button, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
-      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_tertiary_inverse_active']), 'the active fill');
+      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.button_tertiary_active']), 'the plain tertiary active fill');
       await fire(button, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
       await cleanup();
     });
