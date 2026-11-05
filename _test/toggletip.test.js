@@ -122,8 +122,11 @@ describe('Toggletip: the information bubble', function () {
     await act(async function () {
       actionButton.focus();
     });
-    const ringHolder = actionButton.style.outlineColor !== '' ? actionButton : actionButton.firstElementChild;
-    assert.equal(ringHolder.style.outlineColor || ringHolder.style.borderTopColor, cssValue('outlineColor', t['color.focus_ring_inverse']), 'the action button draws the inverse focus ring');
+    if (actionButton.style.outlineColor !== '') {
+      assert.equal(actionButton.style.outlineColor, cssValue('outlineColor', t['color.focus_ring_inverse']), 'the action button draws the inverse focus ring');
+    } else {
+      assert.equal(actionButton.style.borderTopColor, cssValue('borderTopColor', t['color.focus_ring_inverse']), 'the action button draws the inverse focus ring');
+    }
     await cleanup();
   });
 

@@ -53,6 +53,7 @@ file and the row is measured against the primary alone.
 
 - `role="status"` by default, `role="alert"` under `alert`; the close
   button names itself through `closeLabel`.
+- **NotificationActionButton** (requires_parent): requires_parent: "must be composed inside ActionableNotification; measured through ActionableNotification's samples."
 
 ## ActionableNotification
 
@@ -63,7 +64,7 @@ ActionableNotification is a component in the Notification family.
 | Tier | `molecule` |
 | Platform | `both` |
 | Reference | `render-web` (`@carbon/react`) |
-| Enums | `anatomy.status_marker` |
+| Enums | none |
 | Behaviors | none |
 | Flags | none |
 
@@ -134,7 +135,7 @@ Callout is a component in the Notification family.
 | Tier | `molecule` |
 | Platform | `both` |
 | Reference | `render-web` (`@carbon/react`) |
-| Enums | `anatomy.status_marker` |
+| Enums | none |
 | Behaviors | none |
 | Flags | none |
 
@@ -191,7 +192,7 @@ InlineNotification is a component in the Notification family.
 | Tier | `molecule` |
 | Platform | `both` |
 | Reference | `render-web` (`@carbon/react`) |
-| Enums | `anatomy.status_marker` |
+| Enums | none |
 | Behaviors | none |
 | Flags | none |
 
@@ -254,7 +255,7 @@ NotificationActionButton is a component in the Notification family; it must be c
 | Tier | `molecule` |
 | Platform | `both` |
 | Reference | `none` (`@carbon/react`) |
-| Enums | `anatomy.status_marker` |
+| Enums | none |
 | Behaviors | none |
 | Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
 

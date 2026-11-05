@@ -3339,9 +3339,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.dialog_actions"
-      ],
+      "enums": [],
       "behaviors": [
         "overlay",
         "focus-trap"
@@ -3374,9 +3372,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.dialog_actions"
-      ],
+      "enums": [],
       "behaviors": [
         "overlay",
         "focus-trap"
@@ -3444,9 +3440,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3473,9 +3467,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3502,9 +3494,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3531,9 +3521,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": "ActionableNotification",
       "reference": {

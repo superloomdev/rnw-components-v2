@@ -70,6 +70,9 @@ theme.
 `md-dialog` with `headline`, content and `actions` slots of
 `md-text-button`. No eyebrow label, no close control, and bounded
 content-sized width.
+- **ModalHeader** (requires_parent): requires_parent: "must be composed inside ComposedModal; measured through ComposedModal's samples."
+- **ModalBody** (requires_parent): requires_parent: "must be composed inside ComposedModal; measured through ComposedModal's samples."
+- **ModalFooter** (requires_parent): requires_parent: "must be composed inside ComposedModal; measured through ComposedModal's samples."
 
 ## ComposedModal
 
@@ -190,7 +193,7 @@ ModalBody is a component in the Modal family; it must be composed inside Modal.
 | Tier | `composite` |
 | Platform | `both` |
 | Reference | `none` (`@carbon/react`) |
-| Enums | `anatomy.dialog_actions` |
+| Enums | none |
 | Behaviors | `overlay`, `focus-trap` |
 | Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
 
@@ -274,7 +277,7 @@ ModalHeader is a component in the Modal family; it must be composed inside Modal
 | Tier | `composite` |
 | Platform | `both` |
 | Reference | `none` (`@carbon/react`) |
-| Enums | `anatomy.dialog_actions` |
+| Enums | none |
 | Behaviors | `overlay`, `focus-trap` |
 | Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
 
