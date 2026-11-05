@@ -21,6 +21,7 @@ export default Object.freeze({
     'control.breadcrumb_gap', 'control.breadcrumb_gap_small', 'control.breadcrumb_link_min_width_small',
     'control.breadcrumb_overflow_width', 'control.breadcrumb_overflow_height', 'control.breadcrumb_overflow_height_small',
     'control.breadcrumb_overflow_icon_offset', 'control.breadcrumb_overflow_underline_width', 'control.breadcrumb_overflow_caret_size',
+    'control.link_focus_width',
     'size.icon_01', 'icon.overflow', 'icon.overflow_vertical'
   ])
 });

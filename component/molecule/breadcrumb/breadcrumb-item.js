@@ -64,7 +64,10 @@ export default function BreadcrumbItem (ctx) {
         fillHoverLeaf: null,
         fillLeaf: null,
         focusRingLeaf: 'focus',
-        focusUnderline: { activeLeaf: 'text_primary', colorLeaf: 'focus', hoverLeaf: 'link_primary_hover', offsetStart: 2, offsetTop: 15, width: metrics.overflowUnderlineWidth },
+        focusRingOffset: 0,
+        focusRingWidth: ctx.token('control.link_focus_width'),
+        // The underline is 1 px tall, 2 px above the trigger's bottom, as upstream
+        focusUnderline: { activeLeaf: 'text_primary', colorLeaf: 'focus', hoverLeaf: 'link_primary_hover', offsetStart: 2, offsetTop: metrics.overflowHeight - 3, width: metrics.overflowUnderlineWidth },
         icon: 'overflow',
         iconActiveLeaf: 'breadcrumb_overflow_icon_active',
         iconColor: 'breadcrumb_overflow_icon',

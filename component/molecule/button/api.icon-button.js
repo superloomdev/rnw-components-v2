@@ -29,6 +29,8 @@ export default Object.freeze({
     iconHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the icon\'s color leaf on hover (the breadcrumb\'s overflow ink).' },
     iconActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the icon\'s color leaf on press (the breadcrumb\'s overflow ink).' },
     focusRingLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the focus ring draws (the breadcrumb\'s overflow rings `focus`).' },
+    focusRingOffset: { type: 'number', required: false, description: 'Composition prop: the ring offset a composing parent draws instead of the button cell - the breadcrumb overflow\'s 1 px link ring at offset 0.' },
+    focusRingWidth: { type: 'number', required: false, description: 'Composition prop: the ring width a composing parent draws instead of the button cell - the breadcrumb overflow\'s 1 px link ring.' },
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws under hover (the overflow menu\'s trigger hover); default the kind\'s hover cell.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws while pressed (the copy button\'s pressed fill); default the hover leaf, then the kind\'s active cell.' },
     onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },

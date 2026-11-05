@@ -405,6 +405,8 @@ OverflowMenu is a square icon button that opens a panel of options joined to it,
 | `fillHoverLeaf` | `string` | no | Composition prop: overrides the trigger's hover fill leaf outright; `null` draws no fill. |
 | `fillActiveLeaf` | `string` | no | Composition prop: overrides the trigger's active fill leaf outright; `null` draws no fill. |
 | `focusRingLeaf` | `string` | no | Composition prop: the color leaf the trigger's focus ring draws (the breadcrumb rings `focus`). |
+| `focusRingOffset` | `number` | no | Composition prop: the ring offset a composing parent draws instead of the button cell - the breadcrumb overflow's 1 px link ring at offset 0. |
+| `focusRingWidth` | `number` | no | Composition prop: the ring width a composing parent draws instead of the button cell - the breadcrumb overflow's 1 px link ring. |
 | `focusUnderline` | `object` | no | Composition prop: `{ width, offsetStart, offsetTop, colorLeaf }` - a 1 px bar drawn inside the trigger box while it holds focus (the breadcrumb). |
 | `menuOffset` | `object` | no | Composition prop: `{ top, left }` constant shifting the panel off the anchor edge (the breadcrumb). |
 | `caret` | `object` | no | Composition prop: `{ size, offsetX, colorLeaf }` - a caret drawn on the panel's top edge (the breadcrumb menu). |

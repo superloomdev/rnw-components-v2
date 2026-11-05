@@ -444,6 +444,16 @@ describe('context: focusRing', function () {
     assert.equal(layers.every(function (layer) { return layer.indexOf(t['color.focus_ring_inverse']) !== -1; }), true, 'every shadow layer draws the leaf');
   });
 
+  test('width replaces the family ring width: a composing parent draws its own ring', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon').tokens;
+    const ring = ctx.focusRing('button', { focused: true, focusVisible: true }, 0, { offset: 0, width: t['control.link_focus_width'] });
+    assert.equal(ring.outlineWidth, t['control.link_focus_width'], 'the parent\'s width wins');
+    assert.equal(ring.outlineOffset, 0, 'the parent\'s offset wins');
+    assert.equal(ring.outlineColor, t['color.button_focus_ring']);
+    assert.deepEqual(ctx.focusRing('button', { focused: true, focusVisible: true }, 0, { width: 0 }), {}, 'width 0 draws nothing');
+  });
+
   test('feedback.focus_trigger: keyboard draws a button ring on keyboard focus only; a field ring shows on any focus', function () {
     const keyboard = probeWith({ 'feedback.focus_trigger': 'keyboard' });
     assert.deepEqual(keyboard.focusRing('button', { focused: true, focusVisible: false }), {});

@@ -356,7 +356,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
                               `offset` overrides the family's focus-offset cell
                               (a member's own answer, like the tag close's 0);
                               `ringLeaf` replaces the family's ring leaf - a
-                              composing parent's answer
+                              composing parent's answer; `width` replaces the
+                              family's ring width cell
 
   @return {Object} - Style fragment, empty when no ring shows
   *********************************************************************/
@@ -365,7 +366,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // The ring shows on focus; outside the field family only on keyboard focus when the theme says so
     const keyboardOnly = family !== 'field' && enumValue('feedback.focus_trigger') === 'keyboard';
     const shows = state.focused === true && (!keyboardOnly || state.focusVisible === true);
-    const width = token('control.' + family + '_focus_width');
+    const width = options !== undefined && Utils.isNumber(options.width) ? options.width : token('control.' + family + '_focus_width');
     if (!shows || width === 0) {
       return {};
     }

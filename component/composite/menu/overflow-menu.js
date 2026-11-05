@@ -290,6 +290,8 @@ export default function OverflowMenu (ctx) {
       fillHoverLeaf: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (open === true ? 'overflow_menu_trigger_open' : 'overflow_menu_trigger_hover'),
       fillLeaf: props.fillLeaf !== undefined ? props.fillLeaf : triggerFill,
       focusRingLeaf: props.focusRingLeaf,
+      focusRingOffset: props.focusRingOffset,
+      focusRingWidth: props.focusRingWidth,
       height: props.triggerHeight,
       icon: Utils.isString(props.icon) ? props.icon : 'overflow_vertical',
       iconActiveLeaf: props.iconActiveLeaf,

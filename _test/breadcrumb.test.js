@@ -77,6 +77,13 @@ describe('Breadcrumb: every sample state under every template', function () {
             assert.equal(svg.getAttribute('fill'), t['color.breadcrumb_overflow_icon'], 'the overflow ink');
             const iconWrap = svg.parentElement;
             assert.equal(iconWrap.style.marginTop, t['control.breadcrumb_overflow_icon_offset'] + 'px', 'the icon offset');
+            await fire(trigger, new Event('pointerover', { bubbles: true }));
+            const under = li.querySelector('[data-part="focusUnderline"]');
+            if (under !== null) {
+              assert.equal(under.style.top, ((small ? t['control.breadcrumb_overflow_height_small'] : t['control.breadcrumb_overflow_height']) - 3) + 'px', 'the underline sits 2 px above the trigger bottom');
+            } else {
+              assert.fail('the focus underline renders for every template');
+            }
           } else {
             const link = li.querySelector('[role="link"]');
             const text = li.querySelector('[dir="auto"]');

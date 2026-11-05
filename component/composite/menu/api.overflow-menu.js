@@ -29,6 +29,8 @@ export default Object.freeze({
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: overrides the trigger\'s hover fill leaf outright; `null` draws no fill.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: overrides the trigger\'s active fill leaf outright; `null` draws no fill.' },
     focusRingLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the trigger\'s focus ring draws (the breadcrumb rings `focus`).' },
+    focusRingOffset: { type: 'number', required: false, description: 'Composition prop: the ring offset a composing parent draws instead of the button cell - the breadcrumb overflow\'s 1 px link ring at offset 0.' },
+    focusRingWidth: { type: 'number', required: false, description: 'Composition prop: the ring width a composing parent draws instead of the button cell - the breadcrumb overflow\'s 1 px link ring.' },
     focusUnderline: { type: 'object', required: false, description: 'Composition prop: `{ width, offsetStart, offsetTop, colorLeaf }` - a 1 px bar drawn inside the trigger box while it holds focus (the breadcrumb).' },
     menuOffset: { type: 'object', required: false, description: 'Composition prop: `{ top, left }` constant shifting the panel off the anchor edge (the breadcrumb).' },
     caret: { type: 'object', required: false, description: 'Composition prop: `{ size, offsetX, colorLeaf }` - a caret drawn on the panel\'s top edge (the breadcrumb menu).' },
