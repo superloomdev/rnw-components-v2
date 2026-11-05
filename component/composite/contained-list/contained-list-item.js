@@ -92,7 +92,7 @@ export default function ContainedListItem (ctx) {
     // Return the item with its ruler
     return React.createElement(View, { dataSet: { part: 'item' }, testID: props.testID },
       body,
-      action !== null ? React.createElement(View, { dataSet: { part: 'action' }, style: { position: 'absolute', end: 0, top: 0 } }, action) : null,
+      action !== null ? React.createElement(View, { dataSet: { part: 'action' }, pointerEvents: 'box-none', style: { alignItems: 'flex-start', end: 0, flexDirection: 'row', justifyContent: 'flex-end', position: 'absolute', start: 0, top: 0 } }, action) : null,
       props.last !== true ? React.createElement(View, { dataSet: { part: 'ruler' }, style: { backgroundColor: ctx.color('contained_list_divider'), height: ctx.token('border.width_01'), marginStart: props.inset === true ? metrics.paddingInline : 0 } }) : null);
   }
 
