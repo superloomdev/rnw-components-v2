@@ -3494,6 +3494,26 @@
    "test": "breadcrumb.test.js",
    "testName": ": the trail comes from the theme",
    "why": "an underline pinned to the md offset must fail the small underline-top assertion"
+  },
+  {
+   "id": "text-list-nested-indent-off",
+   "file": "component/molecule/text-list/unordered-list.js",
+   "find": "marginStart: nested ? metrics.nestedIndent : metrics.indent",
+   "replace": "marginStart: nested ? metrics.indent : metrics.indent",
+   "runner": "node",
+   "test": "text-list.test.js",
+   "testName": "a nested list indents by its own cell",
+   "why": "a nested list on the root indent must fail the nested-indent assertion"
+  },
+  {
+   "id": "text-list-ordinal-offset-off",
+   "file": "component/molecule/text-list/list-item.js",
+   "find": "metrics.ordinalOffset",
+   "replace": "metrics.markerOffset",
+   "runner": "node",
+   "test": "text-list.test.js",
+   "testName": "the ordered marker sits at the ordinal offset",
+   "why": "an ordered marker on the unordered offset must fail the ordinal-offset assertion"
   }
  ]
 }

@@ -3723,7 +3723,7 @@
         "version": "1.115.0",
         "export": "UnorderedList"
       },
-      "description": "UnorderedList is a component in the List family.",
+      "description": "A bulleted list with en-dash markers; nested lists indent and mark squares.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3739,7 +3739,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OrderedList",
@@ -3750,7 +3750,7 @@
         "version": "1.115.0",
         "export": "OrderedList"
       },
-      "description": "OrderedList is a component in the List family.",
+      "description": "A numbered list with `n.` markers (lower-latin `a.` nested; `native` uses the browser's decimal marker).",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3766,7 +3766,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ListItem",
@@ -3777,25 +3777,26 @@
         "version": "1.115.0",
         "export": "ListItem"
       },
-      "description": "ListItem is a component in the List family; it must be composed inside List.",
+      "description": "One row of a text list with its marker; it must be composed inside UnorderedList or OrderedList, with no upstream visual reference of its own - it is measured through the lists' samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
-      "parent": "List",
+      "parent": "UnorderedList",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ListItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContainedList",

@@ -123,3 +123,7 @@ export { default as MenuItemSelectable } from './component/composite/menu/menu-i
 export { default as MenuItemRadioGroup } from './component/composite/menu/menu-item-radio-group.js';
 export { default as MenuItemGroup } from './component/composite/menu/menu-item-group.js';
 export { default as MenuItemDivider } from './component/composite/menu/menu-item-divider.js';
+
+export { default as UnorderedList } from './component/molecule/text-list/unordered-list.js';
+export { default as OrderedList } from './component/molecule/text-list/ordered-list.js';
+export { default as ListItem } from './component/molecule/text-list/list-item.js';
