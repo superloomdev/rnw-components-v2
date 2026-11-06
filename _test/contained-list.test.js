@@ -23,6 +23,11 @@ describe('ContainedList: the container and its rows', function () {
       const rest = await render(React.createElement(system.ContainedList, { items: ROWS, label: 'Title' }));
       const restHeader = Array.from(rest.querySelectorAll('div')).find(function (d) { return d.style.height !== ''; });
       assert.equal(restHeader.style.height, t['size.size_large'] + 'px', 'on-page header height');
+      const md = await render(React.createElement(system.ContainedList, { items: ROWS, label: 'Title', size: 'md' }));
+      const mdHeader = Array.from(md.querySelectorAll('div')).find(function (d) { return d.style.height !== ''; });
+      assert.equal(mdHeader.style.height, t['size.size_medium'] + 'px', 'the header follows the size cell');
+      const discBorder = Array.from(page.querySelectorAll('div')).find(function (d) { return d.style.height === (t['control.contained_list_header_height_disclosed']) + 'px'; });
+      assert.equal(discBorder.style.borderBottomWidth, '0px', 'the disclosed header draws no divider');
       await cleanup();
     });
 

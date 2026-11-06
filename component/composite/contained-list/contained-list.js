@@ -37,9 +37,10 @@ export default function ContainedList (ctx) {
     // Init the kind, size and metrics
     const size = Utils.inArray(SIZES, props.size) ? props.size : 'lg';
     const disclosed = props.kind === 'disclosed';
+    const SIZES_TO_TOKEN = Object.freeze({ lg: 'size_large', md: 'size_medium', sm: 'size_small', xl: 'size_xlarge' });
     const metrics = {
       headerHeightDisclosed: ctx.metric('ContainedList', 'headerHeightDisclosed'),
-      headerHeight: ctx.token('size.size_large'),
+      headerHeight: ctx.token('size.' + SIZES_TO_TOKEN[size]),
       paddingInline: ctx.metric('ContainedList', 'paddingInline')
     };
 
@@ -52,7 +53,7 @@ export default function ContainedList (ctx) {
 
     // Build the header in the kind's cells
     const labelId = (props.testID || 'contained-list') + '-label';
-    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: ctx.color('contained_list_divider'), borderBottomWidth: ctx.token('border.width_01'), height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
+    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
       React.createElement(Text, { dataSet: { part: 'label' }, nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
 
     // Build the search row under the header
