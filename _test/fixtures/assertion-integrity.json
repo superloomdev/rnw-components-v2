@@ -3554,6 +3554,26 @@
    "test": "contained-list.test.js",
    "testName": "the search input frame reads the contained-list leaves",
    "why": "a frameStyle that ignores fillLeaf must fail the search fill assertion"
+  },
+  {
+   "id": "button-focus-over-hover-off",
+   "file": "component/molecule/button/button.js",
+   "find": "state.focused === true && state.pressed !== true",
+   "replace": "false",
+   "runner": "node",
+   "test": "button.test.js",
+   "testName": "a focused button under the pointer reads fillFocusLeaf",
+   "why": "the focus fill must beat hover"
+  },
+  {
+   "id": "button-border-active-off",
+   "file": "component/molecule/button/button.js",
+   "find": "? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase])",
+   "replace": "? 'button_' + kind + '_border'",
+   "runner": "node",
+   "test": "button.test.js",
+   "testName": "a pressed button reads the kind active border cell",
+   "why": "a pressed border on the rest leaf must fail the active-border assertion"
   }
  ]
 }

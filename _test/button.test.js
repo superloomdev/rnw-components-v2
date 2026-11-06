@@ -320,6 +320,27 @@ describe('Button: composition props', function () {
 
 describe('Button: accessibility', function () {
 
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': a focused button under the pointer reads fillFocusLeaf', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderButton(registryFor(template), { children: 'K', fillFocusLeaf: 'notification_action_tertiary_inverse', kind: 'tertiary', label: 'X' });
+      await fire(parts.root, new Event('pointerover', { bubbles: true }));
+      await act(async function () {
+        parts.root.focus();
+      });
+      assert.equal(parts.root.style.backgroundColor, fillOf(t, 'notification_action_tertiary_inverse'), 'the focus leaf wins over hover');
+      await cleanup();
+    });
+
+    test(template + ': a pressed button reads the kind active border cell', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderButton(registryFor(template), { borderLeaf: 'notification_action_tertiary_inverse', children: 'K', kind: 'tertiary', label: 'X' });
+      await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      assert.equal(parts.root.style.borderTopColor, cssValue('borderColor', t['color.button_tertiary_border_active']), 'the pressed border reads the kind active cell');
+      await cleanup();
+    });
+  }
+
   test('the accessible name is the label, or accessibilityLabel when given', async function () {
     const named = await renderButton(registryFor('default'), { children: 'Save' });
     assert.equal(named.root.getAttribute('role'), 'button');

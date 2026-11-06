@@ -82,7 +82,14 @@ export default function Button (ctx) {
     const contentLeaf = Utils.isString(props.labelLeaf)
       ? ((state.hovered === true || state.pressed === true) && Utils.isString(props.labelHoverLeaf) ? props.labelHoverLeaf : props.labelLeaf)
       : 'button_' + kind + '_label' + press.phase;
-    const borderLeaf = Utils.isString(props.borderLeaf) ? props.borderLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+    const borderLeaf = state.pressed === true
+      ? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase])
+      : Utils.isString(props.borderLeaf) ? props.borderLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+    // Upstream's focus rule comes after hover, so a focused face under the
+    // pointer paints the focus leaf; a press still wins, whose rule is last
+    const containerLayer = Utils.isString(props.fillFocusLeaf) && state.focused === true && state.pressed !== true
+      ? Object.assign({}, press.container, { backgroundColor: ctx.color(props.fillFocusLeaf) })
+      : press.container;
     const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
 
     // The focus ring; a ring drawn with the border gives way to a pressed border
@@ -195,7 +202,7 @@ export default function Button (ctx) {
           paddingStart: paddingStart,
           paddingTop: Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop
         },
-        press.container,
+        containerLayer,
         shadow,
         ring
       ]
