@@ -1,6 +1,7 @@
 // Info: Shared notification parts for the family's owners (toast, inline,
 // actionable, callout). One renderer draws the wrapping row: the
-// container with its `notification_marker_<kind>` start border (the 1 px
+// container with its `notification_marker_<kind>` start border (`support_<kind>`
+// under `lowContrast`, as the glyph reads; the 1 px
 // `notification_outline_<kind>` on the top, end and bottom under
 // `lowContrast`, over `notification_background_<kind>`), the details -
 // the kind's 20 px status glyph (the warning glyph's inner mark in
@@ -78,7 +79,7 @@ export default function createNotificationParts (ctx) {
         backgroundColor: ctx.color(containerLeaf),
         borderRadius: ctx.metric(opts.owner, 'radius'),
         boxShadow: lowContrast ? 'inset 0px 0px 0px ' + ctx.metric(opts.owner, 'outlineWidth') + 'px ' + ctx.color(outlineLeaf) : undefined,
-        borderStartColor: ctx.color('notification_marker_' + cellKind),
+        borderStartColor: ctx.color(lowContrast ? 'support_' + cellKind : 'notification_marker_' + cellKind),
         borderStartWidth: opts.marker === false ? 0 : ctx.metric(opts.owner, 'markerWidth'),
         flexDirection: 'row',
         flexWrap: 'wrap',

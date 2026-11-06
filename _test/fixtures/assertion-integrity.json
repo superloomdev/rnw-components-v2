@@ -3624,6 +3624,16 @@
    "test": "callout.test.js",
    "testName": "the band is fluid inside its width cell",
    "why": "a fixed-width callout band must fail the fluid-frame assertion"
+  },
+  {
+   "id": "notification-low-marker-off",
+   "file": "component/molecule/notification/notification-parts.js",
+   "find": "borderStartColor: ctx.color(lowContrast ? 'support_' + cellKind : 'notification_marker_' + cellKind),",
+   "replace": "borderStartColor: ctx.color('notification_marker_' + cellKind),",
+   "runner": "node",
+   "test": "callout.test.js",
+   "testName": "the low-contrast marker reads the support colour",
+   "why": "a low-contrast marker back on the band leaf must fail the support-colour assertion"
   }
  ]
 }

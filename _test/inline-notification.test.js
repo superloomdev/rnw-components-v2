@@ -74,7 +74,7 @@ describe('InlineNotification: every sample state under every template', function
         assert.equal(container.style.maxWidth, t['control.notification_inline_width'] + 'px');
         assert.equal(container.style.minHeight, t['control.notification_min_height'] + 'px');
         assert.equal(container.style.borderLeftWidth, t['control.notification_marker_width'] + 'px');
-        assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + cellKind]));
+        assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t[low ? 'color.support_' + cellKind : 'color.notification_marker_' + cellKind]));
         assert.equal(container.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + cellKind : 'color.notification_container']));
         if (low) {
           // Upstream draws the low-contrast outline as an inset box-shadow

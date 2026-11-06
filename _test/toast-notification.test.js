@@ -82,7 +82,7 @@ describe('ToastNotification: every sample state under every template', function 
         const props = state.props;
         const parts = await renderToast(registryFor(template), props);
         const lowContrast = props.lowContrast === true;
-        const markerLeaf = 'notification_marker_' + props.kind;
+        const markerLeaf = lowContrast ? 'support_' + props.kind : 'notification_marker_' + props.kind;
         const containerLeaf = lowContrast ? 'notification_background_' + props.kind : 'notification_container';
         const textLeaf = lowContrast ? 'text_primary' : 'notification_text';
 

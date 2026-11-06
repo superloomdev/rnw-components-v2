@@ -80,7 +80,7 @@ describe('ActionableNotification: every sample state under every template', func
           assert.equal(band.style.width, t['control.notification_width'] + 'px');
         }
         assert.equal(band.style.borderLeftWidth, t['control.notification_marker_width'] + 'px');
-        assert.equal(band.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + kind]));
+        assert.equal(band.style.borderLeftColor, cssValue('borderLeftColor', t[low ? 'color.support_' + kind : 'color.notification_marker_' + kind]));
         assert.equal(band.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + kind : 'color.notification_container']));
         if (inline) {
           // The inline band draws no elevation; a low-contrast one draws

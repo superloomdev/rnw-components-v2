@@ -37,7 +37,7 @@ describe('Callout: every sample state under every template', function () {
         assert.equal(container.querySelectorAll('[role="button"]').length, props.actionButtonLabel !== undefined ? 1 : 0);
 
         // The container and the marker draw the GIVEN kind - `error` stays error
-        assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_' + cellKind]), 'the given kind, never mapped');
+        assert.equal(container.style.borderLeftColor, cssValue('borderLeftColor', t[low ? 'color.support_' + cellKind : 'color.notification_marker_' + cellKind]), 'the given kind, never mapped');
         assert.equal(container.style.backgroundColor, cssValue('backgroundColor', t[low ? 'color.notification_background_' + cellKind : 'color.notification_container']));
         const icon = container.children[0].children[0];
         const svg = icon.querySelector('svg');
@@ -54,6 +54,16 @@ describe('Callout: every sample state under every template', function () {
         }
       });
     }
+
+    test(template + ': the low-contrast marker reads the support colour', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const low = await render(React.createElement(Registry.Callout, { kind: 'info', lowContrast: true, title: 'Title' }));
+      assert.equal(low.firstElementChild.style.borderLeftColor, cssValue('borderLeftColor', t['color.support_info']), 'the low-contrast marker');
+      const high = await render(React.createElement(Registry.Callout, { kind: 'info', title: 'Title' }));
+      assert.equal(high.firstElementChild.style.borderLeftColor, cssValue('borderLeftColor', t['color.notification_marker_info']), 'the high-contrast marker');
+      await cleanup();
+    });
 
     test(template + ': the band is fluid inside its width cell', async function () {
       const t = buildNative(template).tokens;
