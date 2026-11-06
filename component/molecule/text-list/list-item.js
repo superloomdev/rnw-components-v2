@@ -19,8 +19,8 @@ export default function ListItem (ctx) {
     const offset = kind === 'unordered' ? (props.nested === true ? metrics.nestedMarkerOffset : metrics.markerOffset) : metrics.ordinalOffset;
     const type = ctx.typeStyle(props.expressive === true ? 'text_list_expressive' : 'text_list');
     const labelColor = ctx.color('text_list_label');
-    return React.createElement(View, { accessibilityRole: 'listitem', style: { position: 'relative', paddingStart: props.nested === true ? metrics.nestedItemPadding : 0 }, testID: props.testID },
-      React.createElement(Text, { 'aria-hidden': true, style: [type, { color: labelColor, left: -offset, position: 'absolute' }] }, glyph),
+    return React.createElement(View, { accessibilityRole: 'listitem', dataSet: { part: 'item' }, style: { position: 'relative', paddingStart: props.nested === true ? metrics.nestedItemPadding : 0 }, testID: props.testID },
+      React.createElement(Text, { 'aria-hidden': true, dataSet: { part: 'marker' }, style: [type, { color: labelColor, left: -offset, position: 'absolute' }] }, glyph),
       React.createElement(Text, { style: [type, { color: labelColor }] }, props.label),
       props.children);
   }

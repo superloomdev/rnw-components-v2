@@ -12,7 +12,7 @@ export default function OrderedList (ctx) {
     const metrics = { nestedIndent: ctx.metric('OrderedList', 'nestedIndent') };
     const items = Utils.isObject(props.items) ? props.items : [];
     const nested = props.nested === true;
-    return React.createElement(View, { accessibilityLabel: props.accessibilityLabel, accessibilityRole: 'list', style: nested ? { marginStart: metrics.nestedIndent } : null, testID: props.testID },
+    return React.createElement(View, { accessibilityLabel: props.accessibilityLabel, accessibilityRole: 'list', dataSet: { part: nested ? 'nestedList' : 'list' }, style: nested ? { marginStart: metrics.nestedIndent } : null, testID: props.testID },
       items.map(function (item, index) {
         const entry = Utils.isObject(item) ? item : { label: String(item) };
         return React.createElement(ctx.Registry.ListItem, { expressive: props.isExpressive === true, index: index + 1, key: index, kind: props.native === true ? 'native' : 'ordered', label: entry.label, nested: nested },
