@@ -69,3 +69,6 @@ content-sized width.
 - **ModalHeader** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
 - **ModalBody** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
 - **ModalFooter** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalHeader** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalBody** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalFooter** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.

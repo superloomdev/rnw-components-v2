@@ -54,3 +54,6 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - A composing parent recolours a focus ring through `ctx.focusRing(..., { ringLeaf })` (outline, border and inset shadow together); `Button` `focusRingGap: false` drops the page-colour line. Overriding `outlineColor`/`borderColor` after the call misses the inset shadow.
 - A component wrapper inside a row-flex cell body is only as wide as its content: a child's `width: 100%` (Carbon `inline-size: 100%`) needs the wrapper itself at `100%` too (ActionableNotification trap wrapper, slice 3 U8).
 - Carbon notifications apply their inverse button themes only `:not(--low-contrast)`: a low-contrast action is the plain ghost/tertiary kind in every state, so pass it no recolour leaves.
+- A `reference.*.js` for a `no_reference` member breaks the harness: `reference.mount is not a function` renders at gate time; no-reference members ship no reference file.
+- A standalone reference needs its `parts` map before any gate run; grep for `parts: Object.freeze` after any scripted insert - a replace-pattern miss once failed silently.
+- `docs.test.js` hard-codes every sample `FRAME` as a `name:width` list; adding a `FRAME` to a sample means adding its entry there.

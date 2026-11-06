@@ -24,3 +24,4 @@ and no landmark.
   `color.breadcrumb_current` with no underline and no link semantics.
 - **BreadcrumbItem** (requires_parent): must be composed inside Breadcrumb; measured through Breadcrumb's samples.
 - **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
+- **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
