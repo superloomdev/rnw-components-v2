@@ -15,11 +15,15 @@
 // design) is left out of the pixels as it is out of the parts. Not product
 // code.
 
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { PNG } from 'pngjs';
+import pixelmatch from 'pixelmatch';
 
 import { findDisagreements } from './compare.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, refocusPanel, reopenPanel, settleLayout, shootCell, shootPart } from './page.js';
-import { perceptualRatio, sampleWindow } from './perceptual.js';
+import { pad, perceptualRatio, sampleWindow } from './perceptual.js';
 import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
@@ -523,6 +527,7 @@ export async function runFidelity (page, component, set, scheme) {
     };
     let a;
     let b;
+    let upOrigin = null;
     // A reference may ask for the origin's own shot outright (`originPixels`):
     // its cell region cannot hold the component's pixels by construction
     const elementCompare = reference.originPixels === true ||
@@ -542,6 +547,7 @@ export async function runFidelity (page, component, set, scheme) {
         if (crop2 !== null) {
           const oursCrop = { _bodyX: crop2.ours.x, _bodyY: crop2.ours.y, width: crop2.ours.width, height: crop2.ours.height };
           const upCrop = { _bodyX: crop2.upstream.x, _bodyY: crop2.upstream.y, width: crop2.upstream.width, height: crop2.upstream.height };
+          upOrigin = upCrop;
           a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
           b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);
           ours.samples[key] = oursCrop;
@@ -566,6 +572,31 @@ export async function runFidelity (page, component, set, scheme) {
     a = masked.shot;
     perceptual[key] = Math.round(perceptualRatio(a, b) * 10000) / 100;
     shots[key] = { ours: a, upstream: b };
+    // Non-gating debug for the pixel-first probe (D51c): with
+    // FIDELITY_DIFF_DUMP set, dump the compared pair, their full-resolution
+    // diff and the frame the part boxes map through for scripts/diff-probe.js
+    if (process.env.FIDELITY_DIFF_DUMP !== undefined) {
+      const dir = join(process.env.FIDELITY_DIFF_DUMP, component.name, scheme, key.replace(/[^\w .@-]+/g, '_'));
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, 'ours.png'), a);
+      writeFileSync(join(dir, 'upstream.png'), b);
+      const pa = PNG.sync.read(a);
+      const pb = PNG.sync.read(b);
+      const width = Math.max(pa.width, pb.width);
+      const height = Math.max(pa.height, pb.height);
+      const fa = pad(pa, width, height);
+      const fb = pad(pb, width, height);
+      const diff = new PNG({ width: width, height: height });
+      pixelmatch(fa.data, fb.data, diff.data, width, height, { threshold: 0.2 });
+      writeFileSync(join(dir, 'diff.png'), PNG.sync.write(diff));
+      writeFileSync(join(dir, 'frame.json'), JSON.stringify({
+        oursOrigin: crop ? ours.states[key][reference.origin] : (ours.samples[key] || null),
+        upstreamOrigin: crop ? upstream.states[key][reference.origin] : upOrigin,
+        ours: ours.states[key] || null,
+        upstream: upstream.states[key] || null,
+        ratio: perceptual[key]
+      }, null, 2));
+    }
   }
 
   return {
