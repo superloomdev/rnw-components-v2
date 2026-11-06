@@ -6,6 +6,14 @@
 // the container, the details, the icon, the text, the action and the
 // close.
 
+// Upstream's ActionableNotification focuses its action button on every
+// mount (`Notification.js:449`: `hasFocus && role === "alertdialog"`
+// focuses `.cds--actionable-notification__action-button`; `hasFocus`
+// defaults true). A rest frame is measured unfocused: this wrapper's
+// mount effect - it runs after the child's autofocus - blurs the button
+// back. Built once from the React the mount is handed
+let blurActionFocus = null;
+
 export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
@@ -22,16 +30,28 @@ export default Object.freeze({
     })
   ]),
   mount: function (React, upstream, props) {
-    return React.createElement(upstream.ActionableNotification, {
-      actionButtonLabel: props.actionButtonLabel,
-      caption: props.caption,
-      hideCloseButton: props.hideCloseButton === true,
-      inline: props.inline === true,
-      kind: props.kind,
-      lowContrast: props.lowContrast === true,
-      subtitle: props.subtitle,
-      title: props.title
-    });
+    if (blurActionFocus === null) {
+      blurActionFocus = function (wrapperProps) {
+        React.useEffect(function () {
+          const active = document.activeElement;
+          if (active !== null && active.matches('.cds--actionable-notification__action-button')) {
+            active.blur();
+          }
+        }, []);
+        return wrapperProps.children;
+      };
+    }
+    return React.createElement(blurActionFocus, null,
+      React.createElement(upstream.ActionableNotification, {
+        actionButtonLabel: props.actionButtonLabel,
+        caption: props.caption,
+        hideCloseButton: props.hideCloseButton === true,
+        inline: props.inline === true,
+        kind: props.kind,
+        lowContrast: props.lowContrast === true,
+        subtitle: props.subtitle,
+        title: props.title
+      }));
   },
   // The element a person interacts with: the action button
   target: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])' }),

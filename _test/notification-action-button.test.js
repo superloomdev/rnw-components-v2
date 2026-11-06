@@ -49,6 +49,20 @@ describe('NotificationActionButton: the two colour maps', function () {
       await cleanup();
     });
 
+    test(template + ': the toast action keeps a bottom margin only', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'toast' }));
+      const seat = rendered.firstElementChild;
+      assert.equal(seat.style.marginTop, '0px', 'the toast action keeps no block-start margin');
+      assert.equal(seat.style.marginBottom, t['spacing.spacing_05'] + 'px', 'the toast action block-end margin');
+      const inline = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'inline' }));
+      const inlineSeat = inline.firstElementChild;
+      assert.equal(inlineSeat.style.marginTop, t['spacing.spacing_03'] + 'px', 'the inline action block-start margin');
+      assert.equal(inlineSeat.style.marginBottom, t['spacing.spacing_03'] + 'px', 'the inline action block-end margin');
+      await cleanup();
+    });
+
     test(template + ': lowContrast swaps the inline hover fill', async function () {
       const t = buildNative(template).tokens;
       const Registry = buildSystem(template, factories);

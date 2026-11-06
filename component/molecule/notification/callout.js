@@ -41,7 +41,7 @@ export default function Callout (ctx) {
 
     // Render the actionable inline band: details, then the ghost action;
     // never a close
-    return parts.frame({ kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
+    return parts.frame({ fluid: true, kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }),
         parts.textBlock({ owner: owner }, [

@@ -57,12 +57,14 @@ export default function NotificationActionButton (ctx) {
     };
 
     // Render the seat: the action's margins, the height and the mapped
-    // button
+    // button. Upstream's toast action keeps a block-end margin only
+    // (`_actionable-notification.scss:441-442` `margin-block-end: $spacing-05`),
+    // the inline ghost keeps `margin: $spacing-03 0` (`:384-390`)
     return React.createElement(View, {
       style: {
         alignSelf: 'flex-start',
-        marginBlockEnd: ctx.token('spacing.spacing_03'),
-        marginBlockStart: ctx.token('spacing.spacing_03'),
+        marginBlockEnd: ctx.token(toast ? 'spacing.spacing_05' : 'spacing.spacing_03'),
+        marginBlockStart: toast ? 0 : ctx.token('spacing.spacing_03'),
         marginEnd: Utils.isNumber(props.marginEnd) ? props.marginEnd : undefined,
         marginStart: toast ? ctx.token('control.notification_toast_action_inset') : ctx.token('control.notification_action_inset')
       }

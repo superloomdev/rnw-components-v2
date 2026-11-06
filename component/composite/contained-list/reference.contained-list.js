@@ -4,7 +4,7 @@ export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze([]),
   additionalTargets: Object.freeze([
-    Object.freeze({ interactions: Object.freeze(['hover', 'focus', 'pressed']), name: 'clickableItem', ours: '[data-part="content"]', states: Object.freeze(['clickable']), upstream: '.cds--contained-list-item--clickable .cds--contained-list-item__content' })
+    Object.freeze({ interactions: Object.freeze(['hover', 'focus', 'pressed']), name: 'clickableItem', ours: '[role="button"]:has(> [data-part="content"])', states: Object.freeze(['clickable']), upstream: '.cds--contained-list-item--clickable .cds--contained-list-item__content' })
   ]),
   body: Object.freeze({ width: 400 }),
   mount: function (React, upstream, props) {

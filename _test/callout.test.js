@@ -54,6 +54,16 @@ describe('Callout: every sample state under every template', function () {
         }
       });
     }
+
+    test(template + ': the band is fluid inside its width cell', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.Callout, { actionButtonLabel: 'Go to page', title: 'Title' }));
+      const container = rendered.firstElementChild;
+      assert.equal(container.style.width, '100%', 'the band fills its container');
+      assert.equal(container.style.maxWidth, t['control.notification_inline_width'] + 'px', 'capped at the inline width cell');
+      await cleanup();
+    });
   }
 
 });

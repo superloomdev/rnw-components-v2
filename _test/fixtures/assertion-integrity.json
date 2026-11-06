@@ -3604,6 +3604,26 @@
    "test": "structural.spec.js",
    "testName": "no text overflows the box that paints behind it",
    "why": "text no scroll container clips must fail the box-overflow assertion"
+  },
+  {
+   "id": "notification-toast-action-margin-off",
+   "file": "component/molecule/notification/notification-action-button.js",
+   "find": "marginBlockEnd: ctx.token(toast ? 'spacing.spacing_05' : 'spacing.spacing_03'),",
+   "replace": "marginBlockEnd: ctx.token('spacing.spacing_03'),",
+   "runner": "node",
+   "test": "notification-action-button.test.js",
+   "testName": "the toast action keeps a bottom margin only",
+   "why": "a toast action seat back at the inline end margin must fail the toast-margin assertion"
+  },
+  {
+   "id": "callout-fluid-off",
+   "file": "component/molecule/notification/callout.js",
+   "find": "fluid: true, kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID",
+   "replace": "kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID",
+   "runner": "node",
+   "test": "callout.test.js",
+   "testName": "the band is fluid inside its width cell",
+   "why": "a fixed-width callout band must fail the fluid-frame assertion"
   }
  ]
 }
