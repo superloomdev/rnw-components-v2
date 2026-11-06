@@ -345,6 +345,59 @@ async function collect (page, component, reference, side, masks) {
       // that differs under it (a fixed layer's, a top-layered element's)
       originShots[key] = await shootPart(page, component.name, label, originSelector, 0, pauseAnimations, preserveViewport);
     }
+    // Non-gating debug for the computed-style probe (D51c): with
+    // FIDELITY_DIFF_PROBE set, read each part's first match in the cell in
+    // the same frame as the shot; the dump writer copies it into frame.json
+    if (process.env.FIDELITY_DIFF_PROBE !== undefined && states[key] !== null && states[key] !== undefined) {
+      states[key].$computed = await page.evaluate(function (input) {
+        const query = function (root, selector) {
+          for (const alternative of selector.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+            let current = root;
+            const segments = alternative.split(' >>> ');
+            for (let i = 0; i < segments.length; i++) {
+              if (current === null) {
+                break;
+              }
+              const scope = i === 0 ? current : (current.shadowRoot || current);
+              current = scope.querySelector(segments[i]);
+            }
+            if (current !== null && current !== undefined) {
+              return current;
+            }
+          }
+          return null;
+        };
+        const out = { innerHeight: window.innerHeight, parts: {} };
+        const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.label + '"] [data-part="body"]');
+        if (body === null) {
+          return out;
+        }
+        for (const name of Object.keys(input.parts)) {
+          const element = query(body, input.parts[name]);
+          if (element === null) {
+            out.parts[name] = null;
+            continue;
+          }
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          out.parts[name] = {
+            rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+            gridTemplateRows: style.gridTemplateRows,
+            maxHeight: style.maxHeight,
+            overflowY: style.overflowY,
+            maskImage: style.maskImage || style.webkitMaskImage,
+            scrollHeight: element.scrollHeight,
+            clientHeight: element.clientHeight,
+            scrollTop: element.scrollTop,
+            paddingTop: style.paddingTop,
+            paddingBottom: style.paddingBottom
+          };
+        }
+        return out;
+      }, { name: component.name, label: label, parts: Object.fromEntries(Object.keys(parts).map(function (name) {
+        return [name, parts[name][side]];
+      })) });
+    }
   };
   for (const label of Object.keys(rest)) {
     // An opened state reads on its own right after its reopen: upstream a
