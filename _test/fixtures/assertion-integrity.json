@@ -3594,6 +3594,16 @@
    "test": "contained-list.test.js",
    "testName": "an item tag keeps the layout small floor in every list size",
    "why": "an in-list tag below the layout small floor must fail the floor assertion"
+  },
+  {
+   "id": "modal-body-overflow-off",
+   "file": "component/composite/modal/modal-body.js",
+   "find": "        style: bodyStyle\n      },\n      React.createElement(ScrollView,",
+   "replace": "        style: [bodyStyle, { overflow: 'visible' }]\n      },\n      React.createElement(View,",
+   "runner": "pw",
+   "test": "structural.spec.js",
+   "testName": "no text overflows the box that paints behind it",
+   "why": "text no scroll container clips must fail the box-overflow assertion"
   }
  ]
 }

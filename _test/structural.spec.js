@@ -170,10 +170,21 @@ function expectTextInsideBox (texts) {
       if (run.box === null) {
         continue;
       }
-      if (run.rect.x < run.box.x - 0.5 || run.rect.y < run.box.y - 0.5 ||
-          run.rect.x + run.rect.width > run.box.x + run.box.width + 0.5 ||
-          run.rect.y + run.rect.height > run.box.y + run.box.height + 0.5) {
-        lines.push(id + ' <' + run.tag + '> "' + run.text + '" overflows its <' + run.box.tag + '> box ' + JSON.stringify(run.box) + ' by ' + JSON.stringify(run.rect));
+      // A run clipped by a proven-scrollable ancestor is tested on its
+      // visible intersection; fully clipped text is not drawn
+      let rect = run.rect;
+      if (run.clip !== null && run.clip !== undefined) {
+        const x = Math.max(run.rect.x, run.clip.x);
+        const y = Math.max(run.rect.y, run.clip.y);
+        rect = { x: x, y: y, width: Math.min(run.rect.x + run.rect.width, run.clip.x + run.clip.width) - x, height: Math.min(run.rect.y + run.rect.height, run.clip.y + run.clip.height) - y };
+        if (rect.width <= 0 || rect.height <= 0) {
+          continue;
+        }
+      }
+      if (rect.x < run.box.x - 0.5 || rect.y < run.box.y - 0.5 ||
+          rect.x + rect.width > run.box.x + run.box.width + 0.5 ||
+          rect.y + rect.height > run.box.y + run.box.height + 0.5) {
+        lines.push(id + ' <' + run.tag + '> "' + run.text + '" overflows its <' + run.box.tag + '> box ' + JSON.stringify(run.box) + ' by ' + JSON.stringify(rect));
       }
     }
   }

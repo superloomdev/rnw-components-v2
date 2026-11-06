@@ -990,7 +990,8 @@ box-shadow outline; a run with no painted ancestor reports no box.
 
 @return {Promise<Array>} - [{ component, family, state, texts }]; each
   text carries the text element's rect and, where a painted ancestor
-  exists, that box's rect and tag
+  exists, that box's rect and tag, plus `clip`: the nearest
+  proven-scrollable ancestor's rect and tag, or null
 *********************************************************************/
 export async function readTextBoxes (page) {
 
@@ -1046,11 +1047,24 @@ export async function readTextBoxes (page) {
             break;
           }
         }
+        // A run clipped by a proven-scrollable ancestor (computed overflow-y
+        // auto|scroll with real overflow) is not overflow: the gate tests
+        // the visible intersection. `overflow: hidden` is never exempt
+        let clip = null;
+        for (let current = element.parentElement; current !== null && current !== cell; current = current.parentElement) {
+          const clipStyle = getComputedStyle(current);
+          if ((clipStyle.overflowY === 'auto' || clipStyle.overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
+            const r = current.getBoundingClientRect();
+            clip = { x: r.x, y: r.y, width: r.width, height: r.height, tag: current.tagName.toLowerCase() };
+            break;
+          }
+        }
         texts.push({
           text: node.textContent.trim().slice(0, 40),
           tag: element.tagName.toLowerCase(),
           rect: { x: lineBox.x, y: lineBox.y, width: lineBox.width, height: lineBox.height },
-          box: box
+          box: box,
+          clip: clip
         });
       }
       return {
@@ -1147,7 +1161,9 @@ not drawn and is not reported.
 @return {Promise<Array>} - [{ component, state, kind, text, color, fontSize,
   fontWeight, ratio, disabled }]; `kind` is text | value | placeholder;
   `color` is the computed color before compositing, for matching a token;
-  `disabled` is the cell's disabled marker or the sample's `disabled` prop
+  `disabled` is the cell's disabled marker or the sample's `disabled` prop.
+A run a proven-scrollable ancestor fully clips is not reported; a partial
+run is sampled at its visible intersection
 *********************************************************************/
 export async function readTextContrast (page, disabledCells) {
 
@@ -1184,18 +1200,41 @@ export async function readTextContrast (page, disabledCells) {
       }
       return false;
     };
-    const backdrop = function (node, body) {
+    // The nearest proven-scrollable ancestor (computed overflow-y
+    // auto|scroll with real overflow), or null: `overflow: hidden` is
+    // never exempt
+    const clipOf = function (node, cell) {
+      for (let current = node.parentElement; current !== null && current !== cell; current = current.parentElement) {
+        const style = getComputedStyle(current);
+        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
+          return current;
+        }
+      }
+      return null;
+    };
+    const backdrop = function (node, body, clip) {
       const layers = [];
       // The run's true backdrop: the paint stack under its centre, not its
       // ancestors - a state layer (the selected slab, a press layer) draws
-      // as an absolutely positioned sibling, not an ancestor
-      let r0 = node.getBoundingClientRect();
+      // as an absolutely positioned sibling, not an ancestor. A clipped run
+      // is sampled at its visible intersection with the clipping ancestor
+      const visibleRect = function () {
+        const r = node.getBoundingClientRect();
+        if (clip === null || clip === undefined) {
+          return r;
+        }
+        const c = clip.getBoundingClientRect();
+        const x = Math.max(r.x, c.x);
+        const y = Math.max(r.y, c.y);
+        return { x: x, y: y, width: Math.min(r.x + r.width, c.x + c.width) - x, height: Math.min(r.y + r.height, c.y + c.height) - y };
+      };
+      let r0 = visibleRect();
       let point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
       // elementsFromPoint only hit-tests visible coordinates: a run below
       // the fold reads the page's `body`, not its backdrop
       if (point.x < 0 || point.x >= window.innerWidth || point.y < 0 || point.y >= window.innerHeight) {
         node.scrollIntoView({ block: 'center', inline: 'center' });
-        r0 = node.getBoundingClientRect();
+        r0 = visibleRect();
         point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
       }
       point = { x: Math.round(point.x * 10) / 10, y: Math.round(point.y * 10) / 10 };
@@ -1256,9 +1295,21 @@ export async function readTextContrast (page, disabledCells) {
         }
       }
       for (const run of runs) {
+        // A run a proven-scrollable ancestor fully clips is not drawn: it
+        // is skipped, not counted and not passed; a partial run is sampled
+        // on its visible intersection
+        const clip = clipOf(run.node, cell);
+        if (clip !== null) {
+          const r = run.node.getBoundingClientRect();
+          const c = clip.getBoundingClientRect();
+          if (Math.min(r.x + r.width, c.x + c.width) <= Math.max(r.x, c.x) ||
+              Math.min(r.y + r.height, c.y + c.height) <= Math.max(r.y, c.y)) {
+            continue;
+          }
+        }
         const style = getComputedStyle(run.node, run.kind === 'placeholder' ? '::placeholder' : null);
         const raw = parse(style.color);
-        const back = backdrop(run.node, body);
+        const back = backdrop(run.node, body, clip);
         const fill = back.color;
         const opacity = parseFloat(getComputedStyle(run.node).opacity);
         const text = over({ r: raw.r, g: raw.g, b: raw.b, a: raw.a * opacity }, fill);
