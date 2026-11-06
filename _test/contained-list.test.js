@@ -61,6 +61,15 @@ describe('ContainedList: the container and its rows', function () {
       await cleanup();
     });
 
+    test(template + ': an item tag keeps the layout small floor in every list size', async function () {
+      for (const size of ['md', 'sm']) {
+        const page = await render(React.createElement(system.ContainedList, { items: [Object.freeze({ action: 'tag', label: 'One' })], label: 'Title', size: size }));
+        const tag = page.querySelector('[data-testid="tag"]');
+        assert.equal(tag.style.minHeight, t['size.size_small'] + 'px', 'the in-list tag floor in a ' + size + ' list');
+        await cleanup();
+      }
+    });
+
     test(template + ': disabled dims only a clickable item', async function () {
       const page = await render(React.createElement(system.ContainedListItem, { disabled: true, label: 'Static' }));
       const text = page.querySelector('div + div') || page;

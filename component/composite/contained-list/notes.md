@@ -1,4 +1,5 @@
 - **ContainedListItem** (requires_parent): must be composed inside ContainedList; measured through ContainedList's samples.
 - **ContainedListItem** (no_reference): no standalone upstream mount; measured through ContainedList's samples.
 - **ContainedList** (superloom_decision): a ContainedList draws no outer margin - adjacent on-page lists' `control.contained_list_gap` is the host's spacing.
+- **ContainedListItem**: an `action: 'tag'` draws at least the layout's small size (`size.size_small`) in every list size - upstream's action LayoutConstraint (`ContainedListItem.js:39-45`, min `sm`) floors it.
 - **ContainedList** (superloom_decision): upstream's header is sticky inside a scroll container; a host scroll view pins it (`stickyHeaderIndices`), the list itself does not.

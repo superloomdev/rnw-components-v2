@@ -39,7 +39,7 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - `scripts/defects.js` rebuilds `__dev__/DEFECTS.md` from the last `browser.json` only: a probe run overwrites it, and a later focused run drops earlier slices' rows. Run defects.js straight after the gate run, before any probe; carry earlier residuals in NOW.md until the closing `npm run batch` regenerates the full list.
 - A part-dump probe must read colours from the innermost element holding the label text; reading the pressable root reported a label colour the screen never showed (slice 3 U5).
 - A clean `_test` install (node_modules and lockfile removed) also drops Playwright's browser binary: reinstall chromium through the guard before the first browser run, or every browser test fails at `browserType.launch` (slice 6 U5).
-- Carbon's Tag height follows its layout context (`_tag.scss:42,53` `layout.use('size', md, sm, lg)` + `layout.size('height')`): inside an `md` ContainedList the tag draws 32 (lg), not its own `md` 24 (slice 6; `control.tag_height_large` needed).
+- Carbon's in-list Tag draws 32, not its `md` 24: `ContainedListItem.js:39-45` wraps the action in `LayoutConstraint` (min `sm`), which sets `--cds-layout-size-height-min` to the global `sm` size (32) on the wrapper, and the tag's `clamp(min, 24, 24)` lets the minimum win (`styles.css:2704,12742,10750`). Read the React wrapper and the compiled CSS, not only the component SCSS; the data already existed (`size.size_small`, slice 6 U6b).
 
 ## Component patterns
 

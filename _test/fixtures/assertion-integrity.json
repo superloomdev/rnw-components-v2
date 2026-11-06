@@ -3584,6 +3584,16 @@
    "test": "breadcrumb.test.js",
    "testName": "the trail comes from the theme",
    "why": "a label that ignores typeLeaf must fail the small-type assertion"
+  },
+  {
+   "id": "contained-list-tag-floor-off",
+   "file": "component/composite/contained-list/contained-list-item.js",
+   "find": "React.createElement(ctx.Registry.Tag, { height: ctx.token('size.size_small'), kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })",
+   "replace": "React.createElement(ctx.Registry.Tag, { kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "an item tag keeps the layout small floor in every list size",
+   "why": "an in-list tag below the layout small floor must fail the floor assertion"
   }
  ]
 }

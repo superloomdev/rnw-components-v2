@@ -67,9 +67,10 @@ export default function ContainedListItem (ctx) {
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: metrics.iconSize })) : null,
     React.createElement(Text, { style: [ctx.typeStyle('contained_list_item'), { color: ctx.color(labelLeaf), flexShrink: 1 }] }, props.label));
 
-    // Draw the action at the end over the reserved space
+    // Draw the action at the end over the reserved space, the tag at least
+    // the layout's small size, as upstream's action constraint floors it
     const action = props.action === 'tag'
-      ? React.createElement(ctx.Registry.Tag, { kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })
+      ? React.createElement(ctx.Registry.Tag, { height: ctx.token('size.size_small'), kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })
       : props.action === 'button'
         ? React.createElement(ctx.Registry.IconButton, { icon: 'close', kind: 'ghost' })
         : props.action !== undefined ? props.action : null;
