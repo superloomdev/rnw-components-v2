@@ -38,6 +38,8 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - `docs:generate` regenerates every stale family page, not just the touched one; commit the regenerated pages with the unit.
 - `scripts/defects.js` rebuilds `__dev__/DEFECTS.md` from the last `browser.json` only: a probe run overwrites it, and a later focused run drops earlier slices' rows. Run defects.js straight after the gate run, before any probe; carry earlier residuals in NOW.md until the closing `npm run batch` regenerates the full list.
 - A part-dump probe must read colours from the innermost element holding the label text; reading the pressable root reported a label colour the screen never showed (slice 3 U5).
+- A clean `_test` install (node_modules and lockfile removed) also drops Playwright's browser binary: reinstall chromium through the guard before the first browser run, or every browser test fails at `browserType.launch` (slice 6 U5).
+- Carbon's Tag height follows its layout context (`_tag.scss:42,53` `layout.use('size', md, sm, lg)` + `layout.size('height')`): inside an `md` ContainedList the tag draws 32 (lg), not its own `md` 24 (slice 6; `control.tag_height_large` needed).
 
 ## Component patterns
 
