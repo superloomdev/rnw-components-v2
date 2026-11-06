@@ -90,6 +90,7 @@ export default function BreadcrumbItem (ctx) {
         minWidth: small ? metrics.linkMinWidthSmall : undefined,
         onPress: props.onPress,
         size: small ? 'sm' : 'md',
+        typeLeaf: type,
         visited: props.visited === true
       }, props.label);
     } else {

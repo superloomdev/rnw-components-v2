@@ -39,6 +39,7 @@ Link draws a pressable run of text in the theme's link colors for rest, hover, p
 | `inline` | `boolean` | no | Draw the link inline - underlined at rest, not only while hovered, focused or pressed. |
 | `visited` | `boolean` | no | Draw the visited color; a page cannot drive the `:visited` pseudo-class itself. |
 | `disabled` | `boolean` | no | Draw the disabled color; no href and no activation. |
+| `typeLeaf` | `string` | no | Composition prop: the type set the label draws instead of the size default - the breadcrumb own type. |
 | `size` | `string` | no | One of `variants`: `sm`, `md` (the default) or `lg` - the label's type set. |
 | `icon` | `string` | no | A semantic icon name drawn after the label, decorative. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |

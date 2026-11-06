@@ -11,6 +11,7 @@ export default Object.freeze({
     inline: { type: 'boolean', required: false, description: 'Draw the link inline - underlined at rest, not only while hovered, focused or pressed.' },
     visited: { type: 'boolean', required: false, description: 'Draw the visited color; a page cannot drive the `:visited` pseudo-class itself.' },
     disabled: { type: 'boolean', required: false, description: 'Draw the disabled color; no href and no activation.' },
+    typeLeaf: { type: 'string', required: false, description: 'Composition prop: the type set the label draws instead of the size default - the breadcrumb own type.' },
     size: { type: 'string', required: false, description: 'One of `variants`: `sm`, `md` (the default) or `lg` - the label\'s type set.' },
     icon: { type: 'string', required: false, description: 'A semantic icon name drawn after the label, decorative.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' },

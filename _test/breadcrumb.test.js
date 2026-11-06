@@ -58,6 +58,11 @@ describe('Breadcrumb: every sample state under every template', function () {
         assert.notEqual(parts.nav, null);
         assert.equal(parts.nav.getAttribute('aria-label'), 'Breadcrumb');
         assert.equal(parts.nav.style.fontSize, t[small ? 'type.breadcrumb_small' : 'type.breadcrumb'].fontSize + 'px');
+        if (small === true) {
+          const linkText = parts.items[0].querySelector('[role="link"], [dir="auto"]');
+          assert.ok(linkText !== null, 'the small link renders');
+          assert.equal(linkText.style.letterSpacing, t['type.breadcrumb_small'].letterSpacing + 'px', 'the small link reads type.breadcrumb_small');
+        }
         assert.notEqual(parts.list, null);
         assert.equal(parts.items.length, props.items.length);
 

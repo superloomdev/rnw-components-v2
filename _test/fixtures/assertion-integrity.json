@@ -3574,6 +3574,16 @@
    "test": "button.test.js",
    "testName": "a pressed button reads the kind active border cell",
    "why": "a pressed border on the rest leaf must fail the active-border assertion"
+  },
+  {
+   "id": "link-type-leaf-off",
+   "file": "component/molecule/link/link.js",
+   "find": "Utils.isString(props.typeLeaf) ? props.typeLeaf :",
+   "replace": "false ||",
+   "runner": "node",
+   "test": "breadcrumb.test.js",
+   "testName": "the trail comes from the theme",
+   "why": "a label that ignores typeLeaf must fail the small-type assertion"
   }
  ]
 }

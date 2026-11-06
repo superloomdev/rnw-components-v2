@@ -91,7 +91,7 @@ export default function Link (ctx) {
       style: [{ alignItems: 'center', flexDirection: 'row', minWidth: Utils.isNumber(props.minWidth) ? props.minWidth : undefined }, ring]
     },
     React.createElement(Text, {
-      style: [ctx.typeStyle(size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label'), {
+      style: [ctx.typeStyle(Utils.isString(props.typeLeaf) ? props.typeLeaf : (size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label')), {
         color: ctx.color(leaf),
         textDecorationLine: underline ? 'underline' : 'none'
       }]
