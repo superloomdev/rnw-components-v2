@@ -93,7 +93,7 @@ describe('ActionableNotification: every sample state under every template', func
         // The action: the inline ghost or the toast tertiary-inverse
         const action = parts.action();
         assert.notEqual(action, null);
-        assert.equal(action.parentElement.style.height, t['control.notification_action_height'] + 'px');
+        assert.equal(action.parentElement.style.minHeight, t['control.notification_action_height'] + 'px');
         const seat = action.parentElement.parentElement;
         assert.equal(seat.style.marginLeft, (inline ? t['control.notification_action_inset'] : t['control.notification_toast_action_inset']) + 'px');
         if (inline) {

@@ -69,7 +69,7 @@ describe('docs: generated pages', function () {
       'TimePicker:320', 'TimePickerSelect:320', 'DropdownSkeleton:320', 'SelectSkeleton:320',
       'MultiSelect:320', 'FilterableMultiSelect:320', 'SelectItem:320', 'SelectItemGroup:320', 'ComboBox:320', 'PopoverContent:400', 'Toggletip:320', 'TagSet:320', 'TabList:320', 'TabsVertical:640',
       'MenuButton:320', 'MenuItem:160', 'MenuItemDivider:160', 'MenuItemGroup:160', 'MenuItemRadioGroup:160',
-      'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320', 'ComposedModal:640',
+      'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320', 'ComposedModal:640', 'ModalHeader:640',
       'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320']);
   });
 

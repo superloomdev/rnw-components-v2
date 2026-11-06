@@ -69,7 +69,7 @@ export default function NotificationActionButton (ctx) {
     },
     React.createElement(View, {
       'aria-describedby': props['aria-describedby'],
-      style: { height: metrics.height }
+      style: { minHeight: metrics.height }
     },
     React.createElement(ctx.Registry.Button, Object.assign({
       'aria-describedby': props['aria-describedby'],

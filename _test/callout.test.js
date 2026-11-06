@@ -48,7 +48,7 @@ describe('Callout: every sample state under every template', function () {
         // The action is the inline ghost at the cells
         if (props.actionButtonLabel !== undefined) {
           const button = container.querySelector('[role="button"]');
-          assert.equal(button.parentElement.style.height, t['control.notification_action_height'] + 'px');
+          assert.equal(button.parentElement.style.minHeight, t['control.notification_action_height'] + 'px');
           const seat = button.parentElement.parentElement;
           assert.equal(seat.style.marginLeft, t['control.notification_action_inset'] + 'px');
         }
