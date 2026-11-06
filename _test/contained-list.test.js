@@ -52,6 +52,15 @@ describe('ContainedList: the container and its rows', function () {
       await cleanup();
     });
 
+    test(template + ': the search input frame reads the contained-list leaves', async function () {
+      const page = await render(React.createElement(system.ContainedList, { action: 'search', items: ROWS, label: 'Title' }));
+      const wrapper = page.querySelector('[data-part="search"]');
+      assert.equal(wrapper.style.backgroundColor, '', 'the wrapper paints no fill');
+      const frame = wrapper.querySelector('input').parentElement;
+      assert.equal(frame.style.backgroundColor, cssValue('backgroundColor', t['color.contained_list_search_container']), 'the input frame reads the fill leaf');
+      await cleanup();
+    });
+
     test(template + ': disabled dims only a clickable item', async function () {
       const page = await render(React.createElement(system.ContainedListItem, { disabled: true, label: 'Static' }));
       const text = page.querySelector('div + div') || page;

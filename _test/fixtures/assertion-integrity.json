@@ -3544,6 +3544,16 @@
    "test": "contained-list.test.js",
    "testName": "disabled dims only a clickable item",
    "why": "a disabled non-clickable item must fail the static-disabled assertion"
+  },
+  {
+   "id": "search-fill-leaf-off",
+   "file": "component/molecule/search/search.js",
+   "find": "backgroundColor: Utils.isString(props.fillLeaf) ? ctx.color(props.fillLeaf) : undefined",
+   "replace": "backgroundColor: undefined",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "the search input frame reads the contained-list leaves",
+   "why": "a frameStyle that ignores fillLeaf must fail the search fill assertion"
   }
  ]
 }

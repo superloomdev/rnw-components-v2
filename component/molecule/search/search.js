@@ -85,6 +85,7 @@ export default function Search (ctx) {
       : Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : 'Search';
     const fieldProps = Object.assign({}, props, {
       accessibilityLabel: name,
+
       label: undefined,
       // The empty field's default hint; an explicit empty string stays empty
       placeholder: Utils.isString(props.placeholder) ? props.placeholder : 'Search',
@@ -245,7 +246,10 @@ export default function Search (ctx) {
       props: fieldProps,
       field: field,
       presentation: presentation,
-      frameStyle: { paddingEnd: reserve, paddingStart: reserve },
+      frameStyle: Object.assign({ paddingEnd: reserve, paddingStart: reserve }, state.disabled !== true ? {
+        backgroundColor: Utils.isString(props.fillLeaf) ? ctx.color(props.fillLeaf) : undefined,
+        borderColor: Utils.isString(props.borderLeaf) ? ctx.color(props.borderLeaf) : undefined
+      } : {}),
       // The labelless field reserves no floating-label room; the parent
       // owns the landmark's zero top padding
       rootStyle: { paddingTop: 0 },

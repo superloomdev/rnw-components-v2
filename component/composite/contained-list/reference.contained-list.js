@@ -27,6 +27,6 @@ export default Object.freeze({
     actions: Object.freeze({ upstream: '.cds--contained-list-item__action', all: true, ours: '[data-part="action"]', measure: 'box', optional: true, compare: ['x', 'y'] }),
     tags: Object.freeze({ upstream: '.cds--tag', all: true, ours: '[data-part="action"] > *', measure: 'box', optional: true, compare: ['height'] }),
     search: Object.freeze({ upstream: '.cds--search', ours: '[data-part="search"]', measure: 'box', optional: true, compare: ['width', 'backgroundColor'] }),
-    searchInput: Object.freeze({ upstream: '.cds--search-input', ours: '[data-part="search"] input', measure: 'box', optional: true, compare: ['backgroundColor', 'borderBottomColor'] })
+    searchInput: Object.freeze({ upstream: '.cds--search-input', ours: '[data-part="search"] div:has(> input)', measure: 'box', optional: true, compare: ['backgroundColor', 'borderBottomColor'] })
   })
 });

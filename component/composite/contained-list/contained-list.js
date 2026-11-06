@@ -57,9 +57,9 @@ export default function ContainedList (ctx) {
       React.createElement(Text, { dataSet: { part: 'label' }, nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
 
     // Build the search row under the header
-    const search = isSearch === true ? React.createElement(View, { dataSet: { part: 'search' }, style: { backgroundColor: ctx.color('contained_list_search_container'), borderBottomColor: ctx.color('contained_list_search_border'), borderBottomWidth: ctx.token('border.width_01') } },
+    const search = isSearch === true ? React.createElement(View, { dataSet: { part: 'search' } },
       props.action === 'search'
-        ? React.createElement(ctx.Registry.Search, { label: 'Search', onChangeText: onQuery })
+        ? React.createElement(ctx.Registry.Search, { borderLeaf: 'contained_list_search_border', fillLeaf: 'contained_list_search_container', label: 'Search', onChangeText: onQuery })
         : React.cloneElement(props.action, { onChangeText: onQuery })) : null;
 
     // Build the items, filtered by the search query on the label
