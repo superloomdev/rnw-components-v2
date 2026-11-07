@@ -83,7 +83,7 @@ export default function ModalBody (ctx) {
       flexGrow: 1,
       flexShrink: 1,
       minHeight: 0,
-      overflow: scrolling ? 'auto' : 'hidden',
+      overflow: 'hidden',
       paddingBottom: metrics.paddingBottom,
       paddingInline: metrics.paddingInline,
       paddingTop: metrics.paddingTop
@@ -92,7 +92,6 @@ export default function ModalBody (ctx) {
 
     if (scrolling) {
       return React.createElement(View, {
-        dataSet: { part: 'modalBody' },
         nativeID: props.bodyId,
         onLayout: function (event) {
           const height = event.nativeEvent && event.nativeEvent.layout ? event.nativeEvent.layout.height : 0;
@@ -100,10 +99,25 @@ export default function ModalBody (ctx) {
             setLayout({ height: height, content: size.content });
           }
         },
-        style: bodyStyle
+        style: {
+          backgroundColor: ctx.color('dialog_container'),
+          flexGrow: 1,
+          flexShrink: 1,
+          minHeight: 0
+        }
       },
       React.createElement(ScrollView, Object.assign({}, named, {
-        style: { flexGrow: 1 }
+        dataSet: { part: 'modalBody' },
+        // Upstream's padded `.cds--modal-content` IS the scroll
+        // container: the padding sits inside the scrollport so the end
+        // space scrolls with the text (`_modal.scss:118-130`)
+        style: {
+          flexGrow: 1,
+          overflow: 'auto',
+          paddingBottom: metrics.paddingBottom,
+          paddingInline: metrics.paddingInline,
+          paddingTop: metrics.paddingTop
+        }
       }), content),
       fade ? React.createElement(View, {
         pointerEvents: 'none',

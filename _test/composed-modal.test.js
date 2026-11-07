@@ -83,11 +83,12 @@ describe('ComposedModal: every sample state under every template', function () {
         const header = parts.header;
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
         assert.equal(header.style.paddingLeft, t['control.dialog_padding_inline'] + 'px');
-        const heading = header.children[1];
+        const headerTexts = header.querySelectorAll('[dir="auto"]');
+        const heading = headerTexts[1];
         assert.equal(heading.textContent, props.header.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');
         assert.equal(heading.style.color, cssValue('color', t['color.dialog_heading']));
-        const eyebrow = header.children[0];
+        const eyebrow = headerTexts[0];
         assert.equal(eyebrow.textContent, props.header.label);
         assert.equal(eyebrow.style.fontSize, t['type.label01'].fontSize + 'px');
         assert.equal(eyebrow.style.display, t['anatomy.dialog_label'] === 'shown' ? '' : 'none');
@@ -102,9 +103,10 @@ describe('ComposedModal: every sample state under every template', function () {
 
         // The body: the padding cells, the prose type and its end gutter
         const body = parts.body;
-        assert.equal(body.style.paddingTop, t['control.dialog_body_padding_top'] + 'px');
-        assert.equal(body.style.paddingBottom, t['control.dialog_body_padding_bottom'] + 'px');
-        const bodyGutter = t['control.dialog_text_gutter_ratio'] * window.innerWidth * t['control.dialog_width_ratio' + suffix] - t['spacing.spacing_07'];
+        const padded = body.getAttribute('data-part') === 'modalBody' ? body : body.querySelector('[data-part="modalBody"]');
+        assert.equal(padded.style.paddingTop, t['control.dialog_body_padding_top'] + 'px');
+        assert.equal(padded.style.paddingBottom, t['control.dialog_body_padding_bottom'] + 'px');
+        const bodyGutter = t['control.dialog_text_gutter_ratio'] * (window.innerWidth * t['control.dialog_width_ratio' + suffix] - 2 * t['control.dialog_border_width'] - 2 * t['control.dialog_padding_inline']) - t['spacing.spacing_07'];
         const bodyGutters = props.size === 'xs' || props.size === 'sm' || (props.body !== undefined && props.body.hasForm === true) ? '' : (bodyGutter > 0 ? bodyGutter + 'px' : '');
         const prose = body.querySelector('[dir="auto"]');
         assert.equal(prose.style.fontSize, t['type.dialog_body'].fontSize + 'px');

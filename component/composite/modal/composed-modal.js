@@ -97,12 +97,13 @@ export default function ComposedModal (ctx) {
     const dialogHeight = bounded ? undefined : (Utils.isNumber(space.height) && space.height > 0 ? space.height * heightRatio : undefined);
 
     // The prose gutters: `control.dialog_text_gutter_ratio` of the
-    // container width minus the close seat (header) or `spacing_07`
+    // container width minus the close seat (header) or of the body's
+    // content box (border and its own padding off) minus `spacing_07`
     // (body); no gutter under `xs`/`sm` or a form body
     const gutterRatio = ctx.token('control.dialog_text_gutter_ratio');
     const guttered = size === 'md' || size === 'lg';
     const textGutter = guttered && Utils.isNumber(dialogWidth) ? {
-      body: gutterRatio * dialogWidth - ctx.token('spacing.spacing_07'),
+      body: gutterRatio * (dialogWidth - 2 * metrics.borderWidth - 2 * ctx.token('control.dialog_padding_inline')) - ctx.token('spacing.spacing_07'),
       header: gutterRatio * dialogWidth - ctx.token('control.icon_button_size')
     } : { body: undefined, header: undefined };
 

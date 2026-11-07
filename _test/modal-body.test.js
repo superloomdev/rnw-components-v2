@@ -51,6 +51,20 @@ describe('ModalBody: the member draws its cells', function () {
       }
       await cleanup();
     });
+
+    test(template + ': the scrolling body is the padded scroll region', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.ModalBody, { hasScrollingContent: true, children: 'Long.' }));
+      const region = rendered.querySelector('[data-part="modalBody"]');
+      assert.notEqual(region, null, 'the measured part exists');
+      assert.equal(region.getAttribute('role'), 'region', 'the measured part is the scroll region');
+      assert.equal(region.style.overflowY, 'auto', 'the scroll region clips to its scrollport');
+      assert.equal(region.style.paddingTop, t['control.dialog_body_padding_top'] + 'px');
+      assert.equal(region.style.paddingBottom, t['control.dialog_body_padding_bottom'] + 'px');
+      assert.equal(region.style.paddingLeft, t['control.dialog_padding_inline'] + 'px');
+      await cleanup();
+    });
   }
 
 });
