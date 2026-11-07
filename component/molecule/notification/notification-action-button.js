@@ -74,7 +74,11 @@ export default function NotificationActionButton (ctx) {
     },
     React.createElement(View, {
       'aria-describedby': props['aria-describedby'],
-      style: { minHeight: metrics.height }
+      // `_actionable-notification.scss:384-386` the action is a rem
+      // `block-size`, so under a larger root font it grows with its
+      // label: a row makes the fill button's flexBasis/flexGrow act on
+      // the width and the cross axis take the label, floored by minHeight
+      style: { flexDirection: 'row', minHeight: metrics.height }
     },
     React.createElement(ctx.Registry.Button, Object.assign({
       'aria-describedby': props['aria-describedby'],
