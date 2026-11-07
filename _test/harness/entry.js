@@ -102,7 +102,10 @@ layer inside the cell it was mounted in.
 *********************************************************************/
 function frameStyle (frame) {
 
-  const style = { display: 'block', width: frame.width + 'px' };
+  // A member's frame stands in for its positioned parent container
+  // (`position: relative`), so an absolute seat hangs where it would in
+  // the real host; `stage` still adds the fixed-layer containing block
+  const style = { display: 'block', position: 'relative', width: frame.width + 'px' };
   if (typeof frame.height === 'number') {
     style.height = frame.height + 'px';
   }

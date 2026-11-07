@@ -25,6 +25,7 @@ export default Object.freeze({
     rulers: Object.freeze({ upstream: '.cds--contained-list-item', pseudo: '::before', all: true, ours: '[data-part="ruler"]', measure: 'box', optional: true, compare: ['cssLeft', 'cssHeight', 'backgroundColor'] }),
     icons: Object.freeze({ upstream: '.cds--contained-list-item__icon', all: true, ours: '[data-part="icon"]', measure: 'box', optional: true, compare: ['width', 'paddingTop', 'marginRight'] }),
     actions: Object.freeze({ upstream: '.cds--contained-list-item__action', all: true, ours: '[data-part="action"]', measure: 'box', optional: true, compare: ['x', 'y'] }),
+    actionButton: Object.freeze({ upstream: '.cds--contained-list-item__action .cds--btn', ours: '[data-part="action"] [role="button"]', measure: 'box', optional: true, compare: ['height'] }),
     tags: Object.freeze({ upstream: '.cds--tag', all: true, ours: '[data-part="action"] [data-testid="tag"]', measure: 'box', optional: true, compare: ['height'] }),
     search: Object.freeze({ upstream: '.cds--search', ours: '[data-part="search"]', measure: 'box', optional: true, compare: ['width', 'backgroundColor'] }),
     searchInput: Object.freeze({ upstream: '.cds--search-input', ours: '[data-part="search"] div:has(> input)', measure: 'box', optional: true, compare: ['backgroundColor', 'borderBottomColor'] })
