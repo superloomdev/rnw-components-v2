@@ -1313,7 +1313,7 @@
    "runner": "pw",
    "test": "structural.spec.js",
    "testName": "no text overflows the box that paints behind it",
-   "why": "a pill 8 points shorter than its label line (material small tag: 16 under a 24 line) draws the label past the box that paints behind it; the range-versus-painted-box check must catch it"
+   "why": "a pill 8 points shorter than its label line (the retired second template's small tag: 16 under a 24 line) draws the label past the box that paints behind it; the range-versus-painted-box check must catch it"
   },
   {
    "id": "tooltip-caret-color",

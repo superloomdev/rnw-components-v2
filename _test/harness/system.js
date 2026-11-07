@@ -41,7 +41,7 @@ export const TEMPLATES = Object.freeze({
 
 // A test-only third theme (plan 0160, batch 15 fire restore): `shapes` is
 // `default` under one layer of the cells and enum values the archived
-// material template pinned, verbatim from its data/light.js (the registry
+// second template pinned, verbatim from its data/light.js (the registry
 // 1.0.0's source, commit 95cc029). It is never shipped, never a measurement
 // reference and never a TEMPLATES entry, so the browser gates stay
 // two-template; the node tests that need it iterate SHAPE_TEMPLATE_NAMES.

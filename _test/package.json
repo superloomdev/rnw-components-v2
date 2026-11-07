@@ -22,7 +22,6 @@
     "@carbon/type": "11.69.0",
     "@ibm/plex-mono": "2.5.0",
     "@ibm/plex-sans": "1.1.0",
-    "@material-symbols/svg-400": "0.47.4",
     "@playwright/test": "^1.63.0",
     "@react-native/assets-registry": "^0.87.0",
     "esbuild": "^0.28.2",

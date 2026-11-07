@@ -1,4 +1,4 @@
-// The values only the retired material template picked (D41): a brand
+// The values only the retired second template picked (D41): a brand
 // layer pins them over carbon so each stays rendered and asserted
 export const LESSONS_LAYER = Object.freeze({
   name: 'lessons',
