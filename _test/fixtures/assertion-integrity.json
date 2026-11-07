@@ -3634,6 +3634,16 @@
    "test": "callout.test.js",
    "testName": "the low-contrast marker reads the support colour",
    "why": "a low-contrast marker back on the band leaf must fail the support-colour assertion"
+  },
+  {
+   "id": "modal-header-max-off",
+   "file": "component/composite/modal/composed-modal.js",
+   "find": "      labelId: labelId,\n      maxHeight: headerMaxHeight,",
+   "replace": "      labelId: labelId,",
+   "runner": "node",
+   "test": "composed-modal.test.js",
+   "testName": "the xs header is capped at the grid's share of the dialog height",
+   "why": "a header handed no maximum must fail the capped-height assertion"
   }
  ]
 }

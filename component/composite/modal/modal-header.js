@@ -20,7 +20,7 @@ export default function ModalHeader (ctx) {
 
   const React = ctx.React;
   const Utils = ctx.Utils;
-  const { Text, View } = ctx.ReactNative;
+  const { ScrollView, Text, View } = ctx.ReactNative;
 
 
   /********************************************************************
@@ -47,15 +47,16 @@ export default function ModalHeader (ctx) {
 
     // Render the header block and, where shown, the close seat
     return React.createElement(React.Fragment, null,
-      React.createElement(View, {
-        style: {
+      React.createElement(Utils.isNumber(props.maxHeight) ? ScrollView : View, {
+        style: [{
           // The header sits in flow, its bottom margin above the content's
-          // top padding, as upstream
+          // top padding, as upstream; a bounded dialog caps it and lets it
+          // scroll (`overflow-y: auto`), like upstream's grid row
           marginBottom: metrics.headerSpace,
           paddingEnd: closeShown ? metrics.closeSize : metrics.paddingInline,
           paddingStart: metrics.paddingInline,
           paddingTop: metrics.paddingTop
-        }
+        }, Utils.isNumber(props.maxHeight) ? { flexGrow: 0, flexShrink: 0, maxHeight: props.maxHeight } : null]
       },
       Utils.isString(props.label) ? React.createElement(Text, {
         nativeID: props.labelId,

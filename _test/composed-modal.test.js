@@ -261,4 +261,16 @@ describe('ComposedModal: behavior through the DOM', function () {
     assert.equal(calls, 1);
   });
 
+  test('the xs header is capped at the grid\'s share of the dialog height', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderComposed(registryFor('carbon'), {
+      footer: { primaryButtonText: 'Save' },
+      header: { title: 'T' },
+      open: true,
+      size: 'xs'
+    });
+    const expected = window.innerHeight * t['control.dialog_height_ratio_xs'] - 2 * t['control.dialog_border_width'] - t['control.dialog_actions_height'] - t['control.dialog_body_padding_top'] - t['control.dialog_body_padding_bottom'] - t['control.dialog_header_space'];
+    assert.equal(parts.header.style.maxHeight, expected + 'px', 'the header gets the grid\'s remainder');
+  });
+
 });

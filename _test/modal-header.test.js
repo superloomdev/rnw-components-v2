@@ -48,6 +48,15 @@ describe('ModalHeader: the member draws its cells', function () {
       assert.equal(closeSvg.getAttribute('width'), String(t['control.dialog_close_icon_size']));
       await cleanup();
     });
+
+    test(template + ': without maxHeight the header is a plain block', async function () {
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.ModalHeader, { title: 'T' }));
+      const header = rendered.firstElementChild;
+      assert.equal(header.style.maxHeight, '');
+      assert.equal(header.style.overflow, '');
+      await cleanup();
+    });
   }
 
 });

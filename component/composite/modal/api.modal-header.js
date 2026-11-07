@@ -10,6 +10,9 @@ export default Object.freeze({
     iconDescription: { type: 'string', required: false, description: 'Accessible name of the close button. Default `Close`.' },
     buttonOnClick: { type: 'function', required: false, description: 'Called by the close button; defaults to the parent\'s close request.' }
   }),
+  composition: Object.freeze({
+    maxHeight: { type: 'number', description: 'Composition prop: the most the header may take inside a height-bounded dialog; past it the header scrolls, as upstream\'s `overflow-y: auto` header row.' }
+  }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([

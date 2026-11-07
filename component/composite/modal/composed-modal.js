@@ -117,6 +117,15 @@ export default function ComposedModal (ctx) {
     }, [open]);
     const animated = open && metrics.enterOffset !== 0 && !reduced;
 
+    // The header yields to the body's minimum the way upstream's
+    // `auto 1fr auto` grid shrinks its `overflow-y: auto` header row
+    // (`_modal.scss:85-89`, `:160-165`): the dialog height minus the
+    // borders, the action row, the body padding and its own margin;
+    // `max-block-size: 50vh` never binds
+    const headerMaxHeight = Utils.isNumber(dialogHeight)
+      ? dialogHeight - 2 * metrics.borderWidth - (passive ? 0 : ctx.token('control.dialog_actions_height')) - ctx.token('control.dialog_body_padding_top') - ctx.token('control.dialog_body_padding_bottom') - ctx.token('control.dialog_header_space')
+      : undefined;
+
     // Render the container through the members
     const container = React.createElement(View, {
       ref: trap.containerRef,
@@ -153,6 +162,7 @@ export default function ComposedModal (ctx) {
       iconDescription: header.iconDescription,
       label: header.label,
       labelId: labelId,
+      maxHeight: headerMaxHeight,
       textGutter: textGutter.header,
       title: header.title
     }),
