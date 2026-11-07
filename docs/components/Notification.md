@@ -283,6 +283,8 @@ NotificationActionButton is a component in the Notification family; it must be c
 |---|---|
 | default | `{"label":"Retry","variant":"inline"}` |
 
+`default` mounts inside View wrapper (sample composition, not a prop).
+
 ## ToastNotification
 
 ToastNotification is a status band: a marker and status icon, a title, a subtitle, an optional caption and action, and a close button.
