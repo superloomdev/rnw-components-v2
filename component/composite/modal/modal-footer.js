@@ -46,8 +46,10 @@ export default function ModalFooter (ctx) {
       actionsTopSpace: ctx.metric('ModalFooter', 'actionsTopSpace'),
       height: ctx.metric('ModalFooter', 'height'),
       paddingBottom: ctx.metric('ModalFooter', 'paddingBottom'),
-      paddingTop: ctx.metric('ModalFooter', 'paddingTop')
+      paddingTop: ctx.metric('ModalFooter', 'paddingTop'),
+      separatorWidth: ctx.token('border.width_01')
     };
+    const focusedIndex = React.useState(null);
     const stretched = ctx.enum('anatomy.dialog_actions') === 'stretched';
     const actions = Utils.isArray(props.actions) ? props.actions : [];
     const secondaries = [];
@@ -89,11 +91,20 @@ export default function ModalFooter (ctx) {
           justifyContent: 'flex-end'
         }
       }, buttons.map(function (button, index) {
+        // The button-set separator: `_button.scss:470-486` draws
+        // `-1px 0 0 0 $button-separator` on every button but the first,
+        // none beside a focused one, the disabled cell for a disabled
+        // button - the same line ButtonSet draws
+        const separator = focusedIndex[0] === index || focusedIndex[0] === index - 1 ? 'transparent'
+          : button.disabled === true
+            ? ctx.color('button_set_separator_disabled')
+            : ctx.color('button_set_separator');
+        const separatorStyle = { backgroundColor: separator, bottom: 0, position: 'absolute', start: -metrics.separatorWidth, top: 0, width: metrics.separatorWidth, zIndex: 1 };
         return React.createElement(View, {
           key: index,
           // A button is never narrower than its label: the ratio is a
           // floor, as upstream's flex basis under a min-content minimum
-          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT }
+          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT, position: 'relative' }
         },
         React.createElement(ctx.Registry.Button, {
           buttonRef: index === 0 ? props.secondaryRef : undefined,
@@ -101,11 +112,20 @@ export default function ModalFooter (ctx) {
           disabled: button.disabled,
           fill: true,
           kind: index === last ? button.kind : 'secondary',
+          onBlur: function () {
+            focusedIndex[1](function (previous) {
+              return previous === index ? null : previous;
+            });
+          },
+          onFocus: function () {
+            focusedIndex[1](index);
+          },
           onPress: button.onPress,
           paddingBottom: metrics.paddingBottom,
           paddingTop: metrics.paddingTop
         },
-        button.loading === true ? React.createElement(ctx.Registry.InlineLoading, { description: props.loadingDescription }) : button.label));
+        button.loading === true ? React.createElement(ctx.Registry.InlineLoading, { description: props.loadingDescription }) : button.label),
+        index === 0 ? null : React.createElement(View, { 'aria-hidden': true, style: separatorStyle }));
       }));
     }
 

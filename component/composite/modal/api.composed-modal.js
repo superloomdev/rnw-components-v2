@@ -24,6 +24,7 @@ export default Object.freeze({
   tokens: Object.freeze([
     'anatomy.dialog_actions', 'anatomy.dialog_close', 'anatomy.dialog_label', 'anatomy.dialog_scroll_fade', 'stacking.overlay',
     'color.dialog_scrim', 'color.dialog_container', 'color.dialog_border', 'color.dialog_heading', 'color.dialog_body', 'color.text_secondary',
+    'color.button_set_separator', 'color.button_set_separator_disabled',
     'control.dialog_border_width', 'control.dialog_radius', 'control.dialog_min_width', 'control.dialog_max_width', 'control.dialog_min_height',
     'control.dialog_width_ratio', 'control.dialog_width_ratio_xs', 'control.dialog_width_ratio_sm', 'control.dialog_width_ratio_lg',
     'control.dialog_height_ratio', 'control.dialog_height_ratio_xs', 'control.dialog_height_ratio_sm', 'control.dialog_height_ratio_lg',
@@ -32,7 +33,7 @@ export default Object.freeze({
     'control.dialog_scroll_fade_height', 'control.dialog_scroll_fade_min_height', 'control.dialog_scroll_fade_start', 'control.dialog_scroll_end_space',
     'control.dialog_actions_height', 'control.dialog_actions_gap', 'control.dialog_actions_padding', 'control.dialog_action_ratio',
     'control.dialog_action_ratio_three', 'control.dialog_action_padding_top', 'control.dialog_action_padding_bottom',
-    'control.dialog_close_icon_size', 'control.icon_button_size', 'spacing.spacing_05', 'spacing.spacing_07', 'shadow.dialog',
+    'control.dialog_close_icon_size', 'control.icon_button_size', 'spacing.spacing_05', 'spacing.spacing_07', 'shadow.dialog', 'border.width_01',
     'type.dialog_heading', 'type.dialog_body', 'type.label01', 'font.family.sans', 'motion.duration_moderate_02', 'icon.close'
   ])
 });

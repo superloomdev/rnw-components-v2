@@ -3644,6 +3644,16 @@
    "test": "composed-modal.test.js",
    "testName": "the xs header is capped at the grid's share of the dialog height",
    "why": "a header handed no maximum must fail the capped-height assertion"
+  },
+  {
+   "id": "modal-footer-separator-off",
+   "file": "component/composite/modal/modal-footer.js",
+   "find": "        index === 0 ? null : React.createElement(View, { 'aria-hidden': true, style: separatorStyle }));",
+   "replace": "        index === 0 ? null : null));",
+   "runner": "node",
+   "test": "modal-footer.test.js",
+   "testName": "every seat but the first draws the button-set separator",
+   "why": "a stretched footer drawing no separator must fail the seam assertion"
   }
  ]
 }

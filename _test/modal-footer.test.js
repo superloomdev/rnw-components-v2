@@ -6,6 +6,7 @@
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
@@ -36,6 +37,28 @@ describe('ModalFooter: the member draws its cells', function () {
       assert.equal(buttons[0].style.backgroundColor, cssValue('backgroundColor', t['color.button_secondary_container']), 'the rest are secondaries');
       assert.equal(buttons[1].style.paddingTop, t['control.dialog_action_padding_top'] + 'px');
       assert.equal(buttons[1].style.paddingBottom, t['control.dialog_action_padding_bottom'] + 'px');
+      await cleanup();
+    });
+
+    test(template + ': every seat but the first draws the button-set separator', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.ModalFooter, { primaryButtonText: 'Save', secondaryButtonText: 'Cancel' }));
+      const footer = rendered.firstElementChild;
+      assert.equal(footer.children[0].children.length, 1, 'the first seat draws no separator');
+      const separator = footer.children[1].children[1];
+      assert.equal(separator.style.backgroundColor, cssValue('backgroundColor', t['color.button_set_separator']));
+      assert.equal(separator.style.left, -t['border.width_01'] + 'px');
+      assert.equal(separator.style.width, t['border.width_01'] + 'px');
+      const buttons = footer.querySelectorAll('[role="button"]');
+      await act(async function () {
+        buttons[0].focus();
+      });
+      assert.equal(separator.style.backgroundColor, 'rgba(0, 0, 0, 0)', 'a focused neighbour suppresses the seam');
+      await act(async function () {
+        buttons[0].blur();
+      });
+      assert.equal(separator.style.backgroundColor, cssValue('backgroundColor', t['color.button_set_separator']), 'the seam returns on blur');
       await cleanup();
     });
 

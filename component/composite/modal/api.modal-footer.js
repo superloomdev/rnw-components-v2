@@ -19,8 +19,9 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'anatomy.dialog_actions',
+    'color.button_set_separator', 'color.button_set_separator_disabled',
     'control.dialog_actions_height', 'control.dialog_actions_gap', 'control.dialog_actions_padding', 'control.dialog_action_ratio',
     'control.dialog_action_ratio_three', 'control.dialog_action_padding_top', 'control.dialog_action_padding_bottom',
-    'spacing.spacing_05', 'font.family.sans'
+    'border.width_01', 'spacing.spacing_05', 'font.family.sans'
   ])
 });
