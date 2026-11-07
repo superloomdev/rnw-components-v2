@@ -47,7 +47,7 @@ describe('docs: generated pages', function () {
     }
   });
 
-  test('the catalog carries each sample\'s frame: a width for a component that fills its container, else null', async function () {
+  test('the catalog carries each sample\'s frame: a width for a component that fills its container, a hang for a part painted outside it, else null', async function () {
     const { catalog } = await import(pathToFileURL(join(REPO_ROOT, 'catalog.js')).href);
     const components = await discoverComponents();
     for (const entry of catalog) {
@@ -59,7 +59,8 @@ describe('docs: generated pages', function () {
     assert.deepEqual(catalog.filter(function (entry) {
       return entry.frame !== null;
     }).map(function (entry) {
-      return entry.name + ':' + entry.frame.width;
+      const width = typeof entry.frame.width === 'number' ? entry.frame.width : 'fit';
+      return entry.name + ':' + width + (entry.frame.hang === undefined ? '' : '+hang' + JSON.stringify(entry.frame.hang));
     }), ['TextInput:320', 'Select:320', 'TextArea:320',
       'Dropdown:320', 'Menu:400', 'Modal:640', 'ProgressBar:320',
       'AspectRatio:320', 'ButtonSet:640', 'Divider:320', 'SkeletonText:320', 'ProgressStep:160',
@@ -70,7 +71,8 @@ describe('docs: generated pages', function () {
       'MultiSelect:320', 'FilterableMultiSelect:320', 'SelectItem:320', 'SelectItemGroup:320', 'ComboBox:320', 'PopoverContent:400', 'Toggletip:320', 'TagSet:320', 'TabList:320', 'TabsVertical:640',
       'MenuButton:320', 'MenuItem:160', 'MenuItemDivider:160', 'MenuItemGroup:160', 'MenuItemRadioGroup:160',
       'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320', 'ComposedModal:640', 'ModalHeader:640', 'ModalFooter:640',
-      'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320']);
+      'Breadcrumb:fit+hang{"bottom":4}', 'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320',
+      'UnorderedList:400+hang{"start":32}', 'OrderedList:400+hang{"start":32}', 'ListItem:400+hang{"start":32}']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

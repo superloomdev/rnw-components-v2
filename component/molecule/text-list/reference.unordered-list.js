@@ -4,7 +4,7 @@ export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze([]),
   additionalTargets: Object.freeze([]),
-  body: Object.freeze({ width: 400 }),
+  body: Object.freeze({ width: 400, hang: Object.freeze({ start: 32 }) }),
   mount: function (React, upstream, props) {
     const items = (props.items || []).map(function (entry, index) {
       const object = typeof entry === 'object';

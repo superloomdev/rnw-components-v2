@@ -1,6 +1,9 @@
 // Info: Breadcrumb sample states for the showcase, the browser gates and
 // the docs. Each entry is one rendered instance.
 
+// The overflow icon is translateY(4px) inside an 18 px trigger (_breadcrumb.scss:106-109,162-167)
+export const FRAME = Object.freeze({ hang: Object.freeze({ bottom: 4 }) });
+
 const TRAIL = Object.freeze([
   Object.freeze({ href: '#home', label: 'Home' }),
   Object.freeze({ href: '#products', label: 'Products' }),

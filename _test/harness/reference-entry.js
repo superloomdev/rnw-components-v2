@@ -153,11 +153,22 @@ function Cell (props) {
   // A reference body may also stage a fixed layer: `stage` makes it the
   // layer's containing block so the surface paints inside the cell. Its
   // declared height is not shrinkable: the measurement grid's 160 px row
-  // pitch must not squeeze the stage the layer covers
+  // pitch must not squeeze the stage the layer covers. A `hang` reserves
+  // the room an upstream part paints outside the box, as a host must
   const body = reference.body ? (function () {
-    const style = { display: 'block', width: reference.body.width + 'px' };
+    const style = {
+      display: 'block',
+      width: typeof reference.body.width === 'number' ? reference.body.width + 'px' : 'fit-content'
+    };
     if (typeof reference.body.height === 'number') {
       style.height = reference.body.height + 'px';
+    }
+    const hang = reference.body.hang || {};
+    if (typeof hang.start === 'number') {
+      style.paddingInlineStart = hang.start + 'px';
+    }
+    if (typeof hang.bottom === 'number') {
+      style.paddingBottom = hang.bottom + 'px';
     }
     if (reference.body.stage === true) {
       style.transform = 'translateZ(0)';

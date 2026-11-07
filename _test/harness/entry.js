@@ -94,9 +94,10 @@ pages; otherwise a component whose sample names a frame is laid out in
 it, as every host's showcase does; every other body keeps the
 shrink-to-fit layout. A frame with `stage` also makes the body the
 containing block of a fixed layer, so an overlay component paints its
-layer inside the cell it was mounted in.
+layer inside the cell it was mounted in. A `hang` reserves the room a
+part upstream paints outside the component's box, as a host must.
 
-@param {Object} frame - { width, height?, stage? }
+@param {Object} frame - { width?, height?, stage?, hang? }
 
 @return {Object} - Inline style
 *********************************************************************/
@@ -105,9 +106,20 @@ function frameStyle (frame) {
   // A member's frame stands in for its positioned parent container
   // (`position: relative`), so an absolute seat hangs where it would in
   // the real host; `stage` still adds the fixed-layer containing block
-  const style = { display: 'block', position: 'relative', width: frame.width + 'px' };
+  const style = {
+    display: 'block',
+    position: 'relative',
+    width: typeof frame.width === 'number' ? frame.width + 'px' : 'fit-content'
+  };
   if (typeof frame.height === 'number') {
     style.height = frame.height + 'px';
+  }
+  const hang = frame.hang || {};
+  if (typeof hang.start === 'number') {
+    style.paddingInlineStart = hang.start + 'px';
+  }
+  if (typeof hang.bottom === 'number') {
+    style.paddingBottom = hang.bottom + 'px';
   }
   if (frame.stage === true) {
     style.transform = 'translateZ(0)';
