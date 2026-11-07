@@ -3318,8 +3318,8 @@
   {
    "id": "modal-footer-three-ratio",
    "file": "component/composite/modal/modal-footer.js",
-   "find": "          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT }",
-   "replace": "          style: { flexShrink: 0, minWidth: '100%' }",
+   "find": "          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT, position: 'relative' }",
+   "replace": "          style: { flexShrink: 0, minWidth: '100%', position: 'relative' }",
    "runner": "node",
    "test": "modal-footer.test.js",
    "testName": "carbon: the three-button layout takes the three ratio, pushed to the end",
@@ -3518,8 +3518,8 @@
   {
    "id": "contained-list-disclosed-height-off",
    "file": "component/composite/contained-list/contained-list.js",
-   "find": "height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight",
-   "replace": "height: metrics.headerHeight",
+   "find": "minHeight: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight",
+   "replace": "minHeight: metrics.headerHeight",
    "runner": "node",
    "test": "contained-list.test.js",
    "testName": "the disclosed header draws its own height",
@@ -3644,6 +3644,16 @@
    "test": "composed-modal.test.js",
    "testName": "the xs header is capped at the grid's share of the dialog height",
    "why": "a header handed no maximum must fail the capped-height assertion"
+  },
+  {
+   "id": "contained-list-action-size-off",
+   "file": "component/composite/contained-list/contained-list-item.js",
+   "find": "          size: { sm: 'sm', md: 'md', lg: 'lg', xl: 'lg' }[props.size] || 'lg' })",
+   "replace": "          size: 'lg' })",
+   "runner": "node",
+   "test": "contained-list.test.js",
+   "testName": "an item tag keeps the layout small floor in every list size",
+   "why": "an lg action button in an md list must fail the size_medium assertion"
   },
   {
    "id": "notification-low-action-label-off",

@@ -111,7 +111,7 @@ import SkipToContentSample, { FRAME as SkipToContentFrame } from './component/mo
 import ComposedModalSample, { FRAME as ComposedModalFrame } from './component/composite/modal/sample.composed-modal.js';
 import ModalHeaderSample, { FRAME as ModalHeaderFrame } from './component/composite/modal/sample.modal-header.js';
 import ModalBodySample from './component/composite/modal/sample.modal-body.js';
-import ModalFooterSample from './component/composite/modal/sample.modal-footer.js';
+import ModalFooterSample, { FRAME as ModalFooterFrame } from './component/composite/modal/sample.modal-footer.js';
 import InlineNotificationSample from './component/molecule/notification/sample.inline-notification.js';
 import ActionableNotificationSample from './component/molecule/notification/sample.actionable-notification.js';
 import CalloutSample from './component/molecule/notification/sample.callout.js';
@@ -239,7 +239,7 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ComposedModal', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ComposedModalFrame, sample: ComposedModalSample }),
   Object.freeze({ name: 'ModalHeader', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: ModalHeaderFrame, sample: ModalHeaderSample }),
   Object.freeze({ name: 'ModalBody', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: ModalBodySample }),
-  Object.freeze({ name: 'ModalFooter', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: ModalFooterSample }),
+  Object.freeze({ name: 'ModalFooter', family: 'Modal', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: ModalFooterFrame, sample: ModalFooterSample }),
   Object.freeze({ name: 'InlineNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: InlineNotificationSample }),
   Object.freeze({ name: 'ActionableNotification', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: ActionableNotificationSample }),
   Object.freeze({ name: 'Callout', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: CalloutSample }),

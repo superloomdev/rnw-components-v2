@@ -15,6 +15,8 @@ BreadcrumbSkeleton factory.
 
 @return {Function} - The BreadcrumbSkeleton component
 *********************************************************************/
+const PCT = '%';
+
 export default function BreadcrumbSkeleton (ctx) {
 
   const React = ctx.React;
@@ -61,7 +63,7 @@ export default function BreadcrumbSkeleton (ctx) {
         }, '/')));
     }
     return React.createElement(View, {
-      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' },
+      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', maxWidth: 100 + PCT },
       testID: props.testID
     }, rows);
 

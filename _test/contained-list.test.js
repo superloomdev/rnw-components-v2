@@ -18,15 +18,17 @@ describe('ContainedList: the container and its rows', function () {
 
     test(template + ': the disclosed header draws its own height', async function () {
       const page = await render(React.createElement(system.ContainedList, { items: ROWS, kind: 'disclosed', label: 'Title' }));
-      const header = Array.from(page.querySelectorAll('div')).find(function (d) { return d.style.height !== ''; });
-      assert.equal(header.style.height, t['control.contained_list_header_height_disclosed'] + 'px', 'disclosed header height');
+      const header = Array.from(page.querySelectorAll('div')).find(function (d) { return d.style.minHeight === (t['control.contained_list_header_height_disclosed'] + 'px'); });
+      assert.equal(header.style.minHeight, t['control.contained_list_header_height_disclosed'] + 'px', 'disclosed header min-height');
+      assert.equal(header.style.height, '', 'the disclosed header is not fixed');
       const rest = await render(React.createElement(system.ContainedList, { items: ROWS, label: 'Title' }));
-      const restHeader = Array.from(rest.querySelectorAll('div')).find(function (d) { return d.style.height !== ''; });
-      assert.equal(restHeader.style.height, t['size.size_large'] + 'px', 'on-page header height');
+      const restHeader = Array.from(rest.querySelectorAll('div')).find(function (d) { return d.style.minHeight === (t['size.size_large'] + 'px'); });
+      assert.equal(restHeader.style.minHeight, t['size.size_large'] + 'px', 'on-page header min-height');
+      assert.equal(restHeader.style.height, '', 'the rest header is not fixed');
       const md = await render(React.createElement(system.ContainedList, { items: ROWS, label: 'Title', size: 'md' }));
-      const mdHeader = Array.from(md.querySelectorAll('div')).find(function (d) { return d.style.height !== ''; });
-      assert.equal(mdHeader.style.height, t['size.size_medium'] + 'px', 'the header follows the size cell');
-      const discBorder = Array.from(page.querySelectorAll('div')).find(function (d) { return d.style.height === (t['control.contained_list_header_height_disclosed']) + 'px'; });
+      const mdHeader = Array.from(md.querySelectorAll('div')).find(function (d) { return d.style.minHeight === (t['size.size_medium'] + 'px'); });
+      assert.equal(mdHeader.style.minHeight, t['size.size_medium'] + 'px', 'the header follows the size cell');
+      const discBorder = Array.from(page.querySelectorAll('div')).find(function (d) { return d.style.minHeight === (t['control.contained_list_header_height_disclosed']) + 'px'; });
       assert.equal(discBorder.style.borderBottomWidth, '0px', 'the disclosed header draws no divider');
       await cleanup();
     });
@@ -66,6 +68,8 @@ describe('ContainedList: the container and its rows', function () {
         const page = await render(React.createElement(system.ContainedList, { items: [Object.freeze({ action: 'tag', label: 'One' })], label: 'Title', size: size }));
         const tag = page.querySelector('[data-testid="tag"]');
         assert.equal(tag.style.minHeight, t['size.size_small'] + 'px', 'the in-list tag floor in a ' + size + ' list');
+        const actionButton = (await render(React.createElement(system.ContainedList, { items: [Object.freeze({ action: 'button', label: 'One' })], label: 'Title', size: 'md' }))).querySelector('[data-part="action"] [role="button"]');
+        assert.equal(actionButton.style.height, t['size.size_medium'] + 'px', 'the md list action button');
         await cleanup();
       }
     });

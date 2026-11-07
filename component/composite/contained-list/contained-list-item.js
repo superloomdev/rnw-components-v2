@@ -72,7 +72,11 @@ export default function ContainedListItem (ctx) {
     const action = props.action === 'tag'
       ? React.createElement(ctx.Registry.Tag, { height: ctx.token('size.size_small'), kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })
       : props.action === 'button'
-        ? React.createElement(ctx.Registry.IconButton, { icon: 'close', kind: 'ghost' })
+        ? React.createElement(ctx.Registry.IconButton, { icon: 'close', kind: 'ghost',
+          // The icon-only button is `layout.size('height')` inside the list's
+          // size context, clamped by the action's LayoutConstraint min sm /
+          // max lg (`ContainedListItem.js:39-45`): sm 32, md 40, lg 48, xl 48
+          size: { sm: 'sm', md: 'md', lg: 'lg', xl: 'lg' }[props.size] || 'lg' })
         : props.action !== undefined ? props.action : null;
 
     // The pressable wrapper when clickable; the ruler under all but the last

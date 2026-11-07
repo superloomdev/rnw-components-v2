@@ -53,7 +53,7 @@ export default function ContainedList (ctx) {
 
     // Build the header in the kind's cells
     const labelId = (props.testID || 'contained-list') + '-label';
-    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), height: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
+    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), minHeight: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
       React.createElement(Text, { dataSet: { part: 'label' }, nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
 
     // Build the search row under the header
