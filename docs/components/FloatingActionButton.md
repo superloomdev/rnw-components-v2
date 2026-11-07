@@ -7,8 +7,9 @@
 A raised icon button, optionally extended with a label, for a screen's
 primary action.
 
-### Decisions
+### Decisions (roster flags `no_reference`, `superloom_decision`)
 
+- **No upstream visual reference.** The retired second reference was the row's only upstream mount - the roster's `no_reference`; the gates for this row are structural, accessibility and cross-template consistency.
 - **Neutral and reference values are Superloom decisions.** The roster flags
   this row `superloom_decision`: the retired second reference's FAB answered
   the contract's `fab_*` cells directly, while the neutral and reference
@@ -33,16 +34,16 @@ without one.
 
 ## FloatingActionButton
 
-FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction, so its values outside the Material template are a Superloom decision.
+FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction and it has no upstream visual reference, so its values are a Superloom decision.
 
 | | |
 |---|---|
 | Tier | `molecule` |
 | Platform | `both` |
-| Reference | `render-web` (`@material/web`) |
+| Reference | `none` |
 | Enums | none |
 | Behaviors | none |
-| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `superloom_decision` - anatomy or a value decided here, not measured from a reference |
 
 ### Props
 

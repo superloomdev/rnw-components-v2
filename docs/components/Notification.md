@@ -58,7 +58,7 @@ file and the row is measured against the primary alone.
 
 ## ActionableNotification
 
-ActionableNotification is a component in the Notification family.
+ActionableNotification is a status notification carrying an action: the `inline` form seats a ghost action beside the title and subtitle, the toast form a tertiary-inverse action below them with a close button.
 
 | | |
 |---|---|
@@ -129,7 +129,7 @@ ActionableNotification is a component in the Notification family.
 
 ## Callout
 
-Callout is a component in the Notification family.
+Callout is the persistent inline message - marker, kind glyph, title and subtitle with the ghost action, no close button and no dialog role.
 
 | | |
 |---|---|
@@ -186,7 +186,7 @@ Callout is a component in the Notification family.
 
 ## InlineNotification
 
-InlineNotification is a component in the Notification family.
+InlineNotification is the status band that sits in the page flow: a marker and kind glyph, a title, an optional subtitle and a close button.
 
 | | |
 |---|---|
@@ -249,7 +249,7 @@ InlineNotification is a component in the Notification family.
 
 ## NotificationActionButton
 
-NotificationActionButton is a component in the Notification family; it must be composed inside Notification.
+NotificationActionButton is a notification's action button - the inline ghost or the toast tertiary-inverse form; it must be composed inside ActionableNotification, with no upstream visual reference of its own - it is measured through the notification's samples.
 
 | | |
 |---|---|

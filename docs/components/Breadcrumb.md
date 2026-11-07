@@ -32,7 +32,7 @@ and no landmark.
 
 ## Breadcrumb
 
-Breadcrumb is a component in the Breadcrumb family.
+Breadcrumb draws the page trail: a row of links separated by slashes, the current page unlinked and an `{ overflow: [...] }` entry collapsing to a menu, with a trailing slash unless `noTrailingSlash`.
 
 | | |
 |---|---|
@@ -80,7 +80,7 @@ Breadcrumb is a component in the Breadcrumb family.
 
 ## BreadcrumbItem
 
-BreadcrumbItem is a component in the Breadcrumb family; it must be composed inside Breadcrumb.
+BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page or the overflow-menu seat; it must be composed inside Breadcrumb, with no upstream visual reference of its own - it is measured through Breadcrumb's samples.
 
 | | |
 |---|---|
@@ -128,7 +128,7 @@ BreadcrumbItem is a component in the Breadcrumb family; it must be composed insi
 
 ## BreadcrumbSkeleton
 
-BreadcrumbSkeleton is a component in the Breadcrumb family.
+BreadcrumbSkeleton draws the breadcrumb's loading form - `items` shimmer bars at the breadcrumb size with the trail's separators and `noTrailingSlash` dropping the last.
 
 | | |
 |---|---|

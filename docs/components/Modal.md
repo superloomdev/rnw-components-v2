@@ -79,7 +79,7 @@ content-sized width.
 
 ## ComposedModal
 
-ComposedModal is a component in the Modal family.
+ComposedModal is the framed dialog on its own scrim layer composing ModalHeader, ModalBody and an optional ModalFooter - passive without one - with Escape, focus trapping and outside-press dismissal.
 
 | | |
 |---|---|
@@ -189,7 +189,7 @@ Modal is a dialog on a scrim layer: a header, a body, an actions row and a close
 
 ## ModalBody
 
-ModalBody is a component in the Modal family; it must be composed inside Modal.
+ModalBody is the content region of a ComposedModal - the prose body, scrollable on demand and gutterless for a form; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
 
 | | |
 |---|---|
@@ -229,7 +229,7 @@ ModalBody is a component in the Modal family; it must be composed inside Modal.
 
 ## ModalFooter
 
-ModalFooter is a component in the Modal family; it must be composed inside Modal.
+ModalFooter is the action row of a ComposedModal - a primary action plus a secondary action or two; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
 
 | | |
 |---|---|
@@ -273,7 +273,7 @@ ModalFooter is a component in the Modal family; it must be composed inside Modal
 
 ## ModalHeader
 
-ModalHeader is a component in the Modal family; it must be composed inside Modal.
+ModalHeader is the header band of a ComposedModal - the eyebrow label, the heading and the close seat; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
 
 | | |
 |---|---|
