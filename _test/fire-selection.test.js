@@ -27,7 +27,13 @@ describe('getFireSelection', function () {
     const actual = [1, 2, 3, 4].flatMap(function (index) {
       return ids(getFireSelection(rows, ['--shard', index + '/4']));
     }).sort();
-    assert.deepEqual(actual, expected);
+    const missing = expected.filter(function (x) { return !actual.includes(x); }).sort();
+    const extra = actual.filter(function (x) { return !expected.includes(x); }).sort();
+    assert.deepEqual(
+      { missing: missing.slice(0, 5), extra: extra.slice(0, 5), counts: [missing.length, extra.length] },
+      { missing: [], extra: [], counts: [0, 0] }
+    );
+    assert.equal(actual.length, expected.length, 'every row selected exactly once');
     assert.equal(new Set(actual).size, expected.length);
   });
 

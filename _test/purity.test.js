@@ -63,6 +63,30 @@ function codeOnly (source) {
 }
 
 
+/********************************************************************
+Assert two iterables hold the same members, reporting a bounded
+difference: the first five missing and extra names plus both counts,
+never two full arrays.
+
+@param {Iterable} actual - Names the code produced
+@param {Iterable} expected - Names the contract requires
+@param {String} label - Assertion message
+*********************************************************************/
+function assertSameSet (actual, expected, label) {
+
+  const a = new Set(actual);
+  const e = new Set(expected);
+  const missing = [...e].filter(function (x) { return !a.has(x); }).sort();
+  const extra = [...a].filter(function (x) { return !e.has(x); }).sort();
+  assert.deepEqual(
+    { missing: missing.slice(0, 5), extra: extra.slice(0, 5), counts: [missing.length, extra.length] },
+    { missing: [], extra: [], counts: [0, 0] },
+    label
+  );
+
+}
+
+
 describe('purity: shipped source', function () {
 
   const files = listShippedFiles();
@@ -170,8 +194,10 @@ describe('purity: declared requirements equal what the components read', functio
         supported.add('color.' + leaf);
       }
     }
-    assert.deepEqual([...REQUIRED_TOKENS].sort(), [...required].sort(), 'REQUIRED_TOKENS must equal the union of spec.js and api.tokens');
-    assert.deepEqual([...SUPPORTED_TOKENS].sort(), [...supported].sort(), 'SUPPORTED_TOKENS must equal REQUIRED_TOKENS plus every api.colors leaf');
+    assert.equal(REQUIRED_TOKENS.length, new Set(REQUIRED_TOKENS).size, 'REQUIRED_TOKENS has no duplicates');
+    assert.equal(SUPPORTED_TOKENS.length, new Set(SUPPORTED_TOKENS).size, 'SUPPORTED_TOKENS has no duplicates');
+    assertSameSet(REQUIRED_TOKENS, required, 'REQUIRED_TOKENS must equal the union of spec.js and api.tokens');
+    assertSameSet(SUPPORTED_TOKENS, supported, 'SUPPORTED_TOKENS must equal REQUIRED_TOKENS plus every api.colors leaf');
   });
 
   test('every declared token and icon is in the contract', function () {
