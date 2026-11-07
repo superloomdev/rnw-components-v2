@@ -8,7 +8,7 @@
 // Run: node --import ./harness/register.js --test update-loop-harness.test.js
 
 import assert from 'node:assert';
-import { afterEach, test } from 'node:test';
+import { afterEach, describe, test } from 'node:test';
 
 import { React, cleanup, commitCount, render } from './harness/render.js';
 
@@ -38,24 +38,28 @@ function Calm () {
 }
 
 
-afterEach(async function () {
-  await cleanup();
-});
+describe('update-loop tripwire: runaway effects fail render', function () {
+
+  afterEach(async function () {
+    await cleanup();
+  });
 
 
-test('an unconditional setState-in-effect loop fails render() as an update loop', async function () {
+  test('an unconditional setState-in-effect loop fails render() as an update loop', async function () {
 
-  await assert.rejects(
-    render(React.createElement(Runaway)),
-    /update loop/
-  );
+    await assert.rejects(
+      render(React.createElement(Runaway)),
+      /update loop/
+    );
 
-});
+  });
 
-test('a normal component renders inside the commit budget', async function () {
+  test('a normal component renders inside the commit budget', async function () {
 
-  const container = await render(React.createElement(Calm));
-  assert(container.textContent.includes('calm'));
-  assert(commitCount() < 10, 'expected fewer than 10 commits, got ' + commitCount());
+    const container = await render(React.createElement(Calm));
+    assert(container.textContent.includes('calm'));
+    assert(commitCount() < 10, 'expected fewer than 10 commits, got ' + commitCount());
+
+  });
 
 });
