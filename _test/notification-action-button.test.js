@@ -68,6 +68,7 @@ describe('NotificationActionButton: the two colour maps', function () {
       const Registry = buildSystem(template, factories);
       const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', lowContrast: true, variant: 'inline' }));
       const button = rendered.querySelector('[role="button"]');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.link_primary']), 'the low-contrast label keeps the ghost primary');
       await fire(button, new Event('pointerover', { bubbles: true }));
       assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_hover']), 'the low-contrast hover fill');
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.link_primary_hover']), 'the low-contrast hover label');

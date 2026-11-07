@@ -75,6 +75,9 @@ export default function ModalHeader (ctx) {
         }
       },
       React.createElement(ctx.Registry.IconButton, {
+        align: 'left',
+        // Upstream `ModalHeader.js:82` renders the close IconButton with
+        // `align: "left"`: its tooltip opens to the left, not above
         buttonRef: props.closeRef,
         icon: 'close',
         iconSize: metrics.closeIconSize,

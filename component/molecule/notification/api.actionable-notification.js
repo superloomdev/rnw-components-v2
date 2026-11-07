@@ -27,7 +27,8 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'color.notification_container', 'color.notification_text', 'color.notification_close_icon', 'color.notification_action',
-    'color.notification_action_hover', 'color.notification_action_container_hover', 'color.notification_action_tertiary_inverse',
+    'color.notification_action_hover', 'color.notification_action_container_hover', 'color.link_primary',
+    'color.notification_action_tertiary_inverse',
     'color.notification_action_tertiary_inverse_hover', 'color.notification_action_tertiary_inverse_active', 'color.notification_action_tertiary_inverse_text',
     'color.notification_warning_icon_inner', 'color.text_primary', 'color.icon_primary', 'color.focus', 'color.focus_ring_inverse', 'font.family.sans',
     'control.notification_inline_width', 'control.notification_width', 'control.notification_min_height', 'control.notification_marker_width',

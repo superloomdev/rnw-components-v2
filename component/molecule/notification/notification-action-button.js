@@ -52,8 +52,11 @@ export default function NotificationActionButton (ctx) {
     }) : {
       fillHoverLeaf: lowContrast ? 'notification_action_hover' : 'notification_action_container_hover',
       focusRingGap: false,
+      // `_actionable-notification.scss:394-399` applies the inverse link to
+      // the ghost action only `:not(--low-contrast)`; a low-contrast ghost
+      // keeps the ghost's `link-primary`
       labelHoverLeaf: lowContrast ? 'link_primary_hover' : 'notification_action',
-      labelLeaf: 'notification_action'
+      labelLeaf: lowContrast ? 'link_primary' : 'notification_action'
     };
 
     // Render the seat: the action's margins, the height and the mapped

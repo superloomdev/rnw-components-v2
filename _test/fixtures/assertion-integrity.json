@@ -3646,6 +3646,16 @@
    "why": "a header handed no maximum must fail the capped-height assertion"
   },
   {
+   "id": "notification-low-action-label-off",
+   "file": "component/molecule/notification/notification-action-button.js",
+   "find": "      labelLeaf: lowContrast ? 'link_primary' : 'notification_action'",
+   "replace": "      labelLeaf: 'notification_action'",
+   "runner": "node",
+   "test": "notification-action-button.test.js",
+   "testName": "lowContrast swaps the inline hover fill",
+   "why": "a low-contrast ghost label back on the notification leaf must fail the link-primary assertion"
+  },
+  {
    "id": "modal-footer-separator-off",
    "file": "component/composite/modal/modal-footer.js",
    "find": "        index === 0 ? null : React.createElement(View, { 'aria-hidden': true, style: separatorStyle }));",

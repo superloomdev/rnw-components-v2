@@ -154,7 +154,8 @@ function expectCellBounds (cells) {
         const r = child.rect, p = child.painted;
         lines.push(id + ' <' + child.tag + '> overflows its cell [' + (child.ident || '') + '] rect=' +
           r1(r.x) + ',' + r1(r.y) + ',' + r1(r.width) + 'x' + r1(r.height) + ' painted=' +
-          r1(p.x) + ',' + r1(p.y) + ',' + r1(p.width) + 'x' + r1(p.height));
+          r1(p.x) + ',' + r1(p.y) + ',' + r1(p.width) + 'x' + r1(p.height) + ' cell=' +
+          r1(bounds.x) + ',' + r1(bounds.y) + ',' + r1(bounds.width) + 'x' + r1(bounds.height) + ' pos=' + (child.position || '?'));
       }
     }
   }
