@@ -1,6 +1,6 @@
 // Info: NotificationActionButton member. The notification's action
 // through a standalone render: size `sm` at
-// `control.notification_action_height` - inline the ghost re-coloured
+// `control.notification_action_height` - inline the ghost re-colored
 // (ink `notification_action`, hover `notification_action_container_hover`,
 // `notification_action_hover` under lowContrast), toast the
 // tertiary-inverse map (transparent rest, label and border
@@ -29,7 +29,7 @@ async function fire (element, event) {
   });
 }
 
-describe('NotificationActionButton: the two colour maps', function () {
+describe('NotificationActionButton: the two color maps', function () {
 
   for (const template of TEMPLATE_NAMES) {
     test(template + ': the inline ghost reads the notification cells', async function () {

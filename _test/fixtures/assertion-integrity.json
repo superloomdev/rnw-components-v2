@@ -3632,8 +3632,8 @@
    "replace": "borderStartColor: ctx.color('notification_marker_' + cellKind),",
    "runner": "node",
    "test": "callout.test.js",
-   "testName": "the low-contrast marker reads the support colour",
-   "why": "a low-contrast marker back on the band leaf must fail the support-colour assertion"
+   "testName": "the low-contrast marker reads the support color",
+   "why": "a low-contrast marker back on the band leaf must fail the support-color assertion"
   },
   {
    "id": "modal-header-max-off",

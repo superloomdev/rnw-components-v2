@@ -1,6 +1,6 @@
 // Info: BreadcrumbItem member. One `li` inside the breadcrumb's ordered
 // list: an `href` item is a `ctx.Registry.Link` (`visited` keeping the
-// link colours), an item without one plain link-styled text; the current
+// link colors), an item without one plain link-styled text; the current
 // page is `aria-current="page"` in `color.breadcrumb_current` with no
 // underline. The separator `/` follows every item (the last one only
 // without `noTrailingSlash`), the `control.breadcrumb_gap` (`_small`) gap on

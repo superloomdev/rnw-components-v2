@@ -55,7 +55,7 @@ describe('Callout: every sample state under every template', function () {
       });
     }
 
-    test(template + ': the low-contrast marker reads the support colour', async function () {
+    test(template + ': the low-contrast marker reads the support color', async function () {
       const t = buildNative(template).tokens;
       const Registry = buildSystem(template, factories);
       const low = await render(React.createElement(Registry.Callout, { kind: 'info', lowContrast: true, title: 'Title' }));

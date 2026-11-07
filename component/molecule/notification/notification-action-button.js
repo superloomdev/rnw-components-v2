@@ -1,6 +1,6 @@
 // Info: NotificationActionButton member. The notification's action: a
 // `ctx.Registry.Button` of size `sm` at `control.notification_action_height`,
-// re-coloured by the notification cells - inline the ghost action (ink
+// re-colored by the notification cells - inline the ghost action (ink
 // `notification_action`, hover `notification_action_container_hover`,
 // `notification_action_hover` under lowContrast, focus ring
 // `focus_ring_inverse` / `focus`); toast the tertiary-inverse mapping
@@ -35,13 +35,13 @@ export default function NotificationActionButton (ctx) {
   *********************************************************************/
   function NotificationActionButtonComponent (props) {
 
-    // Init the metrics and the two colour maps
+    // Init the metrics and the two color maps
     const metrics = {
       height: ctx.metric('NotificationActionButton', 'height')
     };
     const toast = props.variant === 'toast';
     const lowContrast = props.lowContrast === true;
-    const recolour = toast ? (lowContrast ? {} : {
+    const recolor = toast ? (lowContrast ? {} : {
       borderLeaf: 'notification_action_tertiary_inverse',
       fillActiveLeaf: 'notification_action_tertiary_inverse_active',
       fillFocusLeaf: 'notification_action_tertiary_inverse',
@@ -82,7 +82,7 @@ export default function NotificationActionButton (ctx) {
     },
     React.createElement(ctx.Registry.Button, Object.assign({
       'aria-describedby': props['aria-describedby'],
-      borderLeaf: recolour.borderLeaf,
+      borderLeaf: recolor.borderLeaf,
       fill: true,
       focusRingLeaf: toast || !lowContrast ? 'focus_ring_inverse' : 'focus',
       kind: toast ? 'tertiary' : 'ghost',
@@ -90,7 +90,7 @@ export default function NotificationActionButton (ctx) {
       paddingEnd: toast ? ctx.token('spacing.spacing_05') : undefined,
       paddingStart: toast ? ctx.token('spacing.spacing_05') : undefined,
       size: 'sm'
-    }, recolour), props.label)));
+    }, recolor), props.label)));
 
   }
 

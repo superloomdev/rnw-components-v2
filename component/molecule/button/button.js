@@ -66,7 +66,7 @@ export default function Button (ctx) {
 
     // Read the theme's press presentation over the kind's fill cells; the label,
     // border and elevation follow the same state. A composing parent may
-    // re-colour the fills and the label (the notification action's ghost
+    // re-color the fills and the label (the notification action's ghost
     // and tertiary-inverse maps) and point the border at another leaf
     const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined || props.fillFocusLeaf !== undefined
       ? {

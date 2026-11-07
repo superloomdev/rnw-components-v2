@@ -858,7 +858,7 @@
         "version": "2.5.0",
         "export": "MdDivider"
       },
-      "description": "Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; the primary system has no divider, so its values there are a Superloom decision from that system's own scale.",
+      "description": "Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; it has no upstream visual reference, so its values are a Superloom decision from the primary system's own scale.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -867,13 +867,14 @@
       "behaviors": [],
       "parent": null,
       "reference": {
-        "kind": "render-web",
-        "package": "@material/web"
+        "kind": "none",
+        "package": "none"
       },
       "carbon_twin": "none",
       "material_twin": "md-divider",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "superloom_decision"
       ],
       "status": "built"
@@ -2336,7 +2337,7 @@
         "version": "2.5.0",
         "export": "MdFab"
       },
-      "description": "FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction, so its values outside the Material template are a Superloom decision.",
+      "description": "FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction and it has no upstream visual reference, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2345,13 +2346,14 @@
       "behaviors": [],
       "parent": null,
       "reference": {
-        "kind": "render-web",
-        "package": "@material/web"
+        "kind": "none",
+        "package": "none"
       },
       "carbon_twin": "none",
       "material_twin": "md-fab",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "superloom_decision"
       ],
       "status": "built"
@@ -3302,7 +3304,7 @@
         "version": "1.115.0",
         "export": "ComposedModal"
       },
-      "description": "ComposedModal is a component in the Modal family.",
+      "description": "ComposedModal is the framed dialog on its own scrim layer composing ModalHeader, ModalBody and an optional ModalFooter - passive without one - with Escape, focus trapping and outside-press dismissal.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3334,7 +3336,7 @@
         "version": "1.115.0",
         "export": "ModalHeader"
       },
-      "description": "ModalHeader is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalHeader is the header band of a ComposedModal - the eyebrow label, the heading and the close seat; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3367,7 +3369,7 @@
         "version": "1.115.0",
         "export": "ModalBody"
       },
-      "description": "ModalBody is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalBody is the content region of a ComposedModal - the prose body, scrollable on demand and gutterless for a form; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3400,7 +3402,7 @@
         "version": "1.115.0",
         "export": "ModalFooter"
       },
-      "description": "ModalFooter is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalFooter is the action row of a ComposedModal - a primary action plus a secondary action or two; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3435,7 +3437,7 @@
         "version": "1.115.0",
         "export": "InlineNotification"
       },
-      "description": "InlineNotification is a component in the Notification family.",
+      "description": "InlineNotification is the status band that sits in the page flow: a marker and kind glyph, a title, an optional subtitle and a close button.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3462,7 +3464,7 @@
         "version": "1.115.0",
         "export": "ActionableNotification"
       },
-      "description": "ActionableNotification is a component in the Notification family.",
+      "description": "ActionableNotification is a status notification carrying an action: the `inline` form seats a ghost action beside the title and subtitle, the toast form a tertiary-inverse action below them with a close button.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3489,7 +3491,7 @@
         "version": "1.115.0",
         "export": "Callout"
       },
-      "description": "Callout is a component in the Notification family.",
+      "description": "Callout is the persistent inline message - marker, kind glyph, title and subtitle with the ghost action, no close button and no dialog role.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3516,7 +3518,7 @@
         "version": "1.115.0",
         "export": "NotificationActionButton"
       },
-      "description": "NotificationActionButton is a component in the Notification family; it must be composed inside Notification.",
+      "description": "NotificationActionButton is a notification's action button - the inline ghost or the toast tertiary-inverse form; it must be composed inside ActionableNotification, with no upstream visual reference of its own - it is measured through the notification's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3546,7 +3548,7 @@
         "version": "1.115.0",
         "export": "Breadcrumb"
       },
-      "description": "Breadcrumb is a component in the Breadcrumb family.",
+      "description": "Breadcrumb draws the page trail: a row of links separated by slashes, the current page unlinked and an `{ overflow: [...] }` entry collapsing to a menu, with a trailing slash unless `noTrailingSlash`.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3573,7 +3575,7 @@
         "version": "1.115.0",
         "export": "BreadcrumbItem"
       },
-      "description": "BreadcrumbItem is a component in the Breadcrumb family; it must be composed inside Breadcrumb.",
+      "description": "BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page or the overflow-menu seat; it must be composed inside Breadcrumb, with no upstream visual reference of its own - it is measured through Breadcrumb's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3603,7 +3605,7 @@
         "version": "1.115.0",
         "export": "BreadcrumbSkeleton"
       },
-      "description": "BreadcrumbSkeleton is a component in the Breadcrumb family.",
+      "description": "BreadcrumbSkeleton draws the breadcrumb's loading form - `items` shimmer bars at the breadcrumb size with the trail's separators and `noTrailingSlash` dropping the last.",
       "platform": {
         "support": "both",
         "fallback": "none"

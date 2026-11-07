@@ -3,8 +3,9 @@
 A raised icon button, optionally extended with a label, for a screen's
 primary action.
 
-## Decisions
+## Decisions (roster flags `no_reference`, `superloom_decision`)
 
+- **No upstream visual reference.** The retired second reference was the row's only upstream mount - the roster's `no_reference`; the gates for this row are structural, accessibility and cross-template consistency.
 - **Neutral and reference values are Superloom decisions.** The roster flags
   this row `superloom_decision`: the retired second reference's FAB answered
   the contract's `fab_*` cells directly, while the neutral and reference
