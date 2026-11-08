@@ -18,6 +18,8 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - A reparented orphan can enter the guard's `seen` set only while its parent still lives; macOS reparents before the exit event fires, so the orphan test's child idles 1.5 s before exiting.
 - A killed orphan can still answer `process.kill(pid, 0)` for a moment after the SIGKILL (a zombie awaiting launchd's reap); probe it in a poll, not once.
 - `fire.js` proves a row only from an indented result line on stdout: node tests need a `describe` wrapper for the indent, and the guard replays its tail to stdout as well as stderr so the recover run still sees it.
+- `npm run batch` does not run `fire.js`; only `verify` does, so a fire-harness trap stays hidden until the milestone. Twenty-nine node test files had top-level `test()` calls (no indent) and two set assertions printed a 1000-line `deepEqual` diff that pushed the failure marker out of the guard's 60-line tail. A planted failure must print a bounded message: assert the first few missing and extra names plus the counts.
+- The library gates do not see a host. At M5 the demo e2e (last run at 73 rows) found seven host-only defects in rows 74-126: a width written only to a ref (no re-render), a `flexBasis: 0` root that collapses in a column host, a decorative layer that was not `aria-hidden`, a hosted layer sized before the host reported its box. Run the demo e2e against the batch head at every batch close.
 
 ## Harness and measurement
 
