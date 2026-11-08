@@ -8,7 +8,8 @@ export default Object.freeze({
     children: { type: 'node', required: false, description: 'The body content; a string draws as `type.dialog_body` prose.' },
     hasScrollingContent: { type: 'boolean', required: false, description: 'Scrolls the body; a measured overflow scrolls too.' },
     hasForm: { type: 'boolean', required: false, description: 'Drops the prose end gutter for a form body.' },
-    accessibilityLabel: { type: 'string', required: false, description: 'Accessible name of the scrolling region; the heading names it when this is not given.' }
+    accessibilityLabel: { type: 'string', required: false, description: 'Accessible name of the scrolling region; the heading names it when this is not given.' },
+    fill: { type: 'boolean', required: false, description: 'Composition prop: set by Modal and ComposedModal; the body takes the dialog\'s middle `1fr` row while a standalone body is its content\'s height.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),

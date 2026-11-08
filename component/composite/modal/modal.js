@@ -128,6 +128,7 @@ export default function Modal (ctx) {
     React.createElement(ctx.Registry.ModalBody, {
       bodyId: bodyId,
       fadeId: fadeId,
+      fill: true,
       textGutter: textGutter.body
     }, props.children),
     passive || Utils.isEmptyArray(actions) ? null : React.createElement(ctx.Registry.ModalFooter, {

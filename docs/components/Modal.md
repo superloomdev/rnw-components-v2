@@ -208,6 +208,7 @@ ModalBody is the content region of a ComposedModal - the prose body, scrollable 
 | `hasScrollingContent` | `boolean` | no | Scrolls the body; a measured overflow scrolls too. |
 | `hasForm` | `boolean` | no | Drops the prose end gutter for a form body. |
 | `accessibilityLabel` | `string` | no | Accessible name of the scrolling region; the heading names it when this is not given. |
+| `fill` | `boolean` | no | Composition prop: set by Modal and ComposedModal; the body takes the dialog's middle `1fr` row while a standalone body is its content's height. |
 
 ### Metrics
 

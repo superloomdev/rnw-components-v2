@@ -68,7 +68,8 @@ export default function ModalBody (ctx) {
         }
       }
       // The content is its own height on every platform; the body box
-      // (`bodyStyle`) is what fills the dialog
+      // (`bodyStyle`) fills the dialog's middle row when the dialog sets
+      // `fill`
     },
     Utils.isString(props.children) ? React.createElement(Text, {
       style: [ctx.typeStyle('dialog_body'), { color: ctx.color('dialog_body'), paddingEnd: gutter }]
@@ -78,10 +79,13 @@ export default function ModalBody (ctx) {
     // Render the body: a plain box, or the scrolling region with its fade
     // `minHeight: 0` lets the body shrink inside the `maxHeight`-clipped
     // container so the footer stays in the painted box, as upstream's
-    // `overflow-y` region does; scrolling bodies scroll, others clip
+    // `overflow-y` region does; scrolling bodies scroll, others clip.
+    // The growth is the dialog's grid row to give (`_modal.scss:86`
+    // `grid-template-rows: auto 1fr auto`), so only a dialog sets `fill`;
+    // a standalone body would stretch against an indefinite host
     const bodyStyle = {
       backgroundColor: ctx.color('dialog_container'),
-      flexGrow: 1,
+      flexGrow: props.fill === true ? 1 : 0,
       flexShrink: 1,
       minHeight: 0,
       overflow: 'hidden',
@@ -102,7 +106,7 @@ export default function ModalBody (ctx) {
         },
         style: {
           backgroundColor: ctx.color('dialog_container'),
-          flexGrow: 1,
+          flexGrow: props.fill === true ? 1 : 0,
           flexShrink: 1,
           minHeight: 0
         }

@@ -174,6 +174,7 @@ export default function ComposedModal (ctx) {
       accessibilityLabel: body.accessibilityLabel,
       bodyId: bodyId,
       fadeId: fadeId,
+      fill: true,
       hasForm: body.hasForm === true,
       hasScrollingContent: body.hasScrollingContent === true,
       headingId: headingId,
