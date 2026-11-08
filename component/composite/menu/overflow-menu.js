@@ -24,7 +24,7 @@ export default function OverflowMenu (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useA11yId, useAnchoredPosition, useMenuCollection, useMenuPosition, useOverlay, usePopoverDismiss } = ctx.behaviors;
+  const { focusNode, getActiveElement, nodeContains, queryNode, useA11yId, useAnchoredPosition, useMenuCollection, useMenuPosition, useOverlay, usePopoverDismiss } = ctx.behaviors;
 
   const SIZES = Object.freeze(['xs', 'sm', 'md', 'lg']);
   const DIRECTIONS = Object.freeze({ ArrowDown: 'next', ArrowUp: 'previous' });
@@ -79,19 +79,13 @@ export default function OverflowMenu (ctx) {
         props.onClose();
       }
       if (event !== undefined && event !== null && event.key === 'Escape' && containerRef.current !== null) {
-        const trigger = containerRef.current.querySelector('button');
-        if (trigger !== null) {
-          trigger.focus();
-        }
+        focusNode(queryNode(containerRef.current, 'button'));
       }
     };
     const requestClose = function () {
       close();
       if (containerRef.current !== null) {
-        const trigger = containerRef.current.querySelector('button');
-        if (trigger !== null) {
-          trigger.focus();
-        }
+        focusNode(queryNode(containerRef.current, 'button'));
       }
     };
 
@@ -127,7 +121,7 @@ export default function OverflowMenu (ctx) {
         // Upstream OverflowMenu exempts the trigger from the focus-leave
         // close: focus moving to it leaves the panel open
         const next = event !== undefined && event !== null ? event.relatedTarget : null;
-        if (next !== null && next !== undefined && containerRef.current !== null && containerRef.current.contains(next)) {
+        if (next !== null && next !== undefined && nodeContains(containerRef.current, next)) {
           return;
         }
         close(event);
@@ -137,7 +131,7 @@ export default function OverflowMenu (ctx) {
     React.useEffect(function () {
       if (open) {
         positioned.measure();
-        if (panelRef.current !== null && !panelRef.current.contains(document.activeElement)) {
+        if (panelRef.current !== null && !nodeContains(panelRef.current, getActiveElement())) {
           collection.focusItem('first', null);
         }
       }
@@ -146,14 +140,17 @@ export default function OverflowMenu (ctx) {
     // View's onFocus prop does not reach the DOM, so native listeners do
     React.useEffect(function () {
       const node = containerRef.current;
-      if (node === null || !Utils.isObject(props.focusUnderline)) {
+      // A native host's ref takes no DOM listeners: the underline then
+      // tracks nothing and stays quiet
+      if (node === null || !Utils.isObject(props.focusUnderline) ||
+          typeof node.addEventListener !== 'function' || typeof node.removeEventListener !== 'function') {
         return undefined;
       }
       const onIn = function () {
         setTriggerFocused(true);
       };
       const onOut = function (event) {
-        if (event.relatedTarget === null || event.relatedTarget === undefined || !node.contains(event.relatedTarget)) {
+        if (event.relatedTarget === null || event.relatedTarget === undefined || !nodeContains(node, event.relatedTarget)) {
           setTriggerFocused(false);
         }
       };

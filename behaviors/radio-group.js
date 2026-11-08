@@ -19,6 +19,7 @@ Build the radio-group behavior for one component system.
 @param {Object} deps.React                  - The host's React
 @param {Object} deps.Utils                  - helper-utils
 @param {Object} deps.useControllableState   - state family hook
+@param {Object} deps.dom                    - The dom.js family's reach helpers
 
 @return {Object} - { useRadioGroup }
 *********************************************************************/
@@ -27,8 +28,9 @@ export default function createRadioGroupBehaviors (deps) {
   const React = deps.React;
   const Utils = deps.Utils;
   const useControllableState = deps.useControllableState;
+  const { focusNode } = deps.dom;
 
-  const { isArray, isFunction, isNumber, isString } = Utils;
+  const { isArray, isNumber, isString } = Utils;
 
 
   /********************************************************************
@@ -226,8 +228,8 @@ export default function createRadioGroupBehaviors (deps) {
       event.preventDefault();
       select(items[target].value);
       const ref = refs.get(items[target].value);
-      if (ref !== undefined && ref.current !== null && isFunction(ref.current.focus)) {
-        ref.current.focus();
+      if (ref !== undefined) {
+        focusNode(ref.current);
       }
     };
 

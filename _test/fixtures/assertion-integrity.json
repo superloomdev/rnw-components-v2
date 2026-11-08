@@ -3694,6 +3694,16 @@
    "test": "composed-modal.test.js",
    "testName": "the dialog comes from the theme",
    "why": "a gutter based on the full dialog width must fail the content-box assertion"
+  },
+  {
+   "id": "purity-dom-reach",
+   "file": "component/composite/menu/overflow-menu.js",
+   "find": "getActiveElement()",
+   "replace": "document.activeElement",
+   "runner": "node",
+   "test": "purity.test.js",
+   "testName": "no forbidden construct in any shipped file",
+   "why": "a document reach restored outside behaviors/dom.js must fail the DOM-reach assertion"
   }
  ]
 }

@@ -21,7 +21,7 @@ export default function MenuItem (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useAnchoredPosition } = ctx.behaviors;
+  const { focusNode, useAnchoredPosition } = ctx.behaviors;
 
 
   /********************************************************************
@@ -226,9 +226,7 @@ export default function MenuItem (ctx) {
             event.stopPropagation();
           }
           closeSub();
-          if (ref.current !== null && typeof ref.current.focus === 'function') {
-            ref.current.focus();
-          }
+          focusNode(ref.current);
         } else if (event.key === 'Escape') {
           // The submenu's Escape never reaches the document, so it closes
           // only this level; the root's own Escape is unaffected
@@ -236,9 +234,7 @@ export default function MenuItem (ctx) {
             event.stopPropagation();
           }
           closeSub();
-          if (ref.current !== null && typeof ref.current.focus === 'function') {
-            ref.current.focus();
-          }
+          focusNode(ref.current);
         }
       },
       onPointerEnter: function () {
@@ -266,9 +262,7 @@ export default function MenuItem (ctx) {
       },
       onClose: function () {
         setSubmenuOpen(false);
-        if (ref.current !== null && typeof ref.current.focus === 'function') {
-          ref.current.focus();
-        }
+        focusNode(ref.current);
       }
     })) : null),
     pressLayer

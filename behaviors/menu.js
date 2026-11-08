@@ -6,9 +6,10 @@
 /********************************************************************
 Build the menu behaviors for one component system.
 
-@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
-        `OverlayContext` is the overlay family's context, wired by
-        createBehaviors; a context-free call gets an empty one
+@param {Object} deps - { Utils, React, ReactNative, platform, dom, OverlayContext? }
+        `dom` is the dom.js family's reach helpers, wired by
+        createBehaviors; `OverlayContext` is the overlay family's context,
+        wired by createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getMenuPosition, useMenuPosition, useMenuCollection }
 *********************************************************************/
@@ -22,6 +23,7 @@ export default function createMenuBehaviors (deps) {
   // Inside a host the layer mounts `absolute` at the host's own
   // coordinates; unhosted keeps the window answer
   const OverlayContext = deps.OverlayContext === undefined ? React.createContext(null) : deps.OverlayContext;
+  const { focusNode, getViewportSize, measureRect, nodeContains } = deps.dom;
 
 
   function finiteNumber (value) {
@@ -188,17 +190,14 @@ export default function createMenuBehaviors (deps) {
             // layer's coordinates live in is Dimensions'
             viewport = ReactNative.Dimensions.get('window');
           } else {
-            viewport = {
-              width: typeof window === 'undefined' ? 0 : window.innerWidth,
-              height: typeof window === 'undefined' ? 0 : window.innerHeight
-            };
+            viewport = getViewportSize();
           }
         }
         const container = current.containerRef && current.containerRef.current;
         let actionButtonWidth = current.actionButtonWidth;
-        if (actionButtonWidth === undefined && container &&
-            typeof container.getBoundingClientRect === 'function') {
-          actionButtonWidth = container.getBoundingClientRect().width;
+        const containerRect = measureRect(container);
+        if (actionButtonWidth === undefined && containerRect !== null) {
+          actionButtonWidth = containerRect.width;
         }
         // No state write when the answer is unchanged: the surface's own
         // onLayout re-fires measure, and a same-position write would loop
@@ -224,8 +223,9 @@ export default function createMenuBehaviors (deps) {
           return previous !== null && previous.left === next.left && previous.top === next.top ? previous : next;
         });
       };
-      if (typeof menu.getBoundingClientRect === 'function') {
-        finish(menu.getBoundingClientRect());
+      const menuRect = measureRect(menu);
+      if (menuRect !== null) {
+        finish(menuRect);
         return;
       }
       if (typeof menu.measureInWindow === 'function') {
@@ -374,8 +374,8 @@ export default function createMenuBehaviors (deps) {
         target = valid[(index - 1 + valid.length) % valid.length];
       }
 
-      if (target && target.ref.current && typeof target.ref.current.focus === 'function') {
-        target.ref.current.focus();
+      if (target) {
+        focusNode(target.ref && target.ref.current);
       }
       return target;
     }, []);
@@ -405,7 +405,7 @@ export default function createMenuBehaviors (deps) {
       const current = latestRef.current;
       const isRoot = current.isRoot !== false;
       const root = current.rootRef && current.rootRef.current;
-      if (isRoot && root && !root.contains(event.relatedTarget)) {
+      if (isRoot && !Utils.isNullOrUndefined(root) && !nodeContains(root, event.relatedTarget)) {
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }

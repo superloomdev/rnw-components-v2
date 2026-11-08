@@ -6,9 +6,10 @@
 /********************************************************************
 Build the positioning behaviors for one component system.
 
-@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
-        `OverlayContext` is the overlay family's context, wired by
-        createBehaviors; a context-free call gets an empty one
+@param {Object} deps - { Utils, React, ReactNative, platform, dom, OverlayContext? }
+        `dom` is the dom.js family's reach helpers, wired by
+        createBehaviors; `OverlayContext` is the overlay family's context,
+        wired by createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getAnchoredPosition, useAnchoredPosition, useLayerSpace, usePopoverDismiss, useViewportLayer, useViewportSize }
 *********************************************************************/
@@ -19,6 +20,7 @@ export default function createPositioningBehaviors (deps) {
   const ReactNative = deps.ReactNative;
   const Debug = deps.Debug;
   const platform = deps.platform;
+  const { focusNode, getComputedStyleOf, getViewportSize, measureRect, nodeContains, onDocumentEvent, onWindowEvent, requestFrame } = deps.dom;
   // The overlay host's context carries `origin`, the layer root's window
   // position; a native layer computes window coordinates and must shift
   // them back into the host's own space
@@ -126,10 +128,7 @@ export default function createPositioningBehaviors (deps) {
         : { width: 0, height: 0 };
       return { width: size.width, height: size.height };
     }
-    return {
-      width: typeof window === 'undefined' ? 0 : window.innerWidth,
-      height: typeof window === 'undefined' ? 0 : window.innerHeight
-    };
+    return getViewportSize();
 
   }
 
@@ -165,18 +164,18 @@ export default function createPositioningBehaviors (deps) {
   *********************************************************************/
   function fixedSpaceOrigin (element) {
 
-    if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-      return { x: 0, y: 0 };
-    }
     for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {
-      const style = window.getComputedStyle(node);
+      const style = getComputedStyleOf(node);
+      if (style === null) {
+        return { x: 0, y: 0 };
+      }
       const drawn = function (value) {
         return Utils.isString(value) === true && value.length && value !== 'none';
       };
       if (drawn(style.transform) || drawn(style.perspective) || drawn(style.filter) || drawn(style.backdropFilter) ||
           /(paint|layout|strict|content)/.test(style.contain || '') || /(transform|perspective|filter)/.test(style.willChange || '')) {
-        const rect = node.getBoundingClientRect();
-        return { x: rect.left + (node.clientLeft || 0), y: rect.top + (node.clientTop || 0) };
+        const rect = measureRect(node);
+        return { x: rect.x + (node.clientLeft || 0), y: rect.y + (node.clientTop || 0) };
       }
     }
     return { x: 0, y: 0 };
@@ -275,8 +274,16 @@ export default function createPositioningBehaviors (deps) {
       const platform = source.platform || defaults.platform;
       const viewport = source.viewport || defaults.viewport;
 
-      if (platform === 'web' && typeof anchor.getBoundingClientRect === 'function') {
-        const rect = anchor.getBoundingClientRect();
+      const measured = platform === 'web' ? measureRect(anchor) : null;
+      if (measured !== null) {
+        const rect = {
+          left: measured.x,
+          top: measured.y,
+          right: measured.x + measured.width,
+          bottom: measured.y + measured.height,
+          width: measured.width,
+          height: measured.height
+        };
         const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset);
         // Inside a host the answer a caller composes with is the host's own
         // space: the window rect shifts back by the host's origin, as the
@@ -292,7 +299,7 @@ export default function createPositioningBehaviors (deps) {
           position: { left: computed.position.left - origin.x, top: computed.position.top - origin.y },
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
-          anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
+          anchor: { x: measured.x - origin.x, y: measured.y - origin.y, width: measured.width, height: measured.height }
         };
         // The budget spends on changed answers only: an identical measure
         // cannot re-render, so it cannot be the loop
@@ -367,8 +374,7 @@ export default function createPositioningBehaviors (deps) {
     // scroll (any ancestor, so capture) or viewport resize re-measures it.
     // An external event is never a loop, so it restarts the cap's cycle
     React.useEffect(function () {
-      if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
-          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+      if (options.track !== true || platform.os !== 'web') {
         return undefined;
       }
       const onReflow = function () {
@@ -378,11 +384,11 @@ export default function createPositioningBehaviors (deps) {
         cap.warned = false;
         measure();
       };
-      window.addEventListener('scroll', onReflow, true);
-      window.addEventListener('resize', onReflow);
+      const offScroll = onWindowEvent('scroll', onReflow, true);
+      const offResize = onWindowEvent('resize', onReflow);
       return function () {
-        window.removeEventListener('scroll', onReflow, true);
-        window.removeEventListener('resize', onReflow);
+        offScroll();
+        offResize();
       };
     }, [options.track, measure]);
 
@@ -390,32 +396,30 @@ export default function createPositioningBehaviors (deps) {
     // event itself fired: while tracking, re-measure on the frame the
     // anchor's rect actually changes (the cap bounds any loop)
     React.useEffect(function () {
-      if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
-          typeof window.requestAnimationFrame !== 'function' || typeof window.cancelAnimationFrame !== 'function') {
+      if (options.track !== true || platform.os !== 'web') {
         return undefined;
       }
       let stopped = false;
       let last = null;
-      let frame = 0;
+      let cancelFrame = function () {};
       const tick = function () {
         if (stopped === true) {
           return;
         }
-        const anchor = resolveAnchor(options.anchor);
-        if (anchor !== null && anchor !== undefined && typeof anchor.getBoundingClientRect === 'function') {
-          const rect = anchor.getBoundingClientRect();
-          const signature = String(rect.left) + ',' + String(rect.top) + ',' + String(rect.width) + ',' + String(rect.height);
+        const rect = measureRect(resolveAnchor(options.anchor));
+        if (rect !== null) {
+          const signature = String(rect.x) + ',' + String(rect.y) + ',' + String(rect.width) + ',' + String(rect.height);
           if (signature !== last) {
             last = signature;
             measure();
           }
         }
-        frame = window.requestAnimationFrame(tick);
+        cancelFrame = requestFrame(tick);
       };
-      frame = window.requestAnimationFrame(tick);
+      cancelFrame = requestFrame(tick);
       return function () {
         stopped = true;
-        window.cancelAnimationFrame(frame);
+        cancelFrame();
       };
     }, [options.track, measure]);
 
@@ -491,14 +495,10 @@ export default function createPositioningBehaviors (deps) {
           }
         };
       }
-      if (platform.os !== 'web' || typeof window === 'undefined' ||
-          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+      if (platform.os !== 'web') {
         return undefined;
       }
-      window.addEventListener('resize', onResize);
-      return function () {
-        window.removeEventListener('resize', onResize);
-      };
+      return onWindowEvent('resize', onResize);
     }, []);
 
     return size;
@@ -537,8 +537,7 @@ export default function createPositioningBehaviors (deps) {
       const timers = current.timerSource || { setTimeout: setTimeout, clearTimeout: clearTimeout };
       pointerInsideRef.current = Boolean(
         current.contentRef &&
-        current.contentRef.current &&
-        current.contentRef.current.contains(event.target)
+        nodeContains(current.contentRef.current, event.target)
       );
       if (timerRef.current !== null) {
         timers.clearTimeout(timerRef.current);
@@ -560,7 +559,7 @@ export default function createPositioningBehaviors (deps) {
         return;
       }
       const root = current.rootRef && current.rootRef.current;
-      if (!root || !root.contains(related)) {
+      if (!nodeContains(root, related)) {
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }
@@ -579,10 +578,7 @@ export default function createPositioningBehaviors (deps) {
     }, []);
 
     React.useEffect(function () {
-      const source = eventSource || (typeof document === 'undefined' ? null : document);
-      if (!open || !source ||
-          typeof source.addEventListener !== 'function' ||
-          typeof source.removeEventListener !== 'function') {
+      if (!open) {
         return undefined;
       }
       const onKeyDown = function (event) {
@@ -591,33 +587,43 @@ export default function createPositioningBehaviors (deps) {
         }
         const current = latestRef.current;
         const content = current.contentRef && current.contentRef.current;
-        if (!content || !content.contains(event.target)) {
+        if (!nodeContains(content, event.target)) {
           return;
         }
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }
-        const trigger = current.triggerRef && current.triggerRef.current;
-        if (trigger && typeof trigger.focus === 'function') {
-          trigger.focus();
-        }
+        focusNode(current.triggerRef && current.triggerRef.current);
       };
       const onClick = function (event) {
         const current = latestRef.current;
         const root = current.rootRef && current.rootRef.current;
         const content = current.contentRef && current.contentRef.current;
-        if (event.target && root && !root.contains(event.target) &&
-            !(content && content.contains(event.target))) {
+        if (event.target && root && !nodeContains(root, event.target) &&
+            !nodeContains(content, event.target)) {
           if (typeof current.onRequestClose === 'function') {
             current.onRequestClose(event);
           }
         }
       };
-      source.addEventListener('keydown', onKeyDown);
-      source.addEventListener('click', onClick);
+      const source = eventSource;
+      if (!Utils.isNullOrUndefined(source)) {
+        if (typeof source.addEventListener !== 'function' ||
+            typeof source.removeEventListener !== 'function') {
+          return undefined;
+        }
+        source.addEventListener('keydown', onKeyDown);
+        source.addEventListener('click', onClick);
+        return function () {
+          source.removeEventListener('keydown', onKeyDown);
+          source.removeEventListener('click', onClick);
+        };
+      }
+      const offKeyDown = onDocumentEvent('keydown', onKeyDown);
+      const offClick = onDocumentEvent('click', onClick);
       return function () {
-        source.removeEventListener('keydown', onKeyDown);
-        source.removeEventListener('click', onClick);
+        offKeyDown();
+        offClick();
       };
     }, [open, eventSource]);
 

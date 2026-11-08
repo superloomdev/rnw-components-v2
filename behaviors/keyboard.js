@@ -10,7 +10,8 @@
 /********************************************************************
 Build the keyboard behaviors for one component system.
 
-@param {Object} deps - { Utils, React }
+@param {Object} deps - { Utils, React, dom }
+        `dom` is the dom.js family's reach helpers, wired by createBehaviors
 
 @return {Object} - { useEscapeKey, getSearchHandlers }
 *********************************************************************/
@@ -20,6 +21,7 @@ export default function createKeyboardBehaviors (deps) {
   const React = deps.React;
 
   const { isNullOrUndefined } = Utils;
+  const { focusNode, onDocumentEvent } = deps.dom;
 
 
   /********************************************************************
@@ -45,20 +47,10 @@ export default function createKeyboardBehaviors (deps) {
       }
 
       const explicit = !Utils.isNullOrUndefined(source);
-      const resolvedSource = explicit
-        ? source
-        : (typeof document === 'undefined' ? undefined : document);
-      if (Utils.isNullOrUndefined(resolvedSource)) {
-        return undefined;
-      }
-      if (typeof resolvedSource.addEventListener !== 'function' ||
-          typeof resolvedSource.removeEventListener !== 'function') {
+      if (explicit &&
+          (typeof source.addEventListener !== 'function' || typeof source.removeEventListener !== 'function')) {
         // A caller-supplied source that cannot take listeners is a
-        // programmer error; a document without listener APIs is a host
-        // that cannot dispatch Escape, so there is nothing to listen for.
-        if (!explicit) {
-          return undefined;
-        }
+        // programmer error
         throw new TypeError('useEscapeKey: source must provide addEventListener and removeEventListener');
       }
 
@@ -69,10 +61,14 @@ export default function createKeyboardBehaviors (deps) {
           }
         }
       };
-      resolvedSource.addEventListener('keydown', handler);
-      return function () {
-        resolvedSource.removeEventListener('keydown', handler);
-      };
+      if (explicit) {
+        source.addEventListener('keydown', handler);
+        return function () {
+          source.removeEventListener('keydown', handler);
+        };
+      }
+      // No source means the document: a host without one gets a no-op
+      return onDocumentEvent('keydown', handler);
 
     }, [active, source]);
 
@@ -109,9 +105,7 @@ export default function createKeyboardBehaviors (deps) {
     const focusInput = function () {
       const ref = options.inputRef;
       const input = isNullOrUndefined(ref) ? undefined : ref.current;
-      if (!isNullOrUndefined(input) && typeof input.focus === 'function') {
-        input.focus();
-      }
+      focusNode(input);
     };
 
     const clear = function () {

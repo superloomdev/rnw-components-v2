@@ -20,7 +20,7 @@ export default function Toggletip (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useEscapeKey, useA11yId } = ctx.behaviors;
+  const { focusNode, nodeContains, queryNode, useEscapeKey, useA11yId } = ctx.behaviors;
 
 
   /********************************************************************
@@ -39,12 +39,7 @@ export default function Toggletip (ctx) {
     // The trigger holds DOM focus the way upstream's HTMLButtonElement
     // does: a press opens and focuses it, Escape refocuses it
     const focusButton = function () {
-      if (rootRef.current !== null && typeof rootRef.current.querySelector === 'function') {
-        const button = rootRef.current.querySelector('button');
-        if (button !== null) {
-          button.focus();
-        }
-      }
+      focusNode(queryNode(rootRef.current, 'button'));
     };
     // Escape returns focus to the button; blur leaving the toggletip closes
     const close = function (refocus) {
@@ -81,7 +76,7 @@ export default function Toggletip (ctx) {
         // A blur whose related target stays inside does not close it
         const next = event && event.relatedTarget;
         const root = rootRef.current;
-        if (root !== null && typeof root.contains === 'function' && next !== null && root.contains(next)) {
+        if (nodeContains(root, next)) {
           return;
         }
         close(false);

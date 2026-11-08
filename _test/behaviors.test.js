@@ -42,6 +42,8 @@ const EXPECTED_NAMES = [
   'getA11yLive', 'getA11yPosition', 'getA11yRelation', 'getA11yState', 'getA11yValue',
   'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets', 'getSearchHandlers',
   'isLabelMatch', 'isRtl',
+  'getActiveElement', 'focusNode', 'blurNode', 'nodeContains', 'queryNode', 'queryNodes',
+  'measureRect', 'getViewportSize', 'getComputedStyleOf', 'onWindowEvent', 'onDocumentEvent', 'requestFrame',
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox', 'useCombobox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
@@ -877,8 +879,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds twenty-one behavior family files plus the composer', function () {
-    assert.equal(files.length, 22);
+  test('the directory holds twenty-two behavior family files plus the composer', function () {
+    assert.equal(files.length, 23);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {

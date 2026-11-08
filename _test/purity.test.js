@@ -45,7 +45,8 @@ const FORBIDDEN = [
   { name: 'banned mechanism', pattern: /createPortal|LayoutAnimation|useWindowDimensions|__DEV__/ },
   { name: 'web-only visibility style', pattern: /\bvisibility\s*:/ },
   { name: 'JSX', pattern: /^\s*<[A-Z][A-Za-z.]*[\s>/]/ },
-  { name: 'raw emptiness or membership check', pattern: /\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1/ }
+  { name: 'raw emptiness or membership check', pattern: /\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1/ },
+  { name: 'DOM reach outside behaviors/dom.js', pattern: /\b(document|window)\s*\.|\.(focus|blur|contains|querySelector|querySelectorAll|getBoundingClientRect|scrollIntoView|closest|matches)\s*\(/, except: /behaviors[/\\]dom\.js$|reference[^/\\]*\.js$/ }
 ];
 
 

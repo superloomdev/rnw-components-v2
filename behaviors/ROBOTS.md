@@ -13,6 +13,11 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 - Optional callbacks and injected sources are duck-typed (`typeof x.fn === 'function'`); type guards use `Utils.isString`/`isNumber`/`isNullOrUndefined`.
 - Press timing is behavior: `delayPressIn: 0` is set once in `controls.js`.
 
+## DOM reach (`dom.js`)
+
+- `getActiveElement()` -> element or `null`; `focusNode(node)` / `blurNode(node)` -> Boolean; `nodeContains(root, node)` -> Boolean; `queryNode(root, selector)` -> element or `null`; `queryNodes(root, selector)` -> Array; `measureRect(node)` -> `{ x, y, width, height }` or `null`; `getViewportSize()` -> `{ width, height }`; `getComputedStyleOf(node)` -> style or `null`; `onWindowEvent(name, handler, capture)` / `onDocumentEvent(name, handler)` -> unsubscribe; `requestFrame(callback)` -> cancel
+- The only file that touches `document`, `window` or a node's DOM methods: every reach duck-types its capability and answers a no-op or neutral value where the API is absent, so a native host finds no DOM error. Every other file goes through these.
+
 ## Controls (`controls.js`)
 
 - `useTextField({ value, onChangeText, label, invalid, disabled, onFocus, onBlur })` -> `{ rootProps, inputProps, labelProps, state }` | state: `focused, hovered, disabled, invalid, populated`

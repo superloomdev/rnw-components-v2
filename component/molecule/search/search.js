@@ -32,7 +32,7 @@ export default function Search (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useTextField, useButton, getSearchHandlers, useReducedMotion } = ctx.behaviors;
+  const { focusNode, useTextField, useButton, getSearchHandlers, useReducedMotion } = ctx.behaviors;
   const { renderField, FieldAction, actionGeometry } = createFieldParts(ctx);
 
   // Size -> height metric in the spec sheet
@@ -136,9 +136,7 @@ export default function Search (ctx) {
     React.useEffect(function () {
       if (expandable && !expanded && escapeCollapse.current === true) {
         escapeCollapse.current = false;
-        if (triggerRef.current !== null && typeof triggerRef.current.focus === 'function') {
-          triggerRef.current.focus();
-        }
+        focusNode(triggerRef.current);
       }
     }, [expandable, expanded, triggerRef]);
 

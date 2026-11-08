@@ -18,6 +18,7 @@ Build the slider behavior for one component system.
 @param {Object} deps.React                  - The host's React
 @param {Object} deps.Utils                  - helper-utils
 @param {Object} deps.platform               - The injected platform answer
+@param {Object} deps.dom                    - The dom.js family's reach helpers
 @param {Object} deps.useControllableState   - state family hook
 @param {Object} deps.useInteractionState    - local family hook
 
@@ -30,6 +31,7 @@ export default function createSliderBehaviors (deps) {
   const platform = deps.platform;
   const useControllableState = deps.useControllableState;
   const useInteractionState = deps.useInteractionState;
+  const { focusNode, measureRect } = deps.dom;
 
   const { isFunction, isNullOrUndefined, isNumber, isString } = Utils;
   const { useCallback, useEffect, useRef, useState } = React;
@@ -271,10 +273,13 @@ export default function createSliderBehaviors (deps) {
   // native half measures asynchronously through the node
   const measureSync = platform.split({
     web: function (node) {
-      const rect = node.getBoundingClientRect();
+      const rect = measureRect(node);
+      if (rect === null) {
+        return null;
+      }
       const view = isNullOrUndefined(node.ownerDocument) ? undefined : node.ownerDocument.defaultView;
       const scrollX = isNullOrUndefined(view) ? 0 : view.scrollX;
-      return { x: rect.left + scrollX, width: rect.width };
+      return { x: rect.x + scrollX, width: rect.width };
     }
   });
   const measureAsync = platform.split({
@@ -600,9 +605,7 @@ export default function createSliderBehaviors (deps) {
       }
       interaction.rootProps.onPointerDown(event);
       const thumb = thumbRef.current;
-      if (!isNullOrUndefined(thumb) && isFunction(thumb.focus)) {
-        thumb.focus();
-      }
+      focusNode(thumb);
       interaction.rootProps.onPressIn(event);
       const drag = dragRef.current;
       drag.generation += 1;

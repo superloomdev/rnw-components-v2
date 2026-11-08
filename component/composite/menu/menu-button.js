@@ -21,7 +21,7 @@ export default function MenuButton (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useA11yId, useAnchoredPosition } = ctx.behaviors;
+  const { focusNode, queryNode, useA11yId, useAnchoredPosition } = ctx.behaviors;
 
   const SIZES = Object.freeze(['xs', 'sm', 'md', 'lg']);
   const KINDS = Object.freeze(['primary', 'tertiary', 'ghost']);
@@ -60,7 +60,7 @@ export default function MenuButton (ctx) {
     // The menu opens at the trigger's edge: the measured anchor is the
     // pressable itself, not the stretched container
     React.useEffect(function () {
-      triggerRef.current = containerRef.current !== null && typeof containerRef.current.querySelector === 'function' ? containerRef.current.querySelector('button') : containerRef.current;
+      triggerRef.current = containerRef.current !== null && typeof containerRef.current.querySelector === 'function' ? queryNode(containerRef.current, 'button') : containerRef.current;
     }, []);
 
     // The trigger is the menu's anchor: measured into the layer's own
@@ -114,10 +114,7 @@ export default function MenuButton (ctx) {
       },
       onClose: function () {
         close();
-        const trigger = containerRef.current !== null ? containerRef.current.querySelector('button') : null;
-        if (trigger !== null && typeof trigger.focus === 'function') {
-          trigger.focus();
-        }
+        focusNode(queryNode(containerRef.current, 'button'));
       },
       open: true
     }) : null,
