@@ -120,6 +120,7 @@ export default function ModalBody (ctx) {
         }
       }), content),
       fade ? React.createElement(View, {
+        'aria-hidden': true,
         pointerEvents: 'none',
         style: { bottom: 0, end: 0, height: metrics.fadeHeight, position: 'absolute', start: 0 }
       },

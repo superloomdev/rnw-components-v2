@@ -98,4 +98,26 @@ describe('TagSet: fit and overflow', function () {
     await cleanup();
   });
 
+  test('tag layouts landing after the container and the seat still settle the fit', async function () {
+    const parts = await renderSet('carbon', {
+      tags: [{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]
+    });
+    await act(async function () {
+      // The race the seat once lost: the container and its own layout land
+      // before any tag reports a width, so the +0 ghost must not survive the tags' turn
+      parts.layouts[0](layout(320));
+      parts.layouts[parts.layouts.length - 1](layout(40));
+      parts.layouts.slice(1, -1).forEach(function (fn) {
+        fn(layout(60));
+      });
+    });
+    assert.ok(!parts.container.textContent.includes('+0'), 'no +0 ghost seat survives the tag layouts');
+    assert.equal(
+      parts.container.textContent.includes('One') && parts.container.textContent.includes('Two') && parts.container.textContent.includes('Three'),
+      true,
+      'all three tags render once the fit settles'
+    );
+    await cleanup();
+  });
+
 });

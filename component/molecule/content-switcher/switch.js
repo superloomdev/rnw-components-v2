@@ -64,7 +64,8 @@ export default function Switch (ctx) {
 
     const typeName = selected && low ? 'content_switcher_label_selected_low_contrast' : 'content_switcher_label';
 
-    return React.createElement(View, { style: { flexBasis: 0, flexGrow: props.flex === true ? 1 : 0, position: 'relative' } },
+    // Basis 0 shares the row evenly; an unflexed segment keeps its content size on either axis
+    return React.createElement(View, { style: { flexBasis: props.flex === true ? 0 : 'auto', flexGrow: props.flex === true ? 1 : 0, position: 'relative' } },
       React.createElement(View, {
         onLayout: onFaceLayout,
         style: [{

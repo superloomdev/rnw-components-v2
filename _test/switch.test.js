@@ -32,4 +32,14 @@ describe('Switch: every sample state under every template', function () {
     }
   }
 
+  test('the root takes the content basis unflexed and basis zero when flexed', async function () {
+    const Registry = registryFor('carbon');
+    const plain = await render(React.createElement(Registry.Switch, { text: 'One' }));
+    assert.equal(plain.firstElementChild.style.flexBasis, 'auto', 'an unflexed segment keeps its content size');
+    await cleanup();
+    const flexed = await render(React.createElement(Registry.Switch, { text: 'One', flex: true }));
+    assert.equal(flexed.firstElementChild.style.flexBasis, '0px', 'a flexed segment shares the row evenly');
+    await cleanup();
+  });
+
 });

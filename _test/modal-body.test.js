@@ -46,6 +46,7 @@ describe('ModalBody: the member draws its cells', function () {
       const fade = body.querySelector('svg');
       if (t['anatomy.dialog_scroll_fade'] === 'shown') {
         assert.notEqual(fade, null, 'the shown fade draws');
+        assert.equal(fade.parentElement.getAttribute('aria-hidden'), 'true', 'the fade wrapper is decorative');
       } else {
         assert.equal(fade, null, 'no fade under hidden');
       }

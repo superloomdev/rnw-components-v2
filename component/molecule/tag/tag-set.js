@@ -64,6 +64,7 @@ export default function TagSet (ctx) {
     // overflow tag's own seat is measured when it mounts
     const [containerWidth, setContainerWidth] = React.useState(-1);
     const widths = React.useRef({});
+    const [, setMeasureTick] = React.useState(0);
     const [overflowSeat, setOverflowSeat] = React.useState(-1);
     const [overflowOpen, setOverflowOpen] = React.useState(false);
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -157,7 +158,14 @@ export default function TagSet (ctx) {
     },
     shown.map(function (tag, i) {
       return oneTag(tag, i, gap, function (e) {
-        widths.current[i] = e.nativeEvent.layout.width;
+        // A tag's width lands in a ref; the tick re-renders so the fit count never waits on another layout
+        const width = e.nativeEvent.layout.width;
+        if (widths.current[i] !== width) {
+          widths.current[i] = width;
+          setMeasureTick(function (n) {
+            return n + 1;
+          });
+        }
       });
     }),
     React.createElement(ctx.Registry.Popover, {
