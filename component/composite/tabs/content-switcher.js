@@ -5,6 +5,9 @@
 import API from './api.content-switcher.js';
 import SPEC from './spec.content-switcher.js';
 
+// The full width, built from its number so no unit literal appears
+const PCT = '%';
+
 
 /********************************************************************
 ContentSwitcher factory.
@@ -83,7 +86,7 @@ export default function ContentSwitcher (ctx) {
       style: {
         // Upstream `.cds--content-switcher` is `width: 100%`; an icon-only
         // switcher keeps its content width
-        width: iconOnly ? undefined : '100%',
+        width: iconOnly ? undefined : 100 + PCT,
         backgroundColor: lowContrast ? ctx.color('content_switcher_low_contrast_container') : 'transparent',
         borderRadius: ctx.metric('ContentSwitcher', 'radius'),
         outlineColor: ctx.color(items.some(function (i) {

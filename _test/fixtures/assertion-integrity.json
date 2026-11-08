@@ -1878,7 +1878,7 @@
   {
    "id": "radio-group-focus-ref",
    "file": "behaviors/radio-group.js",
-   "find": "        ref.current.focus();",
+   "find": "        focusNode(ref.current);",
    "replace": "        void ref.current;",
    "runner": "node",
    "test": "radio-button-group.test.js",
@@ -2728,7 +2728,7 @@
   {
    "id": "content-switcher-selected-edge",
    "file": "component/molecule/content-switcher/switch.js",
-   "find": "        boxShadow: low === true && selected === true && live === true ? 'inset 0 0 0 ' + ctx.metric('Switch', 'outlineWidth') + 'px ' + ctx.color('content_switcher_outline') : undefined,",
+   "find": "      boxShadow: low === true && selected === true && live === true ? 'inset 0 0 0 ' + ctx.metric('Switch', 'outlineWidth') + 'px ' + ctx.color('content_switcher_outline') : undefined,",
    "replace": "",
    "runner": "node",
    "test": "content-switcher.test.js",
@@ -2927,7 +2927,7 @@
   },
   {
    "file": "component/composite/menu/overflow-menu.js",
-   "find": "containerRef.current.contains(next)",
+   "find": "nodeContains(containerRef.current, next)",
    "replace": "false",
    "testName": "focus moving from an option to the trigger keeps the panel open",
    "runner": "node",
