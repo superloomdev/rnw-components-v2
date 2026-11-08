@@ -8,6 +8,8 @@
 
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { act } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import { createSystem, REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-components';
 import { Lib, TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
@@ -804,6 +806,64 @@ describe('context: listPresentation', function () {
       assert.equal(list.item({ pressed: true, selected: true }).backgroundColor, t['color.list_item_container_selected_active']);
       assert.equal(list.item({ pressed: true }).backgroundColor, t['color.list_item_container_active']);
     }
+  });
+
+});
+
+
+describe('context: useSegmentBasis', function () {
+
+  const NativeLib = function (os) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: Math.round }
+      })
+    });
+  };
+
+  // Render a probe that calls the hook, fire the named layout handlers in
+  // order and collect `basis()` after each render
+  async function drive (ctx, count, steps) {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    let latest;
+    function SegmentProbe () {
+      latest = ctx.useSegmentBasis(count);
+      return null;
+    }
+    await act(async function () {
+      root.render(Lib.React.createElement(SegmentProbe));
+    });
+    const handler0 = latest.onLayout(0);
+    const seen = [latest.basis()];
+    for (const step of steps) {
+      const handler = latest.onLayout(step.index);
+      await act(async function () {
+        handler({ nativeEvent: { layout: { width: step.width, height: 40 } } });
+      });
+      seen.push(latest.basis());
+    }
+    await act(async function () {
+      root.unmount();
+    });
+    container.remove();
+    return { seen: seen, handler0: handler0 };
+  }
+
+  test('web: basis 0 and no layout handler', async function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    const run = await drive(ctx, 3, []);
+    assert.deepEqual(run.seen, [0]);
+    assert.equal(run.handler0, undefined);
+  });
+
+  test('ios: auto until every segment has measured once, then the mean of the first widths', async function () {
+    const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib('ios') }).Probe.ctx;
+    const run = await drive(ctx, 3, [{ index: 0, width: 40 }, { index: 1, width: 60 }, { index: 1, width: 99 }, { index: 2, width: 80 }]);
+    assert.deepEqual(run.seen, ['auto', 'auto', 'auto', 'auto', 60]);
+    assert.equal(typeof run.handler0, 'function');
   });
 
 });

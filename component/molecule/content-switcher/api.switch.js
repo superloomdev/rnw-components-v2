@@ -17,7 +17,9 @@ export default Object.freeze({
     separator: { type: 'boolean', description: 'Draws the leading separator.' },
     separatorFull: { type: 'boolean', description: 'The separator runs the full height.' },
     selectedMark: { type: 'boolean', description: 'Draws the selected-indicator mark.' },
-    icon: { type: 'string', description: 'An icon beside the text.' }
+    icon: { type: 'string', description: 'An icon beside the text.' },
+    flexBasis: { type: 'number|string', description: 'Composition prop: the root flex basis ContentSwitcher hands each text segment (0 on web, the measured mean on native).' },
+    onRootLayout: { type: 'function', description: 'Composition prop: the root layout handler ContentSwitcher uses to measure a segment\'s natural width on native.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),

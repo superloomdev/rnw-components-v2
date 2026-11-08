@@ -605,6 +605,67 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
+  Equal segment basis without a zero basis in an indefinite row. The web
+  lets CSS do the work - a flex container's shrink-to-fit width comes
+  from the items' max-content contributions even when their basis is 0 -
+  so `basis()` is 0 and `onLayout(index)` returns no handler. Yoga sums
+  the bases instead, so on a native platform the segments hand in their
+  natural widths first: `basis()` is 'auto' until every index has
+  measured, then `sum / count`. With basis `sum / count` and grow 1 /
+  shrink 1 a definite row gives `W / n` each and an indefinite row gives
+  `sum` total - both the CSS answer for basis 0.
+
+  @param {Number} count - Segment count
+
+  @return {Object} - { basis, onLayout }
+  *********************************************************************/
+  function useSegmentBasis (count) {
+
+    const [widths, setWidths] = Lib.React.useState(function () {
+      return new Array(count).fill(null);
+    });
+
+    if (!platform.isNative) {
+      return {
+        basis: function () {
+          return 0;
+        },
+        onLayout: function () {
+          return undefined;
+        }
+      };
+    }
+
+    const allMeasured = widths.every(function (width) {
+      return width !== null;
+    });
+    const sum = widths.reduce(function (total, width) {
+      return total + (width === null ? 0 : width);
+    }, 0);
+
+    return {
+      basis: function () {
+        return allMeasured ? sum / count : 'auto';
+      },
+      onLayout: function (index) {
+        return function (event) {
+          const width = event.nativeEvent.layout.width;
+          setWidths(function (previous) {
+            if (previous[index] !== null) {
+              return previous;
+            }
+            const next = previous.slice();
+            next[index] = width;
+            return next;
+          });
+        };
+      }
+    };
+
+  }
+
+
+  /********************************************************************
   The list presentation the theme chose: the container and item cells of an
   option or menu list. The container carries the list's fill, corner, block
   padding and shadow; an item is a height, a fill for its state (`hover`,
@@ -947,7 +1008,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     token: token,
     tokenAt: tokenAt,
     typeStyle: typeStyle,
-    useFaceSize: useFaceSize
+    useFaceSize: useFaceSize,
+    useSegmentBasis: useSegmentBasis
   });
 
 }

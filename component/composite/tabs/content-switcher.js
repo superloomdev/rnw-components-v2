@@ -59,6 +59,18 @@ export default function ContentSwitcher (ctx) {
       orientation: 'horizontal'
     });
 
+    // Equal segments without a zero basis in an indefinite row: the web
+    // keeps CSS's max-content answer; native segments hand in their
+    // natural widths and share the mean once all have measured. Only
+    // text members share the row, so the hook counts them alone - a
+    // mixed row numbers each text member's position among them and
+    // icon-only members take no slot (-1)
+    let textCount = 0;
+    const textIndexes = items.map(function (i) {
+      return i.icon !== undefined && i.text === undefined ? -1 : textCount++;
+    });
+    const segments = ctx.useSegmentBasis(textCount);
+
     const lowContrast = props.lowContrast === true;
     const iconOnly = items.every(function (i) {
       return i.icon !== undefined && i.text === undefined;
@@ -99,6 +111,8 @@ export default function ContentSwitcher (ctx) {
         label: iconOnly ? item.label : undefined,
         first: index === 0,
         flex: iconOnly !== true,
+        flexBasis: iconOnly !== true ? segments.basis() : undefined,
+        onRootLayout: iconOnly !== true ? segments.onLayout(textIndexes[index]) : undefined,
         last: index === items.length - 1,
         lowContrast: lowContrast,
         onSelect: function () {
