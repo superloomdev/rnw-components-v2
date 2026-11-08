@@ -553,6 +553,8 @@ export default function createComboboxBehaviors (deps) {
           ? props.clearLabel : 'Clear selection',
         'aria-disabled': disabled ? true : undefined,
         disabled: disabled,
+        // The clear is not a tab stop (upstream ListBoxSelection tabIndex -1); the input is
+        tabIndex: -1,
         onPress: clearSelection
       },
       getOptionProps: select.getOptionProps,

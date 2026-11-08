@@ -98,6 +98,17 @@ describe('TagSet: fit and overflow', function () {
     await cleanup();
   });
 
+  test('maxVisible caps the row before any layout lands', async function () {
+    const parts = await renderSet('carbon', {
+      maxVisible: 2,
+      tags: [{ label: 'One' }, { label: 'Two' }, { label: 'Three' }, { label: 'Four' }, { label: 'Five' }, { label: 'Six' }, { label: 'Seven' }, { label: 'Eight' }]
+    });
+    assert.ok(parts.container.textContent.includes('+6'), 'the +6 seat mounts before measurement');
+    assert.ok(parts.container.textContent.includes('One') && parts.container.textContent.includes('Two'), 'two tags render');
+    assert.ok(!parts.container.textContent.includes('Three'), 'the third tag waits for measurement');
+    await cleanup();
+  });
+
   test('before any layout the +0 seat is aria-hidden and disabled', async function () {
     const parts = await renderSet('carbon', {
       tags: [{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]

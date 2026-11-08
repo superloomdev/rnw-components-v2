@@ -76,7 +76,8 @@ export default function TagSet (ctx) {
       return Utils.isNumber(widths.current[i]);
     });
     const measuredAll = measured === true && overflowSeat >= 0;
-    let visible = tags.length;
+    // maxVisible caps the row before and after measurement (upstream TagSet.js:146)
+    let visible = Math.min(tags.length, cap);
     if (multiline !== true && measuredAll === true && containerWidth >= 0) {
       visible = 0;
       for (let k = 0; k <= Math.min(cap, tags.length); k++) {

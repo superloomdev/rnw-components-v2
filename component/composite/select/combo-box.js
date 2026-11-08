@@ -271,7 +271,9 @@ export default function ComboBox (ctx) {
       }
     },
     React.createElement(Pressable, Object.assign({}, combo.clearProps, {
-      style: ctx.pressTarget({ height: clearSize, width: clearSize })
+      style: function (s) {
+        return [ctx.pressTarget({ height: clearSize, width: clearSize }), { outlineStyle: 'none' }, ctx.focusRing('field', { focused: s.focused === true })];
+      }
     }),
     React.createElement(ctx.Registry.Icon, { name: 'close', size: iconSize, color: presentation.indicator }))) : null;
 
@@ -307,7 +309,7 @@ export default function ComboBox (ctx) {
     },
     React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }),
     React.createElement(Pressable, Object.assign({}, combo.toggleProps, {
-      style: ctx.pressTarget({ height: iconZone, width: iconZone })
+      style: [ctx.pressTarget({ height: iconZone, width: iconZone }), { outlineStyle: 'none' }]
     })));
 
     // Render the root, the label, the frame with the input and its members,
