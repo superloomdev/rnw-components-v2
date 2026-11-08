@@ -71,8 +71,8 @@ describe('docs: generated pages', function () {
       'MultiSelect:320', 'FilterableMultiSelect:320', 'SelectItem:320', 'SelectItemGroup:320', 'ComboBox:320', 'PopoverContent:400', 'Toggletip:320', 'TagSet:320', 'TabList:320', 'TabsVertical:640',
       'MenuButton:320', 'MenuItem:160', 'MenuItemDivider:160', 'MenuItemGroup:160', 'MenuItemRadioGroup:160',
       'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320', 'ComposedModal:640', 'ModalHeader:640', 'ModalFooter:640',
-      'Breadcrumb:fit+hang{"bottom":4}', 'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320',
-      'UnorderedList:400+hang{"start":32}', 'OrderedList:400+hang{"start":32}', 'ListItem:400+hang{"start":32}']);
+      'Breadcrumb:fit+hang{"bottom":4}', 'BreadcrumbSkeleton:320', 'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320',
+      'UnorderedList:400+hang{"start":32}', 'OrderedList:400+hang{"start":32}', 'ListItem:400+hang{"start":32}', 'ContainedList:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

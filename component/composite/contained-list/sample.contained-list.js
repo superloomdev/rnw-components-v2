@@ -1,5 +1,11 @@
 // Info: ContainedList sample states for the showcase, the browser gates
 // and the docs. Each entry is one rendered instance.
+
+// The list fills the width its container gives it (`_contained-list.scss:66`
+// `inline-size: 100%`), so the showcase, the walker and the browser gates
+// lay its states out in a frame of this width
+export const FRAME = Object.freeze({ width: 320 });
+
 const ROWS = Object.freeze([
   Object.freeze({ label: 'List item 1' }),
   Object.freeze({ label: 'List item 2' }),

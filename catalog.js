@@ -118,14 +118,14 @@ import CalloutSample from './component/molecule/notification/sample.callout.js';
 import NotificationActionButtonSample from './component/molecule/notification/sample.notification-action-button.js';
 import BreadcrumbSample, { FRAME as BreadcrumbFrame } from './component/molecule/breadcrumb/sample.breadcrumb.js';
 import BreadcrumbItemSample from './component/molecule/breadcrumb/sample.breadcrumb-item.js';
-import BreadcrumbSkeletonSample from './component/molecule/breadcrumb/sample.breadcrumb-skeleton.js';
+import BreadcrumbSkeletonSample, { FRAME as BreadcrumbSkeletonFrame } from './component/molecule/breadcrumb/sample.breadcrumb-skeleton.js';
 import AccordionSample, { FRAME as AccordionFrame } from './component/composite/accordion/sample.accordion.js';
 import AccordionItemSample, { FRAME as AccordionItemFrame } from './component/composite/accordion/sample.accordion-item.js';
 import AccordionSkeletonSample, { FRAME as AccordionSkeletonFrame } from './component/composite/accordion/sample.accordion-skeleton.js';
 import UnorderedListSample, { FRAME as UnorderedListFrame } from './component/molecule/text-list/sample.unordered-list.js';
 import OrderedListSample, { FRAME as OrderedListFrame } from './component/molecule/text-list/sample.ordered-list.js';
 import ListItemSample, { FRAME as ListItemFrame } from './component/molecule/text-list/sample.list-item.js';
-import ContainedListSample from './component/composite/contained-list/sample.contained-list.js';
+import ContainedListSample, { FRAME as ContainedListFrame } from './component/composite/contained-list/sample.contained-list.js';
 import ContainedListItemSample from './component/composite/contained-list/sample.contained-list-item.js';
 
 export const catalog = Object.freeze([
@@ -246,13 +246,13 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'NotificationActionButton', family: 'Notification', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: NotificationActionButtonSample }),
   Object.freeze({ name: 'Breadcrumb', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: BreadcrumbFrame, sample: BreadcrumbSample }),
   Object.freeze({ name: 'BreadcrumbItem', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), frame: null, sample: BreadcrumbItemSample }),
-  Object.freeze({ name: 'BreadcrumbSkeleton', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: null, sample: BreadcrumbSkeletonSample }),
+  Object.freeze({ name: 'BreadcrumbSkeleton', family: 'Breadcrumb', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: BreadcrumbSkeletonFrame, sample: BreadcrumbSkeletonSample }),
   Object.freeze({ name: 'Accordion', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionFrame, sample: AccordionSample }),
   Object.freeze({ name: 'AccordionItem', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: AccordionItemFrame, sample: AccordionItemSample }),
   Object.freeze({ name: 'AccordionSkeleton', family: 'Accordion', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: AccordionSkeletonFrame, sample: AccordionSkeletonSample }),
   Object.freeze({ name: 'UnorderedList', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: UnorderedListFrame, sample: UnorderedListSample }),
   Object.freeze({ name: 'OrderedList', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze([]), frame: OrderedListFrame, sample: OrderedListSample }),
   Object.freeze({ name: 'ListItem', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: ListItemFrame, sample: ListItemSample }),
-  Object.freeze({ name: 'ContainedList', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: null, sample: ContainedListSample }),
+  Object.freeze({ name: 'ContainedList', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze([]), frame: ContainedListFrame, sample: ContainedListSample }),
   Object.freeze({ name: 'ContainedListItem', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), frame: null, sample: ContainedListItemSample })
 ]);
