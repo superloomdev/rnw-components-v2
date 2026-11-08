@@ -10,6 +10,7 @@ export default Object.freeze({
   iconTop: 'control.notification_icon_top',
   markerWidth: 'control.notification_marker_width',
   minHeight: 'control.notification_min_height',
+  minWidth: 'control.notification_width',
   outlineWidth: 'control.notification_outline_width',
   textPaddingBlock: 'control.notification_text_padding_block',
   titleGap: 'control.notification_title_gap',

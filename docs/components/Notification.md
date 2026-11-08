@@ -100,6 +100,7 @@ ActionableNotification is a status notification carrying an action: the `inline`
 | `iconTop` | `control.notification_icon_top` |
 | `markerWidth` | `control.notification_marker_width` |
 | `minHeight` | `control.notification_min_height` |
+| `minWidth` | `control.notification_width` |
 | `outlineWidth` | `control.notification_outline_width` |
 | `textPaddingBlock` | `control.notification_text_padding_block` |
 | `titleGap` | `control.notification_title_gap` |
@@ -164,6 +165,7 @@ Callout is the persistent inline message - marker, kind glyph, title and subtitl
 | `iconTop` | `control.notification_icon_top` |
 | `markerWidth` | `control.notification_marker_width` |
 | `minHeight` | `control.notification_min_height` |
+| `minWidth` | `control.notification_width` |
 | `outlineWidth` | `control.notification_outline_width` |
 | `textPaddingBlock` | `control.notification_text_padding_block` |
 | `titleGap` | `control.notification_title_gap` |
@@ -223,6 +225,7 @@ InlineNotification is the status band that sits in the page flow: a marker and k
 | `iconTop` | `control.notification_icon_top` |
 | `markerWidth` | `control.notification_marker_width` |
 | `minHeight` | `control.notification_min_height` |
+| `minWidth` | `control.notification_width` |
 | `outlineWidth` | `control.notification_outline_width` |
 | `textPaddingBlock` | `control.notification_text_padding_block` |
 | `titleGap` | `control.notification_title_gap` |

@@ -84,9 +84,11 @@ export default function createNotificationParts (ctx) {
         flexDirection: 'row',
         flexWrap: 'wrap',
         maxWidth: opts.fluid === true ? opts.width : undefined,
+        minWidth: opts.fluid === true ? ctx.metric(opts.owner, 'minWidth') : undefined,
         minHeight: ctx.metric(opts.owner, 'minHeight'),
-        // Inline bands are `inline-size: 100%` capped at the cell; toast
-        // bands take the cell outright
+        // Inline bands are `inline-size: 100%` held between upstream's 288
+        // floor (`minWidth`) and the cell's cap (`width`); toast bands take
+        // the cell outright
         width: opts.fluid === true ? 100 + PCT : opts.width
       }, opts.level !== undefined ? opts.level : null]
     }, children);
