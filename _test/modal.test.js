@@ -241,6 +241,23 @@ describe('Modal: the dialog width follows the layer space ratio', function () {
     });
   }
 
+  test('an unbounded dialog does not paint until the host reports its space', async function () {
+    const system = systemFor('carbon');
+    const t = buildNative('carbon').tokens;
+    const hidden = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 0, height: 0 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', children: 'B' })));
+    const before = hidden.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.notEqual(before, null);
+    assert.equal(before.style.opacity, '0', 'an unmeasured host means an unpainted dialog');
+    await cleanup();
+    const shown = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 640, height: 400 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', children: 'B' })));
+    const after = shown.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.equal(after.style.opacity, '', 'a measured host paints the dialog');
+    assert.equal(after.style.width, (640 * t['control.dialog_width_ratio']) + 'px', 'the width follows the host ratio');
+    await cleanup();
+  });
+
   test('carbon size xs in an 800-wide host draws the xs ratio of it', async function () {
     const system = systemFor('carbon');
     const t = buildNative('carbon').tokens;

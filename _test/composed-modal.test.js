@@ -276,3 +276,75 @@ describe('ComposedModal: behavior through the DOM', function () {
   });
 
 });
+
+/********************************************************************
+A staged host: publishes `hosted` with a fixed size through the system's
+OverlayContext and paints every registered layer inline.
+
+@param {Object} props - { ctx, size, children }
+*********************************************************************/
+function StagedHost (props) {
+
+  const nextIdRef = React.useRef(0);
+  const [layers, setLayers] = React.useState([]);
+  const register = React.useCallback(function (layer) {
+    const id = nextIdRef.current;
+    nextIdRef.current += 1;
+    setLayers(function (current) {
+      return current.concat(Object.assign({}, layer, { id: id }));
+    });
+    return id;
+  }, []);
+  const unregister = React.useCallback(function (id) {
+    setLayers(function (current) {
+      return current.filter(function (layer) {
+        return layer.id !== id;
+      });
+    });
+  }, []);
+  const value = React.useMemo(function () {
+    return {
+      hosted: true,
+      layers: layers,
+      origin: { x: 0, y: 0 },
+      size: props.size,
+      register: register,
+      unregister: unregister
+    };
+  }, [layers, register, unregister, props.size]);
+
+  return React.createElement(props.ctx.behaviors.OverlayContext.Provider, { value: value },
+    props.children,
+    layers.map(function (layer) {
+      return React.createElement('div', { key: layer.id }, layer.render());
+    }));
+
+}
+
+describe('ComposedModal: an unbounded dialog waits for its layer space', function () {
+
+  test('the container paints nothing until the host reports, then takes the ratio', async function () {
+    let captured = null;
+    const probe = function (ctx) {
+      captured = ctx;
+      return function () {
+        return null;
+      };
+    };
+    const Registry = buildSystem('carbon', Object.assign({}, factories, { ContextProbe: probe }));
+    const t = buildNative('carbon').tokens;
+    const hidden = await render(React.createElement(StagedHost, { ctx: captured, size: { width: 0, height: 0 } },
+      React.createElement(Registry.ComposedModal, { open: true, header: { title: 'T' }, children: 'B' })));
+    const before = hidden.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.notEqual(before, null);
+    assert.equal(before.style.opacity, '0', 'an unmeasured host means an unpainted dialog');
+    await cleanup();
+    const shown = await render(React.createElement(StagedHost, { ctx: captured, size: { width: 640, height: 400 } },
+      React.createElement(Registry.ComposedModal, { open: true, header: { title: 'T' }, children: 'B' })));
+    const after = shown.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.equal(after.style.opacity, '', 'a measured host paints the dialog');
+    assert.equal(after.style.width, (640 * t['control.dialog_width_ratio']) + 'px', 'the width follows the host ratio');
+    await cleanup();
+  });
+
+});

@@ -72,6 +72,7 @@ export default function Modal (ctx) {
     const size = Utils.inArray(['xs', 'sm', 'md', 'lg'], props.size) ? props.size : 'md';
     const suffix = size === 'md' ? '' : '_' + size;
     const space = useLayerSpace();
+    const measured = Utils.isNumber(space.width) && space.width > 0 && Utils.isNumber(space.height) && space.height > 0;
     const widthRatio = ctx.token('control.dialog_width_ratio' + suffix);
     const heightRatio = ctx.token('control.dialog_height_ratio' + suffix);
     const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * widthRatio : undefined);
@@ -109,6 +110,8 @@ export default function Modal (ctx) {
         maxWidth: bounded ? metrics.maxWidth : undefined,
         minHeight: metrics.minHeight > 0 ? metrics.minHeight : undefined,
         minWidth: bounded ? metrics.minWidth : undefined,
+        // An unbounded dialog sizes from its layer space; until the host reports it the dialog does not paint (upstream sizes the container in CSS, so it never shows at another size)
+        opacity: measured || bounded ? undefined : 0,
         outlineStyle: 'none',
         position: 'relative',
         width: bounded ? undefined : dialogWidth
