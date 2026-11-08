@@ -104,12 +104,12 @@ describe('Modal: every sample state under every template', function () {
         const header = parts.header();
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
         assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px', 'the header sits in flow above the content');
-        const heading = header.children[props.label === undefined ? 0 : 1];
+        const heading = header.firstElementChild.children[props.label === undefined ? 0 : 1];
         assert.equal(heading.textContent, props.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');
         assert.equal(heading.style.color, cssValue('color', t['color.dialog_heading']));
         if (props.label !== undefined) {
-          const eyebrow = header.children[0];
+          const eyebrow = header.firstElementChild.children[0];
           assert.equal(eyebrow.textContent, props.label);
           assert.equal(eyebrow.style.fontSize, t['type.label01'].fontSize + 'px');
           assert.equal(eyebrow.style.color, cssValue('color', t['color.text_secondary']));

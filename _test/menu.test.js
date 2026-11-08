@@ -368,3 +368,17 @@ describe('Menu: a nested selectable still reserves the mark seat', function () {
   });
 
 });
+
+describe('Menu: an open hosted menu focuses its items', function () {
+
+  test('the first enabled item takes focus the pass the items mount, no timer', async function () {
+    const Registry = registryFor('carbon');
+    const container = await render(React.createElement(Registry.OverlayHost, { testID: 'menu-host' },
+      React.createElement(Registry.Menu, { items: [{ label: 'One' }, { label: 'Two' }], open: true, x: 8, y: 8 })));
+    const item = container.querySelector('[role="menuitem"]');
+    assert.notEqual(item, null, 'the hosted menu mounts its items');
+    assert.equal(document.activeElement, item, 'the first enabled item takes focus on open');
+    await cleanup();
+  });
+
+});

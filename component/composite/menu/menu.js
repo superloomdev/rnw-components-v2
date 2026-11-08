@@ -91,13 +91,26 @@ export default function Menu (ctx) {
       y: props.y,
       active: open
     });
+    const focusedForOpen = React.useRef(false);
     React.useEffect(function () {
       if (open) {
+        focusedForOpen.current = false;
         positioned.measure();
-        // The reference opens with the focus on the first enabled item
-        collection.focusItem('first', null);
       }
     }, [open, positioned.measure]);
+    // The surface takes the focus the commit its items mount (upstream Menu.js:82 focuses as it opens); a hosted surface mounts a pass after open
+    React.useLayoutEffect(function () {
+      if (open !== true || focusedForOpen.current === true) {
+        return;
+      }
+      const enabled = collection.state.items.find(function (entry) {
+        return entry.disabled !== true;
+      });
+      if (enabled !== undefined) {
+        focusedForOpen.current = true;
+        collection.focusItem('first', null);
+      }
+    }, [open, collection.state.items, collection.focusItem]);
     const dismiss = usePopoverDismiss({
       contentRef: menuRef,
       onRequestClose: props.onClose,

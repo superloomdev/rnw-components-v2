@@ -301,6 +301,12 @@ export default function OverflowMenu (ctx) {
       iconSize: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('OverflowMenu', 'iconSize'),
       kind: 'ghost',
       label: props.iconDescription === undefined ? 'Options' : props.iconDescription,
+      // Escape closes an open menu from the trigger too: the panel takes focus a frame after it opens (upstream closes from the menu's keydown, OverflowMenu.js:183-195)
+      onKeyDown: function (event) {
+        if (openRef.current === true && event.key === 'Escape') {
+          close(event);
+        }
+      },
       onPress: function () {
         if (open) {
           close();

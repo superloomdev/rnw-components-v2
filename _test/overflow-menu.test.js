@@ -131,6 +131,28 @@ describe('OverflowMenu: the open panel', function () {
     assert.equal(document.activeElement, trigger, 'Escape refocuses the trigger');
   });
 
+  test('Escape on the trigger closes the open panel too', async function () {
+    let closed = 0;
+    const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {
+      items: OPEN.props.items,
+      onClose: function () {
+        closed += 1;
+      }
+    }));
+    const trigger = container.querySelector('button');
+    await act(async function () {
+      trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the trigger opens the panel');
+    // The window the Escape can land in: the panel mounts before its options take focus
+    await act(async function () {
+      trigger.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    });
+    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape from the trigger closes the panel');
+    assert.equal(closed, 1, 'onClose fired once');
+    await cleanup();
+  });
+
   test('an option press calls onPress then closes and refocuses the trigger', async function () {
     const chosen = [];
     const container = await render(React.createElement(registryFor('carbon').OverflowMenu, {

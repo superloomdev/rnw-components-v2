@@ -173,6 +173,7 @@ export default function IconButton (ctx) {
       // A composing parent's mousedown rule (the combo button's trigger
       // suppresses the press focus)
       onMouseDown: props.onMouseDown,
+      onKeyDown: props.onKeyDown,
       testID: props.testID,
       style: ctx.pressTarget({ height: buttonHeight, width: buttonWidth })
     })));

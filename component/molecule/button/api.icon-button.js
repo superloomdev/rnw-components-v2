@@ -34,6 +34,7 @@ export default Object.freeze({
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws under hover (the overflow menu\'s trigger hover); default the kind\'s hover cell.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws while pressed (the copy button\'s pressed fill); default the hover leaf, then the kind\'s active cell.' },
     onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler on the pressable (the combo button\'s trigger suppresses the press focus).' },
+    onKeyDown: { type: 'function', required: false, description: 'Composition prop: a keydown handler on the pressable (the overflow menu\'s trigger closes its open menu on Escape).' },
     'aria-controls': { type: 'string', required: false, description: 'Composition prop: the id of the layer the trigger controls (the combo button\'s menu).' },
     'aria-expanded': { type: 'boolean', required: false, description: 'Composition prop: whether the layer the trigger controls is open (the combo button\'s menu).' },
     'aria-haspopup': { type: 'boolean', required: false, description: 'Composition prop: the trigger opens a popup (the combo button\'s menu).' }

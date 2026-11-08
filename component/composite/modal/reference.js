@@ -49,8 +49,8 @@ export default Object.freeze({
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.cds--modal', ours: '[data-testid="modal-scrim"]', measure: 'box', compare: ['backgroundColor'] }),
     container: Object.freeze({ upstream: '.cds--modal-container', ours: '[role="dialog"], [role="alertdialog"]', measure: 'box', compare: ['width', 'backgroundColor', 'borderWidth', 'borderColor', 'borderRadius', 'boxShadow'] }),
-    heading: Object.freeze({ upstream: '.cds--modal-header__heading', ours: '[role="dialog"] > div:first-child > [dir="auto"]:last-child', measure: 'text' }),
-    label: Object.freeze({ upstream: '.cds--modal-header__label', ours: '[role="dialog"] > div:first-child > [dir="auto"]:first-child', measure: 'text', optional: true }),
+    heading: Object.freeze({ upstream: '.cds--modal-header__heading', ours: '[role="dialog"] > div:first-child [dir="auto"]:last-child', measure: 'text' }),
+    label: Object.freeze({ upstream: '.cds--modal-header__label', ours: '[role="dialog"] > div:first-child [dir="auto"]:first-child', measure: 'text', optional: true }),
     body: Object.freeze({ upstream: '.cds--modal-content', ours: '[data-part="modalBody"]', measure: 'box', compare: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] }),
     close: Object.freeze({ upstream: '.cds--modal-close svg', ours: '[role="dialog"] svg', measure: 'box', optional: true, compare: ['width', 'height'] }),
     action: Object.freeze({ upstream: '.cds--modal-footer .cds--btn', ours: '[data-part="modalFooter"] [role="button"]', measure: 'box', compare: ['height', 'backgroundColor'] })
