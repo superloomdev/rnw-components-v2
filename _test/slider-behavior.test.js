@@ -19,6 +19,7 @@ import debug from 'helper-debug';
 import createSliderBehaviors from '../behaviors/slider.js';
 import createStateBehaviors from '../behaviors/state.js';
 import createLocalBehaviors from '../behaviors/local.js';
+import createDomBehaviors from '../behaviors/dom.js';
 import createPlatform from '../component/platform.js';
 
 const Utils = utils({});
@@ -48,6 +49,7 @@ function sliderFor (os) {
   return createSliderBehaviors({
     React: React,
     Utils: Utils,
+    dom: createDomBehaviors({ Utils: Utils }),
     platform: platform,
     useControllableState: state.useControllableState,
     useInteractionState: local.useInteractionState
