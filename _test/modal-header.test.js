@@ -29,14 +29,14 @@ describe('ModalHeader: the member draws its cells', function () {
       assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px', 'the header sits in flow above the content');
       assert.equal(header.style.paddingRight, (t['anatomy.dialog_close'] === 'shown' ? t['control.icon_button_size'] : t['control.dialog_padding_inline']) + 'px');
 
-      const eyebrow = header.children[0];
+      const eyebrow = header.firstElementChild.children[0];
       assert.equal(eyebrow.textContent, 'Account');
       assert.equal(eyebrow.style.fontSize, t['type.label01'].fontSize + 'px');
       assert.equal(eyebrow.style.color, cssValue('color', t['color.text_secondary']));
       assert.equal(eyebrow.style.display, t['anatomy.dialog_label'] === 'shown' ? '' : 'none');
       assert.equal(eyebrow.style.marginBottom, t['control.dialog_header_gap'] + 'px');
 
-      const heading = header.children[1];
+      const heading = header.firstElementChild.children[1];
       assert.equal(heading.textContent, 'T');
       assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');
       assert.equal(heading.style.color, cssValue('color', t['color.dialog_heading']));

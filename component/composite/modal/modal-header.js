@@ -47,7 +47,9 @@ export default function ModalHeader (ctx) {
 
     // Render the header block and, where shown, the close seat
     return React.createElement(React.Fragment, null,
-      React.createElement(Utils.isNumber(props.maxHeight) ? ScrollView : View, {
+      // One element shape in every form: a bounded header scrolls, an unbounded one does not
+      React.createElement(ScrollView, {
+        scrollEnabled: Utils.isNumber(props.maxHeight),
         style: [{
           // The header sits in flow, its bottom margin above the content's
           // top padding, as upstream; a bounded dialog caps it and lets it

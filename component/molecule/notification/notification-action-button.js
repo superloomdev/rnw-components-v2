@@ -2,8 +2,8 @@
 // `ctx.Registry.Button` of size `sm` at `control.notification_action_height`,
 // re-colored by the notification cells - inline the ghost action (ink
 // `notification_action`, hover `notification_action_container_hover`,
-// `notification_action_hover` under lowContrast, focus ring
-// `focus_ring_inverse` / `focus`); toast the tertiary-inverse mapping
+// `notification_action_hover` under lowContrast; the inverse ring is the
+// high-contrast notification's only (upstream `_actionable-notification.scss:482-491`), toast the tertiary-inverse mapping
 // (rest transparent with label and 1 px border
 // `notification_action_tertiary_inverse`, hover/active fills `_hover` /
 // `_active` with label `_text`). It must be composed inside a
@@ -84,7 +84,7 @@ export default function NotificationActionButton (ctx) {
       'aria-describedby': props['aria-describedby'],
       borderLeaf: recolor.borderLeaf,
       fill: true,
-      focusRingLeaf: toast || !lowContrast ? 'focus_ring_inverse' : 'focus',
+      focusRingLeaf: !lowContrast ? 'focus_ring_inverse' : 'focus',
       kind: toast ? 'tertiary' : 'ghost',
       onPress: typeof props.onPress === 'function' ? props.onPress : undefined,
       paddingEnd: toast ? ctx.token('spacing.spacing_05') : undefined,

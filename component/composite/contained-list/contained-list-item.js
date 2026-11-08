@@ -23,6 +23,7 @@ export default function ContainedListItem (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
+  const { useButton } = ctx.behaviors;
 
   const SIZES = Object.freeze({ lg: 'size_large', md: 'size_medium', sm: 'size_small', xl: 'size_xlarge' });
 
@@ -47,10 +48,8 @@ export default function ContainedListItem (ctx) {
     };
     const clickable = Utils.isFunction(props.onPress);
     const disabled = clickable && props.disabled === true;
-    const [hovered, setHovered] = React.useState(false);
-    const [pressed, setPressed] = React.useState(false);
-    const [focused, setFocused] = React.useState(false);
-    const state = { focused: focused, hovered: hovered, pressed: pressed };
+    const button = useButton(props);
+    const state = button.state;
     const labelLeaf = disabled ? 'contained_list_item_label_disabled' : 'contained_list_item_label';
 
     // Build the content: optional icon column, label, optional end action
@@ -80,19 +79,7 @@ export default function ContainedListItem (ctx) {
         : props.action !== undefined ? props.action : null;
 
     // The pressable wrapper when clickable; the ruler under all but the last
-    const body = clickable ? React.createElement(Pressable, { accessibilityRole: 'button', disabled: disabled, onPress: props.onPress, onHoverIn: function () {
-      setHovered(true);
-    }, onHoverOut: function () {
-      setHovered(false);
-    }, onPressIn: function () {
-      setPressed(true);
-    }, onPressOut: function () {
-      setPressed(false);
-    }, onFocus: function () {
-      setFocused(true);
-    }, onBlur: function () {
-      setFocused(false);
-    } }, content) : content;
+    const body = clickable ? React.createElement(Pressable, Object.assign({}, button.rootProps, { accessibilityRole: 'button', disabled: disabled, style: { outlineStyle: 'none' } }), content) : content;
 
     // Return the item with its ruler
     return React.createElement(View, { dataSet: { part: 'item' }, testID: props.testID },
