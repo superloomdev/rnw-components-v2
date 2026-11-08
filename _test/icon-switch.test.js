@@ -31,4 +31,13 @@ describe('IconSwitch: every sample state under every template', function () {
     }
   }
 
+  test('the anchor keeps its content size unless flexed', async function () {
+    const plain = await render(React.createElement(registryFor('carbon').IconSwitch, { icon: 'add', label: 'One' }));
+    assert.equal(plain.firstElementChild.style.flexBasis, '', 'an unflexed segment keeps its content basis');
+    await cleanup();
+    const flexed = await render(React.createElement(registryFor('carbon').IconSwitch, { icon: 'add', label: 'One', flex: true }));
+    assert.equal(flexed.firstElementChild.style.flexBasis, '0px', 'a flexed segment shares the row evenly');
+    await cleanup();
+  });
+
 });

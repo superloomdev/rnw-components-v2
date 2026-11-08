@@ -16,7 +16,8 @@ export default Object.freeze({
     size: { type: 'string', description: '`sm` | `md` | `lg`.' },
     lowContrast: { type: 'boolean', description: 'The low-contrast cells.' },
     separator: { type: 'boolean', description: 'Draws the leading separator.' },
-    separatorFull: { type: 'boolean', description: 'The separator runs the full height.' }
+    separatorFull: { type: 'boolean', description: 'The separator runs the full height.' },
+    flex: { type: 'boolean', description: 'Opt-in: the segment takes an even share of the row; without it the segment keeps its content size.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),

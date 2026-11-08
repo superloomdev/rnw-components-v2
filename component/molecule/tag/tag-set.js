@@ -134,12 +134,14 @@ export default function TagSet (ctx) {
 
     const overflowTag = !Utils.isEmptyArray(hidden) || measuredAll !== true
       ? React.createElement(View, {
+        'aria-hidden': Utils.isEmptyArray(hidden) ? true : undefined,
         onLayout: function (e) {
           setOverflowSeat(e.nativeEvent.layout.width);
         },
         style: { marginBottom: gap, marginEnd: gap, opacity: !Utils.isEmptyArray(hidden) ? 1 : 0 }
       },
       React.createElement(ctx.Registry.OperationalTag, {
+        disabled: Utils.isEmptyArray(hidden),
         onPress: function () {
           setOverflowOpen(overflowOpen !== true);
         },

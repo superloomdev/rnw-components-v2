@@ -98,6 +98,17 @@ describe('TagSet: fit and overflow', function () {
     await cleanup();
   });
 
+  test('before any layout the +0 seat is aria-hidden and disabled', async function () {
+    const parts = await renderSet('carbon', {
+      tags: [{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]
+    });
+    const seat = parts.container.querySelector('button[role="button"]');
+    assert.ok(seat, 'the measuring seat mounts before layouts');
+    assert.notEqual(seat.closest('[aria-hidden="true"]'), null, 'the measuring seat is hidden from assistive technology');
+    assert.equal(seat.disabled === true || seat.getAttribute('aria-disabled') === 'true' || seat.getAttribute('disabled') !== null, true, 'the measuring seat is not focusable');
+    await cleanup();
+  });
+
   test('tag layouts landing after the container and the seat still settle the fit', async function () {
     const parts = await renderSet('carbon', {
       tags: [{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]

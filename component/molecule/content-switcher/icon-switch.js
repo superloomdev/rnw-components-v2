@@ -124,7 +124,7 @@ export default function IconSwitch (ctx) {
     }));
     const segment = React.createElement(View, { style: { alignSelf: 'stretch', position: 'relative' } }, face, pressLayer);
 
-    return React.createElement(ctx.Registry.Tooltip, { anchorStyle: props.flex !== false ? { alignSelf: 'stretch', flexBasis: 0, flexGrow: 1 } : { alignSelf: 'stretch' }, label: props.label }, segment);
+    return React.createElement(ctx.Registry.Tooltip, { anchorStyle: props.flex === true ? { alignSelf: 'stretch', flexBasis: 0, flexGrow: 1 } : { alignSelf: 'stretch' }, label: props.label }, segment);
 
   }
 
