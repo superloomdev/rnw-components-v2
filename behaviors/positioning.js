@@ -515,8 +515,11 @@ export default function createPositioningBehaviors (deps) {
 
     const overlay = React.useContext(OverlayContext);
     const viewport = useViewportSize();
-    const size = overlay !== null && overlay.hosted === true ? overlay.size : undefined;
-    return size !== undefined && size !== null && size.width > 0 && size.height > 0 ? size : viewport;
+    // A hosted layer covers its host: before the host is measured its space is unknown (0), never the window - a fixed layer in a transformed stage resolves against the stage, not the viewport
+    if (overlay !== null && overlay.hosted === true) {
+      return overlay.size;
+    }
+    return viewport;
 
   }
 

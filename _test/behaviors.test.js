@@ -1066,6 +1066,34 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.equal(positioned.layerStyle.top, 30);
   });
 
+  test('useLayerSpace: a hosted layer reads the host size even before it is measured', async function () {
+    let space;
+    function Probe () {
+      space = behaviors.useLayerSpace();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, size: { width: 0, height: 0 }, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(space, { width: 0, height: 0 }, 'an unmeasured host means unknown, never the window');
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, size: { width: 640, height: 400 }, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(space, { width: 640, height: 400 }, 'a measured host box is the layer space');
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    assert.deepEqual(space, { width: window.innerWidth, height: window.innerHeight }, 'unhosted, the space is the viewport');
+  });
+
   test('useViewportLayer: absolute inset 0 inside the host on a native platform', async function () {
     assert.deepEqual(await renderHook(native.useViewportLayer), {
       bottom: 0, left: 0, position: 'absolute', right: 0, top: 0

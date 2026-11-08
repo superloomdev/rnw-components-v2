@@ -114,6 +114,8 @@ export default function Tab (ctx) {
       : null;
     const closeLayer = dismissable
       ? React.createElement(Pressable, {
+        // Only the selected tab's close is exposed (upstream Tabs.js:717 aria-hidden unless selected)
+        'aria-hidden': state.selected === true ? undefined : true,
         'aria-label': 'Remove ' + props.label + ' tab',
         onPress: function () {
           if (typeof props.onClose === 'function') {
