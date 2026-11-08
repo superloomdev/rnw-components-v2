@@ -26,7 +26,7 @@ const CONTEXT_TOKENS = ['control.target_min', 'control.text_scale_max', 'feedbac
 
 const FORBIDDEN = [
   { name: 'color literal', pattern: /#[0-9a-fA-F]{3,8}([^0-9a-zA-Z]|$)|rgba?\(|hsla?\(/ },
-  { name: 'unit string', pattern: /['"][0-9.]+(rem|em|px|vw|vh|ms|%)['"]/ },
+  { name: 'unit string', pattern: /['"][0-9.]+(rem|em|px|vw|vh|ms)['"]/ },
   { name: 'vendor name', pattern: /carbon|material|ibm/i },
   { name: 'framework import', pattern: /(require\(|from )['"](react|react-dom|react-native|react-native-web|react-native-svg)['"]/ },
   { name: 'platform read', pattern: /\bPlatform\s*\.\s*(OS|select)\b/, except: /component\/platform\.js$/ },

@@ -66,8 +66,9 @@ export default function ModalBody (ctx) {
         if (height !== size.content) {
           setLayout({ height: size.height, content: height });
         }
-      },
-      style: { flexGrow: 1 }
+      }
+      // The content is its own height on every platform; the body box
+      // (`bodyStyle`) is what fills the dialog
     },
     Utils.isString(props.children) ? React.createElement(Text, {
       style: [ctx.typeStyle('dialog_body'), { color: ctx.color('dialog_body'), paddingEnd: gutter }]

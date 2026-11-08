@@ -81,8 +81,9 @@ export default function ContentSwitcher (ctx) {
       accessibilityLabel: props.accessibilityLabel,
       testID: props.testID,
       style: {
-        alignSelf: iconOnly ? 'flex-start' : 'stretch',
-        flexGrow: iconOnly ? 0 : 1,
+        // Upstream `.cds--content-switcher` is `width: 100%`; an icon-only
+        // switcher keeps its content width
+        width: iconOnly ? undefined : '100%',
         backgroundColor: lowContrast ? ctx.color('content_switcher_low_contrast_container') : 'transparent',
         borderRadius: ctx.metric('ContentSwitcher', 'radius'),
         outlineColor: ctx.color(items.some(function (i) {
