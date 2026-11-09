@@ -922,7 +922,9 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   descent to the first and last line (a 16-point line height lays out
   19), `textBreakStrategy` `highQuality` wraps earlier than CSS's greedy
   break, and the EditText's own vertical padding lifts a `small` field
-  above its frame's minimum (the field's style zeroes it). Web and iOS
+  above its frame's minimum; the padding and centre alignment are
+  removed here for every input the library mounts, and a multiline
+  input keeps the top alignment CSS gives a textarea. Web and iOS
   know none of the three, so they see no prop change. A caller's own
   `allowFontScaling`, `textBreakStrategy` or style still wins.
 
@@ -940,10 +942,15 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       if (platform.os !== 'android') {
         return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
       }
+      const hostStyle = TextComponent === Lib.ReactNative.TextInput
+        ? (props && props.multiline === true
+          ? { includeFontPadding: false, paddingVertical: 0 }
+          : { includeFontPadding: false, paddingVertical: 0, textAlignVertical: 'center' })
+        : { includeFontPadding: false };
       return Lib.React.createElement(TextComponent, Object.assign(
         { allowFontScaling: false, textBreakStrategy: 'simple' },
         props,
-        { style: [{ includeFontPadding: false }, props && props.style] }));
+        { style: [hostStyle, props && props.style] }));
     }
 
     HostTextDefaults.displayName = 'HostTextDefaults(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
