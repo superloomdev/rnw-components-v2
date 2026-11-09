@@ -10,15 +10,7 @@
 // its stylesheet; `parse-rn` rows mount the upstream React Native component
 // through react-native-web, so its published style objects are what is drawn.
 // `none` rows are counted and skipped, so a skipped row is visible, never
-// silent. Rows whose `reference.js` carries a `second` block are measured
-// the same way against the second reference (the Material web components,
-// themed from the material template) under the material template; a part
-// may name the properties it compares (`compare`) where the two anatomies
-// split one box across elements. Every primary part is measured against the
-// second reference too, or listed in `second.omit` with its reason and the
-// upstream selector that must keep drawing nothing. An omission marked
-// `mask` is a part ours draws by design; the fidelity gate leaves its box
-// out of the pixels too.
+// silent.
 
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -29,7 +21,8 @@ import React from 'react';
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
 import { targetInteractions } from './harness/fidelity.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, reopenPanel } from './harness/page.js';
+import { explainDisagreements } from './harness/expected-gaps.js';
 
 const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
@@ -54,7 +47,6 @@ const noPrimaryTwin = new Set(built.filter(function (row) {
 
 // The template whose values each reference draws
 const REFERENCE_TEMPLATE = 'carbon';
-const SECOND_TEMPLATE = 'material';
 // The second reference paints some colors as a role at an element opacity, where a template
 // states the same color as rgba: the CSS of a shadow is the fidelity gate's pixels, and a text
 // color is compared as its ink (the color at the opacity it is painted at)
@@ -81,6 +73,35 @@ first open cell covers the parts the rest read left hidden.
   state (a main or additional target that resolves to nothing is reported,
   never silently skipped, as the fidelity gate reports them)
 *********************************************************************/
+// A `reopen.states` label reads on its own right after reopening that
+// state: an opened upstream panel focuses its option, closing every
+// sibling's, so each is measured while its own panel is open
+async function rereadReopened (page, component, reference, side, extended, states) {
+  if (reference.reopen === undefined || !Array.isArray(reference.reopen.states)) {
+    return;
+  }
+  for (const label of reference.reopen.states) {
+    if (states[label] === undefined) {
+      continue;
+    }
+    await reopenPanel(page, component.name, label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
+    await page.mouse.move(0, 0);
+    const reread = await readParts(page, component.name, reference.parts, side, reference.origin, { extended: extended, only: label, pauseAnimations: reference.pauseAnimations === true });
+    if (reread[label] !== undefined) {
+      states[label] = reread[label];
+    }
+    await leaveInteraction(page, {
+      escape: reference.escapeOnLeave !== false,
+      releaseBeforeMove: reference.releaseBeforeMove === true,
+      clickOutside: reference.clickOutsideOnLeave === true
+    });
+  }
+}
+
 async function drawnParts (page, component, reference, side, extended, states) {
 
   const parts = reference.parts;
@@ -125,6 +146,11 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && target[side + 'Focus'] ? target[side + 'Focus'] : target[side];
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+          escape: reference.escapeOnLeave !== false,
+          releaseBeforeMove: reference.releaseBeforeMove === true,
+          clickOutside: reference.clickOutsideOnLeave === true
+        });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: target.point === true })) {
           failures.push(entry.label + ' @' + interaction + ': target not found on ' + side);
           continue;
@@ -148,6 +174,11 @@ async function drawnParts (page, component, reference, side, extended, states) {
           return { drawn: drawn, failures: failures };
         }
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+          escape: reference.escapeOnLeave !== false,
+          releaseBeforeMove: reference.releaseBeforeMove === true,
+          clickOutside: reference.clickOutsideOnLeave === true
+        });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(entry.label + ' @' + extra.name + ' ' + interaction + ': additional target "' + extra.name + '" not found on ' + side);
           continue;
@@ -181,6 +212,10 @@ test.describe('measure: reference coverage', function () {
         return entry.name === name;
       });
       for (const state of component.sample) {
+        // A `none` reference mounts nothing by construction
+        if (component.reference.kind === 'none') {
+          continue;
+        }
         expect(component.reference.mount(React, {}, state.props), name + ' / ' + state.label + ': no primary twin but the primary mount drew something').toBeNull();
       }
     }
@@ -207,6 +242,7 @@ test.describe('measure: primary reference', function () {
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference, 'upstream', false, upstream);
       const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
       expect(upstreamDrawn.failures, name + ': declared targets missing upstream').toEqual([]);
 
@@ -215,6 +251,7 @@ test.describe('measure: primary reference', function () {
       const opened = await openShowcase(page, REFERENCE_TEMPLATE, name, { measure: true, hosted: false });
       expect(opened.status.errors).toEqual([]);
       const ours = await readParts(page, name, parts, 'ours', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
+      await rereadReopened(page, component, component.reference, 'ours', false, ours);
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
       const undrawn = Object.keys(parts).filter(function (part) {
@@ -223,121 +260,18 @@ test.describe('measure: primary reference', function () {
       expect(undrawn, name + ': parts the upstream never draws (a selector matches nothing)').toEqual([]);
 
       test.info().annotations.push({ type: 'measure', description: name + ': ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });
-      expect(findDisagreements(ours, upstream, parts), name + ' differs from the rendered upstream').toEqual([]);
+      const lines = findDisagreements(ours, upstream, parts);
+      // A disagreement an expected gap explains is set aside; a gap that no
+      // longer reproduces is stale and fails (FIDELITY RULES 5)
+      const gate = explainDisagreements(lines, GAPS, name, 'measure');
+      if (gate.explained.length > 0) {
+        test.info().annotations.push({ type: 'measure', description: name + ': ' + gate.explained.length + ' disagreement(s) covered by expected gaps' });
+      }
+      expect(gate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+      expect(gate.unexplained, name + ' differs from the rendered upstream').toEqual([]);
     });
   }
 
 });
 
 
-test.describe('measure: second reference', function () {
-
-  const withSecond = components.filter(function (component) {
-    return component.reference !== null && component.reference.second !== undefined;
-  });
-
-  test('every row with a second twin carries a second reference block', function () {
-    const twinned = built.filter(function (row) {
-      return row.material_twin !== 'none' && row.reference.kind === 'render-web';
-    }).map(function (row) {
-      return row.name;
-    });
-    expect(withSecond.map(function (component) {
-      return component.name;
-    }).sort()).toEqual(twinned.sort());
-  });
-
-  // A part left out of the second comparison is a part nothing checks there: each one
-  // carries its reason and the upstream selector that proves the reason still holds
-  test('every primary part is measured against the second reference or omitted with a reason', function () {
-    expect(withSecond.length).toBeGreaterThanOrEqual(1);
-    const problems = [];
-    for (const component of withSecond) {
-      const second = component.reference.second;
-      const omit = second.omit || {};
-      for (const part of Object.keys(component.reference.parts)) {
-        if (second.parts[part] === undefined && omit[part] === undefined) {
-          problems.push(component.name + ' / ' + part + ': neither measured nor omitted');
-        }
-      }
-      for (const part of Object.keys(omit)) {
-        if (second.parts[part] !== undefined) {
-          problems.push(component.name + ' / ' + part + ': both measured and omitted');
-        }
-        if (typeof omit[part].reason !== 'string' || omit[part].reason.length === 0) {
-          problems.push(component.name + ' / ' + part + ': omitted with no reason');
-        }
-        if (typeof omit[part].upstream !== 'string' || omit[part].upstream.length === 0) {
-          problems.push(component.name + ' / ' + part + ': omitted with no upstream selector');
-        }
-        if (omit[part].mask !== undefined && omit[part].mask !== true) {
-          problems.push(component.name + ' / ' + part + ': mask is true or absent');
-        }
-      }
-    }
-    expect(problems, 'primary parts the second reference does not account for').toEqual([]);
-  });
-
-  for (const component of withSecond) {
-    test(component.name + ': parts match the second reference', async function ({ page }) {
-      const parts = component.reference.second.parts;
-      const reference = await openReference(page, component.name, 'second');
-      expect(reference.errors).toEqual([]);
-      expect(reference.cells, component.name + ': the second reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, component.name, parts, 'upstream', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
-      const upstreamDrawn = await drawnParts(page, component, component.reference.second, 'upstream', true, upstream);
-      expect(upstreamDrawn.failures, component.name + ': declared targets missing upstream').toEqual([]);
-
-      // An omitted part must still draw nothing upstream; the moment it does, its omission is stale
-      const omit = component.reference.second.omit || {};
-      const probes = {};
-      for (const part of Object.keys(omit)) {
-        probes[part] = { upstream: omit[part].upstream, measure: 'box' };
-      }
-      const probed = await readParts(page, component.name, probes, 'upstream');
-      const drawnOmissions = Object.keys(probes).filter(function (part) {
-        return Object.keys(probed).some(function (state) {
-          return probed[state][part] !== null && probed[state][part].visible === true;
-        });
-      });
-      expect(drawnOmissions, component.name + ': omitted parts the second reference draws; measure them').toEqual([]);
-      const opened = await openShowcase(page, SECOND_TEMPLATE, component.name, { measure: true, hosted: false });
-      expect(opened.status.errors).toEqual([]);
-      const ours = await readParts(page, component.name, parts, 'ours', component.reference.second.origin, { extended: true, pauseAnimations: component.reference.second.pauseAnimations === true });
-      const undrawn = Object.keys(parts).filter(function (part) {
-        return !upstreamDrawn.drawn.has(part);
-      });
-      expect(undrawn, component.name + ': parts the second reference never draws').toEqual([]);
-      test.info().annotations.push({ type: 'measure', description: component.name + ' (second): ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });
-
-      // A disagreement an expected gap explains (a queued contract request or template
-      // finding) is set aside; a gap that no longer reproduces is stale and fails
-      const gaps = GAPS.filter(function (gap) {
-        return gap.check === 'measure-second' && gap.component === component.name;
-      });
-      // Colors are compared as painted: a box color at its element's opacity, a text color as its ink
-      const lines = findDisagreements(ours, upstream, parts, ['ink'], AS_PAINTED);
-      const explained = function (line) {
-        return gaps.find(function (gap) {
-          const inState = !gap.states || gap.states.some(function (state) {
-            return line.indexOf(state + ' / ') === 0;
-          });
-          return inState && (line.indexOf(' / ' + gap.part + ' / ' + gap.property + ':') !== -1 || (gap.property === '*' && line.indexOf(' / ' + gap.part + ' / ') !== -1) || (gap.property === '*' && line.indexOf(' / ' + gap.part + ': ') !== -1));
-        });
-      };
-      const stale = gaps.filter(function (gap) {
-        return !lines.some(function (line) {
-          return explained(line) === gap;
-        });
-      });
-      expect(stale.map(function (gap) {
-        return gap.part + ' / ' + gap.property + ' (' + gap.request + ')';
-      }), component.name + ': expected gaps that no longer reproduce; remove them').toEqual([]);
-      test.info().annotations.push({ type: 'measure', description: component.name + ' (second): ' + lines.filter(explained).length + ' disagreement(s) explained by ' + gaps.length + ' expected gap(s)' });
-      expect(lines.filter(function (line) {
-        return !explained(line);
-      }), component.name + ' differs from the second reference').toEqual([]);
-    });
-  }
-
-});

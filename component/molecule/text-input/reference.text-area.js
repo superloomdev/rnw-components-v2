@@ -5,8 +5,7 @@
 // element itself, its error icon sits absolute at the wrapper's top end and
 // its counter sits beside the label. The parts compared are the label, the
 // counter, the frame, the value, the icon and the helper. The second
-// reference is the same field in its textarea type and puts the counter in
-// the supporting row.
+// reference was retired (batch R).
 
 let counter = 0;
 
@@ -45,46 +44,5 @@ export default Object.freeze({
     value: Object.freeze({ upstream: '.cds--text-area', ours: 'textarea', measure: 'type' }),
     icon: Object.freeze({ upstream: 'svg.cds--text-area__invalid-icon path', ours: 'div:has(> textarea) svg path', measure: 'box', optional: true }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:nth-child(1)', measure: 'text', optional: true })
-  }),
-  // The second reference is the same field drawn as its textarea type; its
-  // counter lives in the supporting row, and its outline is drawn on
-  // pseudo-elements of the outline's three segments, so the frame compares
-  // geometry, radius and the outline color read from the leading segment
-  second: Object.freeze({
-    origin: 'frame',
-    body: Object.freeze({ width: 320 }),
-    mount: function (React, upstream, props) {
-      return React.createElement('md-outlined-text-field', {
-        type: 'textarea',
-        label: props.label,
-        'aria-label': typeof props.label === 'string' ? undefined : props.accessibilityLabel,
-        placeholder: props.placeholder,
-        value: props.value || '',
-        rows: props.rows === undefined ? 4 : props.rows,
-        disabled: props.disabled === true,
-        error: props.invalid === true,
-        errorText: props.invalidText,
-        supportingText: props.helperText,
-        counter: typeof props.maxCount === 'number',
-        maxLength: props.maxCount,
-        style: { width: 320 }
-      });
-    },
-    target: Object.freeze({ upstream: 'md-outlined-text-field', ours: 'textarea' }),
-    parts: Object.freeze({
-      frame: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .outline', ours: 'div:has(> textarea)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius'] }),
-      edge: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .outline-start', pseudo: '::before', ours: 'div:has(> textarea)', measure: 'box', compare: ['borderTopWidth', 'borderBottomColor'] }),
-      label: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .label:not(.hidden)', ours: ':scope > div > div:nth-child(1) > [dir="auto"]:nth-child(1)', measure: 'text' }),
-      // The upstream counter reads `4 / 100` with spaced slashes, the
-      // 'spaced' value of the counter format ours writes here; the upstream
-      // applies no tracking to supporting text, so ours runs its glyphs
-      // wider while staying pinned to the same trailing edge
-      counter: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .counter', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:last-child', measure: 'text', optional: true, edge: 'end' }),
-      value: Object.freeze({ upstream: 'md-outlined-text-field >>> textarea', ours: 'textarea', measure: 'type' }),
-      message: Object.freeze({ upstream: 'md-outlined-text-field >>> md-outlined-field >>> .supporting-text > span', ours: ':scope > div > div:nth-child(3) > [dir="auto"]:nth-child(1)', measure: 'text', optional: true })
-    }),
-    omit: Object.freeze({
-      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot="trailing-icon"]', mask: true })
-    })
   })
 });

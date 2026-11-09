@@ -4,7 +4,11 @@
 export default Object.freeze({
   name: 'Tabs',
   props: Object.freeze({
-    items: { type: 'array', required: true, description: 'The tabs: `{ label, disabled }` entries, in order.' },
+    items: { type: 'array', required: true, description: 'The tabs: `{ label, disabled?, icon?, secondaryLabel?, iconOnly? }` entries, in order.' },
+    panels: { type: 'array', required: false, description: 'One node or string per tab; renders `TabPanels` under the list.' },
+    activation: { type: 'string', required: false, description: '`automatic` (default) selects on arrow moves; `manual` moves the active tab and selects on Enter or Space.' },
+    dismissable: { type: 'boolean', required: false, description: 'Each tab draws a close button; Delete closes the active tab.' },
+    onTabCloseRequest: { type: 'function', required: false, description: 'Called with the index when a tab asks to close.' },
     selectedIndex: { type: 'number', required: false, description: 'Controlled selection. Absent: the bar keeps its own, starting from `defaultSelectedIndex`.' },
     defaultSelectedIndex: { type: 'number', required: false, description: 'Initially selected while uncontrolled; default 0.' },
     onChange: { type: 'function', required: false, description: 'Called with `{ selectedIndex }` when the selection changes.' },

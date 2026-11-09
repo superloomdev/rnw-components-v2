@@ -55,7 +55,7 @@ The host supplies the scale: `PixelRatio.getFontScale()` on native (re-read on t
 
 ## Sample brands
 
-Each template package ships sample brand layers under `brands` (`{ name, light: { tokens }, dark: { tokens } }`, validated against the contract by the template's tests): the default template ships `rounded` and `acme`, the primary template ships `superloom` and `rounded`, the Material template ships `rounded` (a no-op proof there, since its radii are already soft). A host applies the layer matching its scheme's polarity on top of the base and any variants:
+Each template package ships sample brand layers under `brands` (`{ name, light: { tokens }, dark: { tokens } }`, validated against the contract by the template's tests): the default template ships `rounded` and `acme`, the primary template ships `superloom` and `rounded`. A host applies the layer matching its scheme's polarity on top of the base and any variants:
 
 ```js
 Themer.buildTheme(template, [brand[polarity]], 'native', { variant: { form, platform } });

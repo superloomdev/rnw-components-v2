@@ -32,6 +32,7 @@ Build the multiselect behaviors for one component system.
 @param {Object} deps.Utils                  - helper-utils
 @param {Object} deps.useSelect              - The controls layer's select behavior
 @param {Object} deps.useControllableState   - The state family's resolver
+@param {Object} deps.dom                    - The dom.js family's reach helpers
 
 @return {Object} - { useMultiSelect }
 *********************************************************************/
@@ -41,6 +42,7 @@ export default function createMultiSelectBehaviors (deps) {
   const Utils = deps.Utils;
   const useSelect = deps.useSelect;
   const useControllableState = deps.useControllableState;
+  const { focusNode } = deps.dom;
   const { useCallback, useEffect, useMemo, useRef, useState } = React;
 
   // Fallbacks keep identity stable so memos do not churn on bad props,
@@ -102,10 +104,7 @@ export default function createMultiSelectBehaviors (deps) {
   // The focus target's ref capability, duck-typed; a clear or caret press
   // returns focus to the input or trigger without any DOM or platform read
   function focusInput (inputRef) {
-    const node = inputRef.current;
-    if (node !== null && node !== undefined && typeof node.focus === 'function') {
-      node.focus();
-    }
+    focusNode(inputRef.current);
   }
 
 

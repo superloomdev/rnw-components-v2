@@ -1,8 +1,6 @@
 // Info: Writes the fidelity census sheet from machine output only: the
 // census runs' findings (`_test/census/test-results/census/*.json`, written
-// by `_test/census/census.spec.js`) and the second reference's own
-// component token files for the built rows (`@material/web` 2.5.0, the
-// pinned token version). Every number and every row is the scripts'; the
+// by `_test/census/census.spec.js`). Every number and every row is the scripts'; the
 // reasoning tier adds its classification beside the sheet, never in it.
 //
 // Usage: node scripts/census.js [--out <path>]   (default: ../__dev__/evidence/0160/census-m1.md)
@@ -15,62 +13,9 @@ import { REPO_ROOT } from './lib/components.js';
 const outIndex = process.argv.indexOf('--out');
 const OUT = outIndex === -1 ? resolve(REPO_ROOT, '..', '__dev__', 'evidence', '0160', 'census-m1.md') : resolve(process.argv[outIndex + 1]);
 const RUNS = join(REPO_ROOT, '_test', 'census', 'test-results', 'census');
-const TOKENS = join(REPO_ROOT, '_test', 'node_modules', '@material', 'web', 'tokens', 'versions', 'v0_192');
-
-// The second reference's component token files the built rows draw
-const TOKEN_FILES = Object.freeze({
-  Button: ['filled-button', 'outlined-button', 'text-button', 'filled-tonal-button', 'elevated-button'],
-  Checkbox: ['checkbox'],
-  TextInput: ['outlined-text-field'],
-  Select: ['outlined-select']
-});
-
 // The perceptual budget a state is held to (the roster's default)
 const BUDGET = 2;
 
-
-/********************************************************************
-Every token a component token file names, with the value it states:
-a system role (`md-sys-color.primary`), a hard value (`12px`, `0.38`), or
-a reference to another file's token.
-
-@param {String} file - Token file stem, e.g. 'outlined-select'
-
-@return {Array} - [{ name, value }]
-*********************************************************************/
-function loadTokenFile (file) {
-
-  const content = readFileSync(join(TOKENS, '_md-comp-' + file + '.scss'), 'utf8');
-  const body = content.slice(content.indexOf('$tokens: ('));
-  const out = [];
-  const pattern = /^\s+'([a-z0-9-]+)':\s*([\s\S]*?),\n(?=\s+'|\s*\))/gm;
-  let match;
-  while ((match = pattern.exec(body)) !== null) {
-    const raw = match[2].replace(/\s+/g, ' ').trim();
-    const sys = /map\.get\(\$deps, '(md-sys-[a-z-]+)', '([a-z0-9-]+)'\)/.exec(raw);
-    const hard = /if\(\$exclude-hardcoded-values, null, ([^)]+)\)/.exec(raw);
-    out.push({ name: match[1], value: sys ? sys[1].replace('md-sys-', '') + '.' + sys[2] : hard ? hard[1] : raw.slice(0, 80) });
-  }
-
-  return out;
-
-}
-
-
-/********************************************************************
-The state a token belongs to, from its name.
-
-@param {String} name - Token name
-
-@return {String}
-*********************************************************************/
-function stateOf (name) {
-
-  const match = /^(disabled|hover|focus|pressed|error-focus|error-hover|error|selected|unselected)-/.exec(name);
-
-  return match ? match[1] : 'rest';
-
-}
 
 
 const runs = existsSync(RUNS) ? readdirSync(RUNS).filter(function (file) {
@@ -129,27 +74,6 @@ for (const run of runs) {
   lines.push('');
 }
 
-lines.push('## Second reference component tokens');
-lines.push('');
-lines.push('Every token the pinned component token files state for the built rows, grouped by the state its name carries.');
-lines.push('');
-for (const component of Object.keys(TOKEN_FILES)) {
-  for (const file of TOKEN_FILES[component]) {
-    const tokens = loadTokenFile(file);
-    lines.push('### ' + component + ' - `_md-comp-' + file + '.scss` (' + tokens.length + ' tokens)');
-    lines.push('');
-    const byState = {};
-    for (const token of tokens) {
-      const state = stateOf(token.name);
-      byState[state] = byState[state] || [];
-      byState[state].push('`' + token.name + '` ' + token.value);
-    }
-    for (const state of Object.keys(byState)) {
-      lines.push('- **' + state + '** (' + byState[state].length + '): ' + byState[state].join('; '));
-    }
-    lines.push('');
-  }
-}
 
 writeFileSync(OUT, lines.join('\n') + '\n');
 process.stdout.write('census: ' + runs.length + ' run(s), ' + total + ' disagreement(s) -> ' + OUT + '\n');

@@ -25,107 +25,11 @@ export default function Menu (ctx) {
 
   const React = ctx.React;
   const Utils = ctx.Utils;
-  const { Pressable, Text, View } = ctx.ReactNative;
+  const { View } = ctx.ReactNative;
   const { useMenuCollection, useMenuPosition, useOverlay, usePopoverDismiss } = ctx.behaviors;
 
   // The keys that rove the focus
   const DIRECTIONS = Object.freeze({ ArrowDown: 'next', ArrowUp: 'previous', Home: 'first', End: 'last' });
-
-
-  /********************************************************************
-  One item. Registers its ref with the collection and draws the mark, the
-  icon, the label and the shortcut through the list cells (the danger
-  cells where the item is dangerous).
-
-  @param {Object} props - { item, first, registerItem, list, metrics, onChoose }
-
-  @return {Object} - React element
-  *********************************************************************/
-  function MenuItem (props) {
-
-    // Init the item's ref, states and registration
-    const item = props.item;
-    const disabled = item.disabled === true;
-    const ref = React.useRef(null);
-    const [hovered, setHovered] = React.useState(false);
-    const [pressed, setPressed] = React.useState(false);
-    const [focused, setFocused] = React.useState(false);
-    React.useEffect(function () {
-      return props.registerItem({ ref: ref, disabled: disabled });
-    }, [props.registerItem, disabled]);
-
-    // The item's state cells: a danger item reads the menu's own cells. A
-    // press draws the hover's fill (the references paint no deeper active on
-    // a menu item); a focused item carries the control's ring, nothing else
-    const danger = item.danger === true;
-    const active = hovered || pressed;
-    const state = { disabled: disabled, hovered: active && !danger, highlighted: focused, selected: item.selected === true };
-    const labelLeaf = disabled ? 'list_item_label_disabled'
-      : danger ? (active ? 'menu_item_danger_label_hover' : 'menu_item_danger_label')
-        : props.list.labelLeaf(state);
-    const itemFill = !disabled && danger && active ? 'menu_item_danger_container_hover' : null;
-    // The item icon's ink reads the menu's own icon cells for the state
-    const iconLeaf = disabled ? 'menu_item_icon_disabled' : active ? 'menu_item_icon_hover' : 'menu_item_icon';
-    const itemStyle = Object.assign({}, props.list.item(state));
-    if (itemFill !== null) {
-      itemStyle.backgroundColor = ctx.color(itemFill);
-    }
-
-    // Render the item: mark seat, icon seat, label, shortcut seat
-    return React.createElement(Pressable, {
-      ref: ref,
-      role: item.selected === undefined ? 'menuitem' : 'menuitemcheckbox',
-      'aria-checked': item.selected === undefined ? undefined : item.selected === true,
-      disabled: disabled,
-      tabIndex: -1,
-      onPress: disabled ? undefined : function () {
-        props.onChoose(item);
-      },
-      onPressIn: function () {
-        setPressed(true);
-      },
-      onPressOut: function () {
-        setPressed(false);
-      },
-      onPointerEnter: function () {
-        setHovered(true);
-      },
-      onPointerLeave: function () {
-        setHovered(false);
-      },
-      onFocus: function () {
-        setFocused(true);
-      },
-      onBlur: function () {
-        setFocused(false);
-      },
-      style: itemStyle
-    },
-    React.createElement(View, { style: [props.list.option(props.first !== true), { alignItems: 'center', flexDirection: 'row' }] },
-      props.selectable === true ? React.createElement(View, { style: [props.metrics.markPlace, {
-        display: props.list.mark === 'shown' ? 'flex' : 'none'
-      }] },
-      React.createElement(ctx.Registry.Icon, {
-        name: 'selected_indicator',
-        size: props.metrics.markSize,
-        color: iconLeaf,
-        style: { opacity: item.selected === true ? 1 : 0 }
-      })) : null,
-      props.icons === true ? React.createElement(View, { style: [props.metrics.iconPlace, {
-        display: props.iconsShared === true || item.icon !== undefined ? 'flex' : 'none'
-      }] },
-      item.icon === undefined ? null : React.createElement(ctx.Registry.Icon, { name: item.icon, size: props.metrics.iconSize, color: iconLeaf })) : null,
-      React.createElement(Text, {
-        numberOfLines: 1,
-        style: [props.list.label(state), { color: ctx.color(labelLeaf), flexGrow: 1 }]
-      }, item.label),
-      // The shortcut is its own run: its own type and ink cells. A disabled
-      // or danger item paints all its content in the one color
-      item.shortcut === undefined ? null : React.createElement(Text, {
-        style: [ctx.typeStyle('menu_item_shortcut'), { color: ctx.color(disabled || danger ? labelLeaf : active ? 'menu_item_shortcut_hover' : 'menu_item_shortcut'), marginStart: ctx.metric('Menu', 'itemGap') }]
-      }, item.shortcut)));
-
-  }
 
 
   /********************************************************************
@@ -145,24 +49,27 @@ export default function Menu (ctx) {
     // selectable (the element tree stays the same under every template);
     // where `anatomy.menu_icon_seat` says `item` the seat draws only for an
     // item carrying an icon of its own
-    const selectable = items.some(function (item) {
-      return item.selected !== undefined;
+    const selectable = items.some(function anySelectable (item) {
+      return item.selected !== undefined || item.radioGroup !== undefined ||
+        (item.group !== undefined && Utils.isArray(item.items) && item.items.some(anySelectable));
     });
     const icons = items.some(function (item) {
       return item.icon !== undefined;
     });
     const iconsShared = ctx.enum('anatomy.menu_icon_seat') === 'shared';
     const metrics = {
-      dividerSpace: ctx.metric('Menu', 'paddingBlock'),
+      dividerSpace: ctx.metric('Menu', 'dividerMargin'),
       dividerWidth: ctx.metric('Menu', 'dividerWidth'),
       iconPlace: { marginEnd: ctx.metric('Menu', 'itemGap'), width: ctx.metric('Menu', 'iconSize') },
       iconSize: ctx.metric('Menu', 'iconSize'),
       markPlace: { marginEnd: ctx.metric('Menu', 'itemGap'), width: ctx.metric('Menu', 'markSize') },
       markSize: ctx.metric('Menu', 'markSize')
     };
+    const size = Utils.inArray(['xs', 'sm', 'md', 'lg'], props.size) ? props.size : 'sm';
+    const itemHeights = { xs: 'itemHeightXsmall', sm: 'itemHeight', md: 'itemHeightMedium', lg: 'itemHeightLarge' };
     const list = ctx.listPresentation({
       dividerWidth: 0,
-      itemHeight: ctx.metric('Menu', 'itemHeight'),
+      itemHeight: ctx.metric('Menu', itemHeights[size]),
       level: ctx.metric('Menu', 'level'),
       mark: true,
       markRoom: 0,
@@ -172,7 +79,7 @@ export default function Menu (ctx) {
     });
     const collection = useMenuCollection({
       onRequestClose: props.onClose,
-      rootRef: menuRef
+      rootRef: props.dismissRootRef !== undefined && props.dismissRootRef !== null ? props.dismissRootRef : menuRef
     });
 
     // The surface: measured for placement, dismissed on outside press
@@ -181,20 +88,34 @@ export default function Menu (ctx) {
       menuAlignment: props.menuAlignment,
       spacing: ctx.metric('Menu', 'spacing'),
       x: props.x,
-      y: props.y
+      y: props.y,
+      active: open
     });
+    const focusedForOpen = React.useRef(false);
     React.useEffect(function () {
       if (open) {
+        focusedForOpen.current = false;
         positioned.measure();
-        // The reference opens with the focus on the first enabled item
-        collection.focusItem('first', null);
       }
     }, [open, positioned.measure]);
+    // The surface takes the focus the commit its items mount (upstream Menu.js:82 focuses as it opens); a hosted surface mounts a pass after open
+    React.useLayoutEffect(function () {
+      if (open !== true || focusedForOpen.current === true) {
+        return;
+      }
+      const enabled = collection.state.items.find(function (entry) {
+        return entry.disabled !== true;
+      });
+      if (enabled !== undefined) {
+        focusedForOpen.current = true;
+        collection.focusItem('first', null);
+      }
+    }, [open, collection.state.items, collection.focusItem]);
     const dismiss = usePopoverDismiss({
       contentRef: menuRef,
       onRequestClose: props.onClose,
       open: open,
-      rootRef: menuRef
+      rootRef: props.dismissRootRef !== undefined && props.dismissRootRef !== null ? props.dismissRootRef : menuRef
     });
 
     // Arrows rove the enabled items; Escape and Tab close through the collection
@@ -221,6 +142,15 @@ export default function Menu (ctx) {
     // coordinates on the web, `absolute` at window coordinates on a native
     // platform) and floored at the icon-menu minimum when any item
     // carries an icon
+    const onChooseItem = function (chosen) {
+      if (typeof props.onChange === 'function') {
+        props.onChange(chosen);
+      }
+      if (typeof props.onClose === 'function') {
+        props.onClose();
+      }
+    };
+
     const surface = React.createElement(View, {
       ref: menuRef,
       // Laying the surface out is what measures it: inside a host the
@@ -238,7 +168,12 @@ export default function Menu (ctx) {
       role: 'menu',
       tabIndex: -1,
       style: [list.container, positioned.layerStyle, {
+        backgroundColor: props.backgroundToken === 'background' ? ctx.color('menu_container_background') : undefined,
+        maxWidth: ctx.metric('Menu', 'maxWidth'),
         minWidth: icons ? ctx.metric('Menu', 'iconMinWidth') : ctx.metric('Menu', 'minWidth'),
+        outlineColor: props.border === true ? ctx.color('menu_border') : undefined,
+        outlineStyle: props.border === true ? 'solid' : undefined,
+        outlineWidth: props.border === true ? ctx.metric('Menu', 'borderWidth') : undefined,
         // A composing parent fixes the surface's width (the combo button's
         // container); without one the surface takes its content width
         width: Utils.isNumber(props.width) ? props.width : undefined
@@ -246,33 +181,64 @@ export default function Menu (ctx) {
       testID: props.testID
     }, items.map(function (item, index) {
       if (item.divider === true) {
-        return React.createElement(View, {
+        return React.createElement(ctx.Registry.MenuItemDivider, { key: index });
+      }
+      if (item.group !== undefined && Utils.isArray(item.items)) {
+        return React.createElement(ctx.Registry.MenuItemGroup, { key: index, label: item.group },
+          item.items.map(function (sub, subIndex) {
+            return React.createElement(ctx.Registry.MenuItem, {
+              icons: icons,
+              iconsShared: iconsShared,
+              item: sub,
+              key: subIndex,
+              list: list,
+              seats: metrics,
+              selectable: selectable,
+              onChoose: onChooseItem,
+              registerItem: collection.registerItem
+            });
+          }));
+      }
+      if (item.radioGroup !== undefined && Utils.isArray(item.items)) {
+        return React.createElement(ctx.Registry.MenuItemRadioGroup, { key: index, label: item.radioGroup },
+          item.items.map(function (sub, subIndex) {
+            const subItem = Utils.isString(sub) ? { label: sub } : sub;
+            return React.createElement(ctx.Registry.MenuItem, {
+              icons: icons,
+              iconsShared: iconsShared,
+              item: Object.assign({ radio: true, selected: item.selectedItem !== undefined ? subItem.label === item.selectedItem : subItem.selected === true }, subItem),
+              key: subIndex,
+              list: list,
+              seats: metrics,
+              selectable: selectable || true,
+              onChoose: onChooseItem,
+              registerItem: collection.registerItem
+            });
+          }));
+      }
+      if (item.selected !== undefined) {
+        return React.createElement(ctx.Registry.MenuItemSelectable, {
+          icons: icons,
+          iconsShared: iconsShared,
+          item: item,
           key: index,
-          role: 'separator',
-          style: {
-            backgroundColor: ctx.color('menu_divider'),
-            height: metrics.dividerWidth,
-            marginVertical: metrics.dividerSpace
-          }
+          list: list,
+          seats: metrics,
+          selectable: selectable,
+          onChoose: onChooseItem,
+          registerItem: collection.registerItem
         });
       }
-      return React.createElement(MenuItem, {
+      return React.createElement(ctx.Registry.MenuItem, {
         first: index === 0,
         icons: icons,
         iconsShared: iconsShared,
         item: item,
         key: index,
         list: list,
-        metrics: metrics,
+        seats: metrics,
         selectable: selectable,
-        onChoose: function (chosen) {
-          if (typeof props.onChange === 'function') {
-            props.onChange(chosen);
-          }
-          if (typeof props.onClose === 'function') {
-            props.onClose();
-          }
-        },
+        onChoose: onChooseItem,
         registerItem: collection.registerItem
       });
     }));

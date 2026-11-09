@@ -13,7 +13,7 @@
 /********************************************************************
 Build the overlay behaviors for one component system.
 
-@param {Object} deps - { Utils, React, Debug, platform,
+@param {Object} deps - { Utils, React, Debug, platform, dom,
         LayerContext?, DisabledContext?, HeadingLevelContext? }:
         the structural contexts a hosted layer re-publishes, wired by
         the composer; absent, local defaults are created once below
@@ -26,6 +26,7 @@ export default function createOverlayBehaviors (deps) {
   const React = deps.React;
   const Debug = deps.Debug;
   const platform = deps.platform;
+  const { measureRect } = deps.dom;
 
   // The structural contexts a hosted layer re-publishes inside the host's
   // tree: a hosted overlay renders outside its origin's providers, so the
@@ -68,7 +69,7 @@ export default function createOverlayBehaviors (deps) {
 
   @return {Object} - { contextValue, layers, setOrigin, setSize }
   *********************************************************************/
-  function useOverlayHost () {
+  function useOverlayHost (rootRef) {
 
     const nextIdRef = React.useRef(0);
     const [layers, setLayers] = React.useState([]);
@@ -93,16 +94,29 @@ export default function createOverlayBehaviors (deps) {
       });
     }, []);
 
+    // A web window scroll moves the root without a layout event, so the
+    // origin a hosted layer subtracts must read the live rect, not the
+    // layout-time state; a caller composes getOrigin over a stable dep
+    const getOrigin = React.useCallback(function () {
+      const node = rootRef !== undefined && rootRef !== null ? rootRef.current : null;
+      const r = measureRect(node);
+      if (r !== null) {
+        return { x: r.x, y: r.y };
+      }
+      return origin;
+    }, [rootRef, origin]);
+
     const contextValue = React.useMemo(function () {
       return {
         hosted: true,
+        getOrigin: getOrigin,
         layers: layers,
         origin: origin,
         size: size,
         register: register,
         unregister: unregister
       };
-    }, [layers, origin, size, register, unregister]);
+    }, [layers, origin, size, register, unregister, getOrigin]);
 
     return {
       contextValue: contextValue,

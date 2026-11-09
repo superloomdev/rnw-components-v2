@@ -13,7 +13,8 @@
 /********************************************************************
 Build the focus behaviors for one component system.
 
-@param {Object} deps - { Utils, React, ReactNative, platform }
+@param {Object} deps - { Utils, React, ReactNative, platform, dom }
+        `dom` is the dom.js family's reach helpers, wired by createBehaviors
 
 @return {Object} - { useFocusTrap }
 *********************************************************************/
@@ -23,6 +24,7 @@ export default function createFocusBehaviors (deps) {
   const React = deps.React;
   const { AccessibilityInfo, BackHandler, findNodeHandle } = deps.ReactNative;
   const platform = deps.platform;
+  const { focusNode, getActiveElement, onDocumentEvent, queryNodes } = deps.dom;
 
 
   /********************************************************************
@@ -60,16 +62,14 @@ export default function createFocusBehaviors (deps) {
         return;
       }
 
-      if (platform.os === 'web' && typeof document !== 'undefined') {
-        previousFocusRef.current = document.activeElement;
+      if (platform.os === 'web') {
+        previousFocusRef.current = getActiveElement();
       }
 
       return function () {
         const explicit = options.finalFocusRef && options.finalFocusRef.current;
-        if (explicit && typeof explicit.focus === 'function') {
-          explicit.focus();
-        } else if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-          previousFocusRef.current.focus();
+        if (!focusNode(explicit)) {
+          focusNode(previousFocusRef.current);
         }
       };
 
@@ -86,10 +86,8 @@ export default function createFocusBehaviors (deps) {
       }
 
       const initial = options.initialFocusRef && options.initialFocusRef.current;
-      if (initial && typeof initial.focus === 'function') {
-        initial.focus();
-      } else if (containerRef.current && typeof containerRef.current.focus === 'function') {
-        containerRef.current.focus();
+      if (!focusNode(initial)) {
+        focusNode(containerRef.current);
       }
 
       // Native rendering remains unconfirmed; preserve the existing timing
@@ -114,8 +112,7 @@ export default function createFocusBehaviors (deps) {
         return;
       }
 
-      if (platform.os === 'web' && typeof document !== 'undefined' &&
-          typeof document.addEventListener === 'function') {
+      if (platform.os === 'web') {
 
         const handleKeyDown = function (event) {
           if (event.key === 'Escape' && typeof onCloseRef.current === 'function') {
@@ -123,11 +120,7 @@ export default function createFocusBehaviors (deps) {
           }
         };
 
-        document.addEventListener('keydown', handleKeyDown);
-
-        return function () {
-          document.removeEventListener('keydown', handleKeyDown);
-        };
+        return onDocumentEvent('keydown', handleKeyDown);
       }
 
       if (platform.os === 'android') {
@@ -157,8 +150,7 @@ export default function createFocusBehaviors (deps) {
     // Tab wrapping: only while the layer is open, active, and trapping.
     React.useEffect(function () {
 
-      if (!isOpen || !active || !trap || platform.os !== 'web' || typeof document === 'undefined' ||
-          typeof document.addEventListener !== 'function') {
+      if (!isOpen || !active || !trap || platform.os !== 'web') {
         return;
       }
 
@@ -173,7 +165,7 @@ export default function createFocusBehaviors (deps) {
           return;
         }
 
-        const focusable = container.querySelectorAll(
+        const focusable = queryNodes(container,
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
 
@@ -187,22 +179,18 @@ export default function createFocusBehaviors (deps) {
         const last = focusable[focusable.length - 1];
 
         if (event.shiftKey) {
-          if (document.activeElement === first) {
+          if (getActiveElement() === first) {
             event.preventDefault();
-            last.focus();
+            focusNode(last);
           }
-        } else if (document.activeElement === last) {
+        } else if (getActiveElement() === last) {
           event.preventDefault();
-          first.focus();
+          focusNode(first);
         }
 
       };
 
-      document.addEventListener('keydown', handleTabKey);
-
-      return function () {
-        document.removeEventListener('keydown', handleTabKey);
-      };
+      return onDocumentEvent('keydown', handleTabKey);
 
     }, [isOpen, active, trap]);
 

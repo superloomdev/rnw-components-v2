@@ -1,0 +1,114 @@
+// Info: NotificationActionButton member. The notification's action
+// through a standalone render: size `sm` at
+// `control.notification_action_height` - inline the ghost re-colored
+// (ink `notification_action`, hover `notification_action_container_hover`,
+// `notification_action_hover` under lowContrast), toast the
+// tertiary-inverse map (transparent rest, label and border
+// `notification_action_tertiary_inverse`, fills `_hover` / `_active`
+// with label `_text`).
+
+import { afterEach, describe, test } from 'node:test';
+import assert from 'node:assert/strict';
+import { act } from 'react';
+
+import * as factories from 'rnw-components/all';
+import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { React, cleanup, cssValue, render } from './harness/render.js';
+
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
+
+afterEach(cleanup);
+function paintedFill (t, button) {
+  return t['feedback.press'] === 'ripple' ? button.children[0].style.backgroundColor : button.style.backgroundColor;
+}
+
+
+async function fire (element, event) {
+  await act(async function () {
+    element.dispatchEvent(event);
+  });
+}
+
+describe('NotificationActionButton: the two color maps', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': the inline ghost reads the notification cells', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'inline' }));
+      const seat = rendered.firstElementChild;
+      const button = seat.querySelector('[role="button"]');
+      assert.notEqual(button, null);
+      assert.equal(seat.style.marginLeft, t['control.notification_action_inset'] + 'px');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action']), 'the ghost ink');
+      await fire(button, new Event('pointerover', { bubbles: true }));
+      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_container_hover']), 'the inline hover fill');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action']), 'the ghost ink stays over the hover fill');
+      await fire(button, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      await fire(button, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      await cleanup();
+    });
+
+    test(template + ': the toast action keeps a bottom margin only', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'toast' }));
+      const seat = rendered.firstElementChild;
+      assert.equal(seat.style.marginTop, '0px', 'the toast action keeps no block-start margin');
+      assert.equal(seat.style.marginBottom, t['spacing.spacing_05'] + 'px', 'the toast action block-end margin');
+      const inline = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'inline' }));
+      const inlineSeat = inline.firstElementChild;
+      assert.equal(inlineSeat.style.marginTop, t['spacing.spacing_03'] + 'px', 'the inline action block-start margin');
+      assert.equal(inlineSeat.style.marginBottom, t['spacing.spacing_03'] + 'px', 'the inline action block-end margin');
+      await cleanup();
+    });
+
+    test(template + ': lowContrast swaps the inline hover fill', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', lowContrast: true, variant: 'inline' }));
+      const button = rendered.querySelector('[role="button"]');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.link_primary']), 'the low-contrast label keeps the ghost primary');
+      await fire(button, new Event('pointerover', { bubbles: true }));
+      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_hover']), 'the low-contrast hover fill');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.link_primary_hover']), 'the low-contrast hover label');
+      await fire(button, new Event('pointerout', { bubbles: true }));
+      await cleanup();
+    });
+
+    test(template + ': the toast action is the tertiary-inverse map', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'toast' }));
+      const seat = rendered.firstElementChild;
+      const button = seat.querySelector('[role="button"]');
+      assert.equal(seat.style.marginLeft, t['control.notification_toast_action_inset'] + 'px');
+      assert.equal(button.style.paddingRight, t['spacing.spacing_05'] + 'px', 'the toast action end padding');
+      assert.equal(button.style.paddingLeft, t['spacing.spacing_05'] + 'px', 'the toast action start padding');
+      // Rest: transparent fill, the inverse label and border
+      assert.equal(button.style.backgroundColor, 'rgba(0, 0, 0, 0)', 'the tertiary-inverse rests transparent');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse']));
+      assert.equal(button.style.borderTopColor, cssValue('borderColor', t['color.notification_action_tertiary_inverse']));
+      await fire(button, new Event('pointerover', { bubbles: true }));
+      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.notification_action_tertiary_inverse_hover']), 'the hover fill');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action_tertiary_inverse_text']), 'the label over the fill');
+      await fire(button, new Event('pointerout', { bubbles: true }));
+      await cleanup();
+    });
+
+    test(template + ': the low-contrast toast action is the plain tertiary map', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', lowContrast: true, variant: 'toast' }));
+      const button = rendered.querySelector('[role="button"]');
+      assert.equal(button.style.paddingRight, t['spacing.spacing_05'] + 'px', 'the toast action end padding');
+      assert.equal(button.style.borderTopColor, cssValue('borderColor', t['color.button_tertiary']), 'the plain tertiary border');
+      assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.button_tertiary']), 'the plain tertiary label');
+      await fire(button, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      assert.equal(paintedFill(t, button), cssValue('backgroundColor', t['color.button_tertiary_active']), 'the plain tertiary active fill');
+      await fire(button, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      await cleanup();
+    });
+  }
+
+});

@@ -9,6 +9,8 @@ export default Object.freeze({
   props: Object.freeze({
     label: { type: 'string', required: false, description: 'The control\'s name; the search field draws no visible label, so it names the input. Default `Search`.' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name when `label` is absent.' },
+    borderLeaf: { type: 'string', required: false, description: 'Composition prop: the input bottom border leaf a composing parent draws instead of the field cell - the contained list search.' },
+    fillLeaf: { type: 'string', required: false, description: 'Composition prop: the input fill leaf a composing parent draws instead of the field cell - the contained list search.' },
     placeholder: { type: 'string', required: false, description: 'Hint shown in the empty field. Default `Search`.' },
     value: { type: 'string', required: false, description: 'Controlled value. Absent: the field keeps its own value, starting at `defaultValue` or empty.' },
     defaultValue: { type: 'string', required: false, description: 'Initial uncontrolled value; applied once.' },

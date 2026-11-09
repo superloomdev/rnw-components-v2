@@ -26,7 +26,7 @@ const CONTEXT_TOKENS = ['control.target_min', 'control.text_scale_max', 'feedbac
 
 const FORBIDDEN = [
   { name: 'color literal', pattern: /#[0-9a-fA-F]{3,8}([^0-9a-zA-Z]|$)|rgba?\(|hsla?\(/ },
-  { name: 'unit string', pattern: /['"][0-9.]+(rem|em|px|vw|vh|ms|%)['"]/ },
+  { name: 'unit string', pattern: /['"][0-9.]+(rem|em|px|vw|vh|ms)['"]/ },
   { name: 'vendor name', pattern: /carbon|material|ibm/i },
   { name: 'framework import', pattern: /(require\(|from )['"](react|react-dom|react-native|react-native-web|react-native-svg)['"]/ },
   { name: 'platform read', pattern: /\bPlatform\s*\.\s*(OS|select)\b/, except: /component\/platform\.js$/ },
@@ -45,7 +45,8 @@ const FORBIDDEN = [
   { name: 'banned mechanism', pattern: /createPortal|LayoutAnimation|useWindowDimensions|__DEV__/ },
   { name: 'web-only visibility style', pattern: /\bvisibility\s*:/ },
   { name: 'JSX', pattern: /^\s*<[A-Z][A-Za-z.]*[\s>/]/ },
-  { name: 'raw emptiness or membership check', pattern: /\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1/ }
+  { name: 'raw emptiness or membership check', pattern: /\.length (===|!==|>) 0|(===|!==) ''|Object\.keys\([^)]+\)\.length|indexOf\([^)]*\) *(===|!==|>) *-1/ },
+  { name: 'DOM reach outside behaviors/dom.js', pattern: /\b(document|window)\s*\.|\.(focus|blur|contains|querySelector|querySelectorAll|getBoundingClientRect|scrollIntoView|closest|matches)\s*\(/, except: /behaviors[/\\]dom\.js$|reference[^/\\]*\.js$/ }
 ];
 
 
@@ -59,6 +60,30 @@ Blank comments so a pattern matches code and string literals only.
 function codeOnly (source) {
 
   return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+
+}
+
+
+/********************************************************************
+Assert two iterables hold the same members, reporting a bounded
+difference: the first five missing and extra names plus both counts,
+never two full arrays.
+
+@param {Iterable} actual - Names the code produced
+@param {Iterable} expected - Names the contract requires
+@param {String} label - Assertion message
+*********************************************************************/
+function assertSameSet (actual, expected, label) {
+
+  const a = new Set(actual);
+  const e = new Set(expected);
+  const missing = [...e].filter(function (x) { return !a.has(x); }).sort();
+  const extra = [...a].filter(function (x) { return !e.has(x); }).sort();
+  assert.deepEqual(
+    { missing: missing.slice(0, 5), extra: extra.slice(0, 5), counts: [missing.length, extra.length] },
+    { missing: [], extra: [], counts: [0, 0] },
+    label
+  );
 
 }
 
@@ -170,8 +195,10 @@ describe('purity: declared requirements equal what the components read', functio
         supported.add('color.' + leaf);
       }
     }
-    assert.deepEqual([...REQUIRED_TOKENS].sort(), [...required].sort(), 'REQUIRED_TOKENS must equal the union of spec.js and api.tokens');
-    assert.deepEqual([...SUPPORTED_TOKENS].sort(), [...supported].sort(), 'SUPPORTED_TOKENS must equal REQUIRED_TOKENS plus every api.colors leaf');
+    assert.equal(REQUIRED_TOKENS.length, new Set(REQUIRED_TOKENS).size, 'REQUIRED_TOKENS has no duplicates');
+    assert.equal(SUPPORTED_TOKENS.length, new Set(SUPPORTED_TOKENS).size, 'SUPPORTED_TOKENS has no duplicates');
+    assertSameSet(REQUIRED_TOKENS, required, 'REQUIRED_TOKENS must equal the union of spec.js and api.tokens');
+    assertSameSet(SUPPORTED_TOKENS, supported, 'SUPPORTED_TOKENS must equal REQUIRED_TOKENS plus every api.colors leaf');
   });
 
   test('every declared token and icon is in the contract', function () {

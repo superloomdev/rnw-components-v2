@@ -1,0 +1,37 @@
+{
+  "info": [
+    "assertion-integrity rows that plant into a reference `second` block or a material harness path, verbatim from _test/fixtures/assertion-integrity.json at 7f2bd93"
+  ],
+  "rows": [
+    {
+      "id": "measure-second-coverage",
+      "file": "component/molecule/text-input/reference.js",
+      "find": "      icon: Object.freeze({ reason: 'the second reference marks an invalid field by the error color alone and draws a trailing icon only when the page slots one; ours draws the template\\'s error icon', upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]', mask: true })\n",
+      "replace": "",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "every primary part is measured against the second reference or omitted with a reason",
+      "why": "a primary part neither measured against the second reference nor omitted with a reason must fail the coverage rule"
+    },
+    {
+      "id": "measure-second-omission-stale",
+      "file": "component/molecule/text-input/reference.js",
+      "find": "upstream: 'md-outlined-text-field >>> .icon.trailing svg, md-outlined-text-field [slot=\"trailing-icon\"]'",
+      "replace": "upstream: 'md-outlined-text-field >>> md-outlined-field >>> .container'",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "TextInput: parts match the second reference",
+      "why": "an omitted part that the second reference does draw makes the omission stale and must fail"
+    },
+    {
+      "id": "fidelity-mask-anchor",
+      "file": "component/molecule/checkbox/reference.js",
+      "find": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)' }),",
+      "replace": "      root: Object.freeze({ reason: 'the second reference draws no wrapper around the box', upstream: '*:has(> md-checkbox)', mask: true }),",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Checkbox / second / light: matches the reference in every state",
+      "why": "a masked omission whose box contains the anchor part would hide the component from the pixels; the fidelity gate must reject the mask"
+    }
+  ]
+}

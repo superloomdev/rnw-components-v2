@@ -49,6 +49,7 @@ export default function Button (ctx) {
   @return {Object} - React element
   *********************************************************************/
   function ButtonComponent (props) {
+    const [faceSize, onFaceLayout] = props.pressFloor === true ? ctx.useFaceSize() : [null, undefined];
 
     // Init the behavior and its state
     const button = useButton(props);
@@ -64,17 +65,41 @@ export default function Button (ctx) {
     const borderWidth = ctx.metric('Button', 'borderWidth');
 
     // Read the theme's press presentation over the kind's fill cells; the label,
-    // border and elevation follow the same state
-    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');
-    const contentLeaf = 'button_' + kind + '_label' + press.phase;
-    const borderLeaf = 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+    // border and elevation follow the same state. A composing parent may
+    // re-color the fills and the label (the notification action's ghost
+    // and tertiary-inverse maps) and point the border at another leaf
+    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined || props.fillFocusLeaf !== undefined
+      ? {
+        '': props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container',
+        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_hover'),
+        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : 'button_' + kind + '_container_active'),
+        _focus: props.fillFocusLeaf !== undefined ? props.fillFocusLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus'),
+        _disabled: 'button_' + kind + '_container_disabled',
+        _selected: 'button_' + kind + '_container_selected'
+      }
+      : null;
+    const press = ctx.pressPresentation(state, 'button_' + kind + '_container', fillMap !== null ? { colors: fillMap } : undefined);
+    const contentLeaf = Utils.isString(props.labelLeaf)
+      ? ((state.hovered === true || state.pressed === true) && Utils.isString(props.labelHoverLeaf) ? props.labelHoverLeaf : props.labelLeaf)
+      : 'button_' + kind + '_label' + press.phase;
+    const borderLeaf = state.pressed === true
+      ? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase])
+      : Utils.isString(props.borderLeaf) ? props.borderLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+    // Upstream's focus rule comes after hover, so a focused face under the
+    // pointer paints the focus leaf; a press still wins, whose rule is last
+    const containerLayer = Utils.isString(props.fillFocusLeaf) && state.focused === true && state.pressed !== true
+      ? Object.assign({}, press.container, { backgroundColor: ctx.color(props.fillFocusLeaf) })
+      : press.container;
     const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
 
     // The focus ring; a ring drawn with the border gives way to a pressed border
     // the kind states apart from its rest border, and keeps the kind's elevation
     // beside it. The ring draws its own page-color line width (none in the
     // primary system, where the ring is a plain inset)
-    const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth));
+    // A composing parent may point the ring at another leaf (the toggletip's
+    // action sits on the inverse surface, whose ring is `focus_ring_inverse`)
+    // or drop the page-color line inside it (`focusRingGap: false`)
+    const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth, { gap: props.focusRingGap === false ? false : undefined, ringLeaf: props.focusRingLeaf }));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
     }
@@ -101,18 +126,37 @@ export default function Button (ctx) {
     const slot = ctx.metric('Button', 'iconInset') + iconSize + ctx.metric('Button', 'iconGap') - borderWidth;
     const paddingStart = Utils.isNumber(props.paddingStart) ? props.paddingStart
       : inline ? ctx.metric('Button', 'ghostPaddingStart') : ctx.metric('Button', 'paddingStart');
-    const paddingEnd = inline ? ctx.metric('Button', 'ghostPaddingEnd')
-      : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
+    const paddingEnd = Utils.isNumber(props.paddingEnd) ? props.paddingEnd
+      : inline ? ctx.metric('Button', 'ghostPaddingEnd')
+        : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
     const minWidth = Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('Button', 'minWidth');
     const iconPlace = inline
-      ? { marginStart: ctx.metric('Button', 'iconGap'), marginTop: (labelStyle.lineHeight - iconSize) / 2 }
+      // An inline kind's icon centers itself on the row the way upstream's
+      // static ghost icon does (align-self: center), not by a computed top
+      ? { alignSelf: 'center', marginStart: ctx.metric('Button', 'iconGap') }
       : { end: ctx.metric('Button', 'iconInset'), position: 'absolute', top: labelTop + (labelStyle.lineHeight - iconSize) / 2 };
+    // A composing parent turns the glyph (the menu button's chevron while
+    // open); the turn transitions on the theme's fast-02 duration and
+    // standard productive easing
+    const rotation = Utils.isNumber(props.iconRotation) ? props.iconRotation : 0;
+    if (rotation !== 0) {
+      iconPlace.transform = [{ rotate: rotation + 'deg' }];
+    }
+    iconPlace.transitionDuration = ctx.token('motion.duration_fast_02') + 'ms';
+    iconPlace.transitionProperty = 'transform';
+    iconPlace.transitionTimingFunction = 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')';
     const icon = hasIcon ? React.createElement(View, { style: iconPlace },
       React.createElement(ctx.Registry.Icon, { name: props.icon, size: iconSize, color: contentLeaf })) : null;
+    // A transparent hit expander reaches the form-class floor while the
+    // face keeps its size; a press on it bubbles to the Pressable
+    const hit = props.pressFloor === true ? React.createElement(View, { 'aria-hidden': true, dataSet: { part: 'hit' }, style: ctx.pressTarget(faceSize) }) : null;
 
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      onLayout: onFaceLayout,
+      ref: props.buttonRef,
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : button.rootProps.accessibilityLabel,
+      onMouseDown: props.onMouseDown,
       testID: props.testID,
       style: [
         props.fill === true ? {
@@ -133,9 +177,10 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
+          paddingBottom: Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
-          paddingTop: labelTop
+          paddingTop: Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop
         } : {
           alignItems: 'flex-start',
           alignSelf: 'flex-start',
@@ -152,15 +197,17 @@ export default function Button (ctx) {
           minWidth: minWidth,
           // The theme's ring is the only focus indicator
           outlineStyle: 'none',
+          paddingBottom: Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop,
           paddingEnd: paddingEnd,
           paddingStart: paddingStart,
-          paddingTop: labelTop
+          paddingTop: Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop
         },
-        press.container,
+        containerLayer,
         shadow,
         ring
       ]
     }),
+    hit,
     // The state layer covers the border too, as a container fill does
     React.createElement(View, {
       style: [{ borderRadius: radius, bottom: -borderWidth, left: -borderWidth, position: 'absolute', right: -borderWidth, top: -borderWidth }, press.layer]

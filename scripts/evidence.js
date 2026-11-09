@@ -79,7 +79,7 @@ const specRan = function (fragment) {
 
 const WIDTH_TO_CLASS = { '375': 'compact', '768': 'medium', '1280': 'expanded' };
 const matrix = [];
-for (const template of ['default', 'carbon', 'material']) {
+for (const template of ['default', 'carbon']) {
   for (const width of ['375', '768', '1280']) {
     const form = WIDTH_TO_CLASS[width];
     matrix.push({

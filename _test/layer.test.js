@@ -4,8 +4,7 @@
 // registry dispatches every component inside it to the implementation built
 // for that level's reader context, so `ctx.token`/`ctx.color` read the
 // level's own value when the built theme carries one and the base map
-// otherwise. Literal values never move - the second template's transparent
-// field stays transparent at every level - and a brand layer's pins and
+// otherwise. Literal values never move.
 // redirects ride the same map. DisabledContext does the same for an
 // enclosing group's disabled state, and the hosted-overlay bridge republishes
 // all three structural contexts inside the host tree.
@@ -16,7 +15,7 @@ import assert from 'node:assert/strict';
 import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
-import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -66,16 +65,6 @@ describe('Layer: explicit level overrides paint the leveled field', function () 
       });
     }
   }
-
-  test('the transparent field stays literal at every level under the second template', async function () {
-    const Registry = buildSystem('material', { Layer: factories.Layer, TextInput: factories.TextInput });
-    const base = paint(buildNative('material').tokens['color.field_container']);
-    for (const level of [0, 1, 2]) {
-      const parts = await renderField(React.createElement(Registry.Layer, { level: level },
-        React.createElement(Registry.TextInput, null)));
-      assert.equal(parts.frame.style.backgroundColor, base, 'material level ' + (level + 1));
-    }
-  });
 
   test('a sibling outside the Layer keeps the base value; two differently leveled siblings render together', async function () {
     const t = buildNative('default').tokens;

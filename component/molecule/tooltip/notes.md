@@ -6,6 +6,11 @@ above it on hover, focus or touch.
 
 ## Decisions
 
+`requires_parent`: ToggletipContent must be composed inside Toggletip; the reference draws the content only inside an open parent.
+
+`no_reference`: the reference draws this member only inside an open parent, so it is measured through that parent's samples.
+
+
 - The wrapper, not the anchor, owns the listeners: pointer, focus and touch
   events propagate to it, so the anchor keeps its own role and focusability
   and nothing is cloned.
@@ -42,7 +47,7 @@ above it on hover, focus or touch.
   it; the caret is `aria-hidden`.
 - Escape closes while open.
 
-## Second reference
+## Retired second reference
 
 `none` - the compact geometry comes from the theme's `tooltip_compact`
 cells.

@@ -36,8 +36,8 @@ export default function OverlayHost (ctx) {
 
     // Init the host: the layer stack, the layer root's window origin and the
     // context the overlays register with
-    const host = useOverlayHost();
     const layerRootRef = React.useRef(null);
+    const host = useOverlayHost(layerRootRef);
 
     // Render the app, then the layer root over it: the registered layers in
     // registration order. `box-none` lets the empty root pass touches through

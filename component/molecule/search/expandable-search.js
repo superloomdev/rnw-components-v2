@@ -21,7 +21,7 @@ ExpandableSearch factory.
 export default function ExpandableSearch (ctx) {
 
   const React = ctx.React;
-  const { useDisclosure } = ctx.behaviors;
+  const { focusNode, useDisclosure } = ctx.behaviors;
 
 
   /********************************************************************
@@ -53,9 +53,7 @@ export default function ExpandableSearch (ctx) {
     React.useEffect(function () {
       if (open && focusRequest.current === true) {
         focusRequest.current = false;
-        if (inputRef.current !== null && typeof inputRef.current.focus === 'function') {
-          inputRef.current.focus();
-        }
+        focusNode(inputRef.current);
       }
     }, [open]);
 

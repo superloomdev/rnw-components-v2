@@ -13,6 +13,11 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 - Optional callbacks and injected sources are duck-typed (`typeof x.fn === 'function'`); type guards use `Utils.isString`/`isNumber`/`isNullOrUndefined`.
 - Press timing is behavior: `delayPressIn: 0` is set once in `controls.js`.
 
+## DOM reach (`dom.js`)
+
+- `getActiveElement()` -> element or `null`; `focusNode(node)` / `blurNode(node)` -> Boolean; `nodeContains(root, node)` -> Boolean; `queryNode(root, selector)` -> element or `null`; `queryNodes(root, selector)` -> Array; `measureRect(node)` -> `{ x, y, width, height }` or `null`; `getViewportSize()` -> `{ width, height }`; `getComputedStyleOf(node)` -> style or `null`; `onWindowEvent(name, handler, capture)` / `onDocumentEvent(name, handler)` -> unsubscribe; `requestFrame(callback)` -> cancel
+- The only file that touches `document`, `window` or a node's DOM methods: every reach duck-types its capability and answers a no-op or neutral value where the API is absent, so a native host finds no DOM error. Every other file goes through these.
+
 ## Controls (`controls.js`)
 
 - `useTextField({ value, onChangeText, label, invalid, disabled, onFocus, onBlur })` -> `{ rootProps, inputProps, labelProps, state }` | state: `focused, hovered, disabled, invalid, populated`
@@ -40,7 +45,7 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 - `useResponsiveStack({ enabled, itemCount, minItemWidth, forced })` -> `{ onLayout, state }` | state: `stacked`
 - `useControllableState({ value, defaultValue, onChange })` -> `[value, setValue]` (stateless by contract: a primitive, not a behavior surface)
 - `useAccordionItemState({ open, defaultOpen, disabled, onHeadingClick })` -> `{ toggle(event), state }` | state: `open, disabled`
-- `useTabsState({ defaultSelectedIndex, selectedIndex, onChange })` -> `{ setActiveIndex, setSelectedIndex, state }` | state: `activeIndex, selectedIndex`
+- `useTabsState({ defaultSelectedIndex, selectedIndex, onChange, activation })` -> `{ activation, moveActiveIndex, selectIndex, setActiveIndex, setSelectedIndex, state }` | state: `activeIndex, selectedIndex`; `activation: 'manual'` makes `moveActiveIndex` move without selecting; `selectIndex` selects
 
 ## Keyboard, press, focus (`keyboard.js`, `press.js`, `roving.js`, `focus.js`)
 
@@ -53,7 +58,7 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 
 - `OverlayContext`; `useOverlayHost()` -> `{ contextValue, layers }` (the `OverlayHost` provider renders `layers` in registration order); `useOverlay({ isOpen, name, trap, onClose, render })` -> `{ hosted, layerId, isTopmost }` (while open and hosted, the host calls `render`; unhosted on a native platform it warns once per `name`)
 - `getAnchoredPosition(rect, placement, offset, viewport)` -> `{ top, left, placement }`; `useAnchoredPosition({ anchor, placement, offset, alignmentAxisOffset, track, source })` -> `{ position, actualPlacement, shift, anchor, layerStyle, measure }`; `usePopoverDismiss({ onDismiss })` -> `{ rootProps }`
-- `layerStyle` is the only place an overlay's position mode is chosen: `fixed` at viewport coordinates on the web, `absolute` on a native platform in the hosting `OverlayHost`'s space: the anchor's window rect less the host's window origin, flipped and clamped against the host's size (unhosted: against the device window from `Dimensions`), so an anchored layer lands on its anchor wherever the host is mounted (a Menu's `x`/`y` are already in the host's layer space and are not shifted); `useLayerSpace()` -> `{ width, height }` of the space a layer covers: the host's measured size when hosted, else the viewport (`useViewportSize`, which reads `Dimensions` on a native platform); `useViewportLayer()` -> the layer a viewport-covering surface mounts with: inside a host, `absolute` inset 0 of the host on every platform (a host is the space its layers cover); unhosted, `fixed` sized to the viewport on the web and `absolute` inset 0 in place on a native platform. A hosted Menu likewise mounts `absolute` at its `x`/`y` in the host's space on every platform; an anchored layer stays `fixed` on the web even when hosted, because viewport coordinates survive a document scroll and host-relative ones do not; `useViewportSize()` -> `{ width, height }`
+- `layerStyle` is the only place an overlay's position mode is chosen: `fixed` at viewport coordinates on the web, `absolute` on a native platform in the hosting `OverlayHost`'s space: the anchor's window rect less the host's window origin, flipped and clamped against the host's size (unhosted: against the device window from `Dimensions`), so an anchored layer lands on its anchor wherever the host is mounted (a Menu's `x`/`y` are already in the host's layer space and are not shifted); `useLayerSpace()` -> `{ width, height }` of the space a layer covers: the host's measured size when hosted (0 until measured), else the viewport (`useViewportSize`, which reads `Dimensions` on a native platform); `useViewportLayer()` -> the layer a viewport-covering surface mounts with: inside a host, `absolute` inset 0 of the host on every platform (a host is the space its layers cover); unhosted, `fixed` sized to the viewport on the web and `absolute` inset 0 in place on a native platform. A hosted Menu likewise mounts `absolute` at its `x`/`y` in the host's space on every platform; an anchored layer stays `fixed` on the web even when hosted, because viewport coordinates survive a document scroll and host-relative ones do not; `useViewportSize()` -> `{ width, height }`
 - `getMenuPosition({ x, y, width, height, viewport })` -> `{ top, left }`; `useMenuPosition({ ... })` -> `{ position, layerStyle, measure }`; `useMenuCollection({ ... })` -> `{ registerItem, enableIcons, enableSelectableItems, focusItem, containerProps, state }` | state: `hasIcons, hasSelectableItems, items`
 
 ## Pickers (`pickers.js`)

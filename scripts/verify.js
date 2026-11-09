@@ -16,7 +16,7 @@
 //                                    writes .verify-stamp, so a push to main
 //                                    still requires one full run
 
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -198,7 +198,10 @@ function runCheck (name, fn) {
 
 // Run a shell command from the repo root, surfacing its output on failure
 function sh (cmd, cwd) {
-  execSync(cmd, {
+  // Actions runs every step's run text under `bash --noprofile --norc -eo
+  // pipefail {0}`; replay with the same shell so a failing first line fails
+  // the step instead of being masked by a later command's exit
+  execFileSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', cmd], {
     cwd: cwd || REPO_ROOT,
     stdio: 'inherit'
   });
@@ -368,7 +371,9 @@ if (!GATES_ONLY) {
   if (!FAST) {
 
     if (runCheck('browser gates', function () {
-      sh('npx playwright install --with-deps chromium', path.join(REPO_ROOT, '_test'));
+      // Direct npx playwright and node spawns go through the guard (D43);
+      // the npm scripts are already guarded in _test/package.json
+      sh('node ../scripts/guard.js -- npx playwright install --with-deps chromium', path.join(REPO_ROOT, '_test'));
       sh('npm run test:browser', path.join(REPO_ROOT, '_test'));
     })) {
       passed++;
@@ -380,7 +385,7 @@ if (!GATES_ONLY) {
     if (runCheck('fire', function () {
       // The CI 'Run fire' step's heap tripwire, mirrored so local and CI
       // see the same child-termination behavior
-      execSync('node fire.js', {
+      execSync('node ../scripts/guard.js --seconds 3600 -- node fire.js', {
         cwd: path.join(REPO_ROOT, '_test'),
         stdio: 'inherit',
         env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=3072' }

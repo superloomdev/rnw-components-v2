@@ -6,9 +6,10 @@
 /********************************************************************
 Build the menu behaviors for one component system.
 
-@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
-        `OverlayContext` is the overlay family's context, wired by
-        createBehaviors; a context-free call gets an empty one
+@param {Object} deps - { Utils, React, ReactNative, platform, dom, OverlayContext? }
+        `dom` is the dom.js family's reach helpers, wired by
+        createBehaviors; `OverlayContext` is the overlay family's context,
+        wired by createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getMenuPosition, useMenuPosition, useMenuCollection }
 *********************************************************************/
@@ -17,10 +18,12 @@ export default function createMenuBehaviors (deps) {
   const Utils = deps.Utils;
   const React = deps.React;
   const ReactNative = deps.ReactNative;
+  const Debug = deps.Debug;
   const platform = deps.platform;
   // Inside a host the layer mounts `absolute` at the host's own
   // coordinates; unhosted keeps the window answer
   const OverlayContext = deps.OverlayContext === undefined ? React.createContext(null) : deps.OverlayContext;
+  const { focusNode, getViewportSize, measureRect, nodeContains } = deps.dom;
 
 
   function finiteNumber (value) {
@@ -108,6 +111,15 @@ export default function createMenuBehaviors (deps) {
     // An `-end` alignment hangs the surface's end on the range's end; a `top`
     // alignment ends the surface at the range's start (the container's top)
     const endAligned = menuAlignment === 'bottom-end' || menuAlignment === 'top-end';
+    // `fit: false` places by direction alone, as upstream's FloatingMenu:
+    // below or above the anchor, start- or end-aligned, with no viewport
+    // fitting or clamping
+    if (options.fit === false) {
+      return {
+        left: endAligned ? rangeX[1] - menuSize.width : rangeX[0],
+        top: topAlignment ? rangeY[0] - menuSize.height : rangeY[1]
+      };
+    }
     return {
       left: fitMenuAxis(axes.x, 'x', spacing, topAlignment, endAligned),
       top: fitMenuAxis(axes.y, 'y', spacing, topAlignment, topAlignment)
@@ -115,11 +127,20 @@ export default function createMenuBehaviors (deps) {
 
   }
 
+  // A fit that never converges loops a measure per commit (the surface's
+  // own layout event re-fires measure, and a changed answer re-renders).
+  // The cap ends the loop inside the open it started in: measures per
+  // cycle, not the hook's life (D43)
+  const MEASURE_CAP = 8;
+  const CAP_WINDOW_MS = 1000;
+
   function useMenuPosition (options = {}) {
 
     const latestRef = React.useRef(options);
     latestRef.current = options;
     const [position, setPosition] = React.useState(null);
+    const capRef = React.useRef({ count: 0, since: 0, warned: false });
+    const lastRef = React.useRef(null);
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's size may arrive after mount
@@ -128,6 +149,20 @@ export default function createMenuBehaviors (deps) {
     overlayRef.current = overlay;
 
     const measure = React.useCallback(function () {
+      const cap = capRef.current;
+      const now = Date.now();
+      if (now - cap.since > CAP_WINDOW_MS) {
+        cap.count = 0;
+        cap.since = now;
+        cap.warned = false;
+      }
+      if (cap.count >= MEASURE_CAP) {
+        if (!cap.warned) {
+          cap.warned = true;
+          Debug.warn('useMenuPosition: 8 re-measures in one open; the fit did not converge');
+        }
+        return;
+      }
       const current = latestRef.current;
       const menu = current.menuRef && current.menuRef.current;
       if (!menu) {
@@ -155,17 +190,14 @@ export default function createMenuBehaviors (deps) {
             // layer's coordinates live in is Dimensions'
             viewport = ReactNative.Dimensions.get('window');
           } else {
-            viewport = {
-              width: typeof window === 'undefined' ? 0 : window.innerWidth,
-              height: typeof window === 'undefined' ? 0 : window.innerHeight
-            };
+            viewport = getViewportSize();
           }
         }
         const container = current.containerRef && current.containerRef.current;
         let actionButtonWidth = current.actionButtonWidth;
-        if (actionButtonWidth === undefined && container &&
-            typeof container.getBoundingClientRect === 'function') {
-          actionButtonWidth = container.getBoundingClientRect().width;
+        const containerRect = measureRect(container);
+        if (actionButtonWidth === undefined && containerRect !== null) {
+          actionButtonWidth = containerRect.width;
         }
         // No state write when the answer is unchanged: the surface's own
         // onLayout re-fires measure, and a same-position write would loop
@@ -176,14 +208,24 @@ export default function createMenuBehaviors (deps) {
           menuSize: { width: rect.width, height: rect.height },
           viewport: viewport,
           spacing: current.spacing,
-          actionButtonWidth: actionButtonWidth
+          actionButtonWidth: actionButtonWidth,
+          fit: current.fit
         });
+        // Only a changed answer can re-render, so only a changed answer can
+        // loop: the budget spends on those, never on a re-measure that lands
+        // on the same spot
+        const last = lastRef.current;
+        if (last === null || last.left !== next.left || last.top !== next.top) {
+          cap.count += 1;
+          lastRef.current = next;
+        }
         setPosition(function (previous) {
           return previous !== null && previous.left === next.left && previous.top === next.top ? previous : next;
         });
       };
-      if (typeof menu.getBoundingClientRect === 'function') {
-        finish(menu.getBoundingClientRect());
+      const menuRect = measureRect(menu);
+      if (menuRect !== null) {
+        finish(menuRect);
         return;
       }
       if (typeof menu.measureInWindow === 'function') {
@@ -199,6 +241,26 @@ export default function createMenuBehaviors (deps) {
         });
       }
     }, []);
+
+    // A tracked anchor moves on scroll and resize: re-fit the surface when
+    // the range it opens against changes
+    const rangeX = normalizeRange(options.x === undefined ? 0 : options.x);
+    const rangeY = normalizeRange(options.y === undefined ? 0 : options.y);
+    React.useEffect(function () {
+      measure();
+    }, [measure,
+      rangeX === null ? 0 : rangeX[0], rangeX === null ? 0 : rangeX[1],
+      rangeY === null ? 0 : rangeY[0], rangeY === null ? 0 : rangeY[1]]);
+
+    // A new open cycle gets a fresh measure budget
+    React.useEffect(function () {
+      if (options.active === true) {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+      }
+    }, [options.active]);
 
     // The style the measured surface mounts with: inside a host `absolute`
     // at host coordinates on every platform; unhosted `fixed` at viewport
@@ -312,8 +374,8 @@ export default function createMenuBehaviors (deps) {
         target = valid[(index - 1 + valid.length) % valid.length];
       }
 
-      if (target && target.ref.current && typeof target.ref.current.focus === 'function') {
-        target.ref.current.focus();
+      if (target) {
+        focusNode(target.ref && target.ref.current);
       }
       return target;
     }, []);
@@ -343,7 +405,7 @@ export default function createMenuBehaviors (deps) {
       const current = latestRef.current;
       const isRoot = current.isRoot !== false;
       const root = current.rootRef && current.rootRef.current;
-      if (isRoot && root && !root.contains(event.relatedTarget)) {
+      if (isRoot && !Utils.isNullOrUndefined(root) && !nodeContains(root, event.relatedTarget)) {
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }

@@ -5,7 +5,9 @@
 // appearance: no color, size, radius, border, font, token read or design
 // system name appears in this directory, and the purity test enforces it.
 // Hooks that own state publish `stateKeys`; a component consumes `state` and
-// never recomputes it.
+// never recomputes it. Every reach into `document`, `window` or a node's DOM
+// methods goes through `dom.js`'s helpers, each a no-op or neutral value
+// where the API is absent.
 //
 // Nothing here imports React or React Native. Both arrive through the
 // component system (`shared_libs.React`, `shared_libs.ReactNative`), so the
@@ -16,6 +18,7 @@ import createA11yBehaviors from './a11y.js';
 import createComboboxBehaviors from './combobox.js';
 import createCompoundBehaviors from './compound.js';
 import createControlsBehaviors from './controls.js';
+import createDomBehaviors from './dom.js';
 import createFocusBehaviors from './focus.js';
 import createHeadingBehaviors from './heading.js';
 import createKeyboardBehaviors from './keyboard.js';
@@ -64,8 +67,12 @@ export default function createBehaviors (deps) {
   const scopes = createScopeBehaviors(deps);
   const heading = createHeadingBehaviors(deps);
   const controls = createControlsBehaviors(deps);
+  // The DOM reach helpers are built once and injected into every family
+  // that can meet a document, window or node method on a DOM host
+  const dom = createDomBehaviors(deps);
+  const domDeps = Object.assign({}, deps, { dom: dom });
   const local = createLocalBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState }));
-  const overlay = createOverlayBehaviors(Object.assign({}, deps, {
+  const overlay = createOverlayBehaviors(Object.assign({}, domDeps, {
     LayerContext: scopes.LayerContext,
     DisabledContext: scopes.DisabledContext,
     HeadingLevelContext: heading.HeadingLevelContext
@@ -76,17 +83,18 @@ export default function createBehaviors (deps) {
     createA11yBehaviors(deps),
     // The combobox composes the controls layer's select behavior, so it
     // is built with it once controls exist
-    createComboboxBehaviors(Object.assign({}, deps, { useSelect: controls.useSelect })),
+    createComboboxBehaviors(Object.assign({}, domDeps, { useSelect: controls.useSelect })),
     createCompoundBehaviors(deps),
     controls,
-    createFocusBehaviors(deps),
+    dom,
+    createFocusBehaviors(domDeps),
     heading,
-    createKeyboardBehaviors(deps),
+    createKeyboardBehaviors(domDeps),
     local,
-    createMenuBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
+    createMenuBehaviors(Object.assign({}, domDeps, { OverlayContext: overlay.OverlayContext })),
     // The multiselect composes the controls layer's select for
     // navigation and the state family's resolver for the array
-    createMultiSelectBehaviors(Object.assign({}, deps, {
+    createMultiSelectBehaviors(Object.assign({}, domDeps, {
       useSelect: controls.useSelect,
       useControllableState: state.useControllableState
     })),
@@ -96,12 +104,12 @@ export default function createBehaviors (deps) {
     })),
     overlay,
     createPickersBehaviors(deps),
-    createPositioningBehaviors(Object.assign({}, deps, { OverlayContext: overlay.OverlayContext })),
+    createPositioningBehaviors(Object.assign({}, domDeps, { OverlayContext: overlay.OverlayContext })),
     createPressBehaviors(deps),
-    createRadioGroupBehaviors(Object.assign({}, deps, { useControllableState: state.useControllableState })),
+    createRadioGroupBehaviors(Object.assign({}, domDeps, { useControllableState: state.useControllableState })),
     createRovingBehaviors(deps),
     scopes,
-    createSliderBehaviors(Object.assign({}, deps, {
+    createSliderBehaviors(Object.assign({}, domDeps, {
       useControllableState: state.useControllableState,
       useInteractionState: local.useInteractionState
     })),

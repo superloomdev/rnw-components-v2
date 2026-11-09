@@ -10,7 +10,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/text-input/sample.time-picker-select.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -114,9 +114,9 @@ describe('TimePickerSelect: the member contract', function () {
   });
 
   test('a disabled member announces it; a disabled parent disables it', async function () {
-    const own = await renderMember(registryFor('material'), { disabled: true, items: [{ value: 'AM', label: 'AM' }] });
+    const own = await renderMember(registryFor('carbon', undefined, [LESSONS_LAYER]), { disabled: true, items: [{ value: 'AM', label: 'AM' }] });
     assert.equal(own.querySelector('[role="combobox"]').getAttribute('aria-disabled'), 'true');
-    const inherited = await renderMember(registryFor('material'), { items: [{ value: 'AM', label: 'AM' }] }, { disabled: true });
+    const inherited = await renderMember(registryFor('carbon', undefined, [LESSONS_LAYER]), { items: [{ value: 'AM', label: 'AM' }] }, { disabled: true });
     assert.equal(inherited.querySelector('[role="combobox"]').getAttribute('aria-disabled'), 'true');
   });
 

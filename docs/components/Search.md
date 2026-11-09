@@ -124,6 +124,8 @@ Search is an accessibly named search field with a magnifier and a clear action.
 |---|---|---|---|
 | `label` | `string` | no | The control's name; the search field draws no visible label, so it names the input. Default `Search`. |
 | `accessibilityLabel` | `string` | no | Accessible name when `label` is absent. |
+| `borderLeaf` | `string` | no | Composition prop: the input bottom border leaf a composing parent draws instead of the field cell - the contained list search. |
+| `fillLeaf` | `string` | no | Composition prop: the input fill leaf a composing parent draws instead of the field cell - the contained list search. |
 | `placeholder` | `string` | no | Hint shown in the empty field. Default `Search`. |
 | `value` | `string` | no | Controlled value. Absent: the field keeps its own value, starting at `defaultValue` or empty. |
 | `defaultValue` | `string` | no | Initial uncontrolled value; applied once. |

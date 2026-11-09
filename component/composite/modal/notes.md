@@ -29,6 +29,9 @@ theme.
   `ghost`. An action's `kind` overrides.
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
+- **Header in flow.** The header sits in flow, its bottom margin
+  `dialog_header_space` above the content's top padding; the container
+  border draws on all four sides.
 - **Scrim** centers the container, paints `dialog_scrim`, sits at
   `stacking.overlay`, and a press that lands on it (not inside the
   container) asks for a close unless `preventCloseOnClickOutside`.
@@ -58,8 +61,14 @@ theme.
   `accessibilityLabel` names it; Escape and focus trap; focus returns on
   close.
 
-## Second reference
+## Retired second reference
 
 `md-dialog` with `headline`, content and `actions` slots of
 `md-text-button`. No eyebrow label, no close control, and bounded
 content-sized width.
+- **ModalHeader** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalBody** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalFooter** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalHeader** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalBody** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalFooter** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.

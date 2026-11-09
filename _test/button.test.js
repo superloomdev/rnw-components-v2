@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/button/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -34,9 +34,9 @@ Build a registry for a template, optionally with token overrides.
 
 @return {Object} - Registry
 *********************************************************************/
-function registryFor (template, overrides) {
+function registryFor (template, overrides, layers) {
 
-  const built = buildNative(template);
+  const built = buildNative(template, layers);
   const tokens = Object.assign({}, built.tokens, overrides || {});
 
   return buildSystem(template, factories, { built: Object.assign({}, built, { tokens: tokens }) });
@@ -222,8 +222,8 @@ describe('Button: feedback.press through the DOM', function () {
   });
 
   test('ripple: the state\'s cell is a layer over the resting cell', async function () {
-    const t = buildNative('material').tokens;
-    const parts = await renderButton(registryFor('material', { 'feedback.press': 'ripple' }), { children: 'P' });
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const parts = await renderButton(registryFor('carbon', { 'feedback.press': 'ripple' }, [LESSONS_LAYER]), { children: 'P' });
     assert.equal(parts.layer.style.opacity, '0');
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
     assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_hover'));
@@ -231,6 +231,17 @@ describe('Button: feedback.press through the DOM', function () {
     await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
     assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_active'));
     assert.equal(parts.root.style.backgroundColor, fillOf(t, 'button_primary_container'));
+  });
+
+  test('the state layer paints the interaction cell, not the resting fill', async function () {
+    const t = buildNative('shapes').tokens;
+    const parts = await renderButton(registryFor('shapes'), { children: 'P' });
+    assert.equal(parts.layer.style.opacity, '0');
+    await fire(parts.root, new Event('pointerover', { bubbles: true }));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_hover'));
+    await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+    assert.equal(parts.layer.style.backgroundColor, fillOf(t, 'button_primary_container_active'));
+    await fire(parts.root, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
   });
 
   test('focus draws the button ring from its cells; a keyboard-only theme draws it for keyboard focus, not for a pointer press', async function () {
@@ -244,8 +255,15 @@ describe('Button: feedback.press through the DOM', function () {
     assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.button_focus_ring']));
     assert.match(parts.root.style.boxShadow, /inset/);
     assert.equal(parts.root.style.outlineWidth, '');
-    const m = buildNative('material').tokens;
-    const keyboard = await renderButton(registryFor('material'), { children: 'P' });
+    const single = await renderButton(registryFor('carbon'), { children: 'P', focusRingGap: false });
+    await act(async function () {
+      single.root.focus();
+    });
+    assert.equal(single.root.style.boxShadow.split('inset').length - 1, 1, 'focusRingGap: false draws one shadow layer');
+    const ended = await renderButton(registryFor('carbon'), { children: 'P', paddingEnd: 9 });
+    assert.equal(ended.root.style.paddingRight, '9px', 'paddingEnd overrides the computed end padding');
+    const m = buildNative('shapes').tokens;
+    const keyboard = await renderButton(registryFor('shapes'), { children: 'P' });
     await fire(keyboard.root, new Event('pointerdown', { bubbles: true }));
     await act(async function () {
       keyboard.root.focus();
@@ -257,9 +275,10 @@ describe('Button: feedback.press through the DOM', function () {
     await act(async function () {
       keyboard.root.focus();
     });
+    // A keyboard-only theme draws its ring as an outline outside the edge
+    assert.equal(keyboard.root.style.outlineColor, cssValue('outlineColor', m['color.button_focus_ring']));
     assert.equal(keyboard.root.style.outlineWidth, m['control.button_focus_width'] + 'px');
     assert.equal(keyboard.root.style.outlineOffset, m['control.button_focus_offset'] + 'px');
-    assert.equal(keyboard.root.style.backgroundColor, fillOf(m, 'button_primary_container_focus'));
   });
 
   test('disabled: no hover or press feedback and no activation; enabled activates once per click', async function () {
@@ -300,6 +319,27 @@ describe('Button: composition props', function () {
 
 
 describe('Button: accessibility', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': a focused button under the pointer reads fillFocusLeaf', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderButton(registryFor(template), { children: 'K', fillFocusLeaf: 'notification_action_tertiary_inverse', kind: 'tertiary', label: 'X' });
+      await fire(parts.root, new Event('pointerover', { bubbles: true }));
+      await act(async function () {
+        parts.root.focus();
+      });
+      assert.equal(parts.root.style.backgroundColor, fillOf(t, 'notification_action_tertiary_inverse'), 'the focus leaf wins over hover');
+      await cleanup();
+    });
+
+    test(template + ': a pressed button reads the kind active border cell', async function () {
+      const t = buildNative(template).tokens;
+      const parts = await renderButton(registryFor(template), { borderLeaf: 'notification_action_tertiary_inverse', children: 'K', kind: 'tertiary', label: 'X' });
+      await fire(parts.root, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      assert.equal(parts.root.style.borderTopColor, cssValue('borderColor', t['color.button_tertiary_border_active']), 'the pressed border reads the kind active cell');
+      await cleanup();
+    });
+  }
 
   test('the accessible name is the label, or accessibilityLabel when given', async function () {
     const named = await renderButton(registryFor('default'), { children: 'Save' });

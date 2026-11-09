@@ -2,7 +2,7 @@
 // Builds one component system per template with the real frameworks (React,
 // react-native-web, react-native-svg) exactly as a web host would, and
 // renders every component's sample states in a labelled grid. The URL picks
-// the template and its scheme: /?template=default|carbon|material and
+// the template and its scheme: /?template=default|carbon and
 // &scheme=light|dark (each template's own light and dark scheme; a dark page
 // is painted in the scheme's background). Nothing here is product code; it is
 // the page the browser gates measure.
@@ -16,19 +16,19 @@ import debug from 'helper-debug';
 import themer from 'helper-themer';
 import defaultProfile from 'helper-themer-template-default';
 import carbonProfile from 'helper-themer-template-carbon';
-import materialProfile from 'helper-themer-template-material';
 
 import { createSystem, resolveForm } from 'rnw-components';
+import { LESSONS_LAYER } from './lessons-layer.js';
 import { LocaleProvider } from 'react-native-web/dist/modules/useLocale/index.js';
 import * as factories from 'rnw-components/all';
 import { frames, references, rows, samples } from './manifest.js';
 import { createSampleElement } from './sample.js';
+import { measuredProps } from './sample-props.js';
 
 // Template -> scheme name -> scheme
 const TEMPLATES = {
   default: { light: defaultProfile.schemes.light, dark: defaultProfile.schemes.dark },
-  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 },
-  material: { light: materialProfile.schemes.light, dark: materialProfile.schemes.dark }
+  carbon: { light: carbonProfile.schemes.white, dark: carbonProfile.schemes.g100 }
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -68,7 +68,7 @@ window.addEventListener('error', function (event) {
 
 let Registry;
 try {
-  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], [], 'native', {
+  const built = Themer.buildTheme(TEMPLATES[templateName][schemeName], params.get('pins') === 'lessons' ? [LESSONS_LAYER] : [], 'native', {
     adaptive: adaptive,
     variant: { form: form, platform: 'web' }
   });
@@ -94,22 +94,56 @@ pages; otherwise a component whose sample names a frame is laid out in
 it, as every host's showcase does; every other body keeps the
 shrink-to-fit layout. A frame with `stage` also makes the body the
 containing block of a fixed layer, so an overlay component paints its
-layer inside the cell it was mounted in.
+layer inside the cell it was mounted in. A `hang` reserves the room a
+part upstream paints outside the component's box, as a host must.
 
-@param {Object} frame - { width, height?, stage? }
+@param {Object} frame - { width?, height?, stage?, hang? }
 
 @return {Object} - Inline style
 *********************************************************************/
 function frameStyle (frame) {
 
-  const style = { display: 'block', width: frame.width + 'px' };
+  // A member's frame stands in for its positioned parent container
+  // (`position: relative`), so an absolute seat hangs where it would in
+  // the real host; `stage` still adds the fixed-layer containing block
+  const style = {
+    display: 'block',
+    position: 'relative',
+    width: typeof frame.width === 'number' ? frame.width + 'px' : 'fit-content'
+  };
   if (typeof frame.height === 'number') {
     style.height = frame.height + 'px';
   }
+  const hang = frame.hang || {};
+  if (typeof hang.start === 'number') {
+    style.paddingInlineStart = hang.start + 'px';
+  }
+  if (typeof hang.bottom === 'number') {
+    style.paddingBottom = hang.bottom + 'px';
+  }
   if (frame.stage === true) {
     style.transform = 'translateZ(0)';
+    // A declared height is not shrinkable: the measurement grid's 160 px
+    // row pitch must not squeeze the stage the layer covers
+    style.flexShrink = 0;
   }
   return style;
+
+}
+
+// The rows a staged cell spans on the measurement grid: its declared
+// height plus its own chrome (the 16 px label line, the 8 px gap and the
+// 12 px padding of serve.js's .cell / .cell-label) over the 160 px row
+// pitch and the 24 px grid gap, so every cell still starts on a whole
+// pixel and the grid can no longer shrink the body
+function cellSpan (name) {
+
+  const reference = references[name];
+  const frame = measuring && reference && reference.body ? reference.body : frames[name];
+  if (frame === null || frame === undefined || frame.stage !== true || typeof frame.height !== 'number') {
+    return undefined;
+  }
+  return 'span ' + Math.ceil((frame.height + 16 + 8 + 24 + 24) / (160 + 24));
 
 }
 
@@ -135,16 +169,30 @@ function Cell (props) {
   // width and height) and the layer covers it. A measurement page opens
   // unhosted
   const frame = frames[props.name];
-  const content = hosting && frame !== null && frame !== undefined && frame.stage === true
-    ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, props.state))
-    : createSampleElement(React, Registry, props.name, props.state);
+  // A measured cell opens its reopen states by click, as upstream does:
+  // the seeded `open` is dropped so the panel mounts at the same pinned
+  // scroll on both pages; the sheet keeps the seed
+  const filtered = measuring === true && sheeting === false
+    ? measuredProps(references[props.name], props.state.label, props.state.props)
+    : props.state.props;
+  const state = filtered === props.state.props ? props.state : Object.assign({}, props.state, { props: filtered });
+  // A staged cell renders in the host whenever the page hosts, and also
+  // on the unhosted measurement page when the reference needs ours in the
+  // same cell box its mount pins the upstream layer to (`oursHosted`)
+  const content = (hosting || (references[props.name] && references[props.name].oursHosted === true)) && frame !== null && frame !== undefined && frame.stage === true
+    ? React.createElement(Registry.OverlayHost, null, createSampleElement(React, Registry, props.name, state))
+    : createSampleElement(React, Registry, props.name, state);
+  // The row span applies only to the measurement grid's fixed 160 px pitch;
+  // the sheet's minmax rows already grow to the cell, the showcase is flex
+  const span = measuring === true && sheeting === false ? cellSpan(props.name) : undefined;
 
   return React.createElement('div', {
     className: 'cell',
     'data-component': props.name,
     'data-family': rows[props.name].family,
     'data-state': props.state.label,
-    'data-template': templateName
+    'data-template': templateName,
+    style: span === undefined ? undefined : { gridRow: span }
   },
   React.createElement('div', { className: 'cell-label' }, props.name + ' / ' + props.state.label),
   React.createElement('div', { className: 'cell-body', 'data-part': 'body', style: bodyStyle(props.name) },

@@ -858,7 +858,7 @@
         "version": "2.5.0",
         "export": "MdDivider"
       },
-      "description": "Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; the primary system has no divider, so its values there are a Superloom decision from that system's own scale.",
+      "description": "Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; it has no upstream visual reference, so its values are a Superloom decision from the primary system's own scale.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -867,13 +867,14 @@
       "behaviors": [],
       "parent": null,
       "reference": {
-        "kind": "render-web",
-        "package": "@material/web"
+        "kind": "none",
+        "package": "none"
       },
       "carbon_twin": "none",
       "material_twin": "md-divider",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "superloom_decision"
       ],
       "status": "built"
@@ -2235,15 +2236,12 @@
         "version": "1.115.0",
         "export": "SelectItem"
       },
-      "description": "SelectItem is a component in the Select family; it must be composed inside Select.",
+      "description": "SelectItem draws one option of a Select's open list from the theme's list cells; it must be composed inside Select.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "overlay",
@@ -2254,13 +2252,13 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "SelectItem",
+      "carbon_twin": "none",
       "material_twin": "md-select-option",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SelectItemGroup",
@@ -2271,15 +2269,12 @@
         "version": "1.115.0",
         "export": "SelectItemGroup"
       },
-      "description": "SelectItemGroup groups SelectItems under a group label inside Select; it must be composed inside Select; neither reference system draws an option group header, so its values are a Superloom decision.",
+      "description": "SelectItemGroup draws a group label row above its SelectItems inside a Select's open list and disables them together; it must be composed inside Select; neither reference system draws an option group header of its own, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label",
-        "feedback.field"
-      ],
+      "enums": [],
       "behaviors": [
         "controllable-state",
         "overlay",
@@ -2290,14 +2285,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "SelectItemGroup",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
         "superloom_decision"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ComboBox",
@@ -2308,7 +2303,7 @@
         "version": "1.115.0",
         "export": "ComboBox"
       },
-      "description": "ComboBox is a component in the Select family.",
+      "description": "ComboBox is a single-choice field whose editable input filters the open option list as you type, with a clear action once a value is chosen.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2331,7 +2326,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FloatingActionButton",
@@ -2342,7 +2337,7 @@
         "version": "2.5.0",
         "export": "MdFab"
       },
-      "description": "FloatingActionButton is the composed primary action whose Carbon twin is BottomToolbarPrimaryAction.",
+      "description": "FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction and it has no upstream visual reference, so its values are a Superloom decision.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2351,14 +2346,17 @@
       "behaviors": [],
       "parent": null,
       "reference": {
-        "kind": "render-web",
-        "package": "@material/web"
+        "kind": "none",
+        "package": "none"
       },
       "carbon_twin": "none",
       "material_twin": "md-fab",
       "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
+      "flags": [
+        "no_reference",
+        "superloom_decision"
+      ],
+      "status": "built"
     },
     {
       "name": "Popover",
@@ -2369,7 +2367,7 @@
         "version": "1.115.0",
         "export": "Popover"
       },
-      "description": "Popover is a component in the Popover family.",
+      "description": "Popover anchors a floating surface with an optional caret to its trigger and leaves its open state to the caller.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2388,7 +2386,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "PopoverContent",
@@ -2399,7 +2397,7 @@
         "version": "1.115.0",
         "export": "PopoverContent"
       },
-      "description": "PopoverContent is a component in the Popover family; it must be composed inside Popover.",
+      "description": "PopoverContent is the floating body of a Popover; it must be composed inside Popover; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2411,16 +2409,17 @@
       ],
       "parent": "Popover",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "PopoverContent",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DefinitionTooltip",
@@ -2431,7 +2430,7 @@
         "version": "1.115.0",
         "export": "DefinitionTooltip"
       },
-      "description": "DefinitionTooltip is a component in the Tooltip family.",
+      "description": "DefinitionTooltip underlines a term and shows its definition in a small inverse bubble when the term is pressed, or hovered when asked.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2450,7 +2449,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Toggletip",
@@ -2461,7 +2460,7 @@
         "version": "1.115.0",
         "export": "Toggletip"
       },
-      "description": "Toggletip is a component in the Tooltip family.",
+      "description": "Toggletip pairs a label with an information button that toggles an inverse bubble of text and up to two actions.",
       "platform": {
         "support": "touch_degraded",
         "fallback": "opens on press without hover"
@@ -2480,7 +2479,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipLabel",
@@ -2491,7 +2490,7 @@
         "version": "1.115.0",
         "export": "ToggletipLabel"
       },
-      "description": "ToggletipLabel is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipLabel is the text beside a Toggletip's button; it must be composed inside Toggletip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2512,7 +2511,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipButton",
@@ -2523,7 +2522,7 @@
         "version": "1.115.0",
         "export": "ToggletipButton"
       },
-      "description": "ToggletipButton is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipButton is the information button that opens and closes a Toggletip; it must be composed inside Toggletip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2544,7 +2543,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipContent",
@@ -2555,7 +2554,7 @@
         "version": "1.115.0",
         "export": "ToggletipContent"
       },
-      "description": "ToggletipContent is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipContent is the body text of a Toggletip's bubble; it must be composed inside Toggletip; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2567,16 +2566,17 @@
       ],
       "parent": "Toggletip",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipContent",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ToggletipActions",
@@ -2587,7 +2587,7 @@
         "version": "1.115.0",
         "export": "ToggletipActions"
       },
-      "description": "ToggletipActions is a component in the Tooltip family; it must be composed inside Toggletip.",
+      "description": "ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip and has no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2599,16 +2599,17 @@
       ],
       "parent": "Toggletip",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipActions",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TagSet",
@@ -2619,7 +2620,7 @@
         "version": "2.99.0",
         "export": "TagSet"
       },
-      "description": "TagSet is a component in the Tag family.",
+      "description": "TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag that lists them, with a searchable dialog when there are many.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2635,7 +2636,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tab",
@@ -2646,7 +2647,7 @@
         "version": "1.115.0",
         "export": "Tab"
       },
-      "description": "Tab is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "Tab draws one item of a tab list - its label, optional icon and secondary line, and its selected and disabled states; it must be composed inside Tabs.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2667,7 +2668,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabList",
@@ -2678,7 +2679,7 @@
         "version": "1.115.0",
         "export": "TabList"
       },
-      "description": "TabList is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabList lays out a row of tabs with the selection indicator, keyboard movement, optional close buttons and overflow scrolling; it must be composed inside Tabs.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2699,7 +2700,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabPanel",
@@ -2710,7 +2711,7 @@
         "version": "1.115.0",
         "export": "TabPanel"
       },
-      "description": "TabPanel is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabPanel holds the content for one tab and is labelled by it; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2725,13 +2726,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabPanel",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabPanels",
@@ -2742,7 +2744,7 @@
         "version": "1.115.0",
         "export": "TabPanels"
       },
-      "description": "TabPanels is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabPanels shows the panel of the selected tab and keeps the others linked but hidden; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2757,13 +2759,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabPanels",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "IconTab",
@@ -2774,7 +2777,7 @@
         "version": "1.115.0",
         "export": "IconTab"
       },
-      "description": "IconTab is a component in the Tabs family.",
+      "description": "IconTab is an icon-only tab whose name appears in a tooltip.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2793,7 +2796,7 @@
       "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabsVertical",
@@ -2804,7 +2807,7 @@
         "version": "1.115.0",
         "export": "TabsVertical"
       },
-      "description": "TabsVertical is a component in the Tabs family.",
+      "description": "TabsVertical lists tabs in a column beside their panels, with scroll fades when the list is long.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2823,7 +2826,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabListVertical",
@@ -2834,7 +2837,7 @@
         "version": "1.115.0",
         "export": "TabListVertical"
       },
-      "description": "TabListVertical is a component in the Tabs family; it must be composed inside Tabs.",
+      "description": "TabListVertical is the column of tabs inside TabsVertical; it must be composed inside Tabs; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2849,13 +2852,14 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "TabListVertical",
+      "carbon_twin": "none",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TabsSkeleton",
@@ -2866,7 +2870,7 @@
         "version": "1.115.0",
         "export": "TabsSkeleton"
       },
-      "description": "TabsSkeleton is a component in the Tabs family.",
+      "description": "TabsSkeleton draws the placeholder shape of a tab list while its content loads.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2885,7 +2889,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContentSwitcher",
@@ -2896,37 +2900,7 @@
         "version": "1.115.0",
         "export": "ContentSwitcher"
       },
-      "description": "ContentSwitcher is a component in the Tabs family.",
-      "platform": {
-        "support": "both",
-        "fallback": "none"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state",
-        "roving-tab-index"
-      ],
-      "parent": null,
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "ContentSwitcher",
-      "material_twin": "md-outlined-segmented-button-set",
-      "diff_budget": 2,
-      "flags": [],
-      "status": "pending"
-    },
-    {
-      "name": "Switch",
-      "family": "Tabs",
-      "tier": "molecule",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "Switch"
-      },
-      "description": "Switch is a component in the Switch family.",
+      "description": "ContentSwitcher is a row of segments where exactly one is selected, for switching between views of the same content.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2938,18 +2912,52 @@
       ],
       "behaviors": [
         "controllable-state",
-        "press"
+        "roving-tab-index"
       ],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
-      "carbon_twin": "Switch",
-      "material_twin": "md-outlined-segmented-button",
+      "carbon_twin": "md-outlined-segmented-button-set",
+      "material_twin": "md-outlined-segmented-button-set",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
+    },
+    {
+      "name": "Switch",
+      "family": "Tabs",
+      "tier": "molecule",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "Switch"
+      },
+      "description": "Switch is one text segment of a ContentSwitcher; no upstream visual reference.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [
+        "feedback.press"
+      ],
+      "behaviors": [
+        "controllable-state",
+        "press"
+      ],
+      "parent": null,
+      "reference": {
+        "kind": "none",
+        "package": "@carbon/react"
+      },
+      "carbon_twin": "md-outlined-segmented-button",
+      "material_twin": "md-outlined-segmented-button",
+      "diff_budget": 2,
+      "flags": [
+        "no_reference"
+      ],
+      "status": "built"
     },
     {
       "name": "IconSwitch",
@@ -2960,7 +2968,7 @@
         "version": "1.115.0",
         "export": "IconSwitch"
       },
-      "description": "IconSwitch is a component in the Tabs family; it must be composed inside ContentSwitcher.",
+      "description": "IconSwitch is one icon segment of a ContentSwitcher whose name appears in a tooltip; it must be composed inside ContentSwitcher; no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -2969,16 +2977,17 @@
       "behaviors": [],
       "parent": "ContentSwitcher",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
-      "carbon_twin": "IconSwitch",
+      "carbon_twin": "md-outlined-segmented-button",
       "material_twin": "md-outlined-segmented-button",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuButton",
@@ -2989,7 +2998,7 @@
         "version": "1.115.0",
         "export": "MenuButton"
       },
-      "description": "MenuButton is a component in the Menu family.",
+      "description": "MenuButton is a button that opens a Menu of actions below or above it, its chevron turning while the menu is open.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3008,7 +3017,7 @@
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItem",
@@ -3019,7 +3028,7 @@
         "version": "1.115.0",
         "export": "MenuItem"
       },
-      "description": "MenuItem is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItem is one action of a Menu, with an optional icon and shortcut, a danger kind and a submenu of further items; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3031,7 +3040,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItem",
@@ -3040,7 +3049,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemDivider",
@@ -3051,7 +3060,7 @@
         "version": "1.115.0",
         "export": "MenuItemDivider"
       },
-      "description": "MenuItemDivider is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemDivider is a rule that separates groups of items in a Menu; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3063,7 +3072,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemDivider",
@@ -3072,7 +3081,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemGroup",
@@ -3083,7 +3092,7 @@
         "version": "1.115.0",
         "export": "MenuItemGroup"
       },
-      "description": "MenuItemGroup is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemGroup names a run of a Menu's items for assistive technology without drawing a heading; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3095,7 +3104,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemGroup",
@@ -3104,7 +3113,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemRadioGroup",
@@ -3115,7 +3124,7 @@
         "version": "1.115.0",
         "export": "MenuItemRadioGroup"
       },
-      "description": "MenuItemRadioGroup is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemRadioGroup is a named set of Menu items of which exactly one is selected and marked; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3127,7 +3136,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemRadioGroup",
@@ -3136,7 +3145,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "MenuItemSelectable",
@@ -3147,7 +3156,7 @@
         "version": "1.115.0",
         "export": "MenuItemSelectable"
       },
-      "description": "MenuItemSelectable is a component in the Menu family; it must be composed inside Menu.",
+      "description": "MenuItemSelectable is a Menu item that toggles on and off and shows a mark while it is on; it must be composed inside Menu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3159,7 +3168,7 @@
       ],
       "parent": "Menu",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemSelectable",
@@ -3168,7 +3177,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OverflowMenu",
@@ -3179,7 +3188,7 @@
         "version": "1.115.0",
         "export": "OverflowMenu"
       },
-      "description": "OverflowMenu is a component in the Menu family.",
+      "description": "OverflowMenu is a square icon button that opens a panel of options joined to it, for actions that do not fit beside the content.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3198,7 +3207,7 @@
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OverflowMenuItem",
@@ -3209,7 +3218,7 @@
         "version": "1.115.0",
         "export": "OverflowMenuItem"
       },
-      "description": "OverflowMenuItem is a component in the Menu family.",
+      "description": "OverflowMenuItem is one option row of an OverflowMenu, with an optional rule above it and a danger kind; it must be composed inside OverflowMenu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3221,14 +3230,14 @@
       ],
       "parent": null,
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "OverflowMenuItem",
       "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "CopyButton",
@@ -3239,7 +3248,7 @@
         "version": "1.115.0",
         "export": "CopyButton"
       },
-      "description": "CopyButton is a component in the CodeSnippet family.",
+      "description": "CopyButton is an icon button whose tooltip confirms a copy for a moment after it is pressed.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3255,7 +3264,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SkipToContent",
@@ -3266,7 +3275,7 @@
         "version": "1.115.0",
         "export": "SkipToContent"
       },
-      "description": "SkipToContent is a component in the SkipToContent family; it is web-only and renders nothing on native platforms.",
+      "description": "A visually hidden link that appears on keyboard focus and moves focus past the page's navigation to its main content; web-only, because native screens have no tab order to skip.",
       "platform": {
         "support": "web",
         "fallback": "renders nothing on native"
@@ -3284,7 +3293,7 @@
       "flags": [
         "web_only"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ComposedModal",
@@ -3295,7 +3304,7 @@
         "version": "1.115.0",
         "export": "ComposedModal"
       },
-      "description": "ComposedModal is a component in the Modal family.",
+      "description": "ComposedModal is the framed dialog on its own scrim layer composing ModalHeader, ModalBody and an optional ModalFooter - passive without one - with Escape, focus trapping and outside-press dismissal.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3316,7 +3325,7 @@
       "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalHeader",
@@ -3327,30 +3336,29 @@
         "version": "1.115.0",
         "export": "ModalHeader"
       },
-      "description": "ModalHeader is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalHeader is the header band of a ComposedModal - the eyebrow label, the heading and the close seat; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.dialog_actions"
-      ],
+      "enums": [],
       "behaviors": [
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalHeader",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalBody",
@@ -3361,30 +3369,29 @@
         "version": "1.115.0",
         "export": "ModalBody"
       },
-      "description": "ModalBody is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalBody is the content region of a ComposedModal - the prose body, scrollable on demand and gutterless for a form; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.dialog_actions"
-      ],
+      "enums": [],
       "behaviors": [
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalBody",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ModalFooter",
@@ -3395,7 +3402,7 @@
         "version": "1.115.0",
         "export": "ModalFooter"
       },
-      "description": "ModalFooter is a component in the Modal family; it must be composed inside Modal.",
+      "description": "ModalFooter is the action row of a ComposedModal - a primary action plus a secondary action or two; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3407,18 +3414,19 @@
         "overlay",
         "focus-trap"
       ],
-      "parent": "Modal",
+      "parent": "ComposedModal",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalFooter",
-      "material_twin": "md-dialog",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "InlineNotification",
@@ -3429,14 +3437,12 @@
         "version": "1.115.0",
         "export": "InlineNotification"
       },
-      "description": "InlineNotification is a component in the Notification family.",
+      "description": "InlineNotification is the status band that sits in the page flow: a marker and kind glyph, a title, an optional subtitle and a close button.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3447,7 +3453,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ActionableNotification",
@@ -3458,14 +3464,12 @@
         "version": "1.115.0",
         "export": "ActionableNotification"
       },
-      "description": "ActionableNotification is a component in the Notification family.",
+      "description": "ActionableNotification is a status notification carrying an action: the `inline` form seats a ghost action beside the title and subtitle, the toast form a tertiary-inverse action below them with a close button.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3476,7 +3480,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Callout",
@@ -3487,14 +3491,12 @@
         "version": "1.115.0",
         "export": "Callout"
       },
-      "description": "Callout is a component in the Notification family.",
+      "description": "Callout is the persistent inline message - marker, kind glyph, title and subtitle with the ghost action, no close button and no dialog role.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -3505,7 +3507,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "NotificationActionButton",
@@ -3516,27 +3518,26 @@
         "version": "1.115.0",
         "export": "NotificationActionButton"
       },
-      "description": "NotificationActionButton is a component in the Notification family; it must be composed inside Notification.",
+      "description": "NotificationActionButton is a notification's action button - the inline ghost or the toast tertiary-inverse form; it must be composed inside ActionableNotification, with no upstream visual reference of its own - it is measured through the notification's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.status_marker"
-      ],
+      "enums": [],
       "behaviors": [],
-      "parent": "Notification",
+      "parent": "ActionableNotification",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "NotificationActionButton",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Breadcrumb",
@@ -3547,7 +3548,7 @@
         "version": "1.115.0",
         "export": "Breadcrumb"
       },
-      "description": "Breadcrumb is a component in the Breadcrumb family.",
+      "description": "Breadcrumb draws the page trail: a row of links separated by slashes, the current page unlinked and an `{ overflow: [...] }` entry collapsing to a menu, with a trailing slash unless `noTrailingSlash`.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3563,7 +3564,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "BreadcrumbItem",
@@ -3574,7 +3575,7 @@
         "version": "1.115.0",
         "export": "BreadcrumbItem"
       },
-      "description": "BreadcrumbItem is a component in the Breadcrumb family; it must be composed inside Breadcrumb.",
+      "description": "BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page or the overflow-menu seat; it must be composed inside Breadcrumb, with no upstream visual reference of its own - it is measured through Breadcrumb's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3583,16 +3584,17 @@
       "behaviors": [],
       "parent": "Breadcrumb",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "BreadcrumbItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "BreadcrumbSkeleton",
@@ -3603,7 +3605,7 @@
         "version": "1.115.0",
         "export": "BreadcrumbSkeleton"
       },
-      "description": "BreadcrumbSkeleton is a component in the Breadcrumb family.",
+      "description": "BreadcrumbSkeleton draws the breadcrumb's loading form - `items` shimmer bars at the breadcrumb size with the trail's separators and `noTrailingSlash` dropping the last.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3619,7 +3621,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Accordion",
@@ -3630,7 +3632,7 @@
         "version": "1.115.0",
         "export": "Accordion"
       },
-      "description": "Accordion is a component in the Accordion family.",
+      "description": "Accordion stacks headed sections that open and close independently, each with a chevron and a divider rule.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3649,7 +3651,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "AccordionItem",
@@ -3660,7 +3662,7 @@
         "version": "1.115.0",
         "export": "AccordionItem"
       },
-      "description": "AccordionItem is a component in the Accordion family; it must be composed inside Accordion.",
+      "description": "AccordionItem is one headed section of an Accordion with its chevron, title and collapsible content; it must be composed inside Accordion and has no upstream visual reference.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3672,16 +3674,17 @@
       ],
       "parent": "Accordion",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "AccordionItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "AccordionSkeleton",
@@ -3692,7 +3695,7 @@
         "version": "1.115.0",
         "export": "AccordionSkeleton"
       },
-      "description": "AccordionSkeleton is a component in the Accordion family.",
+      "description": "AccordionSkeleton draws the placeholder shape of an accordion, one section open, while its content loads.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3711,7 +3714,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "UnorderedList",
@@ -3722,7 +3725,7 @@
         "version": "1.115.0",
         "export": "UnorderedList"
       },
-      "description": "UnorderedList is a component in the List family.",
+      "description": "A bulleted list with en-dash markers; nested lists indent and mark squares.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3738,7 +3741,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "OrderedList",
@@ -3749,7 +3752,7 @@
         "version": "1.115.0",
         "export": "OrderedList"
       },
-      "description": "OrderedList is a component in the List family.",
+      "description": "A numbered list with `n.` markers (lower-latin `a.` nested; `native` uses the browser's decimal marker).",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3765,7 +3768,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ListItem",
@@ -3776,25 +3779,26 @@
         "version": "1.115.0",
         "export": "ListItem"
       },
-      "description": "ListItem is a component in the List family; it must be composed inside List.",
+      "description": "One row of a text list with its marker; it must be composed inside UnorderedList or OrderedList, with no upstream visual reference of its own - it is measured through the lists' samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [],
-      "parent": "List",
+      "parent": "UnorderedList",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ListItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContainedList",
@@ -3805,7 +3809,7 @@
         "version": "1.115.0",
         "export": "ContainedList"
       },
-      "description": "ContainedList is a component in the ContainedList family.",
+      "description": "ContainedList is a labelled list of rows inside a container, with a sticky header, an optional search and rulers between rows.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3824,7 +3828,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ContainedListItem",
@@ -3835,7 +3839,7 @@
         "version": "1.115.0",
         "export": "ContainedListItem"
       },
-      "description": "ContainedListItem is a component in the ContainedList family; it must be composed inside ContainedList.",
+      "description": "ContainedListItem is one row of a ContainedList, optionally pressable, with an icon and an end action; it must be composed inside ContainedList, with no upstream visual reference of its own - it is measured through the list's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3847,16 +3851,17 @@
       ],
       "parent": "ContainedList",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "ContainedListItem",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Card",

@@ -57,7 +57,6 @@ export default Object.freeze({
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--btn-set', ours: ':scope > div', measure: 'box' }),
     first: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(1)', ours: SEAT(1), measure: 'box' }),
-    second: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(2)', ours: SEAT(2), measure: 'box', optional: true }),
     third: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(3)', ours: SEAT(3), measure: 'box', optional: true }),
     firstLabel: SEAT_LABEL(1),
     secondLabel: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(2)', ours: SEAT(2) + ' > [dir="auto"]', measure: 'text', optional: true }),

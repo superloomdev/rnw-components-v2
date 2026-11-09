@@ -15,16 +15,20 @@
 // design) is left out of the pixels as it is out of the parts. Not product
 // code.
 
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { PNG } from 'pngjs';
+import pixelmatch from 'pixelmatch';
 
 import { findDisagreements } from './compare.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, shootCell, shootPart } from './page.js';
-import { perceptualRatio } from './perceptual.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, readSampleBox, refocusPanel, reopenPanel, settleLayout, shootCell, shootPart } from './page.js';
+import { pad, perceptualRatio, sampleWindow } from './perceptual.js';
 import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
 export const SCHEMES = Object.freeze(['light', 'dark']);
-export const TEMPLATE = Object.freeze({ primary: 'carbon', second: 'material' });
+export const TEMPLATE = Object.freeze({ primary: 'carbon' });
 
 // Pixels around each cell body in a screenshot: wide enough for the widest ring (a 44px circle around an 18px box)
 const MARGIN = 20;
@@ -60,7 +64,19 @@ border, above any centered text).
 
 @return {void}
 *********************************************************************/
-export function samplePaint (state, shot, omitted) {
+export function restHiddenStates (component) {
+
+  const hidden = {};
+  (component.sample || []).forEach(function (entry) {
+    if (entry.restHidden === true) {
+      hidden[entry.label] = true;
+    }
+  });
+  return hidden;
+
+}
+
+export function samplePaint (state, shot, omitted, frame) {
 
   if (!shot) {
     return;
@@ -83,7 +99,9 @@ export function samplePaint (state, shot, omitted) {
     })) {
       continue;
     }
-    const pixel = image.at(MARGIN + x, MARGIN + y);
+    const dx = frame === undefined || frame === null || frame.dx === undefined ? MARGIN : frame.dx;
+    const dy = frame === undefined || frame === null || frame.dy === undefined ? MARGIN : frame.dy;
+    const pixel = image.at(dx + x, dy + y);
     if (pixel !== null) {
       part.paint = 'rgb(' + pixel.r + ', ' + pixel.g + ', ' + pixel.b + ')';
     }
@@ -299,20 +317,114 @@ async function collect (page, component, reference, side, masks) {
   // is anchored on (the painted face, not the enlarged invisible pressable)
   const anchors = {};
   const failures = [];
+  const samples = {};
   const shoot = async function (label, key, preserveViewport) {
-    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, preserveViewport);
+    // The sample box is read in the same scroll frame as the shot: settle
+    // the rest frame's centering first, then read, then shoot without
+    // another scroll (an interaction frame is already centered)
+    // A pressed frame keeps the focus its press gave; rest and hover frames refocus the measured panel
+    if (key.indexOf(' @pressed') === -1) {
+      await refocusPanel(page, component.name, label, reference.refocus, side);
+    }
+    if (preserveViewport !== true) {
+      await page.locator('.cell[data-component="' + component.name + '"][data-state="' + label + '"] [data-part="body"]').first().evaluate(function (element) {
+        element.scrollIntoView({ block: 'center', inline: 'center' });
+      });
+    }
+    // A fixed panel lags the scroll by a frame or more: let the layout
+    // settle so the shot sees it where the anchor is, not where it was
+    await settleLayout(page, component.name, label);
+    samples[key] = await readSampleBox(page, component.name, label);
+    const frame = {};
+    shots[key] = await shootCell(page, component.name, label, MARGIN, pauseAnimations, true, frame);
     samplePaint(states[key], shots[key], Object.keys(masks || {}).map(function (name) {
       return states[key][name];
-    }));
+    }), frame);
     if (originSelector !== null && states[key] && states[key][origin] && states[key][origin].visible === true) {
       // No margin: the part's own pixels are compared, without the backdrop
       // that differs under it (a fixed layer's, a top-layered element's)
       originShots[key] = await shootPart(page, component.name, label, originSelector, 0, pauseAnimations, preserveViewport);
     }
+    // Non-gating debug for the computed-style probe (D51c): with
+    // FIDELITY_DIFF_PROBE set, read each part's first match in the cell in
+    // the same frame as the shot; the dump writer copies it into frame.json
+    if (process.env.FIDELITY_DIFF_PROBE !== undefined && states[key] !== null && states[key] !== undefined) {
+      states[key].$computed = await page.evaluate(function (input) {
+        const query = function (root, selector) {
+          for (const alternative of selector.split(/,\s*(?=[^)]*(?:\(|$))/)) {
+            let current = root;
+            const segments = alternative.split(' >>> ');
+            for (let i = 0; i < segments.length; i++) {
+              if (current === null) {
+                break;
+              }
+              const scope = i === 0 ? current : (current.shadowRoot || current);
+              current = scope.querySelector(segments[i]);
+            }
+            if (current !== null && current !== undefined) {
+              return current;
+            }
+          }
+          return null;
+        };
+        const out = { innerHeight: window.innerHeight, parts: {} };
+        const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.label + '"] [data-part="body"]');
+        if (body === null) {
+          return out;
+        }
+        for (const name of Object.keys(input.parts)) {
+          const element = query(body, input.parts[name]);
+          if (element === null) {
+            out.parts[name] = null;
+            continue;
+          }
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          out.parts[name] = {
+            rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+            gridTemplateRows: style.gridTemplateRows,
+            maxHeight: style.maxHeight,
+            overflowY: style.overflowY,
+            maskImage: style.maskImage || style.webkitMaskImage,
+            scrollHeight: element.scrollHeight,
+            clientHeight: element.clientHeight,
+            scrollTop: element.scrollTop,
+            paddingTop: style.paddingTop,
+            paddingBottom: style.paddingBottom
+          };
+        }
+        return out;
+      }, { name: component.name, label: label, parts: Object.fromEntries(Object.keys(parts).map(function (name) {
+        return [name, parts[name][side]];
+      })) });
+    }
   };
   for (const label of Object.keys(rest)) {
+    // An opened state reads on its own right after its reopen: upstream a
+    // panel focusing its option closes every sibling's, so each reopen
+    // state is read while its own panel is open, then dismissed again
+    const reopened = reference.reopen !== undefined && Array.isArray(reference.reopen.states) && reference.reopen.states.indexOf(label) !== -1;
+    if (reopened) {
+      await reopenPanel(page, component.name, label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
+      await page.mouse.move(0, 0);
+      const reread = await readParts(page, component.name, parts, side, origin, { extended: true, only: label, pauseAnimations: pauseAnimations });
+      if (reread[label] !== undefined) {
+        rest[label] = reread[label];
+      }
+    }
     states[label] = rest[label];
     await shoot(label, label);
+    if (reopened) {
+      await leaveInteraction(page, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
+    }
   }
   const enabled = component.sample.filter(function (entry) {
     return !(entry.props && entry.props.disabled === true) && rest[entry.label] !== undefined;
@@ -336,7 +448,12 @@ async function collect (page, component, reference, side, masks) {
         const key = entry.label + ' @' + interaction;
         // A declared main target missing on an enabled, mounted state is a
         // failure, as a missing additional target is - not a silent skip
-        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true })) {
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
+        if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: reference.target.point === true, settleBeforePress: reference.target.settleBeforePress === true })) {
           failures.push(key + ': target not found on ' + side);
           continue;
         }
@@ -362,6 +479,11 @@ async function collect (page, component, reference, side, masks) {
       for (const interaction of targetInteractions(extra, interactions)) {
         const selector = interaction === 'focus' && extra[side + 'Focus'] ? extra[side + 'Focus'] : extra[side];
         const key = entry.label + ' @' + extra.name + ' ' + interaction;
+        await reopenPanel(page, component.name, entry.label, reference.reopen, side, {
+        escape: reference.escapeOnLeave !== false,
+        releaseBeforeMove: reference.releaseBeforeMove === true,
+        clickOutside: reference.clickOutsideOnLeave === true
+      });
         if (!await enterInteraction(page, component.name, entry.label, selector, interaction, { point: extra.point === true })) {
           failures.push(key + ': additional target "' + extra.name + '" not found on ' + side);
           continue;
@@ -377,7 +499,7 @@ async function collect (page, component, reference, side, masks) {
     }
   }
 
-  return { states: states, shots: shots, originShots: originShots, anchors: anchors, failures: failures };
+  return { states: states, shots: shots, originShots: originShots, anchors: anchors, failures: failures, samples: samples };
 
 }
 
@@ -394,14 +516,8 @@ Run one row against one reference under one scheme.
 *********************************************************************/
 export async function runFidelity (page, component, set, scheme) {
 
-  const reference = set === 'second' ? component.reference.second : component.reference;
-  // The omissions masked out of the pixels, measured by the primary part's selector on our side
-  const omit = set === 'second' ? (reference.omit || {}) : {};
-  const masks = Object.fromEntries(Object.keys(omit).filter(function (name) {
-    return omit[name].mask === true;
-  }).map(function (name) {
-    return [name, component.reference.parts[name]];
-  }));
+  const reference = component.reference;
+  const masks = {};
   const status = await openReference(page, component.name, set, scheme);
   const upstream = await collect(page, component, reference, 'upstream');
   const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });
@@ -430,7 +546,13 @@ export async function runFidelity (page, component, set, scheme) {
   // Pixels: the ring and shadow profile at the anchor, and the perceptual ratio
   const perceptual = {};
   const shots = {};
+  // A rest-hidden component paints nothing at rest by definition; the
+  // budget still compares its interaction frames
+  const restHidden = restHiddenStates(component);
   for (const key of Object.keys(upstream.shots)) {
+    if (restHidden[key] === true) {
+      continue;
+    }
     if (!(upstream.shots[key] && ours.shots[key])) {
       continue;
     }
@@ -458,6 +580,7 @@ export async function runFidelity (page, component, set, scheme) {
     };
     let a;
     let b;
+    let upOrigin = null;
     // A reference may ask for the origin's own shot outright (`originPixels`):
     // its cell region cannot hold the component's pixels by construction
     const elementCompare = reference.originPixels === true ||
@@ -467,19 +590,66 @@ export async function runFidelity (page, component, set, scheme) {
       a = ours.originShots[key];
       b = upstream.originShots[key];
     } else {
-      a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
-      b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+      // No origin (D39-3): align both pictures at the sample root's
+      // top-left and crop both to one common window around it - never
+      // each side's own union, which would compare shifted pixels
+      const oursSample = reference.origin === undefined ? ours.samples[key] : undefined;
+      const upSample = reference.origin === undefined ? upstream.samples[key] : undefined;
+      if (oursSample !== undefined && oursSample !== null && upSample !== undefined && upSample !== null) {
+        const crop2 = sampleWindow(oursSample, upSample);
+        if (crop2 !== null) {
+          const oursCrop = { _bodyX: crop2.ours.x, _bodyY: crop2.ours.y, width: crop2.ours.width, height: crop2.ours.height };
+          const upCrop = { _bodyX: crop2.upstream.x, _bodyY: crop2.upstream.y, width: crop2.upstream.width, height: crop2.upstream.height };
+          upOrigin = upCrop;
+          a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
+          b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);
+          ours.samples[key] = oursCrop;
+        } else {
+          a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
+          b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+          ours.samples[key] = undefined;
+        }
+      } else {
+        a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : ours.shots[key];
+        b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : upstream.shots[key];
+        ours.samples[key] = undefined;
+      }
     }
     // Align each origin before copying source pixels: cell bodies may reserve
     // different label space even when their compared frames are identical.
     const masked = maskOmitted(a, b, ours.states[key] || {}, Object.keys(masks), keyAnchor,
-      crop ? ours.states[key][reference.origin] : undefined, crop ? 0 : undefined);
+      crop ? ours.states[key][reference.origin] : ours.samples[key], crop ? 0 : undefined);
     for (const line of masked.lines) {
       lines.push(key + ' / ' + line);
     }
     a = masked.shot;
     perceptual[key] = Math.round(perceptualRatio(a, b) * 10000) / 100;
     shots[key] = { ours: a, upstream: b };
+    // Non-gating debug for the pixel-first probe (D51c): with
+    // FIDELITY_DIFF_DUMP set, dump the compared pair, their full-resolution
+    // diff and the frame the part boxes map through for scripts/diff-probe.js
+    if (process.env.FIDELITY_DIFF_DUMP !== undefined) {
+      const dir = join(process.env.FIDELITY_DIFF_DUMP, component.name, scheme, key.replace(/[^\w .@-]+/g, '_'));
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, 'ours.png'), a);
+      writeFileSync(join(dir, 'upstream.png'), b);
+      const pa = PNG.sync.read(a);
+      const pb = PNG.sync.read(b);
+      const width = Math.max(pa.width, pb.width);
+      const height = Math.max(pa.height, pb.height);
+      const fa = pad(pa, width, height);
+      const fb = pad(pb, width, height);
+      const diff = new PNG({ width: width, height: height });
+      pixelmatch(fa.data, fb.data, diff.data, width, height, { threshold: 0.2 });
+      writeFileSync(join(dir, 'diff.png'), PNG.sync.write(diff));
+      writeFileSync(join(dir, 'frame.json'), JSON.stringify({
+        oursOrigin: crop ? ours.states[key][reference.origin] : (ours.samples[key] || null),
+        upstreamOrigin: crop ? upstream.states[key][reference.origin] : upOrigin,
+        ours: ours.states[key] || null,
+        upstream: upstream.states[key] || null,
+        ratio: perceptual[key]
+      }, null, 2));
+    }
   }
 
   return {

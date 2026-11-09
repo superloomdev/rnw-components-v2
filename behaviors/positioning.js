@@ -6,9 +6,10 @@
 /********************************************************************
 Build the positioning behaviors for one component system.
 
-@param {Object} deps - { Utils, React, ReactNative, platform, OverlayContext? }
-        `OverlayContext` is the overlay family's context, wired by
-        createBehaviors; a context-free call gets an empty one
+@param {Object} deps - { Utils, React, ReactNative, platform, dom, OverlayContext? }
+        `dom` is the dom.js family's reach helpers, wired by
+        createBehaviors; `OverlayContext` is the overlay family's context,
+        wired by createBehaviors; a context-free call gets an empty one
 
 @return {Object} - { getAnchoredPosition, useAnchoredPosition, useLayerSpace, usePopoverDismiss, useViewportLayer, useViewportSize }
 *********************************************************************/
@@ -17,7 +18,9 @@ export default function createPositioningBehaviors (deps) {
   const Utils = deps.Utils;
   const React = deps.React;
   const ReactNative = deps.ReactNative;
+  const Debug = deps.Debug;
   const platform = deps.platform;
+  const { focusNode, getComputedStyleOf, getViewportSize, measureRect, nodeContains, onDocumentEvent, onWindowEvent, requestFrame } = deps.dom;
   // The overlay host's context carries `origin`, the layer root's window
   // position; a native layer computes window coordinates and must shift
   // them back into the host's own space
@@ -125,10 +128,7 @@ export default function createPositioningBehaviors (deps) {
         : { width: 0, height: 0 };
       return { width: size.width, height: size.height };
     }
-    return {
-      width: typeof window === 'undefined' ? 0 : window.innerWidth,
-      height: typeof window === 'undefined' ? 0 : window.innerHeight
-    };
+    return getViewportSize();
 
   }
 
@@ -150,6 +150,83 @@ export default function createPositioningBehaviors (deps) {
 
   }
 
+
+  /********************************************************************
+  The origin of the coordinate space a `position: fixed` layer resolves
+  in: the nearest ancestor that is its fixed containing block - a
+  transform, perspective, filter or backdrop-filter, a `contain` naming
+  paint, layout, strict or content, or a `will-change` naming one of
+  those - or {0, 0} when there is none. The layer mounts in the anchor's
+  own subtree, so the walk starts at the anchor.
+
+  @param {Object} element - DOM element
+  @return {Object} - { x, y }
+  *********************************************************************/
+  function fixedSpaceOrigin (element) {
+
+    for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {
+      const style = getComputedStyleOf(node);
+      if (style === null) {
+        return { x: 0, y: 0 };
+      }
+      const drawn = function (value) {
+        return Utils.isString(value) === true && value.length && value !== 'none';
+      };
+      if (drawn(style.transform) || drawn(style.perspective) || drawn(style.filter) || drawn(style.backdropFilter) ||
+          /(paint|layout|strict|content)/.test(style.contain || '') || /(transform|perspective|filter)/.test(style.willChange || '')) {
+        const rect = measureRect(node);
+        return { x: rect.x + (node.clientLeft || 0), y: rect.y + (node.clientTop || 0) };
+      }
+    }
+    return { x: 0, y: 0 };
+
+  }
+
+  // A measure whose answer never converges loops a write per commit; the
+  // cap ends it inside the track cycle it started in (D43)
+  const MEASURE_CAP = 8;
+  const CAP_WINDOW_MS = 1000;
+
+  function samePoint (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined && a.left === b.left && a.top === b.top;
+
+  }
+
+  function sameShift (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined && a.x === b.x && a.y === b.y;
+
+  }
+
+  function sameAnchorRect (a, b) {
+
+    if (a === null || a === undefined) {
+      return b === null || b === undefined;
+    }
+    return b !== null && b !== undefined &&
+      a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+
+  }
+
+  function samePlacement (a, b) {
+
+    if (a === null || a === undefined || b === null || b === undefined) {
+      return a === b;
+    }
+    return samePoint(a.position, b.position) &&
+      a.actualPlacement === b.actualPlacement &&
+      sameShift(a.shift, b.shift) &&
+      sameAnchorRect(a.anchor, b.anchor);
+
+  }
+
   function useAnchoredPosition (options = {}) {
 
     const placement = options.placement === undefined ? 'bottom' : options.placement;
@@ -162,6 +239,8 @@ export default function createPositioningBehaviors (deps) {
       shift: null,
       anchor: null
     });
+    const capRef = React.useRef({ count: 0, since: 0, warned: false });
+    const lastRef = React.useRef(null);
 
     // The overlay context at call time, not render time: `measure` is
     // memoized, and the host's origin and size may arrive after mount
@@ -170,6 +249,21 @@ export default function createPositioningBehaviors (deps) {
     overlayRef.current = overlay;
 
     const measure = React.useCallback(function () {
+
+      const cap = capRef.current;
+      const now = Date.now();
+      if (now - cap.since > CAP_WINDOW_MS) {
+        cap.count = 0;
+        cap.since = now;
+        cap.warned = false;
+      }
+      if (cap.count >= MEASURE_CAP) {
+        if (!cap.warned) {
+          cap.warned = true;
+          Debug.warn('useAnchoredPosition: 8 re-measures in one open; the fit did not converge');
+        }
+        return;
+      }
 
       const anchor = resolveAnchor(options.anchor);
       if (!anchor) {
@@ -180,20 +274,41 @@ export default function createPositioningBehaviors (deps) {
       const platform = source.platform || defaults.platform;
       const viewport = source.viewport || defaults.viewport;
 
-      if (platform === 'web' && typeof anchor.getBoundingClientRect === 'function') {
-        const rect = anchor.getBoundingClientRect();
+      const measured = platform === 'web' ? measureRect(anchor) : null;
+      if (measured !== null) {
+        const rect = {
+          left: measured.x,
+          top: measured.y,
+          right: measured.x + measured.width,
+          bottom: measured.y + measured.height,
+          width: measured.width,
+          height: measured.height
+        };
         const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset);
         // Inside a host the answer a caller composes with is the host's own
         // space: the window rect shifts back by the host's origin, as the
         // native branch's measured rect does
         const current = overlayRef.current;
         const hosted = current !== null && current.hosted === true;
-        const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
-        setState({
-          position: computed.position,
+        const origin = hosted === true
+          ? (current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 })
+          : fixedSpaceOrigin(anchor);
+        // No state write when the answer is unchanged: a caller's layout
+        // effect may re-measure, and a same-position write would loop
+        const next = {
+          position: { left: computed.position.left - origin.x, top: computed.position.top - origin.y },
           actualPlacement: computed.actualPlacement,
           shift: computed.shift,
-          anchor: { x: rect.left - origin.x, y: rect.top - origin.y, width: rect.width, height: rect.height }
+          anchor: { x: measured.x - origin.x, y: measured.y - origin.y, width: measured.width, height: measured.height }
+        };
+        // The budget spends on changed answers only: an identical measure
+        // cannot re-render, so it cannot be the loop
+        if (!samePlacement(lastRef.current, next)) {
+          cap.count += 1;
+          lastRef.current = next;
+        }
+        setState(function (previous) {
+          return samePlacement(previous, next) ? previous : next;
         });
         return;
       }
@@ -205,7 +320,7 @@ export default function createPositioningBehaviors (deps) {
           // origin and the placement is bounded by the host's own size
           const current = overlayRef.current;
           const hosted = current !== null && current.hosted === true;
-          const origin = hosted && current.origin !== undefined ? current.origin : { x: 0, y: 0 };
+          const origin = hosted && current.origin !== undefined ? (typeof current.getOrigin === 'function' ? current.getOrigin() : current.origin) : { x: 0, y: 0 };
           const rect = {
             left: x - origin.x,
             top: y - origin.y,
@@ -227,29 +342,84 @@ export default function createPositioningBehaviors (deps) {
               : currentViewport();
           }
           const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset);
-          setState({
+          const next = {
             position: computed.position,
             actualPlacement: computed.actualPlacement,
             shift: computed.shift,
             anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
+          };
+          if (!samePlacement(lastRef.current, next)) {
+            cap.count += 1;
+            lastRef.current = next;
+          }
+          setState(function (previous) {
+            return samePlacement(previous, next) ? previous : next;
           });
         });
       }
 
     }, [options.anchor, options.source, placement, offset, flip, alignmentAxisOffset]);
 
-    // A fixed surface does not scroll with its anchor: while tracking, every
-    // scroll (any ancestor, so capture) or viewport resize re-measures it
+    // A new track cycle gets a fresh measure budget
     React.useEffect(function () {
-      if (options.track !== true || platform.os !== 'web' || typeof window === 'undefined' ||
-          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+      if (options.track === true) {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+      }
+    }, [options.track]);
+
+    // A fixed surface does not scroll with its anchor: while tracking, every
+    // scroll (any ancestor, so capture) or viewport resize re-measures it.
+    // An external event is never a loop, so it restarts the cap's cycle
+    React.useEffect(function () {
+      if (options.track !== true || platform.os !== 'web') {
         return undefined;
       }
-      window.addEventListener('scroll', measure, true);
-      window.addEventListener('resize', measure);
+      const onReflow = function () {
+        const cap = capRef.current;
+        cap.count = 0;
+        cap.since = Date.now();
+        cap.warned = false;
+        measure();
+      };
+      const offScroll = onWindowEvent('scroll', onReflow, true);
+      const offResize = onWindowEvent('resize', onReflow);
       return function () {
-        window.removeEventListener('scroll', measure, true);
-        window.removeEventListener('resize', measure);
+        offScroll();
+        offResize();
+      };
+    }, [options.track, measure]);
+
+    // A scrollIntoView can move the anchor a frame after the scroll
+    // event itself fired: while tracking, re-measure on the frame the
+    // anchor's rect actually changes (the cap bounds any loop)
+    React.useEffect(function () {
+      if (options.track !== true || platform.os !== 'web') {
+        return undefined;
+      }
+      let stopped = false;
+      let last = null;
+      let cancelFrame = function () {};
+      const tick = function () {
+        if (stopped === true) {
+          return;
+        }
+        const rect = measureRect(resolveAnchor(options.anchor));
+        if (rect !== null) {
+          const signature = String(rect.x) + ',' + String(rect.y) + ',' + String(rect.width) + ',' + String(rect.height);
+          if (signature !== last) {
+            last = signature;
+            measure();
+          }
+        }
+        cancelFrame = requestFrame(tick);
+      };
+      cancelFrame = requestFrame(tick);
+      return function () {
+        stopped = true;
+        cancelFrame();
       };
     }, [options.track, measure]);
 
@@ -325,14 +495,10 @@ export default function createPositioningBehaviors (deps) {
           }
         };
       }
-      if (platform.os !== 'web' || typeof window === 'undefined' ||
-          typeof window.addEventListener !== 'function' || typeof window.removeEventListener !== 'function') {
+      if (platform.os !== 'web') {
         return undefined;
       }
-      window.addEventListener('resize', onResize);
-      return function () {
-        window.removeEventListener('resize', onResize);
-      };
+      return onWindowEvent('resize', onResize);
     }, []);
 
     return size;
@@ -349,8 +515,11 @@ export default function createPositioningBehaviors (deps) {
 
     const overlay = React.useContext(OverlayContext);
     const viewport = useViewportSize();
-    const size = overlay !== null && overlay.hosted === true ? overlay.size : undefined;
-    return size !== undefined && size !== null && size.width > 0 && size.height > 0 ? size : viewport;
+    // A hosted layer covers its host: before the host is measured its space is unknown (0), never the window - a fixed layer in a transformed stage resolves against the stage, not the viewport
+    if (overlay !== null && overlay.hosted === true) {
+      return overlay.size;
+    }
+    return viewport;
 
   }
 
@@ -368,8 +537,7 @@ export default function createPositioningBehaviors (deps) {
       const timers = current.timerSource || { setTimeout: setTimeout, clearTimeout: clearTimeout };
       pointerInsideRef.current = Boolean(
         current.contentRef &&
-        current.contentRef.current &&
-        current.contentRef.current.contains(event.target)
+        nodeContains(current.contentRef.current, event.target)
       );
       if (timerRef.current !== null) {
         timers.clearTimeout(timerRef.current);
@@ -391,7 +559,7 @@ export default function createPositioningBehaviors (deps) {
         return;
       }
       const root = current.rootRef && current.rootRef.current;
-      if (!root || !root.contains(related)) {
+      if (!nodeContains(root, related)) {
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }
@@ -410,10 +578,7 @@ export default function createPositioningBehaviors (deps) {
     }, []);
 
     React.useEffect(function () {
-      const source = eventSource || (typeof document === 'undefined' ? null : document);
-      if (!open || !source ||
-          typeof source.addEventListener !== 'function' ||
-          typeof source.removeEventListener !== 'function') {
+      if (!open) {
         return undefined;
       }
       const onKeyDown = function (event) {
@@ -422,31 +587,43 @@ export default function createPositioningBehaviors (deps) {
         }
         const current = latestRef.current;
         const content = current.contentRef && current.contentRef.current;
-        if (!content || !content.contains(event.target)) {
+        if (!nodeContains(content, event.target)) {
           return;
         }
         if (typeof current.onRequestClose === 'function') {
           current.onRequestClose(event);
         }
-        const trigger = current.triggerRef && current.triggerRef.current;
-        if (trigger && typeof trigger.focus === 'function') {
-          trigger.focus();
-        }
+        focusNode(current.triggerRef && current.triggerRef.current);
       };
       const onClick = function (event) {
         const current = latestRef.current;
         const root = current.rootRef && current.rootRef.current;
-        if (event.target && root && !root.contains(event.target)) {
+        const content = current.contentRef && current.contentRef.current;
+        if (event.target && root && !nodeContains(root, event.target) &&
+            !nodeContains(content, event.target)) {
           if (typeof current.onRequestClose === 'function') {
             current.onRequestClose(event);
           }
         }
       };
-      source.addEventListener('keydown', onKeyDown);
-      source.addEventListener('click', onClick);
+      const source = eventSource;
+      if (!Utils.isNullOrUndefined(source)) {
+        if (typeof source.addEventListener !== 'function' ||
+            typeof source.removeEventListener !== 'function') {
+          return undefined;
+        }
+        source.addEventListener('keydown', onKeyDown);
+        source.addEventListener('click', onClick);
+        return function () {
+          source.removeEventListener('keydown', onKeyDown);
+          source.removeEventListener('click', onClick);
+        };
+      }
+      const offKeyDown = onDocumentEvent('keydown', onKeyDown);
+      const offClick = onDocumentEvent('click', onClick);
       return function () {
-        source.removeEventListener('keydown', onKeyDown);
-        source.removeEventListener('click', onClick);
+        offKeyDown();
+        offClick();
       };
     }, [open, eventSource]);
 

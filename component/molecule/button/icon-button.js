@@ -30,7 +30,7 @@ export default function IconButton (ctx) {
   const ICON_KINDS = Object.freeze(['ghost', 'tertiary']);
 
   // Size -> side metric in the spec sheet
-  const SIZES = Object.freeze({ sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' });
+  const SIZES = Object.freeze({ xs: 'sizeXsmall', sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' });
 
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
   const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
@@ -46,15 +46,34 @@ export default function IconButton (ctx) {
   function IconButtonComponent (props) {
 
     // Init the behavior and its state; the label is the accessible name
-    const button = useButton(Object.assign({}, props, { accessibilityLabel: props.label }));
+    const button = useButton(Object.assign({}, props, { accessibilityLabel: props.accessibilityLabel !== undefined ? props.accessibilityLabel : props.label }));
     const state = button.state;
 
     // Init the kind, the square's side and the icon color's leaf
     const kind = Utils.inArray(KINDS, props.kind) ? props.kind : KINDS[0];
     const side = ctx.metric('IconButton', SIZES[props.size] || 'size');
+    // A composing parent may give a non-square box (the breadcrumb's
+    // overflow trigger) and shift the glyph down inside it
+    const buttonWidth = Utils.isNumber(props.width) ? props.width : side;
+    const buttonHeight = Utils.isNumber(props.height) ? props.height : side;
     const borderWidth = ctx.metric('IconButton', 'borderWidth');
     const radius = ctx.metric('IconButton', 'radius');
-    const press = ctx.pressPresentation(state, 'button_' + kind + '_container');
+    const containerPrefix = 'button_' + kind + '_container';
+    // Composition props that name the face's fill leaves outright (a
+    // composing parent's own cells - the overflow menu's open-trigger
+    // fill, the copy button's pressed fill); every unset phase falls back
+    // to the kind's cell
+    const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined
+      ? {
+        '': props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix,
+        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_hover',
+        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_active'),
+        _focus: props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix + '_focus',
+        _disabled: containerPrefix + '_disabled',
+        _selected: containerPrefix + '_selected'
+      }
+      : null;
+    const press = ctx.pressPresentation(state, containerPrefix, fillMap !== null ? { colors: fillMap } : undefined);
     // A toggle's identity pair is its own: `selected` draws the kind's
     // selected cells, `selected === false` the unselected-toggle cells; any
     // other value is an ordinary button at the family cells. The toggle's
@@ -74,7 +93,9 @@ export default function IconButton (ctx) {
     // kind paints no face by definition) draws the ring without the theme's
     // separating line inside it
     const drawn = kind !== 'ghost';
-    const ring = Object.assign({}, ctx.focusRing('button', state, borderWidth, { gap: drawn }));
+    // A composing parent may point the ring at another leaf (the
+    // breadcrumb's overflow trigger rings `focus`)
+    const ring = Object.assign({}, ctx.focusRing('button', state, fillMap !== null ? 0 : borderWidth, { gap: drawn && fillMap === null, ringLeaf: props.focusRingLeaf, offset: props.focusRingOffset, width: props.focusRingWidth }));
     if (state.pressed && Utils.isString(ring.borderColor) && ctx.color('button_' + kind + '_border_active') !== ctx.color('button_' + kind + '_border')) {
       delete ring.borderColor;
     }
@@ -97,7 +118,7 @@ export default function IconButton (ctx) {
     // has always sat; the pressable is a transparent layer over its center,
     // no smaller than the platform's minimum interactive target
     const element = React.createElement(View, {
-      style: { alignSelf: 'flex-start', height: side, width: side }
+      style: { alignSelf: 'flex-start', height: buttonHeight, width: buttonWidth }
     },
     React.createElement(View, {
       testID: 'icon-button-face',
@@ -106,10 +127,12 @@ export default function IconButton (ctx) {
           alignItems: 'center',
           borderColor: ctx.color(borderLeaf),
           borderRadius: radius,
-          borderWidth: borderWidth,
-          height: side,
+          // A composition fill owns the face outright: the kind's border
+          // does not draw over it (upstream paints no button border)
+          borderWidth: fillMap !== null ? 0 : borderWidth,
+          height: buttonHeight,
           justifyContent: 'center',
-          width: side
+          width: buttonWidth
         },
         face,
         shadow,
@@ -126,14 +149,22 @@ export default function IconButton (ctx) {
     // turns without a transition there, as the press fills' do
     React.createElement(View, {
       style: {
+        marginTop: Utils.isNumber(props.iconOffset) ? props.iconOffset : 0,
         transform: [{ rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg' }],
         transitionDuration: ctx.token('motion.duration_fast_02') + 'ms',
         transitionProperty: 'transform',
         transitionTimingFunction: 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')'
       }
     },
-    React.createElement(ctx.Registry.Icon, { name: props.icon, size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize'), color: Utils.isString(props.iconColor) ? props.iconColor : iconLeaf }))),
+    React.createElement(ctx.Registry.Icon, {
+      color: state.pressed === true && Utils.isString(props.iconActiveLeaf) ? props.iconActiveLeaf
+        : state.hovered === true && Utils.isString(props.iconHoverLeaf) ? props.iconHoverLeaf
+          : (Utils.isString(props.iconColor) ? props.iconColor : iconLeaf),
+      name: props.icon,
+      size: Utils.isNumber(props.iconSize) ? props.iconSize : ctx.metric('IconButton', 'iconSize')
+    }))),
     React.createElement(Pressable, Object.assign({}, button.rootProps, {
+      ref: props.buttonRef,
       // A composing parent's trigger announcements (the combo button's menu)
       'aria-controls': props['aria-controls'],
       'aria-expanded': props['aria-expanded'],
@@ -142,15 +173,17 @@ export default function IconButton (ctx) {
       // A composing parent's mousedown rule (the combo button's trigger
       // suppresses the press focus)
       onMouseDown: props.onMouseDown,
+      onKeyDown: props.onKeyDown,
       testID: props.testID,
-      style: ctx.pressTarget({ height: side, width: side })
+      style: ctx.pressTarget({ height: buttonHeight, width: buttonWidth })
     })));
 
     // The compact tooltip names the button; a disabled one still shows it
     return React.createElement(ctx.Registry.Tooltip, {
       align: props.align,
       compact: true,
-      label: props.label
+      label: props.label,
+      leaveDelayMs: props.leaveDelayMs
     }, element);
 
   }

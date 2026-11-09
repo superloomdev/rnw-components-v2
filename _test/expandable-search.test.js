@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/search/sample.expandable-search.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -139,7 +139,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
   });
 
   test('an initially controlled expanded field mounts without stealing focus', async function () {
-    const parts = await renderExpandable(registryFor('material'), { expanded: true, label: 'Search' });
+    const parts = await renderExpandable(registryFor('carbon', undefined, [LESSONS_LAYER]), { expanded: true, label: 'Search' });
     assert.ok(parts.input, 'controlled expanded mounts the field');
     assert.equal(document.activeElement === parts.input, false, 'a controlled prop alone never steals focus');
   });
@@ -197,7 +197,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
 
   test('controlled expanded answers requests but stays where the owner puts it', async function () {
     const calls = [];
-    const parts = await renderExpandable(registryFor('material'), {
+    const parts = await renderExpandable(registryFor('carbon', undefined, [LESSONS_LAYER]), {
       expanded: false,
       label: 'Search',
       onExpandedChange: function (next) { calls.push(next); }
@@ -208,7 +208,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
     assert.deepEqual(calls, [true], 'the request reaches the owner');
     assert.equal(parts.container.querySelector('input'), null, 'the owner kept it collapsed');
 
-    const opened = await renderExpandable(registryFor('material'), { expanded: true, label: 'Search' });
+    const opened = await renderExpandable(registryFor('carbon', undefined, [LESSONS_LAYER]), { expanded: true, label: 'Search' });
     await keydown(opened.input, 'Escape');
     // The owner kept `expanded` true, so the field stays mounted
     assert.ok(opened.container.querySelector('input'));

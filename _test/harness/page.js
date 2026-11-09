@@ -3,7 +3,13 @@
 // page rendered its cells before measuring anything, so a blank page never
 // passes.
 
-export const TEMPLATE_NAMES = ['default', 'carbon', 'material'];
+import { unionBox } from './perceptual.js';
+
+export const TEMPLATE_NAMES = ['default', 'carbon'];
+
+// Pixels around a sample's painted union: a focus ring or shadow drawn just
+// outside the element stays in the comparison frame
+const RING_ROOM = 4;
 
 
 /********************************************************************
@@ -40,6 +46,7 @@ export async function openShowcase (page, template, component, options) {
     (options && options.rootHost === true ? '&rootHost=1' : '') +
     (options && options.adaptive ? '&adaptive=' + options.adaptive : '') +
     (options && options.textScale !== undefined ? '&textScale=' + options.textScale : '') +
+    (options && options.pins ? '&pins=' + options.pins : '') +
     (options && options.dir === 'rtl' ? '&dir=rtl' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
@@ -49,6 +56,21 @@ export async function openShowcase (page, template, component, options) {
   const status = await page.evaluate(function () {
     return window.__showcase;
   });
+  // Every declared face finishes before any measurement reads text: an
+  // unloaded face paints the system fallback and corrupts the comparison
+  await page.evaluate(function () {
+    return Promise.all([...document.fonts].map(function (face) {
+      return face.load().catch(function () {});
+    })).then(function () {
+      return document.fonts.ready;
+    });
+  });
+  const loaded = await page.evaluate(function () {
+    return document.fonts.check('400 14px "IBM Plex Sans"');
+  });
+  if (loaded !== true) {
+    throw new Error('showcase ' + template + ': IBM Plex Sans 400 not loaded after document.fonts.ready - upstream text would measure a fallback');
+  }
 
   return { status: status, theme: status.theme, consoleErrors: consoleErrors, pageErrors: pageErrors };
 
@@ -74,6 +96,19 @@ export async function openReference (page, component, set, scheme) {
   await page.waitForFunction(function () {
     return window.__reference && window.__reference.ready === true;
   }, null, { timeout: 30000 });
+  await page.evaluate(function () {
+    return Promise.all([...document.fonts].map(function (face) {
+      return face.load().catch(function () {});
+    })).then(function () {
+      return document.fonts.ready;
+    });
+  });
+  const refLoaded = await page.evaluate(function () {
+    return document.fonts.check('400 14px "IBM Plex Sans"');
+  });
+  if (refLoaded !== true) {
+    throw new Error('reference ' + component + ': IBM Plex Sans 400 not loaded after document.fonts.ready - upstream text would measure a fallback');
+  }
 
   return page.evaluate(function () {
     return window.__reference;
@@ -410,6 +445,8 @@ pointer down on it. Wait for transitions and state layers to settle.
 @param {String} selector    - The interactive element, relative to the cell body;
                              ' >>> ' crosses shadow roots (resolved by hand)
 @param {String} interaction - 'hover' | 'focus' | 'pressed' | 'open'
+@param {Object} [options]   - point: press through the box's center point; settleBeforePress: wait for hover-delayed
+                             layers before the press
 
 @return {Promise<Boolean>} - False when the cell or its element is not on the page
 *********************************************************************/
@@ -484,9 +521,20 @@ export async function enterInteraction (page, name, state, selector, interaction
       }
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     } else {
-      await target.hover();
+      // A disabled control's press layer takes no pointer events, so its
+      // face's label is the element under the pointer and actionability
+      // waits would retry until the timeout. Hover it with force: a person
+      // hovering a disabled item gets no effect, and the pointer move is all
+      // the state needs
+      const disabled = await target.evaluate(function (el) {
+        return el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('disabled');
+      });
+      await target.hover(disabled === true ? { force: true } : undefined);
     }
     if (interaction === 'pressed') {
+      if (options && options.settleBeforePress === true) {
+        await page.waitForTimeout(400);
+      }
       await page.mouse.down();
     }
   }
@@ -676,7 +724,7 @@ hidden first, so a shot carries this cell's own painting only.
 
 @return {Promise<Buffer|null>} - PNG, or null when the cell is absent
 *********************************************************************/
-export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport) {
+export async function shootCell (page, name, state, margin, pauseAnimations, preserveViewport, frame) {
 
   const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
   if (await body.count() === 0) {
@@ -695,9 +743,16 @@ export async function shootCell (page, name, state, margin, pauseAnimations, pre
   }
   const box = await body.boundingBox();
   await hideOutsideLayers(body);
+  const clip = { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin };
+  // A clamped clip shifts the picture's origin: give the caller the real
+  // delta so the sampled pixels line up with the measured boxes
+  if (frame !== undefined && frame !== null) {
+    frame.dx = box.x - clip.x;
+    frame.dy = box.y - clip.y;
+  }
   let shot;
   try {
-    shot = await page.screenshot({ clip: { x: Math.max(0, box.x - margin), y: Math.max(0, box.y - margin), width: box.width + 2 * margin, height: box.height + 2 * margin }, animations: 'disabled', scale: 'css' });
+    shot = await page.screenshot({ clip: clip, animations: 'disabled', scale: 'css' });
   } finally {
     await restoreLayers(body);
   }
@@ -830,15 +885,21 @@ export async function readCells (page) {
       // line box taller than its tag)
       const paintedRect = function (node) {
         let r = node.getBoundingClientRect();
+        const CLIPS = ['hidden', 'clip', 'auto', 'scroll'];
         for (let current = node.parentElement; current !== null && current !== body.parentElement; current = current.parentElement) {
-          const overflow = getComputedStyle(current).overflow;
-          if (overflow !== 'visible') {
-            const bounds = current.getBoundingClientRect();
+          const style = getComputedStyle(current);
+          const bounds = current.getBoundingClientRect();
+          // Clip each axis only where that axis actually clips; a scroll
+          // viewport's painted box is its own
+          if (CLIPS.indexOf(style.overflowX) !== -1) {
             const x = Math.max(r.x, bounds.x);
-            const y = Math.max(r.y, bounds.y);
             const right = Math.min(r.x + r.width, bounds.x + bounds.width);
+            r = { x: x, y: r.y, width: Math.max(0, right - x), height: r.height };
+          }
+          if (CLIPS.indexOf(style.overflowY) !== -1) {
+            const y = Math.max(r.y, bounds.y);
             const bottom = Math.min(r.y + r.height, bounds.y + bounds.height);
-            r = { x: x, y: y, width: Math.max(0, right - x), height: Math.max(0, bottom - y) };
+            r = { x: r.x, y: y, width: r.width, height: Math.max(0, bottom - y) };
           }
         }
         return r;
@@ -863,12 +924,26 @@ export async function readCells (page) {
         }
         return false;
       };
+      const identOf = function (node) {
+        const bits = [node.tagName.toLowerCase()];
+        if (node.getAttribute('role')) { bits.push('role=' + node.getAttribute('role')); }
+        const part = node.getAttribute('data-part') || node.getAttribute('data-testid');
+        if (part) { bits.push('data-part=' + part); }
+        const aria = node.getAttribute('aria-label') || node.getAttribute('aria-labelledby');
+        if (aria) { bits.push('aria=' + String(aria).slice(0, 24)); }
+        let depth = 0;
+        for (let p = node.parentElement; p !== null && p !== body.parentElement; p = p.parentElement) { depth += 1; }
+        bits.push('depth=' + depth);
+        bits.push('parent=' + (node.parentElement ? node.parentElement.tagName.toLowerCase() + (node.parentElement.getAttribute('role') ? '[role=' + node.parentElement.getAttribute('role') + ']' : '') : 'none'));
+        return bits.join(' ');
+      };
       const children = Array.from(body.querySelectorAll('*')).map(function (node) {
         const r = node.getBoundingClientRect();
         const style = getComputedStyle(node);
         const overlay = overlayOf(node);
         const overlayRect = overlay === null ? null : overlay.getBoundingClientRect();
         return {
+          ident: identOf(node),
           hidden: isHidden(node),
           undrawn: isUndrawn(node),
           tag: node.tagName.toLowerCase(),
@@ -877,7 +952,7 @@ export async function readCells (page) {
           overlay: overlay !== null,
           contained: overlay !== null && hasStage(overlay),
           layerCovers: overlay !== null && overlayRect.width >= window.innerWidth && overlayRect.height >= window.innerHeight,
-          rect: { x: r.x, y: r.y, width: r.width, height: r.height },
+          rect: (function () { const hitEl = node.querySelector('[data-part="hit"]'); if (hitEl === null) { return { x: r.x, y: r.y, width: r.width, height: r.height }; } const hr = hitEl.getBoundingClientRect(); return { x: Math.min(r.x, hr.x), y: Math.min(r.y, hr.y), width: Math.max(r.x + r.width, hr.x + hr.width) - Math.min(r.x, hr.x), height: Math.max(r.y + r.height, hr.y + hr.height) - Math.min(r.y, hr.y) }; })(),
           painted: paintedRect(node),
           text: node.children.length === 0 ? (node.textContent || '').trim() : '',
           overflow: style.overflow,
@@ -915,7 +990,8 @@ box-shadow outline; a run with no painted ancestor reports no box.
 
 @return {Promise<Array>} - [{ component, family, state, texts }]; each
   text carries the text element's rect and, where a painted ancestor
-  exists, that box's rect and tag
+  exists, that box's rect and tag, plus `clip`: the nearest
+  proven-scrollable ancestor's rect and tag, or null
 *********************************************************************/
 export async function readTextBoxes (page) {
 
@@ -971,11 +1047,24 @@ export async function readTextBoxes (page) {
             break;
           }
         }
+        // A run clipped by a proven-scrollable ancestor (computed overflow-y
+        // auto|scroll with real overflow) is not overflow: the gate tests
+        // the visible intersection. `overflow: hidden` is never exempt
+        let clip = null;
+        for (let current = element.parentElement; current !== null && current !== cell; current = current.parentElement) {
+          const clipStyle = getComputedStyle(current);
+          if ((clipStyle.overflowY === 'auto' || clipStyle.overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
+            const r = current.getBoundingClientRect();
+            clip = { x: r.x, y: r.y, width: r.width, height: r.height, tag: current.tagName.toLowerCase() };
+            break;
+          }
+        }
         texts.push({
           text: node.textContent.trim().slice(0, 40),
           tag: element.tagName.toLowerCase(),
           rect: { x: lineBox.x, y: lineBox.y, width: lineBox.width, height: lineBox.height },
-          box: box
+          box: box,
+          clip: clip
         });
       }
       return {
@@ -1072,7 +1161,9 @@ not drawn and is not reported.
 @return {Promise<Array>} - [{ component, state, kind, text, color, fontSize,
   fontWeight, ratio, disabled }]; `kind` is text | value | placeholder;
   `color` is the computed color before compositing, for matching a token;
-  `disabled` is the cell's disabled marker or the sample's `disabled` prop
+  `disabled` is the cell's disabled marker or the sample's `disabled` prop.
+A run a proven-scrollable ancestor fully clips is not reported; a partial
+run is sampled at its visible intersection
 *********************************************************************/
 export async function readTextContrast (page, disabledCells) {
 
@@ -1097,23 +1188,6 @@ export async function readTextContrast (page, disabledCells) {
       return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
     };
     // The fills behind a node, nearest first, composited onto white (the page)
-    const backdrop = function (node) {
-      const layers = [];
-      for (let current = node; current !== null; current = current.parentElement) {
-        const fill = parse(getComputedStyle(current).backgroundColor);
-        if (fill !== null && fill.a > 0) {
-          layers.push(fill);
-          if (fill.a === 1) {
-            break;
-          }
-        }
-      }
-      let color = { r: 255, g: 255, b: 255, a: 1 };
-      for (let i = layers.length - 1; i >= 0; i--) {
-        color = over(layers[i], color);
-      }
-      return color;
-    };
     const undrawn = function (node, body) {
       for (let current = node; current !== null && current !== body; current = current.parentElement) {
         const style = getComputedStyle(current);
@@ -1125,6 +1199,68 @@ export async function readTextContrast (page, disabledCells) {
         }
       }
       return false;
+    };
+    // The nearest proven-scrollable ancestor (computed overflow-y
+    // auto|scroll with real overflow), or null: `overflow: hidden` is
+    // never exempt
+    const clipOf = function (node, cell) {
+      for (let current = node.parentElement; current !== null && current !== cell; current = current.parentElement) {
+        const style = getComputedStyle(current);
+        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
+          return current;
+        }
+      }
+      return null;
+    };
+    const backdrop = function (node, body, clip) {
+      const layers = [];
+      // The run's true backdrop: the paint stack under its centre, not its
+      // ancestors - a state layer (the selected slab, a press layer) draws
+      // as an absolutely positioned sibling, not an ancestor. A clipped run
+      // is sampled at its visible intersection with the clipping ancestor
+      const visibleRect = function () {
+        const r = node.getBoundingClientRect();
+        if (clip === null || clip === undefined) {
+          return r;
+        }
+        const c = clip.getBoundingClientRect();
+        const x = Math.max(r.x, c.x);
+        const y = Math.max(r.y, c.y);
+        return { x: x, y: y, width: Math.min(r.x + r.width, c.x + c.width) - x, height: Math.min(r.y + r.height, c.y + c.height) - y };
+      };
+      let r0 = visibleRect();
+      let point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
+      // elementsFromPoint only hit-tests visible coordinates: a run below
+      // the fold reads the page's `body`, not its backdrop
+      if (point.x < 0 || point.x >= window.innerWidth || point.y < 0 || point.y >= window.innerHeight) {
+        node.scrollIntoView({ block: 'center', inline: 'center' });
+        r0 = visibleRect();
+        point = { x: r0.x + r0.width / 2, y: r0.y + r0.height / 2 };
+      }
+      point = { x: Math.round(point.x * 10) / 10, y: Math.round(point.y * 10) / 10 };
+      let stack = [];
+      let stackEls = [];
+      if (typeof document.elementsFromPoint === 'function') {
+        stack = document.elementsFromPoint(point.x, point.y).filter(function (el) {
+          return el !== node && el !== body && !node.contains(el) && !undrawn(el, body) && body.contains(el);
+        });
+      }
+      if (stack.length === 0) {
+        for (let current = node; current !== null; current = current.parentElement) { stack.push(current); }
+      }
+      for (const el of stack) {
+        const fill = parse(getComputedStyle(el).backgroundColor);
+        if (fill !== null && fill.a > 0) {
+          layers.push(fill);
+          stackEls.push(el.tagName.toLowerCase() + (el.getAttribute('role') ? '[role=' + el.getAttribute('role') + ']' : '') + '=' + getComputedStyle(el).backgroundColor);
+          if (fill.a === 1) { break; }
+        }
+      }
+      let color = { r: 255, g: 255, b: 255, a: 1 };
+      for (let i = layers.length - 1; i >= 0; i--) {
+        color = over(layers[i], color);
+      }
+      return { color: color, point: point, stack: stackEls.slice(0, 4) };
     };
     const rows = [];
     for (const cell of document.querySelectorAll('.cell')) {
@@ -1142,8 +1278,13 @@ export async function readTextContrast (page, disabledCells) {
         const own = Array.from(node.childNodes).some(function (child) {
           return child.nodeType === 3 && child.textContent.trim() !== '';
         });
+        // A text run with no box paints nothing: a zero-size sizer or a
+        // detached node must not read a backdrop
         if (own) {
-          runs.push({ node: node, text: node.textContent.trim(), kind: 'text' });
+          const r = node.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) {
+            runs.push({ node: node, text: node.textContent.trim(), kind: 'text' });
+          }
         }
         if (node.tagName === 'INPUT') {
           if (node.value) {
@@ -1154,9 +1295,22 @@ export async function readTextContrast (page, disabledCells) {
         }
       }
       for (const run of runs) {
+        // A run a proven-scrollable ancestor fully clips is not drawn: it
+        // is skipped, not counted and not passed; a partial run is sampled
+        // on its visible intersection
+        const clip = clipOf(run.node, cell);
+        if (clip !== null) {
+          const r = run.node.getBoundingClientRect();
+          const c = clip.getBoundingClientRect();
+          if (Math.min(r.x + r.width, c.x + c.width) <= Math.max(r.x, c.x) ||
+              Math.min(r.y + r.height, c.y + c.height) <= Math.max(r.y, c.y)) {
+            continue;
+          }
+        }
         const style = getComputedStyle(run.node, run.kind === 'placeholder' ? '::placeholder' : null);
         const raw = parse(style.color);
-        const fill = backdrop(run.node);
+        const back = backdrop(run.node, body, clip);
+        const fill = back.color;
         const opacity = parseFloat(getComputedStyle(run.node).opacity);
         const text = over({ r: raw.r, g: raw.g, b: raw.b, a: raw.a * opacity }, fill);
         const l1 = luminance(text);
@@ -1166,6 +1320,9 @@ export async function readTextContrast (page, disabledCells) {
           state: cell.getAttribute('data-state'),
           kind: run.kind,
           text: run.text.slice(0, 40),
+          rect: (function () { const r = run.node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })(),
+          point: back.point,
+          stack: back.stack,
           color: style.color,
           fontSize: parseFloat(style.fontSize),
           fontWeight: parseInt(style.fontWeight, 10),
@@ -1204,7 +1361,7 @@ export async function readControlPaint (page) {
       if (control === undefined) {
         continue;
       }
-      const face = control.getAttribute('role') === 'slider'
+      let face = control.getAttribute('role') === 'slider'
         ? body.querySelector('[data-testid="slider-thumb-face"]') : control;
       if (face === null) {
         throw new Error('A slider paint signature requires its painted thumb face');
@@ -1214,9 +1371,25 @@ export async function readControlPaint (page) {
       // is the first painted descendant of the row it overlays
       const painted = function (node) {
         const s = getComputedStyle(node);
-        return s.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
-          (parseFloat(s.borderTopWidth) > 0 && s.borderTopColor !== 'rgba(0, 0, 0, 0)');
+        if (s.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+          return true;
+        }
+        // Any side's border counts: the track under a Tab's face is bottom
+        for (const side of ['Top', 'Bottom', 'Left', 'Right']) {
+          if (parseFloat(s['border' + side + 'Width']) > 0 && s['border' + side + 'Color'] !== 'rgba(0, 0, 0, 0)') {
+            return true;
+          }
+        }
+        return false;
       };
+      // A press-layer control (MenuItem, Tab, Switch, AccordionItem,
+      // IconSwitch) is a transparent sibling over the painted face: read
+      // the face's paint from the layer's previous sibling
+      let fromLayer = false;
+      if (!painted(face) && face.previousElementSibling !== null && painted(face.previousElementSibling)) {
+        face = face.previousElementSibling;
+        fromLayer = true;
+      }
       let paintedFace = face;
       if (!painted(face) && face.parentElement !== null) {
         const inner = Array.from(face.parentElement.querySelectorAll('*')).find(painted);
@@ -1227,7 +1400,7 @@ export async function readControlPaint (page) {
       const style = getComputedStyle(paintedFace);
       // The first drawn text inside the control (or its painted row for a
       // transparent interaction layer), or the control's own color
-      const textScope = paintedFace === face ? control : face.parentElement;
+      const textScope = fromLayer ? face : (paintedFace === face ? control : face.parentElement);
       const textNode = Array.from(textScope.querySelectorAll('*')).find(function (node) {
         return Array.from(node.childNodes).some(function (child) {
           return child.nodeType === 3 && child.textContent.trim() !== '';
@@ -1235,7 +1408,17 @@ export async function readControlPaint (page) {
       });
       const text = getComputedStyle(textNode || control).color;
       // A border in the fill's own color, or transparent, is not seen
-      const border = style.borderTopColor === style.backgroundColor || style.borderTopColor === 'rgba(0, 0, 0, 0)' || parseFloat(style.borderTopWidth) === 0 ? 'none' : style.borderTopColor;
+      // The first drawn border: any side whose color differs from the
+      // fill's own (the track under a Tab's face is the bottom side)
+      let border = 'none';
+      for (const side of ['Top', 'Bottom', 'Left', 'Right']) {
+        const w = parseFloat(style['border' + side + 'Width']);
+        const c = style['border' + side + 'Color'];
+        if (w > 0 && c !== 'rgba(0, 0, 0, 0)' && c !== style.backgroundColor) {
+          border = side.toLowerCase() + ' ' + c;
+          break;
+        }
+      }
       // A cell is disabled when the measured control itself is, or an
       // ancestor of it inside the body - not when a sibling control is (a
       // mixed cell's enabled control must not read as disabled)
@@ -1244,14 +1427,277 @@ export async function readControlPaint (page) {
       for (let node = paintedFace; node !== null && node !== body; node = node.parentElement) {
         opacity *= parseFloat(getComputedStyle(node).opacity);
       }
+      // The control's drawn ink: every svg child's fill or stroke that is
+      // not none/transparent (an icon-only control's only painted part)
+      const inkScope = fromLayer ? face.parentElement : (control.parentElement || textScope || body);
+      const ink = Array.from(inkScope.querySelectorAll('svg path, svg circle, svg rect')).map(function (el) {
+        const is = getComputedStyle(el);
+        return (is.fill !== 'none' && is.fill !== 'rgba(0, 0, 0, 0)' ? is.fill : null) ||
+          (is.stroke !== 'none' && is.stroke !== 'rgba(0, 0, 0, 0)' ? is.stroke : null);
+      }).filter(function (c) { return c !== null && c !== undefined; }).join(',') || 'none';
       out.push({
         component: cell.getAttribute('data-component'),
         state: cell.getAttribute('data-state'),
         disabled: flagged !== null && flagged !== body && body.contains(flagged),
-        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity
+        paint: style.backgroundColor + ' | ' + border + ' | ' + text + ' | opacity ' + opacity + ' | ink ' + ink
       });
     }
     return out;
+  });
+
+}
+
+
+/********************************************************************
+Read the sample's own painted box inside one cell: the sample root (the
+body's first element child) and every descendant element whose rect is
+non-empty and whose computed visibility is not `hidden` and opacity is
+not `0` and that is not clipped away (`clip: rect(0 0 0 0)` /
+`clip-path: inset(50%)`, the visually-hidden pattern), in viewport
+coordinates, unioned and expanded by RING_ROOM on
+each side (a focus ring or shadow drawn just outside the element). Call
+it right before a screenshot: the box is in the same scroll frame.
+
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {String} state  - The cell's state label
+
+@return {Promise<Object|null>} - { x, y, width, height, bodyX, bodyY }:
+   the expanded union in viewport coordinates plus the cell body's
+   origin and the body's size (subtract the origin to land inside a
+   body-framed shot)
+*********************************************************************/
+export async function readSampleBox (page, name, state) {
+
+  const sample = await page.evaluate(function (input) {
+    const body = document.querySelector('.cell[data-component="' + input.name + '"][data-state="' + input.state + '"] [data-part="body"]');
+    if (body === null) {
+      return null;
+    }
+    const boxes = [];
+    const collect = function (element) {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      const clipped = style.clip === 'rect(0px, 0px, 0px, 0px)' || style.clipPath === 'inset(50%)';
+      if (clipped) {
+        return;
+      }
+      if (rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.opacity !== '0') {
+        boxes.push({ x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+      }
+      for (const child of element.children) {
+        collect(child);
+      }
+    };
+    const root = body.firstElementChild;
+    if (root !== null) {
+      collect(root);
+    }
+    const bodyRect = body.getBoundingClientRect();
+    const rootRect = root === null ? null : root.getBoundingClientRect();
+    return { boxes: boxes, bodyX: bodyRect.x, bodyY: bodyRect.y, bodyWidth: bodyRect.width, bodyHeight: bodyRect.height, root: rootRect === null ? null : { x: rootRect.x, y: rootRect.y, width: rootRect.width, height: rootRect.height } };
+  }, { name: name, state: state });
+  if (sample === null) {
+    return null;
+  }
+  const box = unionBox(sample.boxes);
+  if (box === null || sample.root === null) {
+    return null;
+  }
+  return { x: box.x - RING_ROOM, y: box.y - RING_ROOM, width: box.width + 2 * RING_ROOM, height: box.height + 2 * RING_ROOM,
+    rootX: sample.root.x, rootY: sample.root.y, bodyX: sample.bodyX, bodyY: sample.bodyY, bodyWidth: sample.bodyWidth, bodyHeight: sample.bodyHeight };
+
+}
+
+
+/********************************************************************
+Re-open a reference's panel before an interaction that needs it: on a
+state the reference's `reopen` lists, when no element its `when`
+selector names draws on this side, click the side's trigger and wait
+for the panel to draw, as the probe's `prepare` does.
+
+@param {Object} page   - Playwright page
+@param {String} name   - Component name
+@param {String} state  - The cell's state label
+@param {Object} reopen - { states, upstream, ours, when: { upstream, ours } }
+@param {String} side   - 'upstream' | 'ours'
+
+@return {Promise<Boolean>} - Whether a reopen click happened
+*********************************************************************/
+export async function reopenPanel (page, name, state, reopen, side, leave) {
+
+  if (reopen === undefined || reopen === null || !Array.isArray(reopen.states) || reopen.states.indexOf(state) === -1 ||
+      reopen.when === undefined || reopen.when === null) {
+    return false;
+  }
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return false;
+  }
+  // A panel left mounted from an earlier read carries stale coordinates:
+  // dismiss it so the state reads a panel opened by the click that follows
+  const trigger = body.locator(reopen[side]).first();
+  // A panel counts as open when it draws: a closed upstream panel may stay mounted at 0 x 0
+  const shown = async function () {
+    return body.locator(reopen.when[side]).evaluateAll(function (elements) {
+      return elements.some(function (element) {
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && getComputedStyle(element).visibility !== 'hidden';
+      });
+    });
+  };
+  if (await shown()) {
+    await leaveInteraction(page, leave);
+    if (await shown() && await trigger.count() > 0) {
+      // Escape/blur only reach an open menu that holds focus; a seeded
+      // panel whose focus was lost dismisses on the trigger toggle instead
+      await trigger.click();
+      await page.waitForTimeout(200);
+      if (await shown()) {
+        return false;
+      }
+    }
+  }
+  if (await trigger.count() === 0) {
+    return false;
+  }
+  // Pin the cell to the viewport top before the click so a re-opened menu
+  // fits and flips at the same scroll position on both pages
+  await body.evaluate(function (element) {
+    element.scrollIntoView({ block: 'start', inline: 'nearest' });
+  });
+  await trigger.click();
+  // Park the pointer off the cells: an upstream option paints its hover
+  // fill wherever the click left it, and the read must see rest fills
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(400);
+  return true;
+
+}
+
+
+/********************************************************************
+Focus the first enabled item of an open panel before the state's shot:
+every mounted menu grabs focus on open, so without a refocus whichever
+cell mounted last holds the ring in its shot. Focusing the measured
+cell's item right before the read makes the focus deterministic on both
+pages. A `menu` scope, when present, selects the deepest open panel (a
+hover-opened submenu) so its first item is the one that rings.
+
+@param {Object} page    - Playwright page
+@param {String} name    - Component name
+@param {String} state   - The sample state label
+@param {Object} refocus - { states, upstream, ours, menu: { upstream, ours } }
+@param {String} side    - 'ours' | 'upstream'
+
+@return {Promise<Boolean>} - Whether an item was focused
+*********************************************************************/
+export async function refocusPanel (page, name, state, refocus, side) {
+
+  if (refocus === undefined || refocus === null || !Array.isArray(refocus.states) || refocus.states.indexOf(state) === -1 ||
+      refocus[side] === undefined) {
+    return false;
+  }
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return false;
+  }
+  const scope = refocus.menu === undefined || refocus.menu === null || refocus.menu[side] === undefined
+    ? body
+    : body.locator(refocus.menu[side]).last();
+  if (await scope.count() === 0) {
+    return false;
+  }
+  const item = scope.locator(refocus[side]).first();
+  if (await item.count() === 0) {
+    return false;
+  }
+  // The upstream library follows a programmatic focus with its own delayed
+  // re-centering (the menu scrolls its focused item into view), which lands
+  // after the caller's scrollIntoView and pushes the measured body out of
+  // frame. Focus and scrollIntoView are both pinned so no scroll can come
+  // out of the refocus; scrollIntoView is restored after the settle window
+  await page.evaluate(function () {
+    const proto = HTMLElement.prototype;
+    if (window.__refocusFocus === undefined) {
+      window.__refocusFocus = proto.focus;
+      proto.focus = function (options) {
+        return window.__refocusFocus.call(this, Object.assign({}, options || {}, { preventScroll: true }));
+      };
+    }
+    if (window.__refocusSiv === undefined) {
+      window.__refocusSiv = Element.prototype.scrollIntoView;
+    }
+    Element.prototype.scrollIntoView = function () {};
+  });
+  await item.evaluate(function (element) {
+    element.focus({ preventScroll: true });
+  });
+  await page.waitForTimeout(100);
+  await page.evaluate(function () {
+    Element.prototype.scrollIntoView = window.__refocusSiv;
+  });
+  return true;
+
+}
+
+
+/********************************************************************
+Wait until a cell's layout has settled. Every frame, sign every
+descendant's rect relative to the body's (x, y, w, h to 0.01, at most the
+first 600 elements); resolve when the signature holds for 3 consecutive
+frames after at least 2 frames, or after 60 frames - a fixed layer that
+still follows the scroll is caught in the waiting, not in the shot.
+Only a cell holding a `position: fixed` element waits.
+No-op when the cell is absent; never throws.
+
+@param {Object} page  - Playwright page
+@param {String} name  - Component name
+@param {String} state - The cell's state label
+
+@return {Promise<void>}
+*********************************************************************/
+export async function settleLayout (page, name, state) {
+
+  const body = page.locator('.cell[data-component="' + name + '"][data-state="' + state + '"] [data-part="body"]').first();
+  if (await body.count() === 0) {
+    return;
+  }
+  await body.evaluate(function (element) {
+    return new Promise(function (resolve) {
+      // Only a fixed layer can lag the scroll; a cell without one is already settled
+      if (!Array.prototype.some.call(element.querySelectorAll('*'), function (node) { return getComputedStyle(node).position === 'fixed'; })) {
+        resolve();
+        return;
+      }
+      const signature = function () {
+        const bodyRect = element.getBoundingClientRect();
+        const all = element.querySelectorAll('*');
+        const parts = [];
+        for (let i = 0; i < all.length && i < 600; i++) {
+          const rect = all[i].getBoundingClientRect();
+          parts.push([rect.x - bodyRect.x, rect.y - bodyRect.y, rect.width, rect.height].map(function (value) {
+            return Math.round(value * 100) / 100;
+          }).join(','));
+        }
+        return parts.join(';');
+      };
+      let last = signature();
+      let stable = 0;
+      let frames = 0;
+      const step = function () {
+        frames = frames + 1;
+        const next = signature();
+        stable = next === last ? stable + 1 : 0;
+        last = next;
+        if ((stable >= 3 && frames >= 2) || frames >= 60) {
+          resolve();
+          return;
+        }
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
   });
 
 }

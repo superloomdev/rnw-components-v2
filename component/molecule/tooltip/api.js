@@ -6,6 +6,7 @@ export default Object.freeze({
   props: Object.freeze({
     children: { type: 'node', required: true, description: 'The anchor: the tooltip opens when it is hovered, focused or pressed and describes it.' },
     label: { type: 'string', required: true, description: 'The tooltip\'s text; it describes the anchor through `aria-describedby`.' },
+    fill: { type: 'boolean', required: false, description: 'The anchor fills its parent instead of hugging its trigger, for a trigger laid out against a fixed box. Default false.' },
     align: { type: 'string', required: false, description: 'The side and alignment the tooltip opens on: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`. Default `top`; flips at the viewport edge.' },
     compact: { type: 'boolean', required: false, description: 'Draws the compact kind - the tooltip an icon button shows - from the `tooltip_compact` member cells.' },
     open: { type: 'boolean', required: false, description: 'Controlled open state. Absent: the tooltip keeps its own state, starting from `defaultOpen`.' },
@@ -16,6 +17,7 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the anchor wrapper.' }
   }),
   composition: Object.freeze({
+    anchorStyle: { type: 'style', required: false, description: 'Composition prop: a style for the anchor wrapper, so a composing parent can size the anchor (an icon segment of a content switcher fills its share).' },
     paddingInline: { type: 'number', required: false, description: 'Composition prop: the bubble\'s inline padding override, zero included; absent or non-number falls back to the `paddingInline` role cell. A member host like the slider\'s value badge pins the tighter spacing.' }
   }),
   kinds: Object.freeze([]),

@@ -10,9 +10,7 @@
 // and `overlay`, whose layer the upstream fixes to the viewport, outside
 // the cell (the unit test covers the scrim's color and the dialog role).
 //
-// The second reference is `md-circular-progress`: an indeterminate spinner
-// at one size, so the `small` state is unmeasured there. It draws no track
-// circle, so the background part is omitted with its reason.
+// The second reference was retired (batch R).
 
 export default Object.freeze({
   kind: 'render-web',
@@ -35,24 +33,5 @@ export default Object.freeze({
     root: Object.freeze({ upstream: '.cds--loading', ours: ':scope > div', measure: 'box' }),
     stroke: Object.freeze({ upstream: 'circle.cds--loading__stroke', ours: ':scope > div > div > svg > circle:last-child', measure: 'box' }),
     background: Object.freeze({ upstream: 'circle.cds--loading__background', ours: ':scope > div > div > svg > circle:first-child', measure: 'box', optional: true })
-  }),
-  second: Object.freeze({
-    origin: 'root',
-    pauseAnimations: true,
-    mount: function (React, upstream, props) {
-      // One indeterminate spinner at one size; the small, stopped and
-      // overlayed forms have no second-reference answer
-      if (props.small === true || props.active === false || props.withOverlay !== false) {
-        return null;
-      }
-      return React.createElement('md-circular-progress', { indeterminate: true });
-    },
-    parts: Object.freeze({
-      root: Object.freeze({ upstream: 'md-circular-progress', ours: ':scope > div', measure: 'box', compare: ['width', 'height'] })
-    }),
-    omit: Object.freeze({
-      stroke: Object.freeze({ reason: 'the second reference draws its arcs inside a shadow root as layered segments, not one stroked circle', upstream: 'md-circular-progress >>> svg circle' }),
-      background: Object.freeze({ reason: 'the second reference draws no track circle behind the arc', upstream: 'md-circular-progress >>> svg circle' })
-    })
   })
 });

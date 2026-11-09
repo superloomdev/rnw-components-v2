@@ -144,13 +144,18 @@ function expectCellBounds (cells) {
         };
       }
       // Nothing painted after clipping cannot overflow
-      if (painted.width === 0 && painted.height === 0) {
+      if (painted.width === 0 || painted.height === 0) {
         continue;
       }
       if (painted.x < bounds.x - 0.5 || painted.y < bounds.y - 0.5 ||
           painted.x + painted.width > bounds.x + bounds.width + 0.5 ||
           painted.y + painted.height > bounds.y + bounds.height + 0.5) {
-        lines.push(id + ' <' + child.tag + '> overflows its cell');
+        const r1 = function (n) { return Math.round(n * 10) / 10; };
+        const r = child.rect, p = child.painted;
+        lines.push(id + ' <' + child.tag + '> overflows its cell [' + (child.ident || '') + '] rect=' +
+          r1(r.x) + ',' + r1(r.y) + ',' + r1(r.width) + 'x' + r1(r.height) + ' painted=' +
+          r1(p.x) + ',' + r1(p.y) + ',' + r1(p.width) + 'x' + r1(p.height) + ' cell=' +
+          r1(bounds.x) + ',' + r1(bounds.y) + ',' + r1(bounds.width) + 'x' + r1(bounds.height) + ' pos=' + (child.position || '?'));
       }
     }
   }
@@ -166,10 +171,21 @@ function expectTextInsideBox (texts) {
       if (run.box === null) {
         continue;
       }
-      if (run.rect.x < run.box.x - 0.5 || run.rect.y < run.box.y - 0.5 ||
-          run.rect.x + run.rect.width > run.box.x + run.box.width + 0.5 ||
-          run.rect.y + run.rect.height > run.box.y + run.box.height + 0.5) {
-        lines.push(id + ' <' + run.tag + '> "' + run.text + '" overflows its <' + run.box.tag + '> box ' + JSON.stringify(run.box) + ' by ' + JSON.stringify(run.rect));
+      // A run clipped by a proven-scrollable ancestor is tested on its
+      // visible intersection; fully clipped text is not drawn
+      let rect = run.rect;
+      if (run.clip !== null && run.clip !== undefined) {
+        const x = Math.max(run.rect.x, run.clip.x);
+        const y = Math.max(run.rect.y, run.clip.y);
+        rect = { x: x, y: y, width: Math.min(run.rect.x + run.rect.width, run.clip.x + run.clip.width) - x, height: Math.min(run.rect.y + run.rect.height, run.clip.y + run.clip.height) - y };
+        if (rect.width <= 0 || rect.height <= 0) {
+          continue;
+        }
+      }
+      if (rect.x < run.box.x - 0.5 || rect.y < run.box.y - 0.5 ||
+          rect.x + rect.width > run.box.x + run.box.width + 0.5 ||
+          rect.y + rect.height > run.box.y + run.box.height + 0.5) {
+        lines.push(id + ' <' + run.tag + '> "' + run.text + '" overflows its <' + run.box.tag + '> box ' + JSON.stringify(run.box) + ' by ' + JSON.stringify(rect));
       }
     }
   }
@@ -309,7 +325,8 @@ for (const template of TEMPLATE_NAMES) {
             exception.seen = exception.seen || run.ratio < minimum;
             continue;
           }
-          expect(run.ratio, id + ' contrast ' + run.ratio + ':1 (' + run.color + ') below ' + minimum + ':1').toBeGreaterThanOrEqual(minimum);
+          const detail = ' rect=' + Math.round(run.rect.x * 10) / 10 + ',' + Math.round(run.rect.y * 10) / 10 + ' @' + run.point.x + ',' + run.point.y + ' stack=[' + (run.stack || []).join(' | ') + ']';
+          expect(run.ratio, id + ' contrast ' + run.ratio + ':1 (' + run.color + ') below ' + minimum + ':1' + detail).toBeGreaterThanOrEqual(minimum);
         }
         // A listed exception that no longer reproduces is stale
         for (const entry of exempt) {
@@ -330,7 +347,7 @@ for (const template of TEMPLATE_NAMES) {
             if (other.component !== cell.component) {
               continue;
             }
-            expect(cell.paint, cell.component + ' / ' + cell.state + ' paints exactly like disabled state "' + other.state + '"').not.toBe(other.paint);
+            expect(cell.paint, cell.component + ' / ' + cell.state + ' paints exactly like disabled state "' + other.state + '" - enabled [' + cell.paint + '] vs disabled [' + other.paint + ']').not.toBe(other.paint);
           }
         }
       });
@@ -370,9 +387,7 @@ test.describe('structural: adaptive passes', function () {
       // The counterpart: at the compact width the auto build must differ
       // where the template carries form variants - otherwise the harness is
       // not applying the class at all
-      if (template !== 'material') {
-        expect(auto.theme, template + ': the compact build moves tokens off the expanded map').not.toEqual(expanded.theme);
-      }
+      expect(auto.theme, template + ': the compact build moves tokens off the expanded map').not.toEqual(expanded.theme);
     }
     await page.close();
   });

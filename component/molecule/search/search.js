@@ -32,7 +32,7 @@ export default function Search (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useTextField, useButton, getSearchHandlers, useReducedMotion } = ctx.behaviors;
+  const { focusNode, useTextField, useButton, getSearchHandlers, useReducedMotion } = ctx.behaviors;
   const { renderField, FieldAction, actionGeometry } = createFieldParts(ctx);
 
   // Size -> height metric in the spec sheet
@@ -85,6 +85,7 @@ export default function Search (ctx) {
       : Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : 'Search';
     const fieldProps = Object.assign({}, props, {
       accessibilityLabel: name,
+
       label: undefined,
       // The empty field's default hint; an explicit empty string stays empty
       placeholder: Utils.isString(props.placeholder) ? props.placeholder : 'Search',
@@ -135,9 +136,7 @@ export default function Search (ctx) {
     React.useEffect(function () {
       if (expandable && !expanded && escapeCollapse.current === true) {
         escapeCollapse.current = false;
-        if (triggerRef.current !== null && typeof triggerRef.current.focus === 'function') {
-          triggerRef.current.focus();
-        }
+        focusNode(triggerRef.current);
       }
     }, [expandable, expanded, triggerRef]);
 
@@ -182,6 +181,7 @@ export default function Search (ctx) {
       React.createElement(ctx.Registry.Tooltip, {
         align: 'top',
         compact: true,
+        fill: true,
         label: name
       }, React.createElement(FieldAction, {
         button: trigger,
@@ -244,7 +244,10 @@ export default function Search (ctx) {
       props: fieldProps,
       field: field,
       presentation: presentation,
-      frameStyle: { paddingEnd: reserve, paddingStart: reserve },
+      frameStyle: Object.assign({ paddingEnd: reserve, paddingStart: reserve }, state.disabled !== true ? {
+        backgroundColor: Utils.isString(props.fillLeaf) ? ctx.color(props.fillLeaf) : undefined,
+        borderColor: Utils.isString(props.borderLeaf) ? ctx.color(props.borderLeaf) : undefined
+      } : {}),
       // The labelless field reserves no floating-label room; the parent
       // owns the landmark's zero top padding
       rootStyle: { paddingTop: 0 },

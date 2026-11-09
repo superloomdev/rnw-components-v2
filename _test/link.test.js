@@ -160,13 +160,13 @@ describe('Link: interaction states through the DOM', function () {
       await fire(target, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
       await fire(target, new Event('mouseleave', { bubbles: false }));
 
-      // Focus: the underline and the ring, released on blur
+      // Focus: the underline and the ring one point out, released on blur
       await act(async function () {
         target.focus();
       });
       assert.equal(underlineOf(label), true);
       assert.equal(face.style.outlineWidth, t['control.link_focus_width'] + 'px');
-      assert.equal(face.style.outlineOffset, '0px');
+      assert.equal(face.style.outlineOffset, '1px');
       await act(async function () {
         target.blur();
       });

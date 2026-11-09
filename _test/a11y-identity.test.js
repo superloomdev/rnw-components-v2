@@ -1,6 +1,6 @@
 // Info: Accessibility identity across templates. For every component and
 // every sample state, the accessibility tree rendered under the default,
-// carbon and material templates is identical: roles, aria-* attributes,
+// carbon and shapes themes is identical: roles, aria-* attributes,
 // focusability and text. A theme changes appearance only.
 
 import { afterEach, describe, test } from 'node:test';
@@ -12,7 +12,7 @@ import { TEMPLATES, buildSystem } from './harness/system.js';
 import { createSampleElement } from './harness/sample.js';
 import { React, a11yTree, cleanup, render } from './harness/render.js';
 
-const TEMPLATE_NAMES = Object.keys(TEMPLATES);
+const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
 const components = await discoverComponents();
 const registries = {};
 for (const name of TEMPLATE_NAMES) {
@@ -22,7 +22,7 @@ for (const name of TEMPLATE_NAMES) {
 afterEach(cleanup);
 
 
-describe('a11y identity: the accessibility tree is the same under every template', function () {
+describe('a11y identity: the accessibility tree is the same under every theme', function () {
 
   test('there are components and sample states to compare', function () {
     assert.ok(components.length >= 1);

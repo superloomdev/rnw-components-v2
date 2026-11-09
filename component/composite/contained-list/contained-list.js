@@ -1,0 +1,85 @@
+// Info: ContainedList composite. A labelled `list` (`aria-labelledby` the
+// header) inside a container: a header in the kind's cells (`on-page`
+// `size.size_large`, `disclosed` `control.contained_list_header_height_disclosed`),
+// an optional search under the header that filters the items by label
+// itself, and items through `ctx.Registry.ContainedListItem`. The list
+// draws no outer margin - adjacent on-page lists' `control.contained_list_gap`
+// is the host's.
+
+import SPEC from './spec.contained-list.js';
+
+
+/********************************************************************
+ContainedList factory.
+
+@param {Object} ctx - Component context
+
+@return {Function} - The ContainedList component
+*********************************************************************/
+export default function ContainedList (ctx) {
+
+  const React = ctx.React;
+  const Utils = ctx.Utils;
+  const { Text, View } = ctx.ReactNative;
+
+  const SIZES = Object.freeze(['lg', 'md', 'sm', 'xl']);
+
+
+  /********************************************************************
+  ContainedList component.
+
+  @param {Object} props - See `api.contained-list.js`
+
+  @return {Object} - React element
+  *********************************************************************/
+  function ContainedListComponent (props) {
+
+    // Init the kind, size and metrics
+    const size = Utils.inArray(SIZES, props.size) ? props.size : 'lg';
+    const disclosed = props.kind === 'disclosed';
+    const SIZES_TO_TOKEN = Object.freeze({ lg: 'size_large', md: 'size_medium', sm: 'size_small', xl: 'size_xlarge' });
+    const metrics = {
+      headerHeightDisclosed: ctx.metric('ContainedList', 'headerHeightDisclosed'),
+      headerHeight: ctx.token('size.' + SIZES_TO_TOKEN[size]),
+      paddingInline: ctx.metric('ContainedList', 'paddingInline')
+    };
+
+    // Detect the search action: it renders under the header and filters
+    const isSearch = props.action === 'search' || (React.isValidElement(props.action) && (props.action.type === ctx.Registry.Search || props.action.type === ctx.Registry.ExpandableSearch));
+    const [query, setQuery] = React.useState('');
+    const onQuery = function (event) {
+      setQuery(event && event.target ? event.target.value : event);
+    };
+
+    // Build the header in the kind's cells
+    const labelId = (props.testID || 'contained-list') + '-label';
+    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), minHeight: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
+      React.createElement(Text, { dataSet: { part: 'label' }, nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
+
+    // Build the search row under the header
+    const search = isSearch === true ? React.createElement(View, { dataSet: { part: 'search' } },
+      props.action === 'search'
+        ? React.createElement(ctx.Registry.Search, { borderLeaf: 'contained_list_search_border', fillLeaf: 'contained_list_search_container', label: 'Search', onChangeText: onQuery })
+        : React.cloneElement(props.action, { onChangeText: onQuery })) : null;
+
+    // Build the items, filtered by the search query on the label
+    const entries = Utils.isObject(props.items) ? props.items : [];
+    const shown = isSearch === true ? entries.filter(function (entry) {
+      return Utils.isObject(entry) && Utils.isString(entry.label) && entry.label.toLowerCase().includes(query.toLowerCase());
+    }) : entries;
+    const items = React.createElement(View, { accessibilityLabelledBy: labelId, accessibilityRole: 'list' },
+      shown.map(function (entry, index) {
+        return React.createElement(ctx.Registry.ContainedListItem, {
+          action: entry.action, disabled: entry.disabled, icon: entry.icon, inset: props.isInset === true,
+          key: index, label: entry.label, last: index === shown.length - 1, onPress: entry.onPress, size: size, testID: props.testID
+        });
+      }));
+
+    // Return the container
+    return React.createElement(View, { dataSet: { part: 'root' }, testID: props.testID }, header, search, props.action !== undefined && isSearch !== true ? props.action : null, items);
+  }
+
+  ContainedListComponent.displayName = 'ContainedList';
+  return ContainedListComponent;
+}
+ContainedList.spec = SPEC;

@@ -45,21 +45,24 @@ export default function Link (ctx) {
 
     const size = props.size === 'sm' || props.size === 'lg' ? props.size : 'md';
 
-    // The color leaf: disabled, then pressed, hovered, visited, rest
+    // The color leaf: disabled, then the inverse pair a composing parent
+    // asks for on a dark surface, then pressed, hovered, visited, rest
+    const inverse = props.inverse === true;
     const leaf = disabled ? 'link_label_disabled'
-      : state.pressed === true ? 'link_label_active'
-        : state.hovered === true ? 'link_label_hover'
-          : props.visited === true ? 'link_label_visited'
-            : 'link_label';
+      : inverse === true ? (state.pressed === true || state.hovered === true ? 'link_label_inverse_hover' : 'link_label_inverse')
+        : state.pressed === true ? 'link_label_active'
+          : state.hovered === true ? 'link_label_hover'
+            : props.visited === true ? 'link_label_visited'
+              : 'link_label';
 
     // Underline while inline, hovered, focused or pressed, unless disabled
     const underline = !disabled && (props.inline === true || state.hovered === true || state.focused === true || state.pressed === true);
 
-    // The ring while focused or pressed: a solid outline at the edge
+    // The ring while focused (1 out) or pressed (at the edge)
     const ring = !disabled && (state.focused === true || state.pressed === true)
       ? {
-        outlineColor: ctx.color('link_focus_ring'),
-        outlineOffset: ctx.metric('Link', 'focusOffset'),
+        outlineColor: ctx.color(inverse === true ? 'focus_ring_inverse' : 'link_focus_ring'),
+        outlineOffset: ctx.metric('Link', state.pressed === true ? 'pressOffset' : 'focusOffset'),
         outlineStyle: 'solid',
         outlineWidth: ctx.metric('Link', 'focusWidth')
       }
@@ -85,10 +88,10 @@ export default function Link (ctx) {
     },
     React.createElement(View, {
       onLayout: onLayout,
-      style: [{ alignItems: 'center', flexDirection: 'row' }, ring]
+      style: [{ alignItems: 'center', flexDirection: 'row', minWidth: Utils.isNumber(props.minWidth) ? props.minWidth : undefined }, ring]
     },
     React.createElement(Text, {
-      style: [ctx.typeStyle(size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label'), {
+      style: [ctx.typeStyle(Utils.isString(props.typeLeaf) ? props.typeLeaf : (size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label')), {
         color: ctx.color(leaf),
         textDecorationLine: underline ? 'underline' : 'none'
       }]

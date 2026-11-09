@@ -36,9 +36,6 @@ const FACES = [
   ['IBM Plex Sans', 700, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Bold.woff2'],
   ['IBM Plex Mono', 400, '/fonts/plex-mono/complete/woff2/IBMPlexMono-Regular.woff2'],
   ['IBM Plex Mono', 600, '/fonts/plex-mono/complete/woff2/IBMPlexMono-SemiBold.woff2'],
-  ['Roboto', 400, '/fonts/roboto/roboto-latin-400-normal.woff2'],
-  ['Roboto', 500, '/fonts/roboto/roboto-latin-500-normal.woff2'],
-  ['Roboto', 700, '/fonts/roboto/roboto-latin-700-normal.woff2'],
   // The mobile upstream names each weight as its own family, as native font files do
   ['IBMPlexSans-Light', 300, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Light.woff2'],
   ['IBMPlexSans-Regular', 400, '/fonts/plex-sans/complete/woff2/IBMPlexSans-Regular.woff2'],
@@ -91,10 +88,6 @@ function page (title, script, head) {
 
 const SHOWCASE = page('rnw-components showcase', '/bundle.js', '');
 const REFERENCE = page('rnw-components reference', '/reference-bundle.js', '<link rel="stylesheet" href="/upstream.css">');
-// The second reference draws self-styled components: the primary's
-// stylesheet carries a global box-sizing reset that reaches into the
-// upstream shadow trees and beats their own rules, so its page loads none
-const REFERENCE_SECOND = page('rnw-components reference', '/reference-bundle.js', '');
 
 
 /********************************************************************
@@ -106,8 +99,10 @@ files (`.../IBM-Plex-Sans/fonts/` -> `/fonts/plex-sans/`).
 function readUpstreamCss () {
 
   const css = readFileSync(join(MODULES, '@carbon', 'styles', 'css', 'styles.min.css'), 'utf8');
+  // The ibm-products sheet carries TagSet's styles; its font urls are unused here
+  const products = readFileSync(join(MODULES, '@carbon', 'ibm-products', 'css', 'index-without-carbon.min.css'), 'utf8');
 
-  return css.replace(/https:\/\/1\.www\.s81c\.com\/common\/carbon\/plex\/fonts\/IBM-Plex-([A-Za-z-]+)\/fonts\//g, function (match, family) {
+  return (css + products).replace(/https:\/\/1\.www\.s81c\.com\/common\/carbon\/plex\/fonts\/IBM-Plex-([A-Za-z-]+)\/fonts\//g, function (match, family) {
     return '/fonts/plex-' + family.toLowerCase() + '/';
   });
 
@@ -172,7 +167,7 @@ const server = createServer(function (req, res) {
   }
 
   res.writeHead(200, { 'content-type': 'text/html' });
-  res.end(path === '/reference' ? (/[?&]set=second\b/.test(req.url) ? REFERENCE_SECOND : REFERENCE) : SHOWCASE);
+  res.end(path === '/reference' ? REFERENCE : SHOWCASE);
 
 });
 

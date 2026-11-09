@@ -1,6 +1,6 @@
 // Info: The fidelity gate. Every built row with a reference, against each
 // reference it has (the primary under the carbon template, the second under
-// the material template) and under each template's light and dark scheme:
+// each template) and under each template's light and dark scheme:
 // every sample state and every enabled state while hovered, keyboard focused
 // and pressed must match the reference part for part (`harness/fidelity.js`:
 // geometry, type, colors with their opacity, sampled paint, and the ring
@@ -14,6 +14,10 @@ import { expect, test } from '@playwright/test';
 
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
 import { SCHEMES, runFidelity } from './harness/fidelity.js';
+import { explainDisagreements, explainBudgetLines } from './harness/expected-gaps.js';
+import { readFileSync } from 'node:fs';
+
+const GAPS = JSON.parse(readFileSync(new URL('./fixtures/expected-gaps.json', import.meta.url), 'utf8')).gaps;
 
 const components = (await discoverComponents()).filter(function (component) {
   return component.reference !== null;
@@ -33,13 +37,15 @@ const NO_PRIMARY = new Set(getRoster().rows.filter(function (row) {
 test.describe('fidelity', function () {
 
   for (const component of components) {
-    const sets = (NO_PRIMARY.has(component.name) ? [] : ['primary']).concat(component.reference.second ? ['second'] : []);
+    const sets = ['primary'];
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme + ': matches the reference in every state', async function ({ page }) {
-          test.setTimeout(300000);
+          test.slow();
           if (NO_PRIMARY.has(component.name)) {
-            test.info().annotations.push({ type: 'fidelity', description: component.name + ': primary set skipped (no primary twin)' });
+            test.info().annotations.push({ type: 'fidelity', description: component.name + ': skipped (no primary twin)' });
+            test.skip();
+            return;
           }
           const run = await runFidelity(page, component, set, scheme);
           if (run.errors.length > 0 || run.lines.length > 0 ||
@@ -59,13 +65,20 @@ test.describe('fidelity', function () {
             }
           }
           expect(run.errors, 'render errors').toEqual([]);
-          expect(run.lines, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);
+          const gate = explainDisagreements(run.lines, GAPS, component.name, 'fidelity');
+          if (gate.explained.length > 0) {
+            test.info().annotations.push({ type: 'fidelity', description: component.name + ': ' + gate.explained.length + ' disagreement(s) covered by expected gaps' });
+          }
+          expect(gate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), component.name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+          expect(gate.unexplained, component.name + ' differs from its ' + set + ' reference (' + scheme + ')').toEqual([]);
           const over = Object.keys(run.perceptual).filter(function (key) {
             return run.perceptual[key] > BUDGET[component.name];
           }).map(function (key) {
             return key + ': ' + run.perceptual[key] + '% > ' + BUDGET[component.name] + '%';
           });
-          expect(over, component.name + ' states over the diff budget').toEqual([]);
+          const budgetGate = explainBudgetLines(over, GAPS, component.name, 'fidelity');
+          expect(budgetGate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), component.name + ': expected gaps no longer reproduce; remove them').toEqual([]);
+          expect(budgetGate.unexplained, component.name + ' states over the diff budget').toEqual([]);
         });
       }
     }

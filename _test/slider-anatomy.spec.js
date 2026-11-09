@@ -8,8 +8,7 @@ import { enterInteraction, leaveInteraction, openReference, openShowcase, readCo
 
 const STATES = ['minimum', 'quarter', 'default', 'maximum', 'disabled'];
 const REFERENCES = [
-  { set: 'primary', template: 'carbon', selector: '.cds--slider' },
-  { set: 'second', template: 'material', selector: 'md-slider' }
+  { set: 'primary', template: 'carbon', selector: '.cds--slider' }
 ];
 
 function cell (page, state) {
@@ -87,7 +86,6 @@ for (const reference of REFERENCES) {
   for (const scheme of ['light', 'dark']) {
     test('Slider painted track / ' + reference.set + ' / ' + scheme +
       ': fill coverage and disabled overlap match the actual source pixels', async function ({ page }) {
-      test.setTimeout(120000);
       const mounted = await openReference(page, 'Slider', reference.set, scheme);
       expect(mounted.errors).toEqual([]);
       const upstream = {};

@@ -164,6 +164,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       if (!Utils.isNumber(lineHeight) || !Number.isFinite(lineHeight)) {
         throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
       }
+      if (platform.os === 'ios') {
+        if (!Utils.isFunction(pixelRatio.get)) {
+          throw new TypeError('ctx.typeStyle on ios requires Lib.ReactNative.PixelRatio.get');
+        }
+        // iOS lays a grid-aligned line height out one physical pixel taller; half a pixel below the grid rounds back onto it
+        lineHeight = lineHeight - 0.5 / pixelRatio.get();
+      }
     }
 
     // Return the style with the family token resolved
@@ -347,7 +354,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {Object}  [options] - { gap }: `gap === false` draws no page-color
                               separating line inside the ring;
                               `offset` overrides the family's focus-offset cell
-                              (a member's own answer, like the tag close's 0)
+                              (a member's own answer, like the tag close's 0);
+                              `ringLeaf` replaces the family's ring leaf - a
+                              composing parent's answer; `width` replaces the
+                              family's ring width cell
 
   @return {Object} - Style fragment, empty when no ring shows
   *********************************************************************/
@@ -356,14 +366,14 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // The ring shows on focus; outside the field family only on keyboard focus when the theme says so
     const keyboardOnly = family !== 'field' && enumValue('feedback.focus_trigger') === 'keyboard';
     const shows = state.focused === true && (!keyboardOnly || state.focusVisible === true);
-    const width = token('control.' + family + '_focus_width');
+    const width = options !== undefined && Utils.isNumber(options.width) ? options.width : token('control.' + family + '_focus_width');
     if (!shows || width === 0) {
       return {};
     }
 
     // The ring, at its offset from the edge
     const offset = options !== undefined && Utils.isNumber(options.offset) ? options.offset : token('control.' + family + '_focus_offset');
-    const ringColor = color(family + '_focus_ring');
+    const ringColor = options !== undefined && Utils.isString(options.ringLeaf) ? color(options.ringLeaf) : color(family + '_focus_ring');
     if (family !== 'button' || offset >= 0) {
       return { outlineColor: ringColor, outlineOffset: offset, outlineStyle: 'solid', outlineWidth: width };
     }
@@ -595,6 +605,67 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
+  Equal segment basis without a zero basis in an indefinite row. The web
+  lets CSS do the work - a flex container's shrink-to-fit width comes
+  from the items' max-content contributions even when their basis is 0 -
+  so `basis()` is 0 and `onLayout(index)` returns no handler. Yoga sums
+  the bases instead, so on a native platform the segments hand in their
+  natural widths first: `basis()` is 'auto' until every index has
+  measured, then `sum / count`. With basis `sum / count` and grow 1 /
+  shrink 1 a definite row gives `W / n` each and an indefinite row gives
+  `sum` total - both the CSS answer for basis 0.
+
+  @param {Number} count - Segment count
+
+  @return {Object} - { basis, onLayout }
+  *********************************************************************/
+  function useSegmentBasis (count) {
+
+    const [widths, setWidths] = Lib.React.useState(function () {
+      return new Array(count).fill(null);
+    });
+
+    if (!platform.isNative) {
+      return {
+        basis: function () {
+          return 0;
+        },
+        onLayout: function () {
+          return undefined;
+        }
+      };
+    }
+
+    const allMeasured = widths.every(function (width) {
+      return width !== null;
+    });
+    const sum = widths.reduce(function (total, width) {
+      return total + (width === null ? 0 : width);
+    }, 0);
+
+    return {
+      basis: function () {
+        return allMeasured ? sum / count : 'auto';
+      },
+      onLayout: function (index) {
+        return function (event) {
+          const width = event.nativeEvent.layout.width;
+          setWidths(function (previous) {
+            if (previous[index] !== null) {
+              return previous;
+            }
+            const next = previous.slice();
+            next[index] = width;
+            return next;
+          });
+        };
+      }
+    };
+
+  }
+
+
+  /********************************************************************
   The list presentation the theme chose: the container and item cells of an
   option or menu list. The container carries the list's fill, corner, block
   padding and shadow; an item is a height, a fill for its state (`hover`,
@@ -622,7 +693,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         return null;
       }
       if (state.pressed === true) {
-        return 'list_item_container_active';
+        return state.selected === true ? 'list_item_container_selected_active' : 'list_item_container_active';
       }
       if (state.selected === true) {
         return state.hovered === true ? 'list_item_container_selected_hover' : 'list_item_container_selected';
@@ -649,7 +720,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         // The keyboard's highlight carries the control's focus ring: while
         // the list is open the field's ring moves onto the highlighted row
         const ring = state.highlighted === true ? focusRing('field', { focused: true }) : {};
-        return Object.assign({ height: options.itemHeight, justifyContent: 'stretch' }, leaf === null ? {} : { backgroundColor: color(leaf) }, ring);
+        return Object.assign({ minHeight: options.itemHeight, justifyContent: 'stretch' }, leaf === null ? {} : { backgroundColor: color(leaf) }, ring);
       },
       // The item's inner block carries the divider line at its top: the
       // caller decides it draws (the reference hides it on the first item and
@@ -843,29 +914,52 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  A text component wrapper that switches the OS's own font scaling off: the
-  context already applies the host's `textScale` to every type set, so the
-  platform must not scale again. A caller's own `allowFontScaling` prop
-  still wins.
+  A text component wrapper that hands native text the host's defaults. On
+  every platform it switches the OS's own font scaling off: the context
+  already applies the host's `textScale` to every type set, so the
+  platform must not scale again. On Android it also names the three
+  defaults CSS never had: `includeFontPadding` adds the font's ascent and
+  descent to the first and last line (a 16-point line height lays out
+  19), `textBreakStrategy` `highQuality` wraps earlier than CSS's greedy
+  break, and the EditText's own vertical padding lifts a `small` field
+  above its frame's minimum; the padding and centre alignment are
+  removed here for every input the library mounts, and a multiline
+  input keeps the top alignment CSS gives a textarea. Web and iOS
+  know none of the three, so they see no prop change. On native an
+  EditText keeps the theme's vertical padding on any side the style
+  leaves unset, so `baseStyle` zeroes both sides before the caller's
+  style. A caller's own `allowFontScaling`, `textBreakStrategy` or
+  style still wins.
 
   @param {Object} TextComponent - The injected React Native text component
 
+  @param {Object} [baseStyle] - Style prepended before the Android and caller styles
+
   @return {Function} - The wrapped component
   *********************************************************************/
-  function withoutOsFontScaling (TextComponent, baseStyle) {
+  function withHostTextDefaults (TextComponent, baseStyle) {
 
     if (Utils.isNullOrUndefined(TextComponent)) {
       return TextComponent;
     }
 
-    function OsScalingOff (props) {
-      return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props,
-        baseStyle === undefined ? {} : { style: [baseStyle, props.style] }));
+    function HostTextDefaults (props) {
+      if (platform.os !== 'android') {
+        return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props,
+          baseStyle === undefined ? {} : { style: [baseStyle, props.style] }));
+      }
+      const androidStyle = TextComponent === Lib.ReactNative.TextInput && !(props && props.multiline === true)
+        ? { includeFontPadding: false, textAlignVertical: 'center' }
+        : { includeFontPadding: false };
+      return Lib.React.createElement(TextComponent, Object.assign(
+        { allowFontScaling: false, textBreakStrategy: 'simple' },
+        props,
+        { style: [baseStyle, androidStyle, props && props.style] }));
     }
 
-    OsScalingOff.displayName = 'OsScalingOff(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
+    HostTextDefaults.displayName = 'HostTextDefaults(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
 
-    return OsScalingOff;
+    return HostTextDefaults;
 
   }
 
@@ -877,8 +971,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   // style leaves unset, so the native input zeroes both before the caller's style
   const reactNative = platform.isNative
     ? Object.create(Lib.ReactNative, {
-      Text: { value: withoutOsFontScaling(Lib.ReactNative.Text), enumerable: true },
-      TextInput: { value: withoutOsFontScaling(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 }), enumerable: true }
+      Text: { value: withHostTextDefaults(Lib.ReactNative.Text), enumerable: true },
+      TextInput: { value: withHostTextDefaults(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 }), enumerable: true }
     })
     : Lib.ReactNative;
 
@@ -940,7 +1034,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     token: token,
     tokenAt: tokenAt,
     typeStyle: typeStyle,
-    useFaceSize: useFaceSize
+    useFaceSize: useFaceSize,
+    useSegmentBasis: useSegmentBasis
   });
 
 }

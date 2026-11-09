@@ -40,17 +40,31 @@ export default function Select (ctx) {
     // element, so the label prop must not mint an id nothing renders; it
     // keeps its own accessible name instead
     const compact = props.compact === true;
-    const select = useSelect(compact === true
-      ? Object.assign({}, props, { label: undefined })
-      : props);
-    const state = select.state;
     const items = Utils.isArray(props.items) ? props.items : [];
+    // Group entries ({ label, items, disabled? }) flatten to their options
+    // for the behavior: selection, keyboard traversal and the sizer all work
+    // on the flat list while the render keeps the group structure. A group's
+    // `disabled` disables every option in it
+    const flatItems = [];
+    items.forEach(function (entry) {
+      if (Utils.isObject(entry) && Utils.isArray(entry.items)) {
+        entry.items.forEach(function (item) {
+          flatItems.push(entry.disabled === true ? Object.assign({}, item, { disabled: true }) : item);
+        });
+      } else {
+        flatItems.push(entry);
+      }
+    });
+    const select = useSelect(compact === true
+      ? Object.assign({}, props, { items: flatItems, label: undefined })
+      : Object.assign({}, props, { items: flatItems }));
+    const state = select.state;
     const sizerRef = React.useRef(null);
     const intrinsic = useAnchoredPosition({ anchor: sizerRef, offset: 0, placement: 'bottom-start', flip: false });
     const sizerWidth = intrinsic.anchor === null ? undefined : Math.ceil(intrinsic.anchor.width);
     const invalid = props.invalid === true && !state.disabled;
     const labelled = !compact && Utils.isString(props.label) && !Utils.isEmptyString(props.label);
-    const selected = state.selectedIndex >= 0 ? items[state.selectedIndex] : null;
+    const selected = state.selectedIndex >= 0 ? flatItems[state.selectedIndex] : null;
 
     // Read the geometry and the theme's field presentation
     const height = ctx.metric('Select', SIZES[props.size] || 'height');
@@ -119,6 +133,50 @@ export default function Select (ctx) {
       }
     });
 
+    // The render keeps the group structure: a group entry renders a
+    // SelectItemGroup whose options take the flat index the behavior sees;
+    // the first option inside a group draws no divider, as the list's first
+    // option draws none
+    const optionRows = [];
+    let flatIndex = 0;
+    items.forEach(function (entry) {
+      if (Utils.isObject(entry) && Utils.isArray(entry.items)) {
+        const groupOptions = entry.items.map(function (item, subIndex) {
+          const index = flatIndex;
+          flatIndex += 1;
+          return React.createElement(ctx.Registry.SelectItem, {
+            key: item.value,
+            label: item.label,
+            value: item.value,
+            disabled: entry.disabled === true || item.disabled === true,
+            highlighted: index === state.highlightedIndex,
+            selected: index === state.selectedIndex,
+            divider: subIndex !== 0,
+            optionProps: select.getOptionProps(index)
+          });
+        });
+        optionRows.push(React.createElement(ctx.Registry.SelectItemGroup, {
+          key: 'group-' + entry.label,
+          label: entry.label,
+          disabled: entry.disabled === true,
+          options: groupOptions
+        }));
+      } else {
+        const index = flatIndex;
+        flatIndex += 1;
+        optionRows.push(React.createElement(ctx.Registry.SelectItem, {
+          key: entry.value,
+          label: entry.label,
+          value: entry.value,
+          disabled: entry.disabled === true,
+          highlighted: index === state.highlightedIndex,
+          selected: index === state.selectedIndex,
+          divider: index !== 0,
+          optionProps: select.getOptionProps(index)
+        }));
+      }
+    });
+
     // Render the option list while open
     const listElement = state.open ? React.createElement(View, Object.assign({}, select.listProps, {
       style: [overlay.hosted === true
@@ -135,29 +193,7 @@ export default function Select (ctx) {
         maxHeight: ctx.metric('Select', 'itemHeight') * ctx.metric('Select', 'listMaxRows') + ctx.metric('Select', 'listPaddingBlock') * 2,
         overflowY: 'auto'
       }]
-    }), items.map(function (item, index) {
-      const itemDisabled = item.disabled === true;
-      const selectedItem = index === state.selectedIndex;
-      const itemState = function (interaction) {
-        return {
-          disabled: itemDisabled,
-          highlighted: index === state.highlightedIndex,
-          hovered: interaction.hovered === true,
-          pressed: interaction.pressed === true,
-          selected: selectedItem
-        };
-      };
-      return React.createElement(Pressable, Object.assign({ key: item.value }, select.getOptionProps(index), {
-        style: function (interaction) {
-          return list.item(itemState(interaction));
-        }
-      }),
-      React.createElement(View, { style: list.option(index !== 0) },
-        React.createElement(Text, {
-          numberOfLines: 1,
-          style: list.label(itemState({}))
-        }, item.label)));
-    })) : null;
+    }), optionRows) : null;
 
     // Render the message below: the error while invalid, else the helper
     const message = invalid && Utils.isString(props.invalidText) ? props.invalidText
@@ -193,7 +229,7 @@ export default function Select (ctx) {
       onLayout: compact === true ? intrinsic.measure : undefined,
       style: { alignSelf: 'flex-start', height: 0, overflow: 'hidden', position: 'absolute' }
     },
-    [placeholder].concat(items.map(function (item) {
+    [placeholder].concat(flatItems.map(function (item) {
       return item.label;
     })).map(function (text, index) {
       return React.createElement(Text, { key: index, numberOfLines: 1, style: bodyStyle }, text);

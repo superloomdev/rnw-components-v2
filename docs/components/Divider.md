@@ -6,8 +6,9 @@
 
 A horizontal rule: a flex row holding one line child of the theme's divider width, indented at either end by the theme's divider inset when `inset`, `insetStart` or `insetEnd` ask.
 
-### Decisions (roster flag `superloom_decision`)
+### Decisions (roster flags `no_reference`, `superloom_decision`)
 
+- **No upstream visual reference.** The retired second reference was the row's only upstream mount - the roster's `no_reference`; the gates for this row are structural, accessibility and cross-template consistency.
 - **No primary reference.** The first system draws no standalone divider - the roster's `superloom_decision`. Two templates answer the line as `border_subtle_01` at `border.width_01` with a `spacing_05` inset; the third draws its own outline color at one pixel with a sixteen-point inset. Where the primary is silent the template decides.
 - **A row and a line, not a stretched strip.** The second reference draws the rule as a host row's pseudo-element inset by its own padding; ours draws the same anatomy with real elements - a padded row whose line child keeps the divider width.
 
@@ -17,16 +18,16 @@ Both platforms. The rule is layout and paint only; it takes no input.
 
 ## Divider
 
-Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; the primary system has no divider, so its values there are a Superloom decision from that system's own scale.
+Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; it has no upstream visual reference, so its values are a Superloom decision from the primary system's own scale.
 
 | | |
 |---|---|
 | Tier | `atom` |
 | Platform | `both` |
-| Reference | `render-web` (`@material/web`) |
+| Reference | `none` |
 | Enums | none |
 | Behaviors | none |
-| Flags | `superloom_decision` - anatomy or a value decided here, not measured from a reference |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `superloom_decision` - anatomy or a value decided here, not measured from a reference |
 
 ### Props
 

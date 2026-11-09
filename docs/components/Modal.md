@@ -33,6 +33,9 @@ theme.
   `ghost`. An action's `kind` overrides.
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
+- **Header in flow.** The header sits in flow, its bottom margin
+  `dialog_header_space` above the content's top padding; the container
+  border draws on all four sides.
 - **Scrim** centers the container, paints `dialog_scrim`, sits at
   `stacking.overlay`, and a press that lands on it (not inside the
   container) asks for a close unless `preventCloseOnClickOutside`.
@@ -62,11 +65,76 @@ theme.
   `accessibilityLabel` names it; Escape and focus trap; focus returns on
   close.
 
-### Second reference
+### Retired second reference
 
 `md-dialog` with `headline`, content and `actions` slots of
 `md-text-button`. No eyebrow label, no close control, and bounded
 content-sized width.
+- **ModalHeader** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalBody** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalFooter** (requires_parent): must be composed inside ComposedModal; measured through ComposedModal's samples.
+- **ModalHeader** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalBody** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+- **ModalFooter** (no_reference): no standalone upstream mount; measured through ComposedModal's samples.
+
+## ComposedModal
+
+ComposedModal is the framed dialog on its own scrim layer composing ModalHeader, ModalBody and an optional ModalFooter - passive without one - with Escape, focus trapping and outside-press dismissal.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.dialog_actions` |
+| Behaviors | `overlay`, `focus-trap` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `open` | `boolean` | yes | Whether the dialog shows. The caller owns the state; `onClose` asks for a close. |
+| `onClose` | `function` | no | Called on Escape, the close button, and a passive dialog's outside press. Returning `false` vetoes the close. |
+| `size` | `string` | no | One of `xs`, `sm`, `md`, `lg`: the width and height ratio step. Default `md`. |
+| `danger` | `boolean` | no | Draws the footer primary as a danger button and lands initial focus on the secondary. |
+| `isFullWidth` | `boolean` | no | Spans the layer space instead of the size's width ratio. |
+| `preventCloseOnClickOutside` | `boolean` | no | Default: outside press closes only a passive dialog (no footer). |
+| `returnFocusRef` | `object` | no | Ref of the launcher; focused when the dialog closes. |
+| `accessibilityLabel` | `string` | no | Accessible name; the heading names the dialog when this is not given. |
+| `testID` | `string` | no | Test identifier forwarded to the dialog container. |
+| `header` | `object` | no | ModalHeader props: { label, title, iconDescription, buttonOnClick }. |
+| `children` | `node` | no | The body content. |
+| `body` | `object` | no | ModalBody props: { hasScrollingContent, hasForm, accessibilityLabel }. |
+| `footer` | `object` | no | ModalFooter props: { primaryButtonText, primaryButtonDisabled, onRequestSubmit, secondaryButtonText, secondaryButtons, onRequestClose, danger, loadingStatus, loadingDescription }. Absent draws a passive dialog. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `borderWidth` | `control.dialog_border_width` |
+| `enterOffset` | `control.dialog_enter_offset` |
+| `level` | `shadow.dialog` |
+| `margin` | `control.dialog_padding_inline` |
+| `maxWidth` | `control.dialog_max_width` |
+| `minHeight` | `control.dialog_min_height` |
+| `minWidth` | `control.dialog_min_width` |
+| `paddingInline` | `control.dialog_padding_inline` |
+| `radius` | `control.dialog_radius` |
+| `stacking` | `stacking.overlay` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
+| xs | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true,"size":"xs"}` |
+| sm | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true,"size":"sm"}` |
+| lg | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true,"size":"lg"}` |
+| danger | `{"children":"The dialog body.","danger":true,"footer":{"primaryButtonText":"Delete","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
+| three | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtons":[{"buttonText":"Keep both"},{"buttonText":"Cancel"}]},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
+| passive | `{"children":"Read the details, then press outside or Escape to dismiss.","header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
+| scrolling | `{"body":{"hasScrollingContent":true},"children":"Line 1 of the long body text, long enough to overflow the dialog and scroll. Line 2 of the long body text, long enough to overflow the dialog and scroll. Line 3 of the long body text, long enough to overflow the dialog and scroll. Line 4 of the long body text, long enough to overflow the dialog and scroll. Line 5 of the long body text, long enough to overflow the dialog and scroll. Line 6 of the long body text, long enough to overflow the dialog and scroll. Line 7 of the long body text, long enough to overflow the dialog and scroll. Line 8 of the long body text, long enough to overflow the dialog and scroll. Line 9 of the long body text, long enough to overflow the dialog and scroll. Line 10 of the long body text, long enough to overflow the dialog and scroll. Line 11 of the long body text, long enough to overflow the dialog and scroll. Line 12 of the long body text, long enough to overflow the dialog and scroll.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
 
 ## Modal
 
@@ -103,18 +171,7 @@ Modal is a dialog on a scrim layer: a header, a body, an actions row and a close
 
 | Metric | Rule |
 |---|---|
-| `actionsGap` | `control.dialog_actions_gap` |
-| `actionsHeight` | `control.dialog_actions_height` |
-| `actionsPadding` | `control.dialog_actions_padding` |
-| `actionsTopSpace` | `spacing.spacing_05` |
-| `bodyPaddingBottom` | `control.dialog_body_padding_bottom` |
-| `bodyPaddingTop` | `control.dialog_body_padding_top` |
 | `borderWidth` | `control.dialog_border_width` |
-| `closeIconSize` | `control.dialog_close_icon_size` |
-| `closeSize` | `control.icon_button_size` |
-| `headerGap` | `control.dialog_header_gap` |
-| `headerPaddingTop` | `control.dialog_padding_top` |
-| `headerSpace` | `control.dialog_header_space` |
 | `level` | `shadow.dialog` |
 | `maxWidth` | `control.dialog_max_width` |
 | `minHeight` | `control.dialog_min_height` |
@@ -129,3 +186,127 @@ Modal is a dialog on a scrim layer: a header, a body, an actions row and a close
 |---|---|
 | default | `{"actions":[{"label":"Cancel"},{"label":"Save"}],"children":"The dialog body.","open":true,"title":"Confirm the change"}` |
 | passive | `{"children":"Read the details, then press outside or Escape to dismiss.","label":"Notice","open":true,"passive":true,"title":"No actions"}` |
+
+## ModalBody
+
+ModalBody is the content region of a ComposedModal - the prose body, scrollable on demand and gutterless for a form; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `focus-trap` |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `children` | `node` | no | The body content; a string draws as `type.dialog_body` prose. |
+| `hasScrollingContent` | `boolean` | no | Scrolls the body; a measured overflow scrolls too. |
+| `hasForm` | `boolean` | no | Drops the prose end gutter for a form body. |
+| `accessibilityLabel` | `string` | no | Accessible name of the scrolling region; the heading names it when this is not given. |
+| `fill` | `boolean` | no | Composition prop: set by Modal and ComposedModal; the body takes the dialog's middle `1fr` row while a standalone body is its content's height. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `fadeHeight` | `control.dialog_scroll_fade_height` |
+| `fadeMinHeight` | `control.dialog_scroll_fade_min_height` |
+| `fadeStart` | `control.dialog_scroll_fade_start` |
+| `paddingBottom` | `control.dialog_body_padding_bottom` |
+| `paddingInline` | `control.dialog_padding_inline` |
+| `paddingTop` | `control.dialog_body_padding_top` |
+| `scrollEndSpace` | `control.dialog_scroll_end_space` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"children":"The dialog body."}` |
+
+## ModalFooter
+
+ModalFooter is the action row of a ComposedModal - a primary action plus a secondary action or two; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | `anatomy.dialog_actions` |
+| Behaviors | `overlay`, `focus-trap` |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `primaryButtonText` | `string` | no | The primary action label. |
+| `primaryButtonDisabled` | `boolean` | no | Disables the primary action. |
+| `onRequestSubmit` | `function` | no | Called by the primary action. |
+| `secondaryButtonText` | `string` | no | The secondary action label; mutually exclusive with `secondaryButtons`. |
+| `secondaryButtons` | `array` | no | Two `{ buttonText, onClick }` entries draw the three-button layout; one draws the two-button. |
+| `onRequestClose` | `function` | no | Called by the secondary actions; defaults to the parent's close request. |
+| `danger` | `boolean` | no | Draws the primary as a danger button. |
+| `loadingStatus` | `string` | no | Anything but `inactive` shows an InlineLoading in the primary. |
+| `loadingDescription` | `string` | no | Accessible description of the primary's InlineLoading. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `actionsGap` | `control.dialog_actions_gap` |
+| `actionsPadding` | `control.dialog_actions_padding` |
+| `actionsTopSpace` | `spacing.spacing_05` |
+| `height` | `control.dialog_actions_height` |
+| `paddingBottom` | `control.dialog_action_padding_bottom` |
+| `paddingTop` | `control.dialog_action_padding_top` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"primaryButtonText":"Save","secondaryButtonText":"Cancel"}` |
+
+## ModalHeader
+
+ModalHeader is the header band of a ComposedModal - the eyebrow label, the heading and the close seat; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | none |
+| Behaviors | `overlay`, `focus-trap` |
+| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `label` | `string` | no | The eyebrow text above the heading, shown where `anatomy.dialog_label` says so. |
+| `title` | `string` | yes | The heading text; names the dialog unless the parent gives an `accessibilityLabel`. |
+| `iconDescription` | `string` | no | Accessible name of the close button. Default `Close`. |
+| `buttonOnClick` | `function` | no | Called by the close button; defaults to the parent's close request. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `closeIconSize` | `control.dialog_close_icon_size` |
+| `closeSize` | `control.icon_button_size` |
+| `headerGap` | `control.dialog_header_gap` |
+| `headerSpace` | `control.dialog_header_space` |
+| `paddingInline` | `control.dialog_padding_inline` |
+| `paddingTop` | `control.dialog_padding_top` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"label":"Account","title":"Confirm the change"}` |

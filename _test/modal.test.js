@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/composite/modal/sample.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -52,10 +52,10 @@ async function renderModal (Registry, props) {
     header: function () {
       return dialog === null ? null : dialog.children[0];
     },
-    body: function () {
+    close: function () {
       return dialog === null ? null : dialog.children[1];
     },
-    close: function () {
+    body: function () {
       return dialog === null ? null : dialog.children[2];
     },
     actionsRow: function () {
@@ -86,28 +86,30 @@ describe('Modal: every sample state under every template', function () {
         assert.equal(dialog.getAttribute('aria-modal'), 'true');
         assert.equal(dialog.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_container']));
         assert.equal(dialog.style.borderTopLeftRadius, t['control.dialog_radius'] + 'px');
-        assert.equal(dialog.style.borderTopWidth, t['control.dialog_border_width'] + 'px');
+        assert.equal(dialog.style.borderBottomWidth, t['control.dialog_border_width'] + 'px', 'the border draws on all four sides');
         if (t['control.dialog_min_width'] > 0 || t['control.dialog_max_width'] > 0) {
           assert.equal(dialog.style.minWidth, t['control.dialog_min_width'] + 'px');
           assert.equal(dialog.style.maxWidth, t['control.dialog_max_width'] + 'px');
           assert.equal(dialog.style.minHeight, t['control.dialog_min_height'] + 'px');
           assert.equal(dialog.style.width, '');
         } else {
-          // Unhosted, so the layer space is the jsdom window - 1024 wide,
-          // which lands in the md breakpoint tier
-          assert.equal(dialog.style.width, { xs: '48%', sm: '60%', md: '84%', lg: '96%' }[props.size || 'md']);
+          // Unhosted, so the layer space is the jsdom window: the width
+          // is the size's ratio of it
+          const suffix = { xs: '_xs', sm: '_sm', md: '', lg: '_lg' }[props.size || 'md'];
+          assert.equal(dialog.style.width, (window.innerWidth * t['control.dialog_width_ratio' + suffix]) + 'px');
+          assert.equal(dialog.style.maxHeight, (window.innerHeight * t['control.dialog_height_ratio' + suffix]) + 'px');
         }
 
         // The header: label when given, heading always, close seat gated by the anatomy
         const header = parts.header();
         assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
-        assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px');
-        const heading = header.children[props.label === undefined ? 0 : 1];
+        assert.equal(header.style.marginBottom, t['control.dialog_header_space'] + 'px', 'the header sits in flow above the content');
+        const heading = header.firstElementChild.children[props.label === undefined ? 0 : 1];
         assert.equal(heading.textContent, props.title);
         assert.equal(heading.style.fontSize, t['type.dialog_heading'].fontSize + 'px');
         assert.equal(heading.style.color, cssValue('color', t['color.dialog_heading']));
         if (props.label !== undefined) {
-          const eyebrow = header.children[0];
+          const eyebrow = header.firstElementChild.children[0];
           assert.equal(eyebrow.textContent, props.label);
           assert.equal(eyebrow.style.fontSize, t['type.label01'].fontSize + 'px');
           assert.equal(eyebrow.style.color, cssValue('color', t['color.text_secondary']));
@@ -122,9 +124,7 @@ describe('Modal: every sample state under every template', function () {
         const body = parts.body();
         assert.equal(body.style.paddingTop, t['control.dialog_body_padding_top'] + 'px');
         const actions = Array.isArray(props.actions) && props.passive !== true ? props.actions : [];
-        const expectedBodyBottom = actions.length > 0 && t['anatomy.dialog_actions'] !== 'stretched'
-          ? t['control.dialog_header_gap'] : t['control.dialog_body_padding_bottom'];
-        assert.equal(body.style.paddingBottom, expectedBodyBottom + 'px');
+        assert.equal(body.style.paddingBottom, t['control.dialog_body_padding_bottom'] + 'px');
         const bodyText = body.querySelector('[dir="auto"]');
         assert.equal(bodyText.style.fontSize, t['type.dialog_body'].fontSize + 'px');
         assert.equal(bodyText.style.color, cssValue('color', t['color.dialog_body']));
@@ -139,7 +139,7 @@ describe('Modal: every sample state under every template', function () {
         const stretched = t['anatomy.dialog_actions'] === 'stretched';
         assert.equal(row.style.height, t['control.dialog_actions_height'] > 0 ? t['control.dialog_actions_height'] + 'px' : '');
         if (stretched) {
-          assert.equal(row.style.justifyContent, 'flex-start');
+          assert.equal(row.style.justifyContent, 'flex-end');
         } else {
           assert.equal(row.style.justifyContent, 'flex-end');
           assert.equal(row.style.paddingTop, t['spacing.spacing_05'] + 'px');
@@ -224,57 +224,49 @@ function StagedHost (props) {
 }
 
 
-describe('Modal: the dialog width follows the layer space tier', function () {
+describe('Modal: the dialog width follows the layer space ratio', function () {
 
-  for (const row of [
-    { width: 320, expected: '100%', justifyContent: 'flex-start' },
-    { width: 800, expected: '84%', justifyContent: 'center' },
-    { width: 1280, expected: '60%', justifyContent: 'center' },
-    { width: 1400, expected: '48%', justifyContent: 'center' }
-  ]) {
-    test('carbon size md in a ' + row.width + '-wide host draws ' + row.expected, async function () {
+  for (const row of [{ width: 320 }, { width: 800 }, { width: 1280 }, { width: 1400 }]) {
+    test('carbon size md in a ' + row.width + '-wide host draws the width ratio of it', async function () {
       const system = systemFor('carbon');
+      const t = buildNative('carbon').tokens;
       const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: row.width, height: 400 } },
         React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
       const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
       assert.notEqual(dialog, null);
-      assert.equal(dialog.style.width, row.expected);
-      const scrim = container.querySelector('[data-testid="modal-scrim"]');
-      assert.equal(scrim.style.justifyContent, row.justifyContent);
-    });
-  }
-
-  test('carbon size md below the md breakpoint spans the space with no margin', async function () {
-    const system = systemFor('carbon');
-    const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 320, height: 400 } },
-      React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
-    const dialog = container.querySelector('[role="dialog"]');
-    assert.equal(dialog.style.marginLeft, '0px');
-    assert.equal(dialog.style.marginRight, '0px');
-  });
-
-  test('carbon size xs in an 800-wide host draws 48%', async function () {
-    const system = systemFor('carbon');
-    const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 800, height: 400 } },
-      React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'xs', children: 'B' })));
-    const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
-    assert.equal(dialog.style.width, '48%');
-  });
-
-  for (const width of [320, 800, 1280, 1400]) {
-    test('a bounded template keeps its own widths in a ' + width + '-wide host', async function () {
-      const system = systemFor('material');
-      const t = buildNative('material').tokens;
-      const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: width, height: 400 } },
-        React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
-      const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
-      assert.equal(dialog.style.width, '');
-      assert.equal(dialog.style.minWidth, t['control.dialog_min_width'] + 'px');
-      assert.equal(dialog.style.maxWidth, t['control.dialog_max_width'] + 'px');
+      assert.equal(dialog.style.width, (row.width * t['control.dialog_width_ratio']) + 'px');
+      assert.equal(dialog.style.maxHeight, (400 * t['control.dialog_height_ratio']) + 'px');
       const scrim = container.querySelector('[data-testid="modal-scrim"]');
       assert.equal(scrim.style.justifyContent, 'center');
     });
   }
+
+  test('an unbounded dialog does not paint until the host reports its space', async function () {
+    const system = systemFor('carbon');
+    const t = buildNative('carbon').tokens;
+    const hidden = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 0, height: 0 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', children: 'B' })));
+    const before = hidden.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.notEqual(before, null);
+    assert.equal(before.style.opacity, '0', 'an unmeasured host means an unpainted dialog');
+    await cleanup();
+    const shown = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 640, height: 400 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', children: 'B' })));
+    const after = shown.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.equal(after.style.opacity, '', 'a measured host paints the dialog');
+    assert.equal(after.style.width, (640 * t['control.dialog_width_ratio']) + 'px', 'the width follows the host ratio');
+    await cleanup();
+  });
+
+  test('carbon size xs in an 800-wide host draws the xs ratio of it', async function () {
+    const system = systemFor('carbon');
+    const t = buildNative('carbon').tokens;
+    const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 800, height: 400 } },
+      React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'xs', children: 'B' })));
+    const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
+    assert.equal(dialog.style.width, (800 * t['control.dialog_width_ratio_xs']) + 'px');
+  });
+
 
 });
 

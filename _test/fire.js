@@ -20,7 +20,20 @@ const manifest = JSON.parse(readFileSync(join(HERE, 'fixtures', 'assertion-integ
 const args = process.argv.slice(2);
 let selection;
 try {
-  selection = getFireSelection(manifest.rows, args);
+  // `--only` also takes a comma list: expand it in manifest order so the
+  // selection matches what repeated single-id runs would pick
+  const onlyAt = args.indexOf('--only');
+  if (onlyAt !== -1 && typeof args[onlyAt + 1] === 'string' && args[onlyAt + 1].indexOf(',') !== -1) {
+    const ids = args[onlyAt + 1].split(',');
+    selection = { help: false, rows: manifest.rows.filter(function (row) {
+      return ids.indexOf(row.id) !== -1;
+    }) };
+    if (selection.rows.length !== ids.length) {
+      throw new Error('unknown fire row in --only ' + args[onlyAt + 1] + '\n' + FIRE_USAGE);
+    }
+  } else {
+    selection = getFireSelection(manifest.rows, args);
+  }
 } catch (error) {
   process.stderr.write(error.message);
   process.exit(2);
@@ -54,9 +67,13 @@ Run the row's test; report pass or fail without throwing.
 *********************************************************************/
 function runTest (row) {
 
+  // One guard per planted run, capped below the outer `npm run fire` guard
+  // (6144 MB) so a runaway row is killed here and reported, not left to the
+  // outer guard to take the whole run down. `npm run bundle` is already
+  // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
-    ? 'npm run bundle --silent && npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
+    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
@@ -64,6 +81,17 @@ function runTest (row) {
     process.stdout.write('CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
     const detail = String(error.stdout || '') + String(error.stderr || error.message);
     process.stdout.write(detail.split('\n').slice(-30).join('\n') + '\n');
+    // The inner guard's own kill codes: the planted run ran away on memory
+    // or time; the row records KILLED and the runner moves on
+    if (error.status === 137 || error.status === 124) {
+      return { killed: error.status === 137 ? 'memory' : 'time' };
+    }
+    // A Playwright `-g` that matches nothing exits 1 with `No tests
+    // found`: name it, do not let it read as an assertion failure
+    const combined = String(error.stdout || '') + String(error.stderr || '');
+    if (/No tests found/.test(combined)) {
+      throw new Error(row.id + ': the test pattern "' + row.testName + '" matched no test in ' + row.test);
+    }
     // A child that died without a normal test failure proves nothing about
     // the mutation; the caller's finally restores the file before this throw
     if (!isMutationProof(error)) {
@@ -72,8 +100,12 @@ function runTest (row) {
     return false;
   }
 
-  // A pattern that matched no test is not a pass: the row names nothing
-  if (/tests 0\b/.test(output) || /No tests found/.test(output)) {
+  // A pattern that matched no test is not a pass: the row names nothing.
+  // `node --test` reports a zero-match pattern as `tests 1` (the file's own
+  // synthetic pass), never `tests 0`; a real match prints an indented
+  // `  ✔ <name>` line, a zero-match prints only the top-level file line.
+  // Playwright answers a zero match with its own `No tests found` error
+  if (/tests 0\b/.test(output) || /No tests found/.test(output) || (row.runner === 'node' && !/^ +[✔✖x]|^ +not ok /m.test(output))) {
     throw new Error(row.id + ': the test pattern "' + row.testName + '" matched no test in ' + row.test);
   }
 
@@ -102,10 +134,15 @@ for (const row of rows) {
 
   // Plant the edit, run, restore, verify the restore
   let failedUnderMutation;
+  let killed = null;
   try {
     writeFileSync(target, text.replaceAll(row.find, row.replace));
     process.stdout.write('MUTATE  ' + row.id + '\n');
-    failedUnderMutation = !runTest(row);
+    const result = runTest(row);
+    if (result !== null && typeof result === 'object' && result.killed) {
+      killed = result.killed;
+    }
+    failedUnderMutation = result !== true;
   } finally {
     writeFileSync(target, original);
   }
@@ -118,7 +155,20 @@ for (const row of rows) {
   }
 
   process.stdout.write('RECOVER ' + row.id + '\n');
-  const recovered = runTest(row);
+  const recovered = runTest(row) === true;
+
+  // A guard-killed plant still proves the mutation when the clean run
+  // passes: the plant made the test not pass and the guard contained the
+  // cost (D43). A killed row whose recover fails stays a failure
+  if (killed !== null) {
+    if (!recovered) {
+      broken.push(row.id + ': KILLED (' + killed + ') and still failing restored');
+      process.stdout.write('KILLED  ' + row.id + '  (' + killed + ') -> restored (still failing)\n');
+    } else {
+      process.stdout.write('FIRED-KILLED ' + row.id + '  (' + killed + ')  (' + row.test + ')\n');
+    }
+    continue;
+  }
   let mark = 'FIRED  ';
   if (!failedUnderMutation) {
     broken.push(row.id + ': DID NOT FIRE - the planted edit did not fail "' + row.testName + '"');

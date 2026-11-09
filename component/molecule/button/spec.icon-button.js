@@ -6,6 +6,7 @@
 
 export default Object.freeze({
   size: 'control.icon_button_size',
+  sizeXsmall: 'size.size_xsmall',
   sizeSmall: 'size.size_small',
   sizeMedium: 'size.size_medium',
   iconSize: 'control.icon_button_icon_size',

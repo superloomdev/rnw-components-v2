@@ -36,9 +36,6 @@ if (manifest.schema !== 1 || !manifest.icons || typeof manifest.icons !== 'objec
 if (manifest.sources.carbon.version !== imports.sources['@carbon/icons']) {
   fail('Carbon source version differs from scanned package');
 }
-if (manifest.sources.material.style !== 'outlined') {
-  fail('Material style is not outlined');
-}
 
 const names = Object.keys(manifest.icons);
 if (JSON.stringify(names) !== JSON.stringify([...names].sort())) {
@@ -50,12 +47,11 @@ for (const semantic of names) {
   if (!/^[a-z][a-z0-9_]*$/.test(semantic)) {
     fail(`${semantic}: invalid semantic name`);
   }
-  if (!mapping || Object.keys(mapping).join(',') !== 'carbon,material') {
-    fail(`${semantic}: mapping must contain carbon then material`);
+  if (!mapping || Object.keys(mapping).join(',') !== 'carbon') {
+    fail(`${semantic}: mapping must contain carbon`);
     continue;
   }
-  if (typeof mapping.carbon !== 'string' || mapping.carbon.length === 0
-      || typeof mapping.material !== 'string' || mapping.material.length === 0) {
+  if (typeof mapping.carbon !== 'string' || mapping.carbon.length === 0) {
     fail(`${semantic}: empty mapping`);
     continue;
   }
@@ -79,14 +75,6 @@ for (const semantic of names) {
     }
   }
 
-  const materialFile = path.join(
-    modulesRoot,
-    '@material-symbols/svg-400/outlined',
-    `${mapping.material}.svg`
-  );
-  if (!fs.existsSync(materialFile)) {
-    fail(`${semantic}: Material icon '${mapping.material}' does not exist`);
-  }
 }
 
 for (const name of oldSemanticNames) {
@@ -107,6 +95,5 @@ if (failures.length > 0) {
 
 const count = names.length;
 process.stdout.write(
-  `OK ${count} names; carbon resolves ${count}/${count} at sizes 16,20,24,32; `
-  + `material resolves ${count}/${count}; no switch elements\n`
+  `OK ${count} names; carbon resolves ${count}/${count} at sizes 16,20,24,32; no switch elements\n`
 );

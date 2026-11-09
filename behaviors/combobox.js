@@ -23,6 +23,7 @@ Build the combobox behaviors for one component system.
 @param {Object} deps.React     - The host's React
 @param {Object} deps.Utils     - helper-utils
 @param {Object} deps.useSelect - The controls layer's select behavior
+@param {Object} deps.dom - The dom.js family's reach helpers
 
 @return {Object} - { useCombobox }
 *********************************************************************/
@@ -31,6 +32,7 @@ export default function createComboboxBehaviors (deps) {
   const React = deps.React;
   const Utils = deps.Utils;
   const useSelect = deps.useSelect;
+  const { focusNode } = deps.dom;
   const { useCallback, useEffect, useMemo, useRef, useState } = React;
 
   // Fallbacks keep identity stable so memos do not churn on bad props,
@@ -86,10 +88,7 @@ export default function createComboboxBehaviors (deps) {
   // The input's ref focus capability, duck-typed; a clear or caret press
   // returns focus to the input without any DOM or platform read
   function focusInput (inputRef) {
-    const node = inputRef.current;
-    if (node !== null && node !== undefined && typeof node.focus === 'function') {
-      node.focus();
-    }
+    focusNode(inputRef.current);
   }
 
   /********************************************************************
@@ -553,6 +552,8 @@ export default function createComboboxBehaviors (deps) {
           ? props.clearLabel : 'Clear selection',
         'aria-disabled': disabled ? true : undefined,
         disabled: disabled,
+        // The clear is not a tab stop (upstream ListBoxSelection tabIndex -1); the input is
+        tabIndex: -1,
         onPress: clearSelection
       },
       getOptionProps: select.getOptionProps,

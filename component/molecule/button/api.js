@@ -19,9 +19,25 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the pressable root.' }
   }),
   composition: Object.freeze({
+    iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the trailing icon turns by, transitioning on the web (the menu button\'s chevron while open). Default 0.' },
     minWidth: { type: 'number', required: false, description: 'Composition prop: overrides the computed minimum width (the combo button\'s action).' },
     maxWidth: { type: 'number', required: false, description: 'Composition prop: caps the computed width (the combo button\'s action).' },
-    paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' }
+    paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' },
+    paddingTop: { type: 'number', required: false, description: 'Composition prop: overrides the top padding (the dialog actions row reads it from its cells).' },
+    paddingBottom: { type: 'number', required: false, description: 'Composition prop: overrides the bottom padding (the dialog actions row reads it from its cells).' },
+    buttonRef: { type: 'object', required: false, description: 'Composition prop: a ref forwarded to the root pressable (a dialog\'s initial focus).' },
+    fillLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws at rest (the notification action); default the kind\'s container cell.' },
+    fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on hover (the notification action); default the kind\'s hover cell.' },
+    fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on press (the notification action); default the kind\'s active cell.' },
+    borderActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the border leaf while pressed; default the kind active border cell.' },
+    fillFocusLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on focus (the notification action); default the kind\'s focus cell.' },
+    labelLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws at rest (the notification action); default the kind\'s label cell.' },
+    labelHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the label draws on hover or press (the notification action); default the label cell\'s phase.' },
+    borderLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the border draws (the notification action); default the kind\'s border cell.' },
+    focusRingGap: { type: 'boolean', required: false, description: 'Composition prop: false draws no page-color line inside the ring - the notification action\'s single ring.' },
+    focusRingLeaf: { type: 'string', required: false, description: 'Composition prop: a color leaf the focus ring reads instead of the kind ring leaf - the inverse surface\'s `focus_ring_inverse`.' },
+    paddingEnd: { type: 'number', required: false, description: 'Composition prop: overrides the computed end padding (the notification toast action).' },
+    onMouseDown: { type: 'function', required: false, description: 'Composition prop: a mousedown handler forwarded to the pressable root (the menu button\'s press, which prevents the default so an open menu keeps its focus).' }
   }),
   kinds: KINDS,
   variants: Object.freeze(['xs', 'sm', 'md', 'lg', 'xl', '2xl']),
@@ -34,7 +50,7 @@ export default Object.freeze({
     'type.button_label', 'font.family.sans',
     'color.button_focus_ring', 'color.button_focus_gap', 'feedback.focus_trigger',
     'feedback.press', 'anatomy.button_label', 'state.hover_opacity', 'state.pressed_opacity',
-    'motion.duration_fast_01', 'motion.easing_standard_productive'
+    'motion.duration_fast_01', 'motion.duration_fast_02', 'motion.easing_standard_productive'
   ].concat(KINDS.flatMap(function (kind) {
     // Every kind's role cells: fill and label per state, border per state, elevation per state
     return ['', '_hover', '_active', '_focus', '_disabled', '_selected'].flatMap(function (state) {

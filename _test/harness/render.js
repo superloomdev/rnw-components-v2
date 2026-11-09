@@ -7,8 +7,46 @@ import { createRoot } from 'react-dom/client';
 
 const mounted = [];
 
+// Update-loop tripwire (D43): every commit inside a render() act is counted
+// through a Profiler, and past LIMIT the loop is aborted instead of running
+// until the guard or Jetsam kills the process
+let commits = 0;
+const LIMIT = 2000;
+
 // Attributes whose value is a list of element ids
 const ID_REFERENCES = ['aria-labelledby', 'aria-describedby', 'aria-controls', 'aria-owns', 'aria-activedescendant'];
+
+
+/********************************************************************
+Abort the current act when the commit counter is past the limit. The
+count is reset as the error is raised so a caught failure does not keep
+tripping later renders and cleanups.
+*********************************************************************/
+function checkCommits () {
+
+  if (commits > LIMIT) {
+    const count = commits;
+    commits = 0;
+    throw new Error('update loop: ' + count + ' commits in one render');
+  }
+
+}
+
+
+/********************************************************************
+Profiler onRender: one call per commit inside the wrapped tree. Throwing
+past the limit breaks an effect-update loop inside a single act; because
+the throw fires on every subsequent commit too, a React retry cannot
+revive the loop.
+*********************************************************************/
+function onRender () {
+
+  commits += 1;
+  if (commits > LIMIT) {
+    throw new Error('update loop: ' + commits + ' commits in one render');
+  }
+
+}
 
 
 /********************************************************************
@@ -20,13 +58,28 @@ Render one element into a fresh container.
 *********************************************************************/
 export async function render (element) {
 
+  commits = 0;
   const container = document.createElement('div');
   document.body.appendChild(container);
   const root = createRoot(container);
   mounted.push({ container: container, root: root });
-  await act(async function () {
-    root.render(element);
-  });
+  try {
+    await act(async function () {
+      root.render(React.createElement(React.Profiler, { id: 'harness', onRender: onRender }, element));
+    });
+  } finally {
+    if (commits > LIMIT) {
+      const index = mounted.findIndex(function (item) {
+        return item.root === root;
+      });
+      if (index !== -1) {
+        mounted.splice(index, 1);
+      }
+      root.unmount();
+      container.remove();
+    }
+  }
+  checkCommits();
 
   return container;
 
@@ -45,6 +98,7 @@ export async function cleanup () {
     await act(async function () {
       item.root.unmount();
     });
+    checkCommits();
     item.container.remove();
   }
 
@@ -138,6 +192,18 @@ export function a11yTree (root) {
   }
 
   return lines;
+
+}
+
+
+/********************************************************************
+Commit count of the in-flight (or last) render() act, for tests.
+
+@return {Number} - Commits counted so far
+*********************************************************************/
+export function commitCount () {
+
+  return commits;
 
 }
 

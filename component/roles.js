@@ -41,6 +41,6 @@ export const LIST_PRESENTATION_TOKENS = Object.freeze([
   'color.list_container',
   'color.list_item_label', 'color.list_item_label_hover', 'color.list_item_label_selected', 'color.list_item_label_disabled',
   'color.list_item_container_hover', 'color.list_item_container_active',
-  'color.list_item_container_selected', 'color.list_item_container_selected_hover',
+  'color.list_item_container_selected', 'color.list_item_container_selected_hover', 'color.list_item_container_selected_active',
   'color.list_item_divider'
 ]);

@@ -8,9 +8,11 @@
 
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { act } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import { createSystem, REQUIRED_ICONS, REQUIRED_TOKENS, SUPPORTED_TOKENS } from 'rnw-components';
-import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 
 // A factory that hands its context back so the tests can call it directly
 function Probe (ctx) {
@@ -160,7 +162,7 @@ describe('context: reads', function () {
 
 describe('context: enum', function () {
 
-  const EXPECTED_LABEL = { default: 'above', carbon: 'above', material: 'floating' };
+  const EXPECTED_LABEL = { default: 'above', carbon: 'above' };
 
   for (const name of TEMPLATE_NAMES) {
     test(name + ": enum('anatomy.label') returns the template's value", function () {
@@ -202,11 +204,11 @@ describe('context: icon', function () {
     assert.deepEqual(large.paths, literal.paths);
   });
 
-  test('material: every size returns the single glyph scaled by viewBox', function () {
-    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+  test('pinned: every size returns the single glyph scaled by viewBox', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }, { built: buildNative('carbon', [LESSONS_LAYER]) }).Probe.ctx;
     for (const size of [16, 20, 24, 32]) {
       const glyph = ctx.icon('close', size);
-      assert.equal(glyph.viewBox, '0 -960 960 960');
+      assert.equal(glyph.viewBox, ctx.icon('close', 16).viewBox);
       assert.equal(glyph.paths.length, 1);
     }
   });
@@ -230,7 +232,7 @@ describe('context: textPresentation', function () {
     return Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, {
         Platform: { OS: os },
-        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: roundToNearestPixel }
       })
     });
   };
@@ -254,7 +256,7 @@ describe('context: textPresentation', function () {
       const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib(os, Math.round) }).Probe.ctx;
       const set = buildNative('default').tokens['type.body01'];
       const presented = ctx.textPresentation(ctx.typeStyle('body01'));
-      assert.equal(presented.lineHeight, set.lineHeight);
+      assert.equal(presented.lineHeight, os === 'ios' ? Math.round(set.lineHeight) - 1 / 6 : Math.round(set.lineHeight));
       assert.equal(typeof presented.lineHeight, 'number');
     });
   }
@@ -266,7 +268,7 @@ describe('context: textPresentation', function () {
     const web = buildSystem('default', { Probe: Probe }, { layers: layers }).Probe.ctx;
     assert.equal(web.textPresentation(web.typeStyle('body01')).lineHeight, '1.5');
     const native = buildSystem('default', { Probe: Probe }, { layers: layers, lib: NativeLib('ios', Math.round) }).Probe.ctx;
-    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15);
+    assert.equal(native.textPresentation(native.typeStyle('body01')).lineHeight, 15 - 1 / 6);
   });
 
   test('a style without numeric fontSize and lineHeight throws', function () {
@@ -285,7 +287,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     return Object.assign({}, Lib, {
       ReactNative: Object.assign({}, Lib.ReactNative, {
         Platform: { OS: os },
-        PixelRatio: { roundToNearestPixel: roundToNearestPixel }
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: roundToNearestPixel }
       })
     });
   };
@@ -295,7 +297,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     assert.equal(set.lineHeight, 18.00008, 'fixture: carbon body_compact_01 must carry the fractional lineHeight');
     for (const os of ['ios', 'android']) {
       const ctx = buildSystem('carbon', { Probe: Probe }, { lib: NativeGridLib(os, Math.round) }).Probe.ctx;
-      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, 18);
+      assert.equal(ctx.typeStyle('body_compact_01').lineHeight, os === 'ios' ? 18 - 1 / 6 : 18);
     }
     assert.equal(buildNative('carbon').tokens['type.body_compact_01'].lineHeight, 18.00008);
     assert.equal(buildSystem('carbon', { Probe: Probe }).Probe.ctx.token('type.body_compact_01').lineHeight, 18.00008);
@@ -310,7 +312,7 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     const grid2 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return Math.round(v * 2) / 2; }) }).Probe.ctx;
     assert.equal(grid2.typeStyle('body01').lineHeight, 18.5);
     const grid3 = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return Math.round(v * 3) / 3; }) }).Probe.ctx;
-    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3);
+    assert.equal(grid3.typeStyle('body01').lineHeight, Math.round(18.25 * 3) / 3 - 1 / 6);
     assert.notEqual(grid3.typeStyle('body01').lineHeight, 18);
   });
 
@@ -326,6 +328,24 @@ describe('context: native lineHeight on the physical pixel grid', function () {
     assert.equal(style.lineHeight, 18.00008);
     assert.equal(calls, 0);
     assert.equal(ctx.textPresentation(style).lineHeight, String(set.lineHeight / set.fontSize));
+  });
+
+  test('ios emits half a physical pixel below the grid; android emits the grid value', function () {
+    const built = buildNative('default');
+    const tokens = Object.assign({}, built.tokens, {
+      'type.body01': Object.assign({}, built.tokens['type.body01'], { lineHeight: 18 })
+    });
+    const custom = Object.assign({}, built, { tokens: tokens });
+    const ios = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('ios', function (v) { return v; }) }).Probe.ctx;
+    assert.equal(ios.typeStyle('body01').lineHeight, 18 - 1 / 6);
+    const android = buildSystem('default', { Probe: Probe }, { built: custom, lib: NativeGridLib('android', function (v) { return v; }) }).Probe.ctx;
+    assert.equal(android.typeStyle('body01').lineHeight, 18);
+    const noGet = Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, { Platform: { OS: 'ios' }, PixelRatio: { roundToNearestPixel: function (v) { return v; } } })
+    });
+    assert.throws(function () {
+      buildSystem('default', { Probe: Probe }, { built: custom, lib: noGet }).Probe.ctx.typeStyle('body01');
+    }, /PixelRatio\.get/);
   });
 
   test('an integer lineHeight is unchanged; a missing or bad PixelRatio throws on native only', function () {
@@ -416,6 +436,26 @@ describe('context: focusRing', function () {
     }
   });
 
+  test('ringLeaf recolors the ring: the outline, the border and the inset shadow all draw it', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon').tokens;
+    const ring = ctx.focusRing('button', { focused: true, focusVisible: true }, 1, { ringLeaf: 'focus_ring_inverse' });
+    assert.equal(ring.borderColor, t['color.focus_ring_inverse']);
+    assert.equal(ring.outlineColor, undefined);
+    const layers = ring.boxShadow.split(', ');
+    assert.equal(layers.every(function (layer) { return layer.indexOf(t['color.focus_ring_inverse']) !== -1; }), true, 'every shadow layer draws the leaf');
+  });
+
+  test('width replaces the family ring width: a composing parent draws its own ring', function () {
+    const ctx = buildSystem('carbon', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon').tokens;
+    const ring = ctx.focusRing('button', { focused: true, focusVisible: true }, 0, { offset: 0, width: t['control.link_focus_width'] });
+    assert.equal(ring.outlineWidth, t['control.link_focus_width'], 'the parent\'s width wins');
+    assert.equal(ring.outlineOffset, 0, 'the parent\'s offset wins');
+    assert.equal(ring.outlineColor, t['color.button_focus_ring']);
+    assert.deepEqual(ctx.focusRing('button', { focused: true, focusVisible: true }, 0, { width: 0 }), {}, 'width 0 draws nothing');
+  });
+
   test('feedback.focus_trigger: keyboard draws a button ring on keyboard focus only; a field ring shows on any focus', function () {
     const keyboard = probeWith({ 'feedback.focus_trigger': 'keyboard' });
     assert.deepEqual(keyboard.focusRing('button', { focused: true, focusVisible: false }), {});
@@ -448,8 +488,8 @@ describe('context: focusRing', function () {
   });
 
   test('options.offset overrides the family offset, including zero', function () {
-    const t = buildNative('material').tokens;
-    const ctx = buildSystem('material', { Probe: Probe }).Probe.ctx;
+    const t = buildNative('carbon', [LESSONS_LAYER]).tokens;
+    const ctx = buildSystem('carbon', { Probe: Probe }, { built: buildNative('carbon', [LESSONS_LAYER]) }).Probe.ctx;
     for (const offset of [0, 4]) {
       const ring = ctx.focusRing('tag', { focused: true, focusVisible: true }, undefined, { offset: offset });
       assert.equal(ring.outlineOffset, offset, 'offset ' + offset);
@@ -754,3 +794,76 @@ describe('context: fieldPresentation', function () {
 
 });
 
+
+
+describe('context: listPresentation', function () {
+
+  test('a selected and pressed item draws the selected-active fill', function () {
+    for (const name of ['default', 'carbon', 'shapes']) {
+      const t = buildNative(name).tokens;
+      const ctx = buildSystem(name, { Probe: Probe }).Probe.ctx;
+      const list = ctx.listPresentation({ dividerWidth: 0, itemHeight: 0, level: 0, mark: false, markRoom: 0, paddingBlock: 0, paddingInline: 0, radius: 0 });
+      assert.equal(list.item({ pressed: true, selected: true }).backgroundColor, t['color.list_item_container_selected_active']);
+      assert.equal(list.item({ pressed: true }).backgroundColor, t['color.list_item_container_active']);
+    }
+  });
+
+});
+
+
+describe('context: useSegmentBasis', function () {
+
+  const NativeLib = function (os) {
+    return Object.assign({}, Lib, {
+      ReactNative: Object.assign({}, Lib.ReactNative, {
+        Platform: { OS: os },
+        PixelRatio: { get: function () { return 3; }, roundToNearestPixel: Math.round }
+      })
+    });
+  };
+
+  // Render a probe that calls the hook, fire the named layout handlers in
+  // order and collect `basis()` after each render
+  async function drive (ctx, count, steps) {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    let latest;
+    function SegmentProbe () {
+      latest = ctx.useSegmentBasis(count);
+      return null;
+    }
+    await act(async function () {
+      root.render(Lib.React.createElement(SegmentProbe));
+    });
+    const handler0 = latest.onLayout(0);
+    const seen = [latest.basis()];
+    for (const step of steps) {
+      const handler = latest.onLayout(step.index);
+      await act(async function () {
+        handler({ nativeEvent: { layout: { width: step.width, height: 40 } } });
+      });
+      seen.push(latest.basis());
+    }
+    await act(async function () {
+      root.unmount();
+    });
+    container.remove();
+    return { seen: seen, handler0: handler0 };
+  }
+
+  test('web: basis 0 and no layout handler', async function () {
+    const ctx = buildSystem('default', { Probe: Probe }).Probe.ctx;
+    const run = await drive(ctx, 3, []);
+    assert.deepEqual(run.seen, [0]);
+    assert.equal(run.handler0, undefined);
+  });
+
+  test('ios: auto until every segment has measured once, then the mean of the first widths', async function () {
+    const ctx = buildSystem('default', { Probe: Probe }, { lib: NativeLib('ios') }).Probe.ctx;
+    const run = await drive(ctx, 3, [{ index: 0, width: 40 }, { index: 1, width: 60 }, { index: 1, width: 99 }, { index: 2, width: 80 }]);
+    assert.deepEqual(run.seen, ['auto', 'auto', 'auto', 'auto', 60]);
+    assert.equal(typeof run.handler0, 'function');
+  });
+
+});

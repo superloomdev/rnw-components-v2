@@ -17,8 +17,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { openReference, openShowcase, pauseCellAnimations } from './harness/page.js';
-import { perceptualRatio, ratio } from './harness/perceptual.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox, refocusPanel, reopenPanel, settleLayout } from './harness/page.js';
+import { cropRect, perceptualRatio, ratio, sampleWindow } from './harness/perceptual.js';
+import { restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -54,7 +55,9 @@ const pauseAnimations = function (name) {
 
 
 /********************************************************************
-Screenshot every cell body of one component on the open page.
+Screenshot every cell body's painted sample box on the open page: the
+union of its painted elements (readSampleBox), so cell whitespace never
+dilutes the ratio.
 
 @param {Object} page    - Playwright page
 @param {String} name    - Component name
@@ -62,8 +65,12 @@ Screenshot every cell body of one component on the open page.
 
 @return {Promise<Object>} - state label -> PNG buffer
 *********************************************************************/
-async function shootBodies (page, name, frozen) {
+async function shootBodies (page, name, frozen, reference, side) {
 
+  const refocus = reference === undefined || reference === null ? undefined : reference.refocus;
+  const reopen = reference === undefined || reference === null ? undefined : reference.reopen;
+  const leave = reference === undefined || reference === null ? {}
+    : { escape: reference.escapeOnLeave !== false, releaseBeforeMove: reference.releaseBeforeMove === true, clickOutside: reference.clickOutsideOnLeave === true };
   const out = {};
   const cells = page.locator('.cell[data-component="' + name + '"]');
   const count = await cells.count();
@@ -72,7 +79,21 @@ async function shootBodies (page, name, frozen) {
     if (frozen === true) {
       await pauseCellAnimations(cell.locator('[data-part="body"]'));
     }
-    out[await cell.getAttribute('data-state')] = await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' });
+    const state = await cell.getAttribute('data-state');
+    // An opened state's panel must be open for its shot, as the fidelity
+    // run re-opens it: an earlier cell's interaction can have closed it
+    if (reopen !== undefined && reopen !== null && Array.isArray(reopen.states) && reopen.states.indexOf(state) !== -1) {
+      await reopenPanel(page, name, state, reopen, side, leave);
+      await page.mouse.move(0, 0);
+    }
+    // An open panel's ring follows focus, not mount order: focus the
+    // measured cell's own item before its shot, as the fidelity run does
+    await refocusPanel(page, name, state, refocus, side);
+    await settleLayout(page, name, state);
+    out[state] = { shot: await cell.locator('[data-part="body"]').screenshot({ scale: 'css', animations: 'disabled' }), sample: await readSampleBox(page, name, state) };
+    if (reopen !== undefined && reopen !== null && Array.isArray(reopen.states) && reopen.states.indexOf(state) !== -1) {
+      await leaveInteraction(page, leave);
+    }
   }
 
   return out;
@@ -97,8 +118,18 @@ test.describe('perceptual', function () {
       const stale = [];
       for (let i = 0; i < count; i++) {
         const cell = cells.nth(i);
-        const id = await cell.getAttribute('data-component') + ' / ' + await cell.getAttribute('data-state');
+        const state = await cell.getAttribute('data-state');
+        const id = await cell.getAttribute('data-component') + ' / ' + state;
+        // A rest-hidden sample paints nothing at rest by definition: prove
+        // it drawn under the reference's focus target instead
+        const hidden = restHiddenStates(component)[state] === true;
+        if (hidden) {
+          await enterInteraction(page, component.name, state, component.reference.target.ours, 'focus');
+        }
         const shot = await cell.locator('[data-part="body"]').screenshot({ scale: 'css' });
+        if (hidden) {
+          await leaveInteraction(page, { escape: component.reference.escapeOnLeave !== false });
+        }
         expect(ratio(shot, shot, 0.2)).toBe(0);
         const png = PNG.sync.read(shot);
         const white = new PNG({ width: png.width, height: png.height });
@@ -151,7 +182,7 @@ test.describe('perceptual', function () {
     await openShowcase(page, REFERENCE_TEMPLATE, 'TextArea', { measure: true, hosted: false });
     found.push(...await chrome('ours'));
     expect(await page.locator('.cell').count()).toBeGreaterThanOrEqual(1);
-    for (const set of ['primary', 'second']) {
+    for (const set of ['primary']) {
       const reference = await openReference(page, 'TextArea', set, 'dark');
       expect(reference.cells, 'TextArea: the ' + set + ' reference page drew no state').toBeGreaterThanOrEqual(1);
       found.push(...await chrome(set));
@@ -161,21 +192,46 @@ test.describe('perceptual', function () {
 
   for (const row of primaryReference) {
     test(row.name + ': mismatch within diff_budget ' + row.diff_budget + '%', async function ({ page }) {
+      const component = components.find(function (entry) {
+        return entry.name === row.name;
+      });
+      const componentReference = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference : undefined;
       const reference = await openReference(page, row.name);
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name));
+      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream');
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
-      const ours = await shootBodies(page, row.name, pauseAnimations(row.name));
+      const ours = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'ours');
       const ratios = [];
       const over = [];
+      const crops = [];
+      // A rest-hidden state paints nothing at rest by definition; the
+      // budget still compares its interaction frames
+      const restHidden = component === undefined ? {} : restHiddenStates(component);
       for (const state of Object.keys(upstream)) {
+        if (restHidden[state] === true) {
+          continue;
+        }
         expect(ours[state], row.name + ' / ' + state + ' is drawn upstream but not here').toBeDefined();
-        const percent = Math.round(perceptualRatio(ours[state], upstream[state]) * 10000) / 100;
+        let a = ours[state].shot;
+        let b = upstream[state].shot;
+        // D39-3: one common window aligned at each side's sample root
+        if (ours[state].sample !== null && upstream[state].sample !== null) {
+          const crop = sampleWindow(ours[state].sample, upstream[state].sample);
+          if (crop !== null) {
+            a = cropRect(ours[state].shot, crop.ours.x, crop.ours.y, crop.ours.width, crop.ours.height);
+            b = cropRect(upstream[state].shot, crop.upstream.x, crop.upstream.y, crop.upstream.width, crop.upstream.height);
+          }
+        }
+        const pngA = PNG.sync.read(a);
+        const pngB = PNG.sync.read(b);
+        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + ' @' + ours[state].sample.rootX + ',' + ours[state].sample.rootY + ' upstream ' + pngB.width + 'x' + pngB.height + ' @' + upstream[state].sample.rootX + ',' + upstream[state].sample.rootY);
+        const percent = Math.round(perceptualRatio(a, b) * 10000) / 100;
         ratios.push(state + ' ' + percent + '%');
         if (percent > row.diff_budget) {
           over.push(state + ': ' + percent + '% > ' + row.diff_budget + '%');
         }
       }
+      test.info().annotations.push({ type: 'crop', description: row.name + ' crops: ' + crops.join('; ') });
       test.info().annotations.push({ type: 'perceptual', description: row.name + ': ' + ratios.join(', ') });
       expect(over, row.name + ' states over the diff budget').toEqual([]);
     });

@@ -11,7 +11,7 @@ import { act } from 'react';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/text-input/sample.password-input.js';
 import REFERENCE from '../component/molecule/text-input/reference.password-input.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { TEMPLATES, buildNative, buildSystem, LESSONS_LAYER } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -115,7 +115,7 @@ describe('PasswordInput: the reveal contract', function () {
   });
 
   test('custom names reach the action', async function () {
-    const parts = await renderField(registryFor('material'), {
+    const parts = await renderField(registryFor('carbon', undefined, [LESSONS_LAYER]), {
       hidePasswordLabel: 'Mask it',
       label: 'Password',
       showPasswordLabel: 'Reveal it',
@@ -162,14 +162,6 @@ describe('PasswordInput: the reveal contract', function () {
     assert.equal(bubble.style.paddingBottom, t['control.tooltip_compact_padding_block'] + 'px');
   });
 
-  test('the second reference slots a disabled action without double-applying the field opacity', function () {
-    const upstream = { tokens: buildNative('material').tokens };
-    const element = REFERENCE.second.mount(React, upstream, { label: 'Password', value: 'secret', disabled: true });
-    const action = element.props.children;
-    assert.equal(action.type, 'md-icon-button');
-    assert.equal(action.props.disabled, true, 'the mounted action stays disabled');
-    assert.equal(action.props.style['--md-icon-button-disabled-icon-opacity'], 1, 'the field owns the disabled trailing opacity; the action does not apply it again');
-  });
 
   test('it composes inside a painted Layer and inside a disabled group', async function () {
     const Registry = registryFor('carbon');

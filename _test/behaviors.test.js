@@ -42,6 +42,8 @@ const EXPECTED_NAMES = [
   'getA11yLive', 'getA11yPosition', 'getA11yRelation', 'getA11yState', 'getA11yValue',
   'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets', 'getSearchHandlers',
   'isLabelMatch', 'isRtl',
+  'getActiveElement', 'focusNode', 'blurNode', 'nodeContains', 'queryNode', 'queryNodes',
+  'measureRect', 'getViewportSize', 'getComputedStyleOf', 'onWindowEvent', 'onDocumentEvent', 'requestFrame',
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox', 'useCombobox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',
@@ -369,6 +371,55 @@ describe('behaviors: getCompoundContext', function () {
       Compound.useContext();
       return null;
     }), /OrphanProbe/);
+  });
+
+});
+
+
+describe('behaviors: useTabsState', function () {
+
+  test('manual activation moves the active index without selecting', async function () {
+    const hook = behaviors.useTabsState;
+    const result = {};
+    function Probe () {
+      result.h = hook({ activation: 'manual', defaultSelectedIndex: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.h.moveActiveIndex(2);
+    });
+    assert.equal(result.h.state.activeIndex, 2, 'manual: the arrow move lands on the active index');
+    assert.equal(result.h.state.selectedIndex, 0, 'manual: the selection holds until activation');
+    await act(async function () {
+      result.h.selectIndex(2);
+    });
+    assert.equal(result.h.state.selectedIndex, 2, 'manual: Enter or Space selects through selectIndex');
+  });
+
+  test('automatic activation selects on move, unchanged from before', async function () {
+    const result = {};
+    function Probe () {
+      result.h = behaviors.useTabsState({ defaultSelectedIndex: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.h.moveActiveIndex(1);
+    });
+    assert.equal(result.h.state.selectedIndex, 1);
   });
 
 });
@@ -828,8 +879,8 @@ describe('behaviors: purity', function () {
     return file.endsWith('.js');
   });
 
-  test('the directory holds twenty-one behavior family files plus the composer', function () {
-    assert.equal(files.length, 22);
+  test('the directory holds twenty-two behavior family files plus the composer', function () {
+    assert.equal(files.length, 23);
   });
 
   test('no appearance, vendor name, framework import or platform read in behaviors/', function () {
@@ -925,6 +976,49 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.equal(result.layerStyle.top, 78);
   });
 
+  test('useAnchoredPosition: a fixed layer inside a transformed ancestor answers in that ancestor\'s space', async function () {
+    const host = document.createElement('div');
+    host.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+    const anchorEl = document.createElement('div');
+    host.appendChild(anchorEl);
+    document.body.appendChild(host);
+    host.getBoundingClientRect = function () {
+      return { left: 100, top: 50, right: 300, bottom: 150, width: 200, height: 100 };
+    };
+    anchorEl.getBoundingClientRect = function () {
+      return { left: 150, top: 100, right: 170, bottom: 110, width: 20, height: 10 };
+    };
+    let result;
+    function Probe () {
+      result = behaviors.useAnchoredPosition({ anchor: anchorEl, placement: 'bottom-start', flip: false, offset: 0 });
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    await act(async function () {
+      result.measure();
+    });
+    // The ancestor's origin {100, 50} shifts the anchor and the position
+    assert.equal(result.anchor.x, 50);
+    assert.equal(result.anchor.y, 50);
+    assert.equal(result.layerStyle.left, 50);
+    assert.equal(result.layerStyle.top, 60);
+    host.style.transform = 'none';
+    await act(async function () {
+      result.measure();
+    });
+    assert.equal(result.anchor.x, 150);
+    assert.equal(result.anchor.y, 100);
+    assert.equal(result.layerStyle.left, 150);
+    assert.equal(result.layerStyle.top, 110);
+    document.body.removeChild(host);
+  });
+
   test('useViewportLayer: fixed and viewport-sized on the web', async function () {
     const layer = await renderHook(behaviors.useViewportLayer);
     assert.equal(layer.position, 'fixed');
@@ -972,6 +1066,34 @@ describe('behaviors: the platform answer owns the layer style', function () {
     assert.equal(positioned.layerStyle.position, 'absolute');
     assert.equal(positioned.layerStyle.left, 20);
     assert.equal(positioned.layerStyle.top, 30);
+  });
+
+  test('useLayerSpace: a hosted layer reads the host size even before it is measured', async function () {
+    let space;
+    function Probe () {
+      space = behaviors.useLayerSpace();
+      return null;
+    }
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    mounted.push({ container: container, root: root });
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, size: { width: 0, height: 0 }, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(space, { width: 0, height: 0 }, 'an unmeasured host means unknown, never the window');
+    await act(async function () {
+      root.render(React.createElement(behaviors.OverlayContext.Provider,
+        { value: { hosted: true, size: { width: 640, height: 400 }, origin: { x: 0, y: 0 } } },
+        React.createElement(Probe)));
+    });
+    assert.deepEqual(space, { width: 640, height: 400 }, 'a measured host box is the layer space');
+    await act(async function () {
+      root.render(React.createElement(Probe));
+    });
+    assert.deepEqual(space, { width: window.innerWidth, height: window.innerHeight }, 'unhosted, the space is the viewport');
   });
 
   test('useViewportLayer: absolute inset 0 inside the host on a native platform', async function () {

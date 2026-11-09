@@ -219,6 +219,7 @@ export default function Tooltip (ctx) {
 
     // The anchor wrapper: pointer, focus and touch drive the open state
     return React.createElement(View, {
+      style: props.anchorStyle,
       onPointerEnter: function () {
         schedule(true, delayOpen);
       },
@@ -239,7 +240,7 @@ export default function Tooltip (ctx) {
         setShown(true);
       }
     },
-    React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, testID: props.testID },
+    React.createElement(View, { ref: anchorRef, 'aria-describedby': tooltipId, style: props.fill === true ? undefined : { alignSelf: 'flex-start' }, testID: props.testID },
       // A bare string anchor renders through the registry Text (the theme's
       // typography) and gets a tab stop: a tooltip opens on focus, so a
       // keyboard has to reach it; an element child brings its own
