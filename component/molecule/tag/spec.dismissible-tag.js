@@ -5,7 +5,7 @@
 export default Object.freeze({
   height: 'control.tag_height',
   heightSmall: 'control.tag_height_small',
-  heightLarge: 'size.size_small',
+  heightLarge: 'control.tag_height_large',
   closeGap: 'control.tag_close_gap',
   closeInset: 'control.tag_close_inset',
   closeIconSize: 'control.tag_close_icon_size',

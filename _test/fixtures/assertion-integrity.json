@@ -2608,7 +2608,7 @@
     {
       "id": "toggletip-button-focus-width",
       "file": "component/molecule/tooltip/spec.toggletip-button.js",
-      "find": "  focusWidth: { constant: 1 },",
+      "find": "  focusWidth: 'control.toggletip_focus_width',",
       "replace": "  focusWidth: { constant: 2 },",
       "runner": "node",
       "test": "toggletip.test.js",

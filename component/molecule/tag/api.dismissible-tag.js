@@ -33,7 +33,7 @@ export default Object.freeze({
     'anatomy.tag_close',
     'control.tag_height', 'control.tag_close_gap', 'control.tag_close_inset',
     'control.tag_close_icon_size', 'control.tag_close_focus_offset', 'border.width_01',
-    'size.icon_01', 'spacing.spacing_01', 'size.size_small',
+    'size.icon_01', 'spacing.spacing_01', 'control.tag_height_large',
     'color.tag_close_container_hover', 'color.tag_close_layer_active', 'color.tag_close_focus_ring',
     'color.tag_icon_disabled',
     'color.tag_label', 'color.tag_dismissible_label', 'color.tag_container_disabled', 'color.tag_label_disabled',

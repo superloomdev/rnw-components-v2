@@ -80,7 +80,7 @@ DismissibleTag draws a Tag with a trailing close seat - a pressable cross in the
 |---|---|
 | `height` | `control.tag_height` |
 | `heightSmall` | `control.tag_height_small` |
-| `heightLarge` | `size.size_small` |
+| `heightLarge` | `control.tag_height_large` |
 | `closeGap` | `control.tag_close_gap` |
 | `closeInset` | `control.tag_close_inset` |
 | `closeIconSize` | `control.tag_close_icon_size` |
@@ -221,7 +221,7 @@ Tag draws a non-interactive pill holding an optional leading icon and one line o
 |---|---|
 | `height` | `control.tag_height` |
 | `heightSmall` | `control.tag_height_small` |
-| `heightLarge` | `size.size_small` |
+| `heightLarge` | `control.tag_height_large` |
 | `radius` | `control.tag_radius` |
 | `paddingInline` | `control.tag_padding_inline` |
 | `paddingInlineIcon` | `control.tag_padding_icon` |

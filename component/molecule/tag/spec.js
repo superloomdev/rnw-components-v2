@@ -1,7 +1,7 @@
 // Info: Tag spec sheet. Every metric names a token; the theme supplies the
 // number. The small size's height is the theme's own cell - the label's
 // line box must fit the pill (the primary's 18, the second's 24); the
-// large size is the small size step.
+// large size is the theme's own lg cell.
 // `iconGap` and `paddingInlineIcon` share the tag's icon-spacing cell: both
 // references answer it with the same number for the start padding and the
 // gap after the icon.
@@ -9,7 +9,7 @@
 export default Object.freeze({
   height: 'control.tag_height',
   heightSmall: 'control.tag_height_small',
-  heightLarge: 'size.size_small',
+  heightLarge: 'control.tag_height_large',
   radius: 'control.tag_radius',
   paddingInline: 'control.tag_padding_inline',
   paddingInlineIcon: 'control.tag_padding_icon',
