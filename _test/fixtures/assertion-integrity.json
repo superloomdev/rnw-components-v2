@@ -6,6 +6,126 @@
   ],
   "rows": [
     {
+      "id": "guard-rss-inverted",
+      "file": "scripts/guard.js",
+      "find": "sample.maxRssMb > procMb",
+      "replace": "sample.maxRssMb > 1000000000",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a child past the per-process memory ceiling is killed and reported 137",
+      "why": "a per-process ceiling that cannot trip must fail the runaway kill assertion"
+    },
+    {
+      "id": "guard-log-tail-off",
+      "file": "scripts/guard.js",
+      "find": "const TAIL_LINES = 60;",
+      "replace": "const TAIL_LINES = 10000;",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "the child output goes to the guard log and only its tail is printed",
+      "why": "a ring that keeps every line leaks the early lines the tail must drop"
+    },
+    {
+      "id": "guard-seen-off",
+      "file": "scripts/guard.js",
+      "find": "order.unshift(pid);",
+      "replace": "order.indexOf(pid);",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a reparented grandchild past the ceiling is still killed",
+      "why": "reparented pids dropped from the kill order must fail the orphan-kill assertion"
+    },
+    {
+      "id": "update-loop-threshold-off",
+      "file": "_test/harness/render.js",
+      "find": "const LIMIT = 2000;",
+      "replace": "const LIMIT = Infinity;",
+      "runner": "node",
+      "test": "update-loop-harness.test.js",
+      "testName": "an unconditional setState-in-effect loop fails render",
+      "why": "a commit ceiling that cannot trip must fail the update loop assertion"
+    },
+    {
+      "id": "positioning-fixed-space-origin",
+      "file": "behaviors/positioning.js",
+      "find": "    for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {",
+      "replace": "    for (let node = null; node !== null && node !== undefined; node = node.parentElement) {",
+      "runner": "node",
+      "test": "behaviors.test.js",
+      "testName": "useAnchoredPosition: a fixed layer inside a transformed ancestor answers in that ancestor's space",
+      "why": "an unhosted fixed layer inside a transformed ancestor must resolve in that ancestor's space; forcing the origin to 0 must fail the shift assertions"
+    },
+    {
+      "id": "menu-position-cap-off",
+      "file": "behaviors/menu.js",
+      "find": "  const MEASURE_CAP = 8;",
+      "replace": "  const MEASURE_CAP = Infinity;",
+      "runner": "node",
+      "test": "behaviors-measure-cap.test.js",
+      "testName": "useMenuPosition: a never-settling fit stops after 8 measures and warns once",
+      "why": "a measure cap that cannot trip must fail the never-settling assertion"
+    },
+    {
+      "id": "anchored-position-cap-off",
+      "file": "behaviors/positioning.js",
+      "find": "  const MEASURE_CAP = 8;",
+      "replace": "  const MEASURE_CAP = Infinity;",
+      "runner": "node",
+      "test": "behaviors-measure-cap.test.js",
+      "testName": "useAnchoredPosition: a never-settling anchor stops after 8 measures and warns once",
+      "why": "a measure cap that cannot trip must fail the never-settling assertion"
+    },
+    {
+      "id": "reopen-seed-kept",
+      "file": "_test/harness/sample-props.js",
+      "find": "export function measuredProps (reference, label, props) {",
+      "replace": "export function measuredProps (reference, label, props) {\n  return props;",
+      "runner": "node",
+      "test": "sample-props.test.js",
+      "testName": "a reopen state drops the seeded open prop",
+      "why": "a filter that keeps the seeded open must fail the drops-the-seed assertion"
+    },
+    {
+      "id": "list-item-height-minimum",
+      "file": "component/context.js",
+      "find": "minHeight: options.itemHeight, justifyContent: 'stretch'",
+      "replace": "height: options.itemHeight, justifyContent: 'stretch'",
+      "runner": "node",
+      "test": "list-item-height-minimum.test.js",
+      "testName": "list-item-height-minimum",
+      "why": "a fixed item height must fail the minimum-height assertion"
+    },
+    {
+      "id": "switch-height-minimum",
+      "file": "component/molecule/content-switcher/switch.js",
+      "find": "minHeight: props.segmentHeight === undefined",
+      "replace": "height: props.segmentHeight === undefined",
+      "runner": "node",
+      "test": "switch-height-minimum.test.js",
+      "testName": "switch-height-minimum",
+      "why": "a fixed segment height must fail the minimum-height assertion"
+    },
+    {
+      "id": "tab-height-minimum",
+      "file": "component/composite/tabs/tab.js",
+      "find": "minHeight: props.tall === true",
+      "replace": "height: props.tall === true",
+      "runner": "node",
+      "test": "tab-height-minimum.test.js",
+      "testName": "tab-height-minimum",
+      "why": "a fixed tab height must fail the minimum-height assertion"
+    },
+    {
+      "id": "content-switcher-height-minimum",
+      "file": "component/composite/tabs/content-switcher.js",
+      "find": "minHeight: ctx.metric('ContentSwitcher', heightKey)",
+      "replace": "height: ctx.metric('ContentSwitcher', heightKey)",
+      "runner": "node",
+      "test": "content-switcher-height-minimum.test.js",
+      "testName": "content-switcher-height-minimum",
+      "why": "a fixed container height must fail the minimum-height assertion"
+    },
+    {
       "id": "purity-color-literal",
       "file": "behaviors/press.js",
       "find": "  const platform = deps.platform;",
@@ -206,20 +326,10 @@
       "why": "View must draw the fill leaf the caller names"
     },
     {
-      "id": "button-kind-palette",
-      "file": "component/molecule/button/button.js",
-      "find": "    const press = ctx.pressPresentation(state, 'button_' + kind + '_container', fillMap !== null ? { colors: fillMap } : undefined);",
-      "replace": "    const press = ctx.pressPresentation(state, 'button_primary_container');",
-      "runner": "node",
-      "test": "button.test.js",
-      "testName": "carbon / secondary: geometry, fill and label come from the theme",
-      "why": "each kind must fill with its own cells"
-    },
-    {
       "id": "button-engaged-content",
       "file": "component/molecule/button/button.js",
-      "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
-      "replace": "    const contentLeaf = 'button_' + kind + '_label';",
+      "find": "      : 'button_' + kind + '_label' + press.phase;",
+      "replace": "      : 'button_' + kind + '_label';",
       "runner": "node",
       "test": "button.test.js",
       "testName": "highlight: hover, press and release paint the kind",
@@ -272,7 +382,7 @@
       "replace": "          placeholder: presentation.placeholder ? props.placeholder : undefined,",
       "runner": "node",
       "test": "text-input.test.js",
-      "testName": "material / unlabelled: frame, label, input and message come from the theme",
+      "testName": "shapes / unlabelled: frame, label, input and message come from the theme",
       "why": "an unlabelled field must show its placeholder under every label placement"
     },
     {
@@ -328,8 +438,8 @@
     {
       "id": "select-sizer",
       "file": "component/composite/select/select.js",
-      "find": "[placeholder].concat(items.map(",
-      "replace": "[].concat(items.map(",
+      "find": "[placeholder].concat(flatItems.map(",
+      "replace": "[].concat(flatItems.map(",
       "runner": "node",
       "test": "select.test.js",
       "testName": "the trigger is sized by a hidden sizer",
@@ -382,7 +492,7 @@
       "replace": "    const labelColor = color('field_label');",
       "runner": "node",
       "test": "text-input.test.js",
-      "testName": "material / invalid: frame, label, input and message come from the theme",
+      "testName": "shapes / invalid: frame, label, input and message come from the theme",
       "why": "a field label must read its cell for the state"
     },
     {
@@ -392,7 +502,7 @@
       "replace": "      Object.assign(frame, { borderWidth: width, paddingEnd: paddingEnd, paddingStart: paddingInline });",
       "runner": "node",
       "test": "select.test.js",
-      "testName": "material / default: frame, label, trigger, caret and message come from the theme",
+      "testName": "shapes / default: frame, label, trigger, caret and message come from the theme",
       "why": "an outline frame keeps its borders inside the inline padding so the text starts where the padding says"
     },
     {
@@ -518,8 +628,8 @@
     {
       "id": "structural-contrast",
       "file": "component/molecule/button/button.js",
-      "find": "    const contentLeaf = 'button_' + kind + '_label' + press.phase;",
-      "replace": "    const contentLeaf = 'button_' + kind + '_container' + press.phase;",
+      "find": "      : 'button_' + kind + '_label' + press.phase;",
+      "replace": "      : 'button_' + kind + '_container' + press.phase;",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "every drawn text run meets the contrast minimum against its backdrop",
@@ -640,10 +750,10 @@
       "file": "component/context.js",
       "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "Button / second / light: matches the reference in every state",
-      "why": "a button whose hovered and pressed state layer paints its resting fill must fail the fidelity gate in the interaction states"
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "the state layer paints the interaction cell, not the resting fill",
+      "why": "a button whose hovered and pressed state layer paints its resting fill must fail the ripple layer's per-interaction cell assertions"
     },
     {
       "id": "fidelity-ring-pixels",
@@ -1012,7 +1122,7 @@
       "replace": "    const icon = props.icon;",
       "runner": "node",
       "test": "selectable-tag.test.js",
-      "testName": "material / selected: the selectable cells, the outline and the mark",
+      "testName": "carbon / selected: the selectable cells, the outline and the mark",
       "why": "the selected mark shows only where the theme's mark anatomy says so"
     },
     {
@@ -1050,10 +1160,10 @@
       "file": "component/atom/loading/loading.js",
       "find": "const HALF_ROTATE = { left: '135deg', right: '100deg' };",
       "replace": "const HALF_ROTATE = { left: '225deg', right: '135deg' };",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "Loading / second / light: matches the reference in every state",
-      "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc and must fail the second-reference fidelity"
+      "runner": "node",
+      "test": "loading.test.js",
+      "testName": "the arc halves seat their circles at the resting rotations",
+      "why": "the halves' static rotations seat each circle's drawn quarter; turning the left seat into the shadowed quadrant moves the painted arc"
     },
     {
       "id": "inline-loading-label",
@@ -1170,10 +1280,10 @@
       "file": "component/molecule/tag/selectable-tag.js",
       "find": "      outlineInLayout: ctx.enum('anatomy.tag_interactive_outline') === 'border',",
       "replace": "      outlineInLayout: true,",
-      "runner": "pw",
-      "test": "fidelity.spec.js",
-      "testName": "SelectableTag / second / light: matches the reference in every state",
-      "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the second fidelity gate"
+      "runner": "node",
+      "test": "selectable-tag.test.js",
+      "testName": "shapes / default: the selectable cells, the outline and the mark",
+      "why": "the second system draws the outline as an overlay that moves nothing; drawing it as a layout border shifts the label and must fail the inset assertions"
     },
     {
       "id": "purity-composition-prop",
@@ -1203,7 +1313,7 @@
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "no text overflows the box that paints behind it",
-      "why": "a pill 8 points shorter than its label line (material small tag: 16 under a 24 line) draws the label past the box that paints behind it; the range-versus-painted-box check must catch it"
+      "why": "a pill 8 points shorter than its label line (the retired second template's small tag: 16 under a 24 line) draws the label past the box that paints behind it; the range-versus-painted-box check must catch it"
     },
     {
       "id": "tooltip-caret-color",
@@ -1512,7 +1622,7 @@
       "replace": "          gap: 0,",
       "runner": "node",
       "test": "time-picker.test.js",
-      "testName": "material / default: label, row and message at the theme metrics",
+      "testName": "carbon / default: label, row and message at the theme metrics",
       "why": "the row spaces its members by the theme's select gap"
     },
     {
@@ -1768,7 +1878,7 @@
     {
       "id": "radio-group-focus-ref",
       "file": "behaviors/radio-group.js",
-      "find": "        ref.current.focus();",
+      "find": "        focusNode(ref.current);",
       "replace": "        void ref.current;",
       "runner": "node",
       "test": "radio-button-group.test.js",
@@ -1866,16 +1976,6 @@
       "why": "cleanup of a held slider must not drag its value to the page edge while moving the pointer away"
     },
     {
-      "id": "slider-painted-signature",
-      "file": "_test/harness/page.js",
-      "find": "      const face = control.getAttribute('role') === 'slider'\n        ? body.querySelector('[data-testid=\"slider-thumb-face\"]') : control;",
-      "replace": "      const face = control;",
-      "runner": "pw",
-      "test": "slider-anatomy.spec.js",
-      "testName": "structural paint reads a slider face rather than its transparent press target",
-      "why": "the enabled/disabled gate must read the real slider face and its effective ancestor opacity"
-    },
-    {
       "id": "slider-disabled-composition",
       "file": "component/molecule/slider/slider-parts.js",
       "find": "    const grouped = disabled && ctx.enum('anatomy.slider_disabled_paint') === 'grouped';",
@@ -1924,16 +2024,6 @@
       "test": "fidelity.test.js",
       "testName": "a deeper focus profile still detects a wrong inner color",
       "why": "the declared deeper profile must actually sample its fifth pixel and detect a wrong inner color"
-    },
-    {
-      "id": "slider-pressed-inset-ring",
-      "file": "component/molecule/slider/slider-parts.js",
-      "find": "          display: insetPressed ? undefined : 'none',",
-      "replace": "          display: 'none',",
-      "runner": "node",
-      "test": "slider.test.js",
-      "testName": "pressed inset focus paints a second ring over the scaled face",
-      "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
     },
     {
       "id": "select-skeleton-field-height",
@@ -2226,6 +2316,16 @@
       "why": "the native wrapper must inherit the namespace, not copy it - copying runs every lazy export getter, and removed modules throw under React Native 0.88"
     },
     {
+      "id": "list-selected-active",
+      "file": "component/context.js",
+      "find": "state.selected === true ? 'list_item_container_selected_active' : 'list_item_container_active'",
+      "replace": "state.selected === true ? 'list_item_container_active' : 'list_item_container_active'",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "a selected and pressed item draws the selected-active fill",
+      "why": "a selected row under press must draw the selected-active cell, not the plain active one"
+    },
+    {
       "id": "form-variant-applied",
       "file": "_test/harness/entry.js",
       "find": "variant: { form: form, platform: 'web' }",
@@ -2254,156 +2354,6 @@
       "test": "fire-result.test.js",
       "testName": "a signal-killed child is not a mutation proof",
       "why": "a child that dies must never count as a fired row; a classifier that returns true unconditionally must fail the pinned cases"
-    },
-    {
-      "id": "native-input-padding-zeroed",
-      "file": "component/context.js",
-      "find": "withHostTextDefaults(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 })",
-      "replace": "withHostTextDefaults(Lib.ReactNative.TextInput, {})",
-      "runner": "node",
-      "test": "adaptive.test.js",
-      "testName": "the native input zeroes Android vertical padding before the caller style",
-      "why": "the native input must zero Android's default vertical padding before the caller's style"
-    },
-    {
-      "id": "toggle-system-seat",
-      "file": "component/molecule/switch/toggle.native.js",
-      "find": "width: ctx.metric('Toggle', small ? 'trackWidthSmall' : 'trackWidth')",
-      "replace": "width: ctx.metric('Toggle', 'layerSize')",
-      "runner": "node",
-      "test": "toggle.test.js",
-      "testName": "the OS switch sits in a seat of the drawn track's size",
-      "why": "the system seat must carry the drawn track's width for the size"
-    },
-    {
-      "id": "guard-rss-inverted",
-      "file": "scripts/guard.js",
-      "find": "sample.maxRssMb > procMb",
-      "replace": "sample.maxRssMb > 1000000000",
-      "runner": "node",
-      "test": "guard.test.js",
-      "testName": "a child past the per-process memory ceiling is killed and reported 137",
-      "why": "a per-process ceiling that cannot trip must fail the runaway kill assertion"
-    },
-    {
-      "id": "guard-log-tail-off",
-      "file": "scripts/guard.js",
-      "find": "const TAIL_LINES = 60;",
-      "replace": "const TAIL_LINES = 10000;",
-      "runner": "node",
-      "test": "guard.test.js",
-      "testName": "the child output goes to the guard log and only its tail is printed",
-      "why": "a ring that keeps every line leaks the early lines the tail must drop"
-    },
-    {
-      "id": "guard-seen-off",
-      "file": "scripts/guard.js",
-      "find": "order.unshift(pid);",
-      "replace": "order.indexOf(pid);",
-      "runner": "node",
-      "test": "guard.test.js",
-      "testName": "a reparented grandchild past the ceiling is still killed",
-      "why": "reparented pids dropped from the kill order must fail the orphan-kill assertion"
-    },
-    {
-      "id": "update-loop-threshold-off",
-      "file": "_test/harness/render.js",
-      "find": "const LIMIT = 2000;",
-      "replace": "const LIMIT = Infinity;",
-      "runner": "node",
-      "test": "update-loop-harness.test.js",
-      "testName": "an unconditional setState-in-effect loop fails render",
-      "why": "a commit ceiling that cannot trip must fail the update loop assertion"
-    },
-    {
-      "id": "positioning-fixed-space-origin",
-      "file": "behaviors/positioning.js",
-      "find": "    for (let node = element.parentElement; node !== null && node !== undefined; node = node.parentElement) {",
-      "replace": "    for (let node = null; node !== null && node !== undefined; node = node.parentElement) {",
-      "runner": "node",
-      "test": "behaviors.test.js",
-      "testName": "useAnchoredPosition: a fixed layer inside a transformed ancestor answers in that ancestor's space",
-      "why": "an unhosted fixed layer inside a transformed ancestor must resolve in that ancestor's space; forcing the origin to 0 must fail the shift assertions"
-    },
-    {
-      "id": "menu-position-cap-off",
-      "file": "behaviors/menu.js",
-      "find": "  const MEASURE_CAP = 8;",
-      "replace": "  const MEASURE_CAP = Infinity;",
-      "runner": "node",
-      "test": "behaviors-measure-cap.test.js",
-      "testName": "useMenuPosition: a never-settling fit stops after 8 measures and warns once",
-      "why": "a measure cap that cannot trip must fail the never-settling assertion"
-    },
-    {
-      "id": "anchored-position-cap-off",
-      "file": "behaviors/positioning.js",
-      "find": "  const MEASURE_CAP = 8;",
-      "replace": "  const MEASURE_CAP = Infinity;",
-      "runner": "node",
-      "test": "behaviors-measure-cap.test.js",
-      "testName": "useAnchoredPosition: a never-settling anchor stops after 8 measures and warns once",
-      "why": "a measure cap that cannot trip must fail the never-settling assertion"
-    },
-    {
-      "id": "reopen-seed-kept",
-      "file": "_test/harness/sample-props.js",
-      "find": "export function measuredProps (reference, label, props) {",
-      "replace": "export function measuredProps (reference, label, props) {\n  return props;",
-      "runner": "node",
-      "test": "sample-props.test.js",
-      "testName": "a reopen state drops the seeded open prop",
-      "why": "a filter that keeps the seeded open must fail the drops-the-seed assertion"
-    },
-    {
-      "id": "list-item-height-minimum",
-      "file": "component/context.js",
-      "find": "minHeight: options.itemHeight, justifyContent: 'stretch'",
-      "replace": "height: options.itemHeight, justifyContent: 'stretch'",
-      "runner": "node",
-      "test": "list-item-height-minimum.test.js",
-      "testName": "list-item-height-minimum",
-      "why": "a fixed item height must fail the minimum-height assertion"
-    },
-    {
-      "id": "switch-height-minimum",
-      "file": "component/molecule/content-switcher/switch.js",
-      "find": "minHeight: props.segmentHeight === undefined",
-      "replace": "height: props.segmentHeight === undefined",
-      "runner": "node",
-      "test": "switch-height-minimum.test.js",
-      "testName": "switch-height-minimum",
-      "why": "a fixed segment height must fail the minimum-height assertion"
-    },
-    {
-      "id": "tab-height-minimum",
-      "file": "component/composite/tabs/tab.js",
-      "find": "minHeight: props.tall === true",
-      "replace": "height: props.tall === true",
-      "runner": "node",
-      "test": "tab-height-minimum.test.js",
-      "testName": "tab-height-minimum",
-      "why": "a fixed tab height must fail the minimum-height assertion"
-    },
-    {
-      "id": "content-switcher-height-minimum",
-      "file": "component/composite/tabs/content-switcher.js",
-      "find": "minHeight: ctx.metric('ContentSwitcher', heightKey)",
-      "replace": "height: ctx.metric('ContentSwitcher', heightKey)",
-      "runner": "node",
-      "test": "content-switcher-height-minimum.test.js",
-      "testName": "content-switcher-height-minimum",
-      "why": "a fixed container height must fail the minimum-height assertion"
-    },
-    {
-      "id": "list-selected-active",
-      "file": "component/context.js",
-      "find": "state.selected === true ? 'list_item_container_selected_active' : 'list_item_container_active'",
-      "replace": "state.selected === true ? 'list_item_container_active' : 'list_item_container_active'",
-      "runner": "node",
-      "test": "system.test.js",
-      "testName": "a selected and pressed item draws the selected-active fill",
-      "why": "a selected row under press must draw the selected-active cell, not the plain active one"
     },
     {
       "id": "select-item-divider",
@@ -3326,6 +3276,16 @@
       "why": "ignoring the hit expander under-measures the effective press area"
     },
     {
+      "id": "slider-painted-signature",
+      "file": "_test/harness/page.js",
+      "find": "      let face = control.getAttribute('role') === 'slider'\n        ? body.querySelector('[data-testid=\"slider-thumb-face\"]') : control;",
+      "replace": "      let face = control;",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every enabled control state paints differently from every disabled state of its component",
+      "why": "the enabled/disabled gate must read the slider's painted thumb face, not its press target"
+    },
+    {
       "id": "fidelity-menu-refocus",
       "file": "_test/harness/fidelity.js",
       "find": "    await refocusPanel(page, component.name, label, reference.refocus, side);",
@@ -3744,6 +3704,46 @@
       "test": "purity.test.js",
       "testName": "no forbidden construct in any shipped file",
       "why": "a document reach restored outside behaviors/dom.js must fail the DOM-reach assertion"
+    },
+    {
+      "id": "button-kind-palette",
+      "file": "component/molecule/button/button.js",
+      "find": "    const press = ctx.pressPresentation(state, 'button_' + kind + '_container', fillMap !== null ? { colors: fillMap } : undefined);",
+      "replace": "    const press = ctx.pressPresentation(state, 'button_primary_container');",
+      "runner": "node",
+      "test": "button.test.js",
+      "testName": "carbon / secondary: geometry, fill and label come from the theme",
+      "why": "each kind must fill with its own cells"
+    },
+    {
+      "id": "slider-pressed-inset-ring",
+      "file": "component/molecule/slider/slider-parts.js",
+      "find": "          display: insetPressed ? undefined : 'none',",
+      "replace": "          display: 'none',",
+      "runner": "node",
+      "test": "slider.test.js",
+      "testName": "pressed inset focus paints a second ring over the scaled face",
+      "why": "the pressed inset stroke is a second antialiased paint pass, not merely a background of the same color"
+    },
+    {
+      "id": "native-input-padding-zeroed",
+      "file": "component/context.js",
+      "find": "withHostTextDefaults(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 })",
+      "replace": "withHostTextDefaults(Lib.ReactNative.TextInput, {})",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "the native input zeroes Android vertical padding before the caller style",
+      "why": "the native input must zero Android's default vertical padding before the caller's style"
+    },
+    {
+      "id": "toggle-system-seat",
+      "file": "component/molecule/switch/toggle.native.js",
+      "find": "width: ctx.metric('Toggle', small ? 'trackWidthSmall' : 'trackWidth')",
+      "replace": "width: ctx.metric('Toggle', 'layerSize')",
+      "runner": "node",
+      "test": "toggle.test.js",
+      "testName": "the OS switch sits in a seat of the drawn track's size",
+      "why": "the system seat must carry the drawn track's width for the size"
     }
   ]
 }
