@@ -331,7 +331,11 @@ export default function createFieldParts (ctx) {
             flexGrow: 1,
             flexShrink: 1,
             minWidth: 0,
-            outlineStyle: 'none'
+            outlineStyle: 'none',
+            // The Android EditText's own vertical padding would otherwise lift
+            // a `small` field above its frame's minimum; web and iOS ignore both
+            paddingVertical: 0,
+            textAlignVertical: 'center'
           }, options.inputStyle]
         })),
         icon,

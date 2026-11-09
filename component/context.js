@@ -914,28 +914,41 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
-  A text component wrapper that switches the OS's own font scaling off: the
-  context already applies the host's `textScale` to every type set, so the
-  platform must not scale again. A caller's own `allowFontScaling` prop
-  still wins.
+  A text component wrapper that hands native text the host's defaults. On
+  every platform it switches the OS's own font scaling off: the context
+  already applies the host's `textScale` to every type set, so the
+  platform must not scale again. On Android it also names the three
+  defaults CSS never had: `includeFontPadding` adds the font's ascent and
+  descent to the first and last line (a 16-point line height lays out
+  19), `textBreakStrategy` `highQuality` wraps earlier than CSS's greedy
+  break, and the EditText's own vertical padding lifts a `small` field
+  above its frame's minimum (the field's style zeroes it). Web and iOS
+  know none of the three, so they see no prop change. A caller's own
+  `allowFontScaling`, `textBreakStrategy` or style still wins.
 
   @param {Object} TextComponent - The injected React Native text component
 
   @return {Function} - The wrapped component
   *********************************************************************/
-  function withoutOsFontScaling (TextComponent) {
+  function withHostTextDefaults (TextComponent) {
 
     if (Utils.isNullOrUndefined(TextComponent)) {
       return TextComponent;
     }
 
-    function OsScalingOff (props) {
-      return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
+    function HostTextDefaults (props) {
+      if (platform.os !== 'android') {
+        return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
+      }
+      return Lib.React.createElement(TextComponent, Object.assign(
+        { allowFontScaling: false, textBreakStrategy: 'simple' },
+        props,
+        { style: [{ includeFontPadding: false }, props && props.style] }));
     }
 
-    OsScalingOff.displayName = 'OsScalingOff(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
+    HostTextDefaults.displayName = 'HostTextDefaults(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
 
-    return OsScalingOff;
+    return HostTextDefaults;
 
   }
 
@@ -945,8 +958,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   // export's lazy getter runs (React Native 0.88 throws from removed modules)
   const reactNative = platform.isNative
     ? Object.create(Lib.ReactNative, {
-      Text: { value: withoutOsFontScaling(Lib.ReactNative.Text), enumerable: true },
-      TextInput: { value: withoutOsFontScaling(Lib.ReactNative.TextInput), enumerable: true }
+      Text: { value: withHostTextDefaults(Lib.ReactNative.Text), enumerable: true },
+      TextInput: { value: withHostTextDefaults(Lib.ReactNative.TextInput), enumerable: true }
     })
     : Lib.ReactNative;
 
