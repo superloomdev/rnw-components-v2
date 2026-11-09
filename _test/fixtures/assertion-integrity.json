@@ -2616,6 +2616,66 @@
       "why": "the member's ring is the upstream 1 px edge outline; a wider ring must fail the width assertion"
     },
     {
+      "id": "tile-container",
+      "file": "component/molecule/tile/tile.js",
+      "find": "backgroundColor: ctx.color('tile_container')",
+      "replace": "backgroundColor: ctx.color('tile_container_hover')",
+      "runner": "node",
+      "test": "tile.test.js",
+      "testName": "carbon / default: box and type come from the theme",
+      "why": "the box paints the layer cell; the hover cell must fail the container assertion"
+    },
+    {
+      "id": "clickable-tile-disabled-behavior",
+      "file": "component/molecule/tile/clickable-tile.js",
+      "find": "      disabled: disabled,\n      onPress:",
+      "replace": "      disabled: false,\n      onPress:",
+      "runner": "node",
+      "test": "clickable-tile.test.js",
+      "testName": "carbon / disabled: face, label and icon come from the theme",
+      "why": "dropping the disabled flag the behavior reads must fail the disabled assertion"
+    },
+    {
+      "id": "selectable-tile-toggle",
+      "file": "component/molecule/tile/selectable-tile.js",
+      "find": "setSelected(!selected)",
+      "replace": "setSelected(selected)",
+      "runner": "node",
+      "test": "selectable-tile.test.js",
+      "testName": "press toggles the checked state",
+      "why": "the toggle is the row's key behavior; a no-op toggle must fail"
+    },
+    {
+      "id": "expandable-tile-collapsed-height",
+      "file": "component/molecule/tile/expandable-tile.js",
+      "find": "maxHeight: expanded ? undefined : baseHeight + pad,",
+      "replace": "maxHeight: expanded ? undefined : baseHeight,",
+      "runner": "node",
+      "test": "expandable-tile.test.js",
+      "testName": "carbon / default: fold, chevron and collapsed height come from the theme",
+      "why": "the collapsed height adds the padding allowance; dropping it must fail"
+    },
+    {
+      "id": "radio-tile-select",
+      "file": "component/molecule/tile/radio-tile.js",
+      "find": "        setChecked(true);",
+      "replace": "        setChecked(false);",
+      "runner": "node",
+      "test": "radio-tile.test.js",
+      "testName": "press selects the radio",
+      "why": "a radio only selects; inverting it must fail"
+    },
+    {
+      "id": "tile-group-single-selection",
+      "file": "component/molecule/tile/tile-group.js",
+      "find": "        checked: itemProps.checked,",
+      "replace": "        checked: true,",
+      "runner": "node",
+      "test": "tile-group.test.js",
+      "testName": "one value is checked across the group",
+      "why": "single selection is the group's key behavior; marking every tile must fail"
+    },
+    {
       "id": "ios-line-height-half-pixel",
       "file": "component/context.js",
       "find": "        lineHeight = lineHeight - 0.5 / pixelRatio.get();",

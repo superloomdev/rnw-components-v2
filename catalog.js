@@ -127,6 +127,12 @@ import OrderedListSample, { FRAME as OrderedListFrame } from './component/molecu
 import ListItemSample, { FRAME as ListItemFrame } from './component/molecule/text-list/sample.list-item.js';
 import ContainedListSample, { FRAME as ContainedListFrame } from './component/composite/contained-list/sample.contained-list.js';
 import ContainedListItemSample from './component/composite/contained-list/sample.contained-list-item.js';
+import RadioTileSample from './component/molecule/tile/sample.radio-tile.js';
+import ClickableTileSample from './component/molecule/tile/sample.clickable-tile.js';
+import ExpandableTileSample from './component/molecule/tile/sample.expandable-tile.js';
+import SelectableTileSample from './component/molecule/tile/sample.selectable-tile.js';
+import TileSample from './component/molecule/tile/sample.js';
+import TileGroupSample from './component/molecule/tile/sample.tile-group.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), widget: null, frame: null, sample: IconSample }),
@@ -254,5 +260,11 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'OrderedList', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: OrderedListFrame, sample: OrderedListSample }),
   Object.freeze({ name: 'ListItem', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: ListItemFrame, sample: ListItemSample }),
   Object.freeze({ name: 'ContainedList', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: ContainedListFrame, sample: ContainedListSample }),
-  Object.freeze({ name: 'ContainedListItem', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: ContainedListItemSample })
+  Object.freeze({ name: 'ContainedListItem', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: ContainedListItemSample }),
+  Object.freeze({ name: 'RadioTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: RadioTileSample }),
+  Object.freeze({ name: 'ClickableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: ClickableTileSample }),
+  Object.freeze({ name: 'ExpandableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: ExpandableTileSample }),
+  Object.freeze({ name: 'SelectableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: SelectableTileSample }),
+  Object.freeze({ name: 'Tile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileSample }),
+  Object.freeze({ name: 'TileGroup', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileGroupSample })
 ]);

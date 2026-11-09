@@ -129,3 +129,10 @@ export { default as OrderedList } from './component/molecule/text-list/ordered-l
 export { default as ListItem } from './component/molecule/text-list/list-item.js';
 export { default as ContainedList } from './component/composite/contained-list/contained-list.js';
 export { default as ContainedListItem } from './component/composite/contained-list/contained-list-item.js';
+
+export { default as Tile } from './component/molecule/tile/tile.js';
+export { default as ClickableTile } from './component/molecule/tile/clickable-tile.js';
+export { default as SelectableTile } from './component/molecule/tile/selectable-tile.js';
+export { default as ExpandableTile } from './component/molecule/tile/expandable-tile.js';
+export { default as RadioTile } from './component/molecule/tile/radio-tile.js';
+export { default as TileGroup } from './component/molecule/tile/tile-group.js';

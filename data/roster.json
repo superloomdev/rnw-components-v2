@@ -4092,7 +4092,7 @@
         "version": "1.115.0",
         "export": "RadioTile"
       },
-      "description": "RadioTile is a component in the RadioButton family.",
+      "description": "RadioTile is a selectable tile that acts as one radio option inside a TileGroup.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4108,10 +4108,10 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioTile",
-      "material_twin": "md-radio",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ClickableTile",
@@ -4122,7 +4122,7 @@
         "version": "1.115.0",
         "export": "ClickableTile"
       },
-      "description": "ClickableTile is a component in the Tile family.",
+      "description": "ClickableTile is a tile that acts as one link or press target, with an optional corner icon.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4140,7 +4140,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "ExpandableTile",
@@ -4151,14 +4151,15 @@
         "version": "1.115.0",
         "export": "ExpandableTile"
       },
-      "description": "ExpandableTile is a component in the Tile family.",
+      "description": "ExpandableTile is a tile that reveals its below-the-fold content when expanded from its chevron.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "press"
+        "press",
+        "controllable-state"
       ],
       "parent": null,
       "reference": {
@@ -4169,7 +4170,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SelectableTile",
@@ -4180,14 +4181,15 @@
         "version": "1.115.0",
         "export": "SelectableTile"
       },
-      "description": "SelectableTile is a component in the Tile family.",
+      "description": "SelectableTile is a tile that toggles its own selection like a checkbox, marked in its corner.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "press"
+        "press",
+        "controllable-state"
       ],
       "parent": null,
       "reference": {
@@ -4198,7 +4200,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tile",
@@ -4209,15 +4211,13 @@
         "version": "1.115.0",
         "export": "Tile"
       },
-      "description": "Tile is a component in the Tile family.",
+      "description": "Tile is a container on the layer that groups related content.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [
-        "press"
-      ],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -4227,7 +4227,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TileGroup",
@@ -4238,14 +4238,15 @@
         "version": "1.115.0",
         "export": "TileGroup"
       },
-      "description": "TileGroup is a component in the Tile family.",
+      "description": "TileGroup is a labelled group of RadioTiles holding one selected value.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
       "behaviors": [
-        "press"
+        "controllable-state",
+        "radio-group"
       ],
       "parent": null,
       "reference": {
@@ -4256,7 +4257,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DatePicker",
