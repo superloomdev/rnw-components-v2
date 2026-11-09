@@ -53,8 +53,11 @@ export default function ToggleNative (ctx) {
       return React.createElement(WebComponent, props);
     }
 
-    // The OS switch draws the theme's track and handle colors; the label
-    // keeps the drawn field's own text and names the control
+    // The outer layout is the drawn field's: the label, the strut the
+    // upstream grid leaves under the regular row, the row, and the state
+    // text; only the drawn track and handle are replaced
+    const small = props.size === 'sm';
+    const stateText = ctx.enum('anatomy.switch_state_text') === 'shown';
     const label = props.label === undefined ? null : React.createElement(Text, {
       nativeID: labelId,
       style: [ctx.typeStyle('label01'), {
@@ -63,8 +66,26 @@ export default function ToggleNative (ctx) {
       }]
     }, props.label);
 
-    return React.createElement(View, { style: { alignSelf: 'flex-start', flexDirection: 'column' } },
-      label,
+    return React.createElement(View, {
+      style: {
+        alignSelf: 'flex-start',
+        flexDirection: 'column',
+        paddingBottom: small ? 0 : ctx.metric('Toggle', 'labelStrut')
+      }
+    },
+    label,
+    React.createElement(View, { style: { alignItems: 'center', flexDirection: 'row' } },
+      // The seat is the drawn track's box for the size; the OS switch
+      // centers in it and its own bounds may overflow it
+      React.createElement(View, {
+        style: {
+          alignItems: 'center',
+          height: ctx.metric('Toggle', small ? 'trackHeightSmall' : 'trackHeight'),
+          justifyContent: 'center',
+          overflow: 'visible',
+          width: ctx.metric('Toggle', small ? 'trackWidthSmall' : 'trackWidth')
+        }
+      },
       React.createElement(Adapter, Object.assign({}, getA11yState({ checked: checked, disabled: disabled || undefined }), getA11yRelation({ labelledby: labelId }), {
         accessibilityRole: 'switch',
         disabled: disabled,
@@ -79,7 +100,17 @@ export default function ToggleNative (ctx) {
           true: ctx.color(disabled ? 'switch_track_selected_disabled' : 'switch_track_selected')
         },
         value: checked
-      })));
+      }))),
+      // The on/off text element stays in the tree as in the drawn half,
+      // so the accessibility answer is the same under every template
+      React.createElement(Text, {
+        'aria-hidden': true,
+        style: [ctx.typeStyle('body01'), {
+          color: ctx.color(disabled ? 'text_disabled' : 'text_primary'),
+          display: stateText ? 'flex' : 'none',
+          marginStart: ctx.metric('Toggle', 'stateTextGap')
+        }]
+      }, checked ? props.onText : props.offText)));
 
   }
 

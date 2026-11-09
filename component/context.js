@@ -925,14 +925,19 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   above its frame's minimum; the padding and centre alignment are
   removed here for every input the library mounts, and a multiline
   input keeps the top alignment CSS gives a textarea. Web and iOS
-  know none of the three, so they see no prop change. A caller's own
-  `allowFontScaling`, `textBreakStrategy` or style still wins.
+  know none of the three, so they see no prop change. On native an
+  EditText keeps the theme's vertical padding on any side the style
+  leaves unset, so `baseStyle` zeroes both sides before the caller's
+  style. A caller's own `allowFontScaling`, `textBreakStrategy` or
+  style still wins.
 
   @param {Object} TextComponent - The injected React Native text component
 
+  @param {Object} [baseStyle] - Style prepended before the Android and caller styles
+
   @return {Function} - The wrapped component
   *********************************************************************/
-  function withHostTextDefaults (TextComponent) {
+  function withHostTextDefaults (TextComponent, baseStyle) {
 
     if (Utils.isNullOrUndefined(TextComponent)) {
       return TextComponent;
@@ -940,17 +945,16 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     function HostTextDefaults (props) {
       if (platform.os !== 'android') {
-        return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props));
+        return Lib.React.createElement(TextComponent, Object.assign({ allowFontScaling: false }, props,
+          baseStyle === undefined ? {} : { style: [baseStyle, props.style] }));
       }
-      const hostStyle = TextComponent === Lib.ReactNative.TextInput
-        ? (props && props.multiline === true
-          ? { includeFontPadding: false, paddingVertical: 0 }
-          : { includeFontPadding: false, paddingVertical: 0, textAlignVertical: 'center' })
+      const androidStyle = TextComponent === Lib.ReactNative.TextInput && !(props && props.multiline === true)
+        ? { includeFontPadding: false, textAlignVertical: 'center' }
         : { includeFontPadding: false };
       return Lib.React.createElement(TextComponent, Object.assign(
         { allowFontScaling: false, textBreakStrategy: 'simple' },
         props,
-        { style: [hostStyle, props && props.style] }));
+        { style: [baseStyle, androidStyle, props && props.style] }));
     }
 
     HostTextDefaults.displayName = 'HostTextDefaults(' + (TextComponent.displayName || TextComponent.name || 'Text') + ')';
@@ -962,11 +966,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   // On native, OS font scaling is switched off centrally; on the web the
   // injected React Native is the web build, which knows no such prop. The
   // native wrapper inherits the namespace rather than copying it, so no other
-  // export's lazy getter runs (React Native 0.88 throws from removed modules)
+  // export's lazy getter runs (React Native 0.88 throws from removed modules).
+  // Android's EditText keeps the theme's vertical padding on any side the
+  // style leaves unset, so the native input zeroes both before the caller's style
   const reactNative = platform.isNative
     ? Object.create(Lib.ReactNative, {
       Text: { value: withHostTextDefaults(Lib.ReactNative.Text), enumerable: true },
-      TextInput: { value: withHostTextDefaults(Lib.ReactNative.TextInput), enumerable: true }
+      TextInput: { value: withHostTextDefaults(Lib.ReactNative.TextInput, { paddingTop: 0, paddingBottom: 0 }), enumerable: true }
     })
     : Lib.ReactNative;
 
