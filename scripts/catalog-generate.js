@@ -1,5 +1,6 @@
 // Info: Writes `catalog.js`, the package's `./catalog` export: for every built
-// component, its roster family, tier, platform answer, flags, the frame its
+// component, its roster family, tier, platform answer, flags, the host widget
+// its api names (`anatomy.*_widget`, or null), the frame its
 // samples are laid out in (`sample.js` FRAME, or null) and its `sample.js`
 // states, in roster build order. Hosts read it to render a
 // showcase and a walker without knowing the library's folder layout.
@@ -51,10 +52,13 @@ export async function renderCatalog () {
   lines.push('export const catalog = Object.freeze([');
   lines.push(components.map(function (component) {
     const row = rows[component.name];
+    const widget = (component.api.tokens || []).find(function (token) {
+      return /^anatomy\..*_widget$/.test(token);
+    });
     return '  Object.freeze({ name: \'' + component.name + '\', family: \'' + row.family + '\', tier: \'' + row.tier +
       '\', platform: \'' + row.platform.support + '\', flags: Object.freeze([' + row.flags.map(function (flag) {
       return '\'' + flag + '\'';
-    }).join(', ') + ']), frame: ' + (framed[component.name] ? component.name + 'Frame' : 'null') + ', sample: ' + component.name + 'Sample })';
+    }).join(', ') + ']), widget: ' + (widget === undefined ? 'null' : '\'' + widget + '\'') + ', frame: ' + (framed[component.name] ? component.name + 'Frame' : 'null') + ', sample: ' + component.name + 'Sample })';
   }).join(',\n'));
   lines.push(']);');
   lines.push('');
