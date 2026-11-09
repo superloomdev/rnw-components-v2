@@ -288,3 +288,18 @@ describe('Select: the list through the DOM', function () {
   });
 
 });
+
+
+describe('Select: inline composition', function () {
+
+  test('the inline form draws no frame, label or message and takes the parent paddings', async function () {
+    const Registry = registryFor('carbon');
+    const parts = await renderSelect(Registry, { inline: true, items: ITEMS, paddingStart: 16, paddingEnd: 12 });
+    assert.equal(parts.label, null);
+    assert.equal(parts.frame.style.borderTopWidth, '');
+    assert.equal(parts.frame.style.paddingLeft, '16px');
+    assert.equal(parts.frame.style.paddingRight, '12px');
+    assert.equal(parts.root.style.paddingTop, '0px');
+  });
+
+});

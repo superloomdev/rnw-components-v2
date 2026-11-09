@@ -23,7 +23,11 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the trigger.' }
   }),
   composition: Object.freeze({
-    compact: { type: 'boolean', required: false, description: 'Composition prop: the labeled-composite member form a TimePickerSelect uses: no visible label, one content-height value line.' }
+    compact: { type: 'boolean', required: false, description: 'Composition prop: the labeled-composite member form a TimePickerSelect uses: no visible label, one content-height value line.' },
+    inline: { type: 'boolean', required: false, description: 'Composition prop: the transparent member form a Pagination uses: no frame, label or helper row; the parent gives the height.' },
+    paddingStart: { type: 'number', required: false, description: 'Composition prop with `inline`: padding before the value, from the parent.' },
+    paddingEnd: { type: 'number', required: false, description: 'Composition prop with `inline`: padding after the indicator, from the parent.' },
+    hoverLeaf: { type: 'string', required: false, description: 'Composition prop with `inline`: the container color leaf under hover.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),

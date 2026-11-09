@@ -40,6 +40,7 @@ export default function Select (ctx) {
     // element, so the label prop must not mint an id nothing renders; it
     // keeps its own accessible name instead
     const compact = props.compact === true;
+    const inline = props.inline === true;
     const items = Utils.isArray(props.items) ? props.items : [];
     // Group entries ({ label, items, disabled? }) flatten to their options
     // for the behavior: selection, keyboard traversal and the sizer all work
@@ -63,7 +64,7 @@ export default function Select (ctx) {
     const intrinsic = useAnchoredPosition({ anchor: sizerRef, offset: 0, placement: 'bottom-start', flip: false });
     const sizerWidth = intrinsic.anchor === null ? undefined : Math.ceil(intrinsic.anchor.width);
     const invalid = props.invalid === true && !state.disabled;
-    const labelled = !compact && Utils.isString(props.label) && !Utils.isEmptyString(props.label);
+    const labelled = !compact && !inline && Utils.isString(props.label) && !Utils.isEmptyString(props.label);
     const selected = state.selectedIndex >= 0 ? flatItems[state.selectedIndex] : null;
 
     // Read the geometry and the theme's field presentation
@@ -71,6 +72,7 @@ export default function Select (ctx) {
     const iconSize = ctx.metric('Select', 'iconSize');
     const surface = Utils.isString(props.surface) ? props.surface
       : Utils.isString(ctx.config.FIELD_SURFACE) ? ctx.config.FIELD_SURFACE : 'background';
+    const [inlineHovered, setInlineHovered] = React.useState(false);
     const presentation = ctx.fieldPresentation({
       disabled: state.disabled,
       focused: state.focused || state.open,
@@ -196,7 +198,7 @@ export default function Select (ctx) {
     }), optionRows) : null;
 
     // Render the message below: the error while invalid, else the helper
-    const message = invalid && Utils.isString(props.invalidText) ? props.invalidText
+    const message = inline === true ? null : invalid && Utils.isString(props.invalidText) ? props.invalidText
       : Utils.isString(props.helperText) ? props.helperText : null;
 
     // Size the trigger to its widest text, as a platform select sizes to its
@@ -238,34 +240,53 @@ export default function Select (ctx) {
     // Render the root, the label, the frame with the trigger and the list, and the message
     return React.createElement(View, Object.assign({}, select.rootProps, {
       // A compact member draws no label and takes no floating reserve
-      style: [{ position: 'relative' }, presentation.root, compact === true ? { paddingTop: 0 } : null]
+      style: [{ position: 'relative' }, presentation.root, (compact === true || inline === true) ? { paddingTop: 0 } : null]
     }),
     labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-    React.createElement(View, { ref: frameRef, style: presentation.frame },
-      React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
-        accessibilityLabel: props.accessibilityLabel,
-        testID: props.testID,
-        // The focus ring is drawn on the frame, so the trigger itself shows none.
-        // The trigger grows from its content (the sizer), not from zero: native
-        // layout gives `flex: 1` a zero basis, which collapses the trigger
-        // inside a container that sizes to its content
-        style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
-      }),
-      React.createElement(View, {
-        style: { flexGrow: 1, width: compact === true && sizerWidth !== undefined ? sizerWidth : undefined }
-      },
-      React.createElement(Text, {
-        numberOfLines: 1,
-        // A list box's placeholder is its label, drawn in the field's own
-        // ink; under a floating label it stays in the tree, undrawn
-        style: [bodyStyle, {
-          opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
-        }]
-      }, selected === null ? placeholder : selected.label),
-      sizer),
-      icon,
-      caret),
-      overlay.hosted === true ? null : listElement
+    React.createElement(View, { ref: frameRef, style: inline === true ? {
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      backgroundColor: inlineHovered === true && Utils.isString(props.hoverLeaf) ? ctx.color(props.hoverLeaf) : 'transparent',
+      flexDirection: 'row',
+      paddingEnd: Utils.isNumber(props.paddingEnd) ? props.paddingEnd : 0,
+      paddingStart: Utils.isNumber(props.paddingStart) ? props.paddingStart : 0
+    } : presentation.frame },
+    React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
+      onHoverIn: inline === true ? function (e) {
+        if (typeof select.triggerProps.onHoverIn === 'function') {
+          select.triggerProps.onHoverIn(e);
+        }
+        setInlineHovered(true);
+      } : select.triggerProps.onHoverIn,
+      onHoverOut: inline === true ? function (e) {
+        if (typeof select.triggerProps.onHoverOut === 'function') {
+          select.triggerProps.onHoverOut(e);
+        }
+        setInlineHovered(false);
+      } : select.triggerProps.onHoverOut,
+      accessibilityLabel: props.accessibilityLabel,
+      testID: props.testID,
+      // The focus ring is drawn on the frame, so the trigger itself shows none.
+      // The trigger grows from its content (the sizer), not from zero: native
+      // layout gives `flex: 1` a zero basis, which collapses the trigger
+      // inside a container that sizes to its content
+      style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
+    }),
+    React.createElement(View, {
+      style: { flexGrow: 1, width: compact === true && sizerWidth !== undefined ? sizerWidth : undefined }
+    },
+    React.createElement(Text, {
+      numberOfLines: 1,
+      // A list box's placeholder is its label, drawn in the field's own
+      // ink; under a floating label it stays in the tree, undrawn
+      style: [bodyStyle, {
+        opacity: selected === null && labelled && ctx.enum('anatomy.label') === 'floating' ? 0 : 1
+      }]
+    }, selected === null ? placeholder : selected.label),
+    sizer),
+    icon,
+    caret),
+    overlay.hosted === true ? null : listElement
     ),
     message === null ? null : React.createElement(Text, { style: presentation.message }, message)
     );

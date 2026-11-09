@@ -127,6 +127,9 @@ import OrderedListSample, { FRAME as OrderedListFrame } from './component/molecu
 import ListItemSample, { FRAME as ListItemFrame } from './component/molecule/text-list/sample.list-item.js';
 import ContainedListSample, { FRAME as ContainedListFrame } from './component/composite/contained-list/sample.contained-list.js';
 import ContainedListItemSample from './component/composite/contained-list/sample.contained-list-item.js';
+import PaginationSample from './component/molecule/pagination/sample.pagination.js';
+import PaginationNavSample from './component/molecule/pagination/sample.pagination-nav.js';
+import PaginationSkeletonSample from './component/molecule/pagination/sample.pagination-skeleton.js';
 import RadioTileSample from './component/molecule/tile/sample.radio-tile.js';
 import ClickableTileSample from './component/molecule/tile/sample.clickable-tile.js';
 import ExpandableTileSample from './component/molecule/tile/sample.expandable-tile.js';
@@ -261,6 +264,9 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ListItem', family: 'List', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: ListItemFrame, sample: ListItemSample }),
   Object.freeze({ name: 'ContainedList', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: ContainedListFrame, sample: ContainedListSample }),
   Object.freeze({ name: 'ContainedListItem', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: ContainedListItemSample }),
+  Object.freeze({ name: 'Pagination', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationSample }),
+  Object.freeze({ name: 'PaginationNav', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationNavSample }),
+  Object.freeze({ name: 'PaginationSkeleton', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationSkeletonSample }),
   Object.freeze({ name: 'RadioTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: RadioTileSample }),
   Object.freeze({ name: 'ClickableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: ClickableTileSample }),
   Object.freeze({ name: 'ExpandableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: ExpandableTileSample }),

@@ -2676,6 +2676,56 @@
       "why": "single selection is the group's key behavior; marking every tile must fail"
     },
     {
+      "id": "pagination-skeleton-gap",
+      "file": "component/molecule/pagination/pagination-skeleton.js",
+      "find": "marginEnd: last === true ? 0 : gap",
+      "replace": "marginEnd: 0",
+      "runner": "node",
+      "test": "pagination-skeleton.test.js",
+      "testName": "carbon / default: the bars read the skeleton width cells",
+      "why": "the bars sit in the text gap's rhythm; a zero gap must fail"
+    },
+    {
+      "id": "pagination-forward-end",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "pagesUnknown !== true && page >= totalPages",
+      "replace": "false",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "carbon / lastPage: the forward button ends at the last page",
+      "why": "the forward button must disable at the last page"
+    },
+    {
+      "id": "pagination-nav-active",
+      "file": "component/molecule/pagination/pagination-nav.js",
+      "find": "const active = index === page;",
+      "replace": "const active = false;",
+      "runner": "node",
+      "test": "pagination-nav.test.js",
+      "testName": "carbon / default: the active page carries aria-current",
+      "why": "the active page must carry aria-current=page"
+    },
+    {
+      "id": "grid-column-span",
+      "file": "component/molecule/grid/column.js",
+      "find": "const pct = (span * 100 / columns);",
+      "replace": "const pct = (span * 100 / columns) / 2;",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: the columns take the lg span of 16",
+      "why": "a span of 4 of 16 is 25 percent"
+    },
+    {
+      "id": "column-span-zero",
+      "file": "component/molecule/grid/column.js",
+      "find": "spec === 0",
+      "replace": "spec === -1",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: a span of 0 draws nothing",
+      "why": "span 0 must hide the column"
+    },
+    {
       "id": "ios-line-height-half-pixel",
       "file": "component/context.js",
       "find": "        lineHeight = lineHeight - 0.5 / pixelRatio.get();",

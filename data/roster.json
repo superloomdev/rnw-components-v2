@@ -3935,16 +3935,17 @@
       "behaviors": [],
       "parent": "Grid",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "Column",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Grid",
@@ -3955,7 +3956,7 @@
         "version": "1.115.0",
         "export": "Grid"
       },
-      "description": "Grid is a component in the Grid family.",
+      "description": "Grid is the layout grid that holds rows of columns sized per breakpoint.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3971,7 +3972,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Row",
@@ -3982,7 +3983,7 @@
         "version": "1.115.0",
         "export": "Row"
       },
-      "description": "Row is a component in the Grid family; it must be composed inside Grid.",
+      "description": "Row is one row of a Grid; it must be composed inside Grid.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4000,7 +4001,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Pagination",
@@ -4011,13 +4012,15 @@
         "version": "1.115.0",
         "export": "Pagination"
       },
-      "description": "Pagination is a component in the Pagination family.",
+      "description": "Pagination is a bar that pages through a list, with a page-size select, item counts and previous and next buttons.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [],
+      "behaviors": [
+        "controllable-state"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -4027,7 +4030,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "PaginationNav",
@@ -4038,13 +4041,15 @@
         "version": "1.115.0",
         "export": "PaginationNav"
       },
-      "description": "PaginationNav is a component in the Pagination family.",
+      "description": "PaginationNav is a row of page buttons with overflow pickers and previous and next buttons.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [],
-      "behaviors": [],
+      "behaviors": [
+        "controllable-state"
+      ],
       "parent": null,
       "reference": {
         "kind": "render-web",
@@ -4054,7 +4059,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "PaginationSkeleton",
@@ -4065,7 +4070,7 @@
         "version": "1.115.0",
         "export": "PaginationSkeleton"
       },
-      "description": "PaginationSkeleton is a component in the Pagination family.",
+      "description": "PaginationSkeleton is the loading placeholder of a Pagination bar.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4081,7 +4086,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "RadioTile",
