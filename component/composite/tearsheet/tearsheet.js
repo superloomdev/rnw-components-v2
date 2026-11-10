@@ -17,7 +17,6 @@ import SPEC from './spec.tearsheet.js';
 // ActionSet order)
 const ORDER = { ghost: 1, danger_ghost: 2, tertiary: 3, secondary: 4, danger: 5, primary: 6 };
 const STACK_DEPTH = 3;
-const STACK_SHRINK = 32;
 
 
 /********************************************************************
@@ -163,7 +162,7 @@ export default function Tearsheet (ctx) {
     }) : 0;
     const position = index === -1 ? stack.length : index + 1;
     const level = depth - position;
-    const scale = level <= 0 ? 1 : (innerWidth - STACK_SHRINK * level) / innerWidth;
+    const scale = level <= 0 ? 1 : (innerWidth - 2 * metrics.stackOffset * level) / innerWidth;
 
     // The header block: label, heading, description, navigation; the
     // close button seats the header end and shortens its end padding
@@ -270,7 +269,7 @@ export default function Tearsheet (ctx) {
 
     // The close button at the header end
     const close = !hasClose ? null : React.createElement(View, {
-      style: { position: 'absolute', right: 16, top: 8 }
+      style: { end: ctx.token('spacing.spacing_05'), position: 'absolute', top: ctx.token('spacing.spacing_03') }
     }, React.createElement(View, {
       dataSet: { part: 'close' }
     }, React.createElement(ctx.Registry.IconButton, {

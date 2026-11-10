@@ -42,6 +42,6 @@ export default Object.freeze({
     'control.tearsheet_action_padding_top', 'control.tearsheet_action_padding_bottom', 'control.tearsheet_action_max_width',
     'control.dialog_header_gap',
     'border.width_01', 'type.label01', 'type.body_compact_01', 'type.tearsheet_heading', 'type.tearsheet_description',
-    'font.family.sans', 'motion.duration_moderate_02', 'icon.close'
+    'spacing.spacing_03', 'spacing.spacing_05', 'font.family.sans', 'motion.duration_moderate_02', 'icon.close'
   ])
 });

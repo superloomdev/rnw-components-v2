@@ -16,6 +16,8 @@ and Button draw the parts.
 - The header's `minHeight` is `tearsheet_header_height` (a floor); its
   padding is the block / inline cells, `header_padding_end` when the close
   button sits there, bottom 0 with navigation.
+- The title is one themed `Text` with the header role at level 3, not the
+  Heading row (upstream fixes `h3`).
 - `hasCloseIcon` defaults to passive (no actions); the close button is the
   IconButton at `icon_button_size` with the dialog's close glyph size.
 - Actions order ghost -> secondary -> primary; each seat is a quarter of
@@ -72,6 +74,8 @@ Tearsheet is a large dialog for a focused task: a header, an optional influencer
 | Metric | Rule |
 |---|---|
 | `actionHeight` | `control.tearsheet_action_height` |
+| `actionPaddingBottom` | `control.tearsheet_action_padding_bottom` |
+| `actionPaddingTop` | `control.tearsheet_action_padding_top` |
 | `actionMaxWidth` | `control.tearsheet_action_max_width` |
 | `borderWidth` | `control.dialog_border_width` |
 | `closeIconSize` | `control.dialog_close_icon_size` |
@@ -89,6 +93,7 @@ Tearsheet is a large dialog for a focused task: a header, an optional influencer
 | `insetInline` | `control.tearsheet_inset_inline` |
 | `insetTop` | `control.tearsheet_inset_top` |
 | `insetTopLower` | `control.tearsheet_inset_top_lower` |
+| `labelGap` | `control.dialog_header_gap` |
 | `navigationGap` | `control.tearsheet_navigation_gap` |
 | `stackOffset` | `control.tearsheet_stack_offset` |
 | `stacking` | `stacking.overlay` |
