@@ -37,24 +37,25 @@ export default function Column (ctx) {
     const gutterHalfS = context.gutterStart;
     const gutterHalfE = context.gutterEnd;
     const mode = context.mode;
-    const style = {};
+    // The track wrapper takes the span's fraction of the grid's content
+    // width (and the offset's start margin); the painting column inside
+    // carries the gutter halves, so no box ever outgrows its track
+    const track = { flexShrink: 0 };
     if (span === null) {
-      style.flexGrow = 1;
-      style.flexBasis = '0%';
+      track.flexGrow = 1;
+      track.flexBasis = '0%';
     } else {
-      const pct = (span * 100 / columns);
-      style.flexBasis = mode === 'columns' ? 'calc(' + pct + '% - ' + (gutterHalfS + gutterHalfE) + 'px)' : pct + '%';
-      style.flexShrink = 0;
+      track.width = (span * 100 / columns) + '%';
     }
-    if (mode === 'columns') {
-      style.marginEnd = gutterHalfE;
-      style.marginStart = offset > 0 ? 'calc(' + (offset * 100 / columns) + '% + ' + gutterHalfS + 'px)' : gutterHalfS;
-    } else {
-      style.marginStart = offset > 0 ? (offset * 100 / columns) + '%' : undefined;
-      style.paddingEnd = gutterHalfE;
-      style.paddingStart = gutterHalfS;
+    if (offset > 0) {
+      track.marginStart = (offset * 100 / columns) + '%';
     }
-    return React.createElement(View, { dataSet: { part: 'column' }, style: style, testID: props.testID }, Utils.isString(props.children) ? React.createElement(ctx.ReactNative.Text, { style: ctx.typeStyle('body_compact_01') }, props.children) : props.children);
+    const style = mode === 'columns'
+      ? { marginEnd: gutterHalfE, marginStart: gutterHalfS }
+      : { paddingEnd: gutterHalfE, paddingStart: gutterHalfS };
+    return React.createElement(View, { style: track },
+      React.createElement(View, { dataSet: { part: 'column' }, style: style, testID: props.testID },
+        Utils.isString(props.children) ? React.createElement(ctx.ReactNative.Text, { style: ctx.typeStyle('body_compact_01') }, props.children) : props.children));
   }
 
   ColumnComponent.displayName = 'Column';

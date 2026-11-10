@@ -20,7 +20,7 @@ describe('Grid: every sample state under every template', function () {
         const cols = Array.from(container.firstElementChild.children);
         assert.equal(cols.length, state.props.columns.length);
         if (state.label === 'default') {
-          assert.match(cols[0].style.flexBasis, /calc\(25% - 32px\)/, 'a span of 4 of 16 is 25% less the gutter');
+          assert.equal(cols[0].style.width, '25%', 'a span of 4 of 16 takes a quarter track');
         }
       });
     }

@@ -66,6 +66,7 @@ export default function PaginationNav (ctx) {
         },
         style: function (state) {
           return [{
+            position: 'relative',
             alignItems: 'center',
             backgroundColor: state.hovered === true ? ctx.color('pagination_nav_page_container_hover') : undefined,
             flexDirection: 'column',
@@ -79,6 +80,7 @@ export default function PaginationNav (ctx) {
           }];
         }
       },
+      React.createElement(View, { 'aria-hidden': true, style: ctx.pressTarget(null) }),
       React.createElement(View, { style: { alignItems: 'center', flexGrow: 1, justifyContent: 'center' } },
         React.createElement(Text, { style: [{ color: ctx.color('pagination_nav_page_label') }, ctx.typeStyle(active ? 'pagination_nav_page_active' : 'pagination_nav_page')] }, String(index + 1))),
       React.createElement(View, { dataSet: { part: 'activeBar' }, style: { alignSelf: 'center', backgroundColor: active ? ctx.color('pagination_nav_indicator') : 'transparent', height: ctx.metric('PaginationNav', 'indicatorHeight'), width: ctx.metric('PaginationNav', 'indicatorWidth') } }));
@@ -149,10 +151,12 @@ export default function PaginationNav (ctx) {
     dirButton('caret_left', prevEnd, loop && page <= 0 ? totalItems - 1 : page - 1),
     items,
     dirButton('caret_right', nextEnd, loop && page >= totalItems - 1 ? 0 : page + 1),
-    React.createElement(Text, {
+    React.createElement(View, {
+      'aria-atomic': true,
       'aria-live': 'polite',
-      style: { height: 0, overflow: 'hidden', position: 'absolute', width: 0 }
-    }, 'Page ' + (page + 1) + ' of ' + totalItems));
+      style: { height: 1, left: -9999, overflow: 'hidden', position: 'absolute', width: 1 }
+    },
+    React.createElement(View, { accessibilityLabel: 'Page ' + (page + 1) + ' of ' + totalItems })));
   }
 
   PaginationNavComponent.displayName = 'PaginationNav';
