@@ -383,7 +383,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // `options.gap === false` draws no separating line - the reference omits
     // it on a face that draws neither fill nor border; `options.gapWidth`
     // replaces the family's gap cell (a kind's own answer, the quick action's)
-    const inner = 0;
+    const inner = Math.max(0, width - (border || 0));
     const gap = options !== undefined && options.gap === false ? 0
       : options !== undefined && Utils.isNumber(options.gapWidth) ? options.gapWidth
         : token('control.' + family + '_focus_gap_width');
