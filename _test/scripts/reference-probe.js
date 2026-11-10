@@ -96,6 +96,7 @@ function probeEntry (rows) {
   return `import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as WebUpstream from '@carbon/react';
+import * as IbmProducts from '@carbon/ibm-products';
 import * as UpstreamIcons from '@carbon/icons-react';
 import { bodyCompact01, bodyCompact02, fontFamilies } from '@carbon/type';
 import ICONS from ${JSON.stringify(join(REPO, 'data', 'icons.json'))};
@@ -120,7 +121,7 @@ function fixtureTextStyle (name) {
     lineHeight: set.lineHeight
   };
 }
-const upstream = Object.assign({}, WebUpstream, { icon: icon, fixtureTextStyle: fixtureTextStyle });
+const upstream = Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, icon: icon, fixtureTextStyle: fixtureTextStyle });
 window.__probePrepare = function (row, state) {
   const mount = MOUNTS[row];
   if (mount === undefined || typeof mount.prepare !== 'function') {

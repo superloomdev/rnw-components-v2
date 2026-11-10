@@ -5,8 +5,11 @@
 export { default as Icon } from './component/atom/icon/icon.js';
 export { default as Text } from './component/atom/text/text.js';
 export { default as View } from './component/atom/view/view.js';
+export { default as Card } from './component/molecule/card/card.js';
 export { default as Button } from './component/molecule/button/button.js';
 export { default as Checkbox } from './component/molecule/checkbox/checkbox.js';
+export { default as TreeNode } from './component/composite/tree-view/tree-node.js';
+export { default as TreeView } from './component/composite/tree-view/tree-view.js';
 export { default as TextInput } from './component/molecule/text-input/text-input.js';
 export { default as Select } from './component/composite/select/select.js';
 export { default as SelectItem } from './component/composite/select/select-item.js';

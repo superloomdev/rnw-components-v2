@@ -3872,7 +3872,7 @@
         "version": "2.99.0",
         "export": "ProductiveCard"
       },
-      "description": "Card is the shared productive and expressive card family.",
+      "description": "Card is a productive card with a header, a body and actions in its header or footer.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3885,10 +3885,10 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "ProductiveCard",
-      "material_twin": "md-elevated-card",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "EmptyState",
@@ -4624,16 +4624,17 @@
       ],
       "parent": "TreeView",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "TreeNode",
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "requires_parent"
+        "requires_parent",
+        "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TreeView",
@@ -4663,7 +4664,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Content",

@@ -3854,6 +3854,46 @@
       "test": "toggle.test.js",
       "testName": "the OS switch sits in a seat of the drawn track's size",
       "why": "the system seat must carry the drawn track's width for the size"
+    },
+    {
+      "id": "tree-view-aria-expanded",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "'aria-expanded': isParent ? expanded : undefined",
+      "replace": "'aria-expanded': isParent ? false : undefined",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "nodes render as treeitems with their aria state",
+      "why": "a parent node must report its expanded state"
+    },
+    {
+      "id": "tree-node-leaf-indent",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "paddingStart: offset * indent",
+      "replace": "paddingStart: offset",
+      "runner": "node",
+      "test": "tree-node.test.js",
+      "testName": "a leaf at depth 1 reports treeitem without expanded",
+      "why": "the leaf indent at depth 1 is the frozen calcOffset"
+    },
+    {
+      "id": "tree-view-arrow-down",
+      "file": "component/composite/tree-view/tree-view.js",
+      "find": "const idx = enabledIndexes[next];",
+      "replace": "const idx = enabledIndexes[enabledPos];",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "arrow keys move the focus order and aria-selected",
+      "why": "arrow keys move the focus order down the tree"
+    },
+    {
+      "id": "card-footer-only",
+      "file": "component/molecule/card/card.js",
+      "find": "(!atTop && actions !== null) || primary !== null || secondary !== null",
+      "replace": "false",
+      "runner": "node",
+      "test": "card.test.js",
+      "testName": "the footer renders only with bottom actions or a button",
+      "why": "the footer renders only with bottom actions or a button"
     }
   ]
 }

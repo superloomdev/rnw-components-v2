@@ -143,6 +143,21 @@ Row is one row of a Grid; it must be composed inside Grid.
 
 | State | Props |
 |---|---|
-| default | `{"columns":[{"children":"Column"},{"children":"Column"},{"children":"Column"}]}` |
-| spans | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":8}]}` |
+| default | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}]}` |
+| condensed | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}]}` |
+| narrow | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}]}` |
 | offset | `{"columns":[{"children":"Column","lg":{"offset":4,"span":4}},{"children":"Column","lg":8}]}` |
+| auto | `{"columns":[{"children":"Column"},{"children":"Column"},{"children":"Column"}]}` |
+| rowGap | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}]}` |
+
+`default` mounts inside Grid wrapper (sample composition, not a prop).
+
+`condensed` mounts inside Grid wrapper (sample composition, not a prop).
+
+`narrow` mounts inside Grid wrapper (sample composition, not a prop).
+
+`offset` mounts inside Grid wrapper (sample composition, not a prop).
+
+`auto` mounts inside Grid wrapper (sample composition, not a prop).
+
+`rowGap` mounts inside Grid wrapper (sample composition, not a prop).
