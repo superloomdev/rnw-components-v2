@@ -18,6 +18,7 @@ export { default as ComboBox } from './component/composite/select/combo-box.js';
 export { default as FloatingActionButton } from './component/molecule/floating-action-button/floating-action-button.js';
 export { default as IconButton } from './component/molecule/button/icon-button.js';
 export { default as TextArea } from './component/molecule/text-input/text-area.js';
+export { default as EmptyState } from './component/molecule/empty-state/empty-state.js';
 export { default as Dropdown } from './component/composite/select/dropdown.js';
 export { default as RadioButton } from './component/molecule/radio-button/radio-button.js';
 export { default as Popover } from './component/molecule/popover/popover.js';
@@ -119,6 +120,7 @@ export { default as FilterableMultiSelect } from './component/composite/select/f
 export { default as Layer } from './component/provider/layer/layer.js';
 export { default as SkipToContent } from './component/molecule/skip-to-content/skip-to-content.js';
 export { default as OverflowMenu } from './component/composite/menu/overflow-menu.js';
+export { default as PageHeader } from './component/composite/page-header/page-header.js';
 export { default as OverflowMenuItem } from './component/composite/menu/overflow-menu-item.js';
 export { default as MenuButton } from './component/composite/menu/menu-button.js';
 export { default as MenuItem } from './component/composite/menu/menu-item.js';

@@ -74,7 +74,7 @@ function fixtureTextStyle (name) {
 }
 
 const UPSTREAM = {
-  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
+  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
   'parse-rn': { Text: NativeText, getColor: getColor }
 };
 

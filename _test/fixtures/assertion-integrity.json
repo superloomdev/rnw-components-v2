@@ -3894,6 +3894,26 @@
       "test": "card.test.js",
       "testName": "the footer renders only with bottom actions or a button",
       "why": "the footer renders only with bottom actions or a button"
+    },
+    {
+      "id": "empty-state-action-gap",
+      "file": "component/molecule/empty-state/empty-state.js",
+      "find": "marginTop: gap('actionGap')",
+      "replace": "marginTop: 0",
+      "runner": "node",
+      "test": "empty-state.test.js",
+      "testName": "the action renders an sm tertiary button in its seat",
+      "why": "the action gap separates the action from the subtitle"
+    },
+    {
+      "id": "page-header-title-min-height",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "minHeight: ctx.metric('PageHeader', 'titleMinHeight')",
+      "replace": "minHeight: 0",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the title row renders without breadcrumbs",
+      "why": "the title row keeps its min height without breadcrumbs"
     }
   ]
 }

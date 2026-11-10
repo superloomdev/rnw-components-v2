@@ -3899,7 +3899,7 @@
         "version": "2.99.0",
         "export": "EmptyState"
       },
-      "description": "EmptyState is the shared empty-state family and includes the upstream variants.",
+      "description": "EmptyState is a title, supporting text, an action and a link under an optional illustration.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3915,7 +3915,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Column",
@@ -4558,7 +4558,7 @@
         "version": "2.99.0",
         "export": "PageHeader"
       },
-      "description": "PageHeader is a component in the PageHeader family.",
+      "description": "PageHeader is the page header: breadcrumbs, a title row with actions, subtitle and tags, collapsing on scroll.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4574,7 +4574,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Tearsheet",

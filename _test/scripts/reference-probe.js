@@ -121,7 +121,7 @@ function fixtureTextStyle (name) {
     lineHeight: set.lineHeight
   };
 }
-const upstream = Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, icon: icon, fixtureTextStyle: fixtureTextStyle });
+const upstream = Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, icon: icon, fixtureTextStyle: fixtureTextStyle });
 window.__probePrepare = function (row, state) {
   const mount = MOUNTS[row];
   if (mount === undefined || typeof mount.prepare !== 'function') {
