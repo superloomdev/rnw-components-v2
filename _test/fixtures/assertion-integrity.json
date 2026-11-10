@@ -3914,6 +3914,36 @@
       "test": "page-header.test.js",
       "testName": "the title row renders without breadcrumbs",
       "why": "the title row keeps its min height without breadcrumbs"
+    },
+    {
+      "id": "tearsheet-action-height",
+      "file": "component/composite/tearsheet/spec.tearsheet.js",
+      "find": "actionHeight: 'control.tearsheet_action_height'",
+      "replace": "actionHeight: 'control.tearsheet_inset_inline'",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "the action row draws the action height cell",
+      "why": "the action row must be the 80 action cell, not a smaller inset"
+    },
+    {
+      "id": "tearsheet-passive-close",
+      "file": "component/composite/tearsheet/tearsheet.js",
+      "find": "const hasClose = props.hasCloseIcon === undefined ? passive : props.hasCloseIcon === true;",
+      "replace": "const hasClose = false;",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "a passive tearsheet draws the close button",
+      "why": "a passive tearsheet must draw its close button"
+    },
+    {
+      "id": "tearsheet-influencer-width",
+      "file": "component/composite/tearsheet/tearsheet.js",
+      "find": "width: influencerWidth + metrics.dividerWidth",
+      "replace": "width: influencerWidth",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "the left influencer box is the cell plus the end rule",
+      "why": "the influencer box is the 256 cell plus the 1px end rule (257 upstream)"
     }
   ]
 }

@@ -85,14 +85,15 @@ ready.
 @param {String} component - Component name
 @param {String} set       - 'primary' (default) | 'second': which reference set the page mounts
 @param {String} [scheme]  - 'light' (default) | 'dark'
+@param {String} [state]   - D61: an isolating reference renders only this state label
 
 @return {Promise<Object>} - The page status ({ cells, unmeasured, errors })
 *********************************************************************/
-export async function openReference (page, component, set, scheme) {
+export async function openReference (page, component, set, scheme, state) {
 
   // The mobile upstream follows the platform's color scheme, so a dark reference asks for it
   await page.emulateMedia({ colorScheme: scheme === 'dark' ? 'dark' : 'light' });
-  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : ''));
+  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : '') + (typeof state === 'string' ? '&state=' + encodeURIComponent(state) : ''));
   await page.waitForFunction(function () {
     return window.__reference && window.__reference.ready === true;
   }, null, { timeout: 30000 });

@@ -196,9 +196,19 @@ test.describe('perceptual', function () {
         return entry.name === row.name;
       });
       const componentReference = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference : undefined;
-      const reference = await openReference(page, row.name);
+      const isoLabels = componentReference !== undefined && componentReference.isolate === true && component !== undefined
+        ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
+        : [null];
+      const reference = { cells: 0, errors: [], unmeasured: [] };
+      const upstream = {};
+      for (const isoLabel of isoLabels) {
+        const ref = await openReference(page, row.name, undefined, undefined, isoLabel);
+        reference.cells += ref.cells;
+        reference.errors.push.apply(reference.errors, ref.errors);
+        reference.unmeasured.push.apply(reference.unmeasured, ref.unmeasured || []);
+        Object.assign(upstream, await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream'));
+      }
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream');
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
       const ours = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'ours');
       const ratios = [];

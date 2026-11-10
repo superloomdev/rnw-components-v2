@@ -209,7 +209,8 @@ export default function createOverlayBehaviors (deps) {
       render: options.render,
       layerLevel: layerLevel,
       inheritedDisabled: inheritedDisabled,
-      headingLevel: headingLevel
+      headingLevel: headingLevel,
+      name: options.name
     };
 
     // Version store each mounted layer view subscribes to. Bumped after
@@ -247,6 +248,9 @@ export default function createOverlayBehaviors (deps) {
 
       if (isOpen && hosted) {
         layerIdRef.current = register({
+          get name () {
+            return optionsRef.current.name;
+          },
           get trap () {
             return optionsRef.current.trap;
           },
@@ -292,7 +296,8 @@ export default function createOverlayBehaviors (deps) {
     return {
       hosted: hosted,
       layerId: layerIdRef.current,
-      isTopmost: isTopmost
+      isTopmost: isTopmost,
+      layers: layers
     };
 
   }

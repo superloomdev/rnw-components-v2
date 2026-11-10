@@ -518,8 +518,27 @@ export async function runFidelity (page, component, set, scheme) {
 
   const reference = component.reference;
   const masks = {};
-  const status = await openReference(page, component.name, set, scheme);
-  const upstream = await collect(page, component, reference, 'upstream');
+  const isoLabels = reference.isolate === true
+    ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
+    : [null];
+  const status = { cells: 0, errors: [], unmeasured: [] };
+  const upstream = {};
+  for (const isoLabel of isoLabels) {
+    const ref = await openReference(page, component.name, set, scheme, isoLabel);
+    status.cells += ref.cells;
+    status.errors.push.apply(status.errors, ref.errors);
+    status.unmeasured.push.apply(status.unmeasured, ref.unmeasured || []);
+    const read = await collect(page, component, reference, 'upstream');
+    for (const key of Object.keys(read)) {
+      if (Array.isArray(read[key])) {
+        upstream[key] = (upstream[key] || []).concat(read[key]);
+      } else if (upstream[key] && typeof upstream[key] === 'object' && typeof read[key] === 'object') {
+        Object.assign(upstream[key], read[key]);
+      } else {
+        upstream[key] = read[key];
+      }
+    }
+  }
   const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });
   const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];

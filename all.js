@@ -121,6 +121,7 @@ export { default as Layer } from './component/provider/layer/layer.js';
 export { default as SkipToContent } from './component/molecule/skip-to-content/skip-to-content.js';
 export { default as OverflowMenu } from './component/composite/menu/overflow-menu.js';
 export { default as PageHeader } from './component/composite/page-header/page-header.js';
+export { default as Tearsheet } from './component/composite/tearsheet/tearsheet.js';
 export { default as OverflowMenuItem } from './component/composite/menu/overflow-menu-item.js';
 export { default as MenuButton } from './component/composite/menu/menu-button.js';
 export { default as MenuItem } from './component/composite/menu/menu-item.js';

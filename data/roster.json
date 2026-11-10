@@ -4585,7 +4585,7 @@
         "version": "2.99.0",
         "export": "Tearsheet"
       },
-      "description": "Tearsheet is a component in the Tearsheet family.",
+      "description": "Tearsheet is a large dialog for a focused task: a header, an optional influencer panel, the main content and a row of actions.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4601,7 +4601,7 @@
       "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "TreeNode",

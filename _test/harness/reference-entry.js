@@ -74,12 +74,14 @@ function fixtureTextStyle (name) {
 }
 
 const UPSTREAM = {
-  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
+  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, Tearsheet: IbmProducts.Tearsheet, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
   'parse-rn': { Text: NativeText, getColor: getColor }
 };
 
 const params = new URLSearchParams(window.location.search);
 const only = params.get('component');
+// D61: an isolating reference (`isolate: true`) renders only this state
+const stateOnly = params.get('state');
 const set = 'primary';
 const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 // The primary's darkest zone, and the mobile upstream's own dark theme
@@ -213,7 +215,7 @@ function Reference () {
     return React.createElement('section', { key: name, className: 'family', 'data-family': rows[name].family },
       React.createElement('h2', null, name),
       React.createElement('div', { className: 'grid' }, (samples[name] || []).filter(function (state) {
-        return state.cell !== false;
+        return state.cell !== false && (stateOnly === null || state.label === stateOnly);
       }).map(function (state) {
         return React.createElement(Cell, { key: state.label, name: name, state: state });
       })));
