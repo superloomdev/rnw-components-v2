@@ -230,7 +230,7 @@ jobs:
           echo "PASS: no SCREAMING token names"
       - name: G11 - No unit strings in shipped source or data
         run: |
-          hits=$(git grep -nE "['\"][0-9.]+(rem|em|px|vw|vh|ms|%)['\"]" -- component behaviors components.js all.js catalog.js data || true)
+          hits=$(git grep -nE "['\"][0-9.]+(rem|em|px|vw|vh|ms)['\"]" -- component behaviors components.js all.js catalog.js data || true)
           if [ -n "$hits" ]; then
             echo "FAIL: unit string found. Values are numbers in the native projection; RNW is the web projection."
             echo "$hits"

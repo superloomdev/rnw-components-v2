@@ -2,7 +2,7 @@
 
 The page's header stack: breadcrumb row, title row (icon + heading +
 actions), subtitle, tags; `scrollY`/`collapseHeader` drive the collapsed
-bar. Upstream is the ibm-products `PageHeader`.
+bar. Upstream is the product-patterns `PageHeader`.
 
 ## Decisions
 

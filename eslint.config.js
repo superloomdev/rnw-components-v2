@@ -6,5 +6,4 @@
 // `_test/**`, which is this repository's only test directory.
 import { app } from '@superloomdev/js-helper-eslint-config';
 
-// The archive holds verbatim reference material: not source, never linted
-export default app.concat([{ ignores: ['archive/**'] }]);
+export default app;

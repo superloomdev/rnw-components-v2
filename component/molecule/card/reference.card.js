@@ -1,4 +1,4 @@
-// Info: Card measurement reference - the ibm-products ProductiveCard:
+// Info: Card measurement reference - the product-patterns ProductiveCard:
 // the card's box, header fields, body and footer's action seats.
 export default Object.freeze({
   kind: 'render-web',

@@ -1,4 +1,4 @@
-// Info: EmptyState measurement reference - the ibm-products EmptyState:
+// Info: EmptyState measurement reference - the product-patterns EmptyState:
 // the illustration, the content column, the title, the subtitle, the
 // action and the link.
 export default Object.freeze({

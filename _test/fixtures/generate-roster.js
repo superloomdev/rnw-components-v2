@@ -17,7 +17,6 @@ const PINS = {
   '@carbon/react': '1.115.0',
   '@carbon/react-native': '9.0.7',
   '@carbon/ibm-products': '2.99.0',
-  '@material/web': '2.5.0',
 };
 
 const PRODUCT_FAMILIES = [
@@ -37,8 +36,8 @@ const PRODUCT_FAMILIES = [
 ];
 
 const ADDITION_ROWS = [
-  ['Divider', { package: '@material/web', version: '2.5.0', export: 'MdDivider' }],
-  ['FloatingActionButton', { package: '@material/web', version: '2.5.0', export: 'MdFab' }],
+  ['Divider', { package: 'local', version: '1.0.0', export: 'Divider' }],
+  ['FloatingActionButton', { package: 'local', version: '1.0.0', export: 'FloatingActionButton' }],
   ['Carousel', { package: 'local', version: '1.0.0', export: 'Carousel' }],
 ];
 const ADDITIONS = 4; // 3 new families + Button kinds augmentation (reuses Button row)
@@ -61,7 +60,6 @@ function makeRow(name, source) {
     parent: null,
     reference: null,
     carbon_twin: null,
-    material_twin: null,
     diff_budget: null,
     flags: null,
     status: null,

@@ -5,7 +5,7 @@
 ## Card family
 
 A productive card with a header, a body and actions in its header or
-footer. The ibm-products `ProductiveCard` is the upstream.
+footer. The product-patterns `ProductiveCard` is the upstream.
 
 ### Decisions
 

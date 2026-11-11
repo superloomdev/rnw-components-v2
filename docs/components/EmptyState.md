@@ -5,7 +5,7 @@
 ## EmptyState family
 
 A title, supporting text, an action and a link under an optional
-illustration. The upstream is the ibm-products `EmptyState`.
+illustration. The upstream is the product-patterns `EmptyState`.
 
 ### Decisions
 

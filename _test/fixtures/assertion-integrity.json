@@ -2708,8 +2708,8 @@
     {
       "id": "grid-column-span",
       "file": "component/molecule/grid/column.js",
-      "find": "const pct = (span * 100 / columns);",
-      "replace": "const pct = (span * 100 / columns) / 2;",
+      "find": "track.width = (span * 100 / columns) + '%';",
+      "replace": "track.width = (span * 100 / columns / 2) + '%';",
       "runner": "node",
       "test": "grid.test.js",
       "testName": "carbon / default: the columns take the lg span of 16",

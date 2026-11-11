@@ -35,7 +35,6 @@
         "package": "none"
       },
       "carbon_twin": "none",
-      "material_twin": "md-icon",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -65,7 +64,6 @@
         "package": "@carbon/react-native"
       },
       "carbon_twin": "Text",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -92,7 +90,6 @@
         "package": "none"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -127,7 +124,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Button",
-      "material_twin": "md-button",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -159,7 +155,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Checkbox",
-      "material_twin": "md-checkbox",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -191,7 +186,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextInput",
-      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -225,7 +219,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Select",
-      "material_twin": "md-outlined-select",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -256,7 +249,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "IconButton",
-      "material_twin": "md-icon-button",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -289,7 +281,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextArea",
-      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -324,7 +315,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Dropdown",
-      "material_twin": "md-outlined-select",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -354,7 +344,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioButton",
-      "material_twin": "md-radio",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -388,7 +377,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Toggle",
-      "material_twin": "md-switch",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -415,7 +403,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tag",
-      "material_twin": "md-assist-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -445,7 +432,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tabs",
-      "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -475,7 +461,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Menu",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -507,7 +492,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Modal",
-      "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -536,7 +520,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToastNotification",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -565,7 +548,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressBar",
-      "material_twin": "md-linear-progress",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -595,7 +577,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tooltip",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -624,7 +605,6 @@
         "package": "none"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -654,7 +634,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "AspectRatio",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -685,7 +664,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ButtonSet",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -716,7 +694,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ButtonSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -749,7 +726,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ComboButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -782,7 +758,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DangerButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -813,7 +788,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "PrimaryButton",
-      "material_twin": "md-button",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -844,7 +818,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SecondaryButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -854,9 +827,9 @@
       "family": "Divider",
       "tier": "atom",
       "source": {
-        "package": "@material/web",
-        "version": "2.5.0",
-        "export": "MdDivider"
+        "package": "local",
+        "version": "1.0.0",
+        "export": "Divider"
       },
       "description": "Divider draws a horizontal rule of the theme's divider width and color, inset at either end by the divider inset when asked; it has no upstream visual reference, so its values are a Superloom decision from the primary system's own scale.",
       "platform": {
@@ -871,7 +844,6 @@
         "package": "none"
       },
       "carbon_twin": "none",
-      "material_twin": "md-divider",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -901,7 +873,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "IconSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -930,7 +901,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Link",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -959,7 +929,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SkeletonIcon",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -988,7 +957,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SkeletonPlaceholder",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1017,7 +985,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SkeletonText",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1046,7 +1013,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "InlineLoading",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1080,7 +1046,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Loading",
-      "material_twin": "md-circular-progress",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1107,7 +1072,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressIndicator",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1136,7 +1100,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressIndicatorSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1167,7 +1130,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ProgressStep",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -1199,7 +1161,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DismissibleTag",
-      "material_twin": "md-input-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1230,7 +1191,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "OperationalTag",
-      "material_twin": "md-assist-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1262,7 +1222,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectableTag",
-      "material_twin": "md-filter-chip",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1289,7 +1248,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TagSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1319,7 +1277,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "CheckboxGroup",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1348,7 +1305,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "CheckboxSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1375,7 +1331,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Form",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1402,7 +1357,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FormGroup",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -1431,7 +1385,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FormItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1458,7 +1411,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FormLabel",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -1487,7 +1439,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Heading",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1514,7 +1465,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Section",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1548,7 +1498,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "NumberInput",
-      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1577,7 +1526,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "NumberInputSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1609,7 +1557,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioButtonGroup",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1638,7 +1585,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioButtonSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1670,7 +1616,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ExpandableSearch",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1705,7 +1650,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Search",
-      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1732,7 +1676,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SearchSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1767,7 +1710,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Slider",
-      "material_twin": "md-slider",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1794,7 +1736,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SliderSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1821,7 +1762,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HStack",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1848,7 +1788,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Stack",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1875,7 +1814,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "VStack",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1902,7 +1840,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggleSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1938,7 +1875,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "PasswordInput",
-      "material_twin": "md-outlined-text-field",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -1965,7 +1901,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextAreaSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -1994,7 +1929,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TextInputSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -2028,7 +1962,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TimePicker",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision",
@@ -2063,7 +1996,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TimePickerSelect",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2094,7 +2026,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DropdownSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2121,7 +2052,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2155,7 +2085,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MultiSelect",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -2191,7 +2120,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FilterableMultiSelect",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -2220,7 +2148,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Layer",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "superloom_decision"
@@ -2253,7 +2180,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "none",
-      "material_twin": "md-select-option",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2286,7 +2212,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2323,7 +2248,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ComboBox",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2333,9 +2257,9 @@
       "family": "FloatingActionButton",
       "tier": "molecule",
       "source": {
-        "package": "@material/web",
-        "version": "2.5.0",
-        "export": "MdFab"
+        "package": "local",
+        "version": "1.0.0",
+        "export": "FloatingActionButton"
       },
       "description": "FloatingActionButton is a raised icon button, optionally extended with a label, for a screen's primary action; its Carbon twin is BottomToolbarPrimaryAction and it has no upstream visual reference, so its values are a Superloom decision.",
       "platform": {
@@ -2350,7 +2274,6 @@
         "package": "none"
       },
       "carbon_twin": "none",
-      "material_twin": "md-fab",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -2383,7 +2306,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Popover",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2413,7 +2335,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "PopoverContent",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2446,7 +2367,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DefinitionTooltip",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2476,7 +2396,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Toggletip",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2506,7 +2425,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipLabel",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2538,7 +2456,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2570,7 +2487,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipContent",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2603,7 +2519,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ToggletipActions",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2633,7 +2548,6 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "TagSet",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2663,7 +2577,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tab",
-      "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2695,7 +2608,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TabList",
-      "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -2727,7 +2639,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2760,7 +2671,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2793,7 +2703,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "IconTab",
-      "material_twin": "md-tabs",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2823,7 +2732,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TabsVertical",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2853,7 +2761,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "none",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -2886,7 +2793,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TabsSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2920,7 +2826,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "md-outlined-segmented-button-set",
-      "material_twin": "md-outlined-segmented-button-set",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -2952,7 +2857,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "md-outlined-segmented-button",
-      "material_twin": "md-outlined-segmented-button",
       "diff_budget": 2,
       "flags": [
         "no_reference"
@@ -2981,7 +2885,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "md-outlined-segmented-button",
-      "material_twin": "md-outlined-segmented-button",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -3014,7 +2917,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuButton",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3044,7 +2946,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItem",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3076,7 +2977,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemDivider",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3108,7 +3008,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemGroup",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3140,7 +3039,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemRadioGroup",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3172,7 +3070,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "MenuItemSelectable",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -3204,7 +3101,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "OverflowMenu",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3234,7 +3130,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "OverflowMenuItem",
-      "material_twin": "md-menu",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3261,7 +3156,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "CopyButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3288,7 +3182,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SkipToContent",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "web_only"
@@ -3322,7 +3215,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ComposedModal",
-      "material_twin": "md-dialog",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3352,7 +3244,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalHeader",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -3385,7 +3276,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalBody",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -3420,7 +3310,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ModalFooter",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -3450,7 +3339,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "InlineNotification",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3477,7 +3365,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ActionableNotification",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3504,7 +3391,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Callout",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3531,7 +3417,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "NotificationActionButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -3561,7 +3446,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Breadcrumb",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3588,7 +3472,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "BreadcrumbItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "no_reference",
@@ -3618,7 +3501,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "BreadcrumbSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3648,7 +3530,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Accordion",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3678,7 +3559,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "AccordionItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -3711,7 +3591,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "AccordionSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3738,7 +3617,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "UnorderedList",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3765,7 +3643,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "OrderedList",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3792,7 +3669,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ListItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -3825,7 +3701,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ContainedList",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3855,7 +3730,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ContainedListItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -3885,7 +3759,6 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "ProductiveCard",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3912,7 +3785,6 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "EmptyState",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3926,7 +3798,7 @@
         "version": "1.115.0",
         "export": "Column"
       },
-      "description": "Column is a component in the Grid family; it must be composed inside Grid.",
+      "description": "Column is one cell of the layout grid, spanning a number of the breakpoint's columns with the gutter halves the family context carries; it must be composed inside Grid or Row, with no upstream visual reference of its own - it is measured through the Grid and Row samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -3939,7 +3811,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Column",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -3969,7 +3840,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Grid",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -3996,7 +3866,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Row",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4027,7 +3896,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Pagination",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4056,7 +3924,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "PaginationNav",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4083,7 +3950,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "PaginationSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4113,7 +3979,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "RadioTile",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4142,7 +4007,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ClickableTile",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4172,7 +4036,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "ExpandableTile",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4202,7 +4065,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SelectableTile",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4229,7 +4091,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Tile",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4259,7 +4120,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TileGroup",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4294,7 +4154,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePicker",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4308,7 +4167,7 @@
         "version": "1.115.0",
         "export": "DatePickerInput"
       },
-      "description": "DatePickerInput is one date field of a DatePicker; it must be composed inside DatePicker.",
+      "description": "DatePickerInput is one date field of a DatePicker - the label, the text field at the width the picker's type assigns and the calendar icon; it must be composed inside DatePicker, with no upstream visual reference of its own - it is measured through DatePicker's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4327,7 +4186,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePickerInput",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -4349,9 +4207,7 @@
         "support": "both",
         "fallback": "none"
       },
-      "enums": [
-        "anatomy.label"
-      ],
+      "enums": [],
       "behaviors": [],
       "parent": null,
       "reference": {
@@ -4359,7 +4215,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePickerSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4388,7 +4243,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Filename",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4417,7 +4271,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploader",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4446,7 +4299,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4477,7 +4329,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderDropContainer",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4508,7 +4359,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4539,7 +4389,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4566,7 +4415,6 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "PageHeader",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4593,7 +4441,6 @@
         "package": "@carbon/ibm-products"
       },
       "carbon_twin": "Tearsheet",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4607,7 +4454,7 @@
         "version": "1.115.0",
         "export": "TreeNode"
       },
-      "description": "TreeNode is a component in the TreeView family; it must be composed inside TreeView.",
+      "description": "TreeNode is one row of a TreeView - an expandable parent or a selectable leaf with an optional icon, indented by its depth; it must be composed inside TreeView, with no upstream visual reference of its own - it is measured through the tree's samples.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4623,7 +4470,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TreeNode",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent",
@@ -4640,7 +4486,7 @@
         "version": "1.115.0",
         "export": "TreeView"
       },
-      "description": "TreeView is a component in the TreeView family.",
+      "description": "TreeView is a hierarchical list of nodes that expand, collapse and select, one at a time or several, walked by the arrow keys under an optional visible label.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4656,7 +4502,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TreeView",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "built"
@@ -4686,7 +4531,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Content",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4716,7 +4560,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Header",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4746,7 +4589,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderContainer",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -4776,7 +4618,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderGlobalAction",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4808,7 +4649,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderGlobalBar",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4840,7 +4680,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderMenu",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4872,7 +4711,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderMenuButton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4904,7 +4742,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderMenuItem",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4936,7 +4773,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderName",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -4968,7 +4804,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderNavigation",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5000,7 +4835,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderPanel",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5032,7 +4866,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderSideNavItems",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5064,7 +4897,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNav",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -5094,7 +4926,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavDetails",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5126,7 +4957,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavDivider",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5158,7 +4988,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavFooter",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5190,7 +5019,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavHeader",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5222,7 +5050,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavIcon",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5254,7 +5081,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavItem",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5286,7 +5112,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavItems",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5318,7 +5143,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavLink",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5350,7 +5174,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavLinkText",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5382,7 +5205,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavMenu",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5414,7 +5236,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavMenuItem",
-      "material_twin": "md-navigation-drawer",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5443,7 +5264,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListBody",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5472,7 +5292,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListCell",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5501,7 +5320,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListHead",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5530,7 +5348,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListInput",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5559,7 +5376,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListRow",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5588,7 +5404,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -5615,7 +5430,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "StructuredListWrapper",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -5645,7 +5459,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DataTable",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -5675,7 +5488,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DataTableSkeleton",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [],
       "status": "pending"
@@ -5705,7 +5517,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "Table",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5737,7 +5548,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableActionList",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5769,7 +5579,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableBatchAction",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5801,7 +5610,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableBatchActions",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5833,7 +5641,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableBody",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5865,7 +5672,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableCell",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5897,7 +5703,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableContainer",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5929,7 +5734,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableExpandedRow",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5961,7 +5765,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableExpandHeader",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -5993,7 +5796,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableExpandRow",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6025,7 +5827,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableHead",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6057,7 +5858,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableHeader",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6089,7 +5889,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableRow",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6121,7 +5920,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableSelectAll",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6153,7 +5951,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableSelectRow",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6185,7 +5982,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableToolbar",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6217,7 +6013,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableToolbarAction",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6249,7 +6044,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableToolbarContent",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6281,7 +6075,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableToolbarMenu",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"
@@ -6313,7 +6106,6 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "TableToolbarSearch",
-      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
         "requires_parent"

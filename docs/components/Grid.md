@@ -25,7 +25,7 @@ references instead.
 
 ## Column
 
-Column is a component in the Grid family; it must be composed inside Grid.
+Column is one cell of the layout grid, spanning a number of the breakpoint's columns with the gutter halves the family context carries; it must be composed inside Grid or Row, with no upstream visual reference of its own - it is measured through the Grid and Row samples.
 
 | | |
 |---|---|

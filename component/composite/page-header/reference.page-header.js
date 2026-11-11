@@ -1,4 +1,4 @@
-// Info: PageHeader measurement reference - the ibm-products PageHeader:
+// Info: PageHeader measurement reference - the product-patterns PageHeader:
 // the breadcrumb row, the title row, subtitle and tags.
 export default Object.freeze({
   kind: 'render-web',

@@ -15,13 +15,18 @@ TileGroup's `items`, D21a); TreeNode is the row the context renders. The
 depth indent is upstream's `calcOffset` verbatim in `control.tree_indent`
 units.
 
+Only the focused node is a tab stop: each node takes `tabIndex` -1 and the
+focused one 0 (upstream `TreeNode.js:281`, `TreeView.js:112`), passed
+explicitly because a react-native-web `Pressable` otherwise gives every
+enabled node 0.
+
 ### Platform
 
 `platform.support` is `both`.
 
 ## TreeNode
 
-TreeNode is a component in the TreeView family; it must be composed inside TreeView.
+TreeNode is one row of a TreeView - an expandable parent or a selectable leaf with an optional icon, indented by its depth; it must be composed inside TreeView, with no upstream visual reference of its own - it is measured through the tree's samples.
 
 | | |
 |---|---|
@@ -72,7 +77,7 @@ TreeNode is a component in the TreeView family; it must be composed inside TreeV
 
 ## TreeView
 
-TreeView is a component in the TreeView family.
+TreeView is a hierarchical list of nodes that expand, collapse and select, one at a time or several, walked by the arrow keys under an optional visible label.
 
 | | |
 |---|---|
