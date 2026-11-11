@@ -74,6 +74,7 @@ export default function TreeNode (ctx) {
         }, props.style];
       },
       focusable: focused && !disabled,
+      tabIndex: disabled ? undefined : focused ? 0 : -1,
       testID: props.testID
     }, label);
   }
