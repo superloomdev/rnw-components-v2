@@ -4273,18 +4273,20 @@
         "version": "1.115.0",
         "export": "DatePicker"
       },
-      "description": "DatePicker is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
+      "description": "DatePicker picks a date or a date range from a calendar under one or two date inputs.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
         "anatomy.label",
-        "feedback.field"
+        "feedback.field",
+        "anatomy.date_picker_widget"
       ],
       "behaviors": [
         "controllable-state",
-        "overlay"
+        "overlay",
+        "keyboard"
       ],
       "parent": null,
       "reference": {
@@ -4292,11 +4294,9 @@
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePicker",
-      "material_twin": "md-dialog-date-picker",
+      "material_twin": "none",
       "diff_budget": 2,
-      "flags": [
-        "deferred_gap"
-      ],
+      "flags": [],
       "status": "pending"
     },
     {
@@ -4308,7 +4308,7 @@
         "version": "1.115.0",
         "export": "DatePickerInput"
       },
-      "description": "DatePickerInput is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
+      "description": "DatePickerInput is one date field of a DatePicker; it must be composed inside DatePicker.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4321,16 +4321,17 @@
         "controllable-state",
         "overlay"
       ],
-      "parent": null,
+      "parent": "DatePicker",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePickerInput",
-      "material_twin": "md-dialog-date-picker",
+      "material_twin": "none",
       "diff_budget": 2,
       "flags": [
-        "deferred_gap"
+        "requires_parent",
+        "no_reference"
       ],
       "status": "pending"
     },
@@ -4343,31 +4344,25 @@
         "version": "1.115.0",
         "export": "DatePickerSkeleton"
       },
-      "description": "DatePickerSkeleton is a component in the DatePicker family; its Material dialog anatomy is explicitly deferred.",
+      "description": "DatePickerSkeleton is the loading placeholder of a DatePicker: a label bar and one or two input bars.",
       "platform": {
         "support": "both",
         "fallback": "none"
       },
       "enums": [
-        "anatomy.label",
-        "feedback.field"
+        "anatomy.label"
       ],
-      "behaviors": [
-        "controllable-state",
-        "overlay"
-      ],
+      "behaviors": [],
       "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "DatePickerSkeleton",
-      "material_twin": "md-dialog-date-picker",
+      "material_twin": "none",
       "diff_budget": 2,
-      "flags": [
-        "deferred_gap"
-      ],
-      "status": "pending"
+      "flags": [],
+      "status": "built"
     },
     {
       "name": "Filename",
