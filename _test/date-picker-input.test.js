@@ -27,7 +27,8 @@ test('DatePickerInput: range gives both fields the range width and the first the
     React.createElement(Registry.DatePickerInput, { labelText: 'Start', testID: 'dpi-s' }),
     React.createElement(Registry.DatePickerInput, { labelText: 'End', testID: 'dpi-e' })));
   assert.equal(c.querySelector('[data-testid="dpi-s"]').style.width, '143.5px');
-  assert.equal(c.querySelector('[data-testid="dpi-s"]').style.marginEnd, '1px');
+  assert.equal(c.querySelector('[data-testid="dpi-s"]').style.marginRight, '1px');
+  assert.equal(c.querySelector('[data-testid="dpi-e"]').style.marginRight, '0px');
   assert.equal(c.querySelector('[data-testid="dpi-e"]').style.width, '143.5px');
 });
 
