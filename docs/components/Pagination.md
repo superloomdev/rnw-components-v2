@@ -84,6 +84,7 @@ Pagination is a bar that pages through a list, with a page-size select, item cou
 | `textGap` | `control.pagination_text_gap` |
 | `selectPaddingStart` | `control.pagination_select_padding_start` |
 | `selectPaddingEnd` | `control.pagination_select_padding_end` |
+| `selectIndicatorEnd` | `control.pagination_select_indicator_end` |
 | `collapseWidth` | `control.pagination_collapse_width` |
 
 ### States (sample.js)

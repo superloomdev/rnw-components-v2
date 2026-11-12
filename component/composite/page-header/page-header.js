@@ -34,7 +34,7 @@ export default function PageHeader (ctx) {
     // available width the actions wrap under the title (`:439-447,494-506`)
     const titleRow = React.createElement(View, {
       dataSet: { part: 'titleRow' },
-      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: hasCrumbs ? 0 : 32 }
+      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: hasCrumbs ? 0 : ctx.metric('PageHeader', 'titleOffsetNoBreadcrumb') }
     },
     React.createElement(View, { dataSet: { part: 'title' }, style: { alignItems: 'center', flexDirection: 'row', flexShrink: 1, minHeight: ctx.metric('PageHeader', 'titleMinHeight') } },
       Utils.isString(props.titleIcon) ? React.createElement(View, { dataSet: { part: 'titleIcon' }, style: { marginEnd: ctx.metric('PageHeader', 'titleIconGap') } },
@@ -50,12 +50,12 @@ export default function PageHeader (ctx) {
       dataSet: { part: 'available' },
       style: { marginTop: subtitle !== null ? ctx.metric('PageHeader', 'subtitleGap') : rowGap }
     }, Utils.isString(props.children) ? React.createElement(Text, { style: [{ color: ctx.color('page_header_subtitle') }, ctx.typeStyle('body_compact_01')] }, props.children) : props.children) : null;
-    const tagRow = !collapsed && !Utils.isEmptyArray(tags) ? React.createElement(View, { dataSet: { part: 'tags' }, style: { flexDirection: 'row', flexWrap: 'wrap', height: 44, marginStart: -ctx.metric('PageHeader', 'tagsPaddingBlock') } },
+    const tagRow = !collapsed && !Utils.isEmptyArray(tags) ? React.createElement(View, { dataSet: { part: 'tags' }, style: { flexDirection: 'row', flexWrap: 'wrap', height: ctx.metric('PageHeader', 'tagsHeight'), marginStart: -ctx.metric('PageHeader', 'tagsPaddingBlock') } },
       tags.map(function (t, i) {
         return React.createElement(ctx.Registry.Tag, { children: t.label, key: i, type: t.type });
       })) : null;
     const lastIsTitle = subtitle === null && available === null;
-    const buffer = React.createElement(View, { style: { height: lastIsTitle && tagRow === null ? 32 : rowGap } });
+    const buffer = React.createElement(View, { style: { height: lastIsTitle && tagRow === null ? ctx.metric('PageHeader', 'bufferTitle') : rowGap } });
     return React.createElement(View, {
       dataSet: { part: 'root' },
       style: {

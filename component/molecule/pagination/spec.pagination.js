@@ -9,5 +9,6 @@ export default Object.freeze({
   textGap: 'control.pagination_text_gap',
   selectPaddingStart: 'control.pagination_select_padding_start',
   selectPaddingEnd: 'control.pagination_select_padding_end',
+  selectIndicatorEnd: 'control.pagination_select_indicator_end',
   collapseWidth: 'control.pagination_collapse_width'
 });

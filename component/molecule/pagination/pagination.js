@@ -63,7 +63,7 @@ export default function Pagination (ctx) {
       fillLeaf: disabled ? 'pagination_container' : undefined,
       height: size,
       hoverLeaf: 'pagination_select_container_hover',
-      indicatorEnd: ctx.metric('Pagination', 'selectPaddingStart'),
+      indicatorEnd: ctx.metric('Pagination', 'selectIndicatorEnd'),
       inline: true,
       paddingEnd: ctx.metric('Pagination', 'selectPaddingEnd'),
       paddingStart: ctx.metric('Pagination', 'selectPaddingStart')

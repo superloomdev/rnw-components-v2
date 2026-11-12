@@ -4034,6 +4034,56 @@
       "test": "date-picker.test.js",
       "testName": "the host adapter takes the field's seat with the date and no calendar draws",
       "why": "a system widget with its adapter present seats the OS picker instead of the calendar"
+    },
+    {
+      "id": "file-uploader-item-outline-inset",
+      "file": "component/composite/file-uploader/file-uploader-item.js",
+      "find": "outlineOffset: -ctx.metric('FileUploaderItem', 'outlineWidth'),",
+      "replace": "outlineOffset: 0,",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "an invalid item draws the inset outline, its padding and the message under its rule",
+      "why": "the invalid outline draws inside the item's edge (focus-outline('invalid'), outline-offset -2)"
+    },
+    {
+      "id": "filename-invalid-gap",
+      "file": "component/composite/file-uploader/filename.js",
+      "find": "marginEnd: ctx.metric('Filename', 'invalidGap')",
+      "replace": "marginEnd: ctx.metric('Filename', 'seat')",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "Filename is the inset seat: the close button, the flush error glyph, the checkmark",
+      "why": "the error glyph sits flush before the close button (probe invalid icon x 268 + 16 = close x 284)"
+    },
+    {
+      "id": "file-uploader-dedupe",
+      "file": "component/composite/file-uploader/file-uploader.js",
+      "find": "return !Utils.inArray(names, entry.name);",
+      "replace": "return true;",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the uploader lists valid picks by name, reports oversize ones and deletes",
+      "why": "a multiple uploader adds a picked file only when its name is not listed yet (FileUploader.js handleChange)"
+    },
+    {
+      "id": "file-uploader-drop-accept",
+      "file": "component/composite/file-uploader/file-picking.js",
+      "find": "const refused = !Utils.isEmptyArray(accept) &&",
+      "replace": "const refused = false &&",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the drop area takes a drop, marks refused files, and ignores drops while disabled",
+      "why": "a dropped file outside a non-empty accept list is marked invalidFileType (FileUploaderDropContainer.js validateFiles)"
+    },
+    {
+      "id": "file-uploader-button-label",
+      "file": "component/composite/file-uploader/file-uploader-button.js",
+      "find": "setLabel(files.length > 1 ? files.length + ' files' : files[0].name);",
+      "replace": "setLabel(files[0].name);",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the button picks through the host adapter and names the chosen files",
+      "why": "several chosen files name the button \"<n> files\" (FileUploaderButton.js handleOnChange)"
     }
   ]
 }

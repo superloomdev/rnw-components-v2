@@ -144,6 +144,12 @@ import TileGroupSample from './component/molecule/tile/sample.tile-group.js';
 import DatePickerSample, { FRAME as DatePickerFrame } from './component/composite/date-picker/sample.date-picker.js';
 import DatePickerInputSample from './component/composite/date-picker/sample.date-picker-input.js';
 import DatePickerSkeletonSample, { FRAME as DatePickerSkeletonFrame } from './component/composite/date-picker/sample.date-picker-skeleton.js';
+import FilenameSample, { FRAME as FilenameFrame } from './component/composite/file-uploader/sample.filename.js';
+import FileUploaderSample, { FRAME as FileUploaderFrame } from './component/composite/file-uploader/sample.js';
+import FileUploaderButtonSample from './component/composite/file-uploader/sample.file-uploader-button.js';
+import FileUploaderDropContainerSample, { FRAME as FileUploaderDropContainerFrame } from './component/composite/file-uploader/sample.file-uploader-drop-container.js';
+import FileUploaderItemSample, { FRAME as FileUploaderItemFrame } from './component/composite/file-uploader/sample.file-uploader-item.js';
+import FileUploaderSkeletonSample, { FRAME as FileUploaderSkeletonFrame } from './component/composite/file-uploader/sample.file-uploader-skeleton.js';
 import PageHeaderSample, { FRAME as PageHeaderFrame } from './component/composite/page-header/sample.page-header.js';
 import TearsheetSample, { FRAME as TearsheetFrame } from './component/composite/tearsheet/sample.tearsheet.js';
 import TreeNodeSample from './component/composite/tree-view/sample.tree-node.js';
@@ -293,6 +299,12 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'DatePicker', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: 'anatomy.date_picker_widget', frame: DatePickerFrame, sample: DatePickerSample }),
   Object.freeze({ name: 'DatePickerInput', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: DatePickerInputSample }),
   Object.freeze({ name: 'DatePickerSkeleton', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: DatePickerSkeletonFrame, sample: DatePickerSkeletonSample }),
+  Object.freeze({ name: 'Filename', family: 'FileUploader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: FilenameFrame, sample: FilenameSample }),
+  Object.freeze({ name: 'FileUploader', family: 'FileUploader', tier: 'composite', platform: 'adapter', flags: Object.freeze([]), widget: null, frame: FileUploaderFrame, sample: FileUploaderSample }),
+  Object.freeze({ name: 'FileUploaderButton', family: 'FileUploader', tier: 'composite', platform: 'adapter', flags: Object.freeze([]), widget: null, frame: null, sample: FileUploaderButtonSample }),
+  Object.freeze({ name: 'FileUploaderDropContainer', family: 'FileUploader', tier: 'composite', platform: 'adapter', flags: Object.freeze([]), widget: null, frame: FileUploaderDropContainerFrame, sample: FileUploaderDropContainerSample }),
+  Object.freeze({ name: 'FileUploaderItem', family: 'FileUploader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: FileUploaderItemFrame, sample: FileUploaderItemSample }),
+  Object.freeze({ name: 'FileUploaderSkeleton', family: 'FileUploader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: FileUploaderSkeletonFrame, sample: FileUploaderSkeletonSample }),
   Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: PageHeaderFrame, sample: PageHeaderSample }),
   Object.freeze({ name: 'Tearsheet', family: 'Tearsheet', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TearsheetFrame, sample: TearsheetSample }),
   Object.freeze({ name: 'TreeNode', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: TreeNodeSample }),

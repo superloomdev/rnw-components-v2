@@ -4140,8 +4140,7 @@
       },
       "enums": [
         "anatomy.label",
-        "feedback.field",
-        "anatomy.date_picker_widget"
+        "feedback.field"
       ],
       "behaviors": [
         "controllable-state",
@@ -4228,7 +4227,7 @@
         "version": "1.115.0",
         "export": "Filename"
       },
-      "description": "Filename is a component in the FileUploader family.",
+      "description": "Filename is the status seat of a file row: a small spinner while uploading, a close button to remove the file, or a checkmark once complete.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4245,7 +4244,7 @@
       "carbon_twin": "Filename",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FileUploader",
@@ -4256,10 +4255,10 @@
         "version": "1.115.0",
         "export": "FileUploader"
       },
-      "description": "FileUploader is a component in the FileUploader family.",
+      "description": "FileUploader lists the files a person picks under a title, a description and the picking button.",
       "platform": {
         "support": "adapter",
-        "fallback": "renders nothing without an adapter"
+        "fallback": "draws disabled without an adapter"
       },
       "enums": [],
       "behaviors": [
@@ -4273,7 +4272,7 @@
       "carbon_twin": "FileUploader",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "FileUploaderButton",
@@ -4284,26 +4283,24 @@
         "version": "1.115.0",
         "export": "FileUploaderButton"
       },
-      "description": "FileUploaderButton is a component in the FileUploader family; it must be composed inside FileUploader.",
+      "description": "FileUploaderButton is a button that opens the file chooser and reports the chosen files.",
       "platform": {
         "support": "adapter",
-        "fallback": "renders nothing without an adapter"
+        "fallback": "draws disabled without an adapter"
       },
       "enums": [],
       "behaviors": [
         "controllable-state"
       ],
-      "parent": "FileUploader",
+      "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderButton",
       "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
+      "flags": [],
+      "status": "built"
     },
     {
       "name": "FileUploaderDropContainer",
@@ -4314,26 +4311,24 @@
         "version": "1.115.0",
         "export": "FileUploaderDropContainer"
       },
-      "description": "FileUploaderDropContainer is a component in the FileUploader family; it must be composed inside FileUploader.",
+      "description": "FileUploaderDropContainer is a dashed area that takes dropped files or opens the file chooser when pressed.",
       "platform": {
         "support": "adapter",
-        "fallback": "renders nothing without an adapter"
+        "fallback": "draws disabled without an adapter"
       },
       "enums": [],
       "behaviors": [
         "controllable-state"
       ],
-      "parent": "FileUploader",
+      "parent": null,
       "reference": {
         "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "FileUploaderDropContainer",
       "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
+      "flags": [],
+      "status": "built"
     },
     {
       "name": "FileUploaderItem",
@@ -4344,37 +4339,7 @@
         "version": "1.115.0",
         "export": "FileUploaderItem"
       },
-      "description": "FileUploaderItem is a component in the FileUploader family; it must be composed inside FileUploader.",
-      "platform": {
-        "support": "adapter",
-        "fallback": "renders nothing without an adapter"
-      },
-      "enums": [],
-      "behaviors": [
-        "controllable-state"
-      ],
-      "parent": "FileUploader",
-      "reference": {
-        "kind": "render-web",
-        "package": "@carbon/react"
-      },
-      "carbon_twin": "FileUploaderItem",
-      "diff_budget": 2,
-      "flags": [
-        "requires_parent"
-      ],
-      "status": "pending"
-    },
-    {
-      "name": "FileUploaderSkeleton",
-      "family": "FileUploader",
-      "tier": "composite",
-      "source": {
-        "package": "@carbon/react",
-        "version": "1.115.0",
-        "export": "FileUploaderSkeleton"
-      },
-      "description": "FileUploaderSkeleton is a component in the FileUploader family.",
+      "description": "FileUploaderItem is one chosen file's row: its name, its status seat and, when invalid, the error message.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4388,10 +4353,36 @@
         "kind": "render-web",
         "package": "@carbon/react"
       },
+      "carbon_twin": "FileUploaderItem",
+      "diff_budget": 2,
+      "flags": [],
+      "status": "built"
+    },
+    {
+      "name": "FileUploaderSkeleton",
+      "family": "FileUploader",
+      "tier": "composite",
+      "source": {
+        "package": "@carbon/react",
+        "version": "1.115.0",
+        "export": "FileUploaderSkeleton"
+      },
+      "description": "FileUploaderSkeleton is the loading placeholder of a FileUploader: a title bar, a description bar and a button placeholder.",
+      "platform": {
+        "support": "both",
+        "fallback": "none"
+      },
+      "enums": [],
+      "behaviors": [],
+      "parent": null,
+      "reference": {
+        "kind": "render-web",
+        "package": "@carbon/react"
+      },
       "carbon_twin": "FileUploaderSkeleton",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "PageHeader",

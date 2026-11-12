@@ -125,6 +125,12 @@ export { default as Tearsheet } from './component/composite/tearsheet/tearsheet.
 export { default as DatePickerSkeleton } from './component/composite/date-picker/date-picker-skeleton.js';
 export { default as DatePicker } from './component/composite/date-picker/date-picker.js';
 export { default as DatePickerInput } from './component/composite/date-picker/date-picker-input.js';
+export { default as Filename } from './component/composite/file-uploader/filename.js';
+export { default as FileUploader } from './component/composite/file-uploader/file-uploader.js';
+export { default as FileUploaderButton } from './component/composite/file-uploader/file-uploader-button.js';
+export { default as FileUploaderDropContainer } from './component/composite/file-uploader/file-uploader-drop-container.js';
+export { default as FileUploaderItem } from './component/composite/file-uploader/file-uploader-item.js';
+export { default as FileUploaderSkeleton } from './component/composite/file-uploader/file-uploader-skeleton.js';
 export { default as OverflowMenuItem } from './component/composite/menu/overflow-menu-item.js';
 export { default as MenuButton } from './component/composite/menu/menu-button.js';
 export { default as MenuItem } from './component/composite/menu/menu-item.js';

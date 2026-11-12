@@ -15,7 +15,7 @@ Headless interaction hooks and accessibility translators. No appearance: no colo
 
 ## DOM reach (`dom.js`)
 
-- `getActiveElement()` -> element or `null`; `focusNode(node)` / `blurNode(node)` -> Boolean; `nodeContains(root, node)` -> Boolean; `queryNode(root, selector)` -> element or `null`; `queryNodes(root, selector)` -> Array; `measureRect(node)` -> `{ x, y, width, height }` or `null`; `getViewportSize()` -> `{ width, height }`; `getComputedStyleOf(node)` -> style or `null`; `onWindowEvent(name, handler, capture)` / `onDocumentEvent(name, handler)` -> unsubscribe; `requestFrame(callback)` -> cancel
+- `getActiveElement()` -> element or `null`; `focusNode(node)` / `blurNode(node)` -> Boolean; `nodeContains(root, node)` -> Boolean; `queryNode(root, selector)` -> element or `null`; `queryNodes(root, selector)` -> Array; `measureRect(node)` -> `{ x, y, width, height }` or `null`; `getViewportSize()` -> `{ width, height }`; `getComputedStyleOf(node)` -> style or `null`; `onWindowEvent(name, handler, capture)` / `onDocumentEvent(name, handler)` / `onNodeEvent(node, name, handler)` -> unsubscribe; `fileEntries(list)` -> `[{ name, size, type, file }]`; `canPickFiles()` -> Boolean; `pickFiles({ accept, multiple })` -> Promise of entries (empty when cancelled, `null` without a document); `requestFrame(callback)` -> cancel
 - The only file that touches `document`, `window` or a node's DOM methods: every reach duck-types its capability and answers a no-op or neutral value where the API is absent, so a native host finds no DOM error. Every other file goes through these.
 
 ## Controls (`controls.js`)

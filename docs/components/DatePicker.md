@@ -52,7 +52,7 @@ DatePicker picks a date or a date range from a calendar under one or two date in
 | Tier | `composite` |
 | Platform | `both` |
 | Reference | `render-web` (`@carbon/react`) |
-| Enums | `anatomy.label`, `feedback.field`, `anatomy.date_picker_widget` |
+| Enums | `anatomy.label`, `feedback.field` |
 | Behaviors | `controllable-state`, `overlay`, `keyboard` |
 | Flags | none |
 
