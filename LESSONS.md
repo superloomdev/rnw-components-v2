@@ -46,6 +46,9 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 
 ## Component patterns
 
+- `createSystem` refuses an adapter that is not a component (`components.js:106-117`): a host service adapter such as `FilePicker` is a function, not an object with a method (Plan 0162 U3).
+- A grid of empty upstream containers measures nothing: an undrawn part (FileUploader's empty list) is an unexplained gap; compare the root box that carries its margin instead (Plan 0162 U3).
+- react-native-web forwards no drag events; a drop target listens on its own node through `behaviors/dom.js` `onNodeEvent`, which a native host never fires (Plan 0162 U3).
 - An absolute child of a bordered frame hangs from the frame's padding box, so `top: '100%'` lands one border width short of the field's bottom edge: the DatePicker calendar sat at 63 vs 64 until its seat spanned the border box (`bottom: borderSide - borderBottomWidth`) (Plan 0162 U3).
 - A failing `assert.equal(node, null)` on a jsdom element prints the whole element and drove a fire run to a 3 GB guard kill; assert `node === null` as a boolean (Plan 0162 U3).
 - `readOnly` as an identifier trips the banned-verb lint rule; quote it as a key (`'readOnly': ...`) where an upstream prop needs the name, and name the local something else (Plan 0162 U3).
