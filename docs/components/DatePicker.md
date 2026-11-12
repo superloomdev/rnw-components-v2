@@ -4,6 +4,34 @@
 
 ## DatePicker, DatePickerInput, DatePickerSkeleton
 
+- **DatePicker.** Owns the value (`m/d/Y` text, a `[start, end]` pair for
+  `range`), the open state and the shown month, and draws its own calendar:
+  the month header with its arrows, the weekday row and a six-week grid of
+  42 days. The calendar sits flush under the first field (the reference
+  positions it 2 below and pulls it back 2) at the calendar cells (288 x
+  336, padding 4 / 4 / 8 / 4) and centers its rows in that box, so the 326
+  of rows overflow it by 1 at each end as the reference's centered column
+  does; the six week rows share the 246 grid height (a 41 pitch), as the
+  reference's wrapping lines stretch. The weekday labels and month names are
+  English with Sunday first unless the `locale` prop says otherwise. The
+  calendar always draws in place, hung from the first field's start edge
+  (logical, so a range's calendar stays over its fields in rtl) at the
+  dropdown stacking level; it does not render through an overlay host, whose
+  anchored position is physical. Escape and a day press close it; an outside
+  press does not yet.
+- **Icon.** As the reference's field icon: the calendar, drawn in the
+  disabled icon color on a disabled or read-only field; the error glyph in
+  its place on an invalid field; none on a valid `simple` field.
+- **Platform.** The row is `split`: the web half always draws. The native
+  half reads `anatomy.date_picker_widget`: `system` keeps the drawn labels,
+  fields and messages and seats the host's `adapters.DatePicker` (props
+  `value` as a `Date`, `mode: 'date'`, `onChange(event, date)`, `disabled`)
+  in each field where the text input draws, with no calendar; without the
+  adapter it draws the calendar and reports `adapter_missing`.
+- **Not drawn.** The year is text, not the reference's number input with
+  its hover arrows; a typed year is entered through the field. `warn` is
+  accepted but drawn as the helper message only: the field family draws no
+  warning frame yet, so no sample shows it.
 - **DatePickerSkeleton.** A static placeholder (`aria-hidden`): one label bar
   over one input bar per picker; `range` draws the two pickers the upstream
   range skeleton holds, at the range input width with the 1px end margin the
@@ -11,8 +39,136 @@
   upstream skeleton resolves the `--simple --short` class.
 - **DatePickerInput.** Carries `requires_parent` (a field draws inside a
   DatePicker, which assigns its width from the picker type and its seat
-  index) and `no_reference` (upstream draws the input only inside its
-  picker, so it is measured through DatePicker's samples).
+  index, hands it its text and opens the calendar from its focus) and
+  `no_reference` (upstream draws the input only inside its picker, so it is
+  measured through DatePicker's samples).
+
+## DatePicker
+
+DatePicker picks a date or a date range from a calendar under one or two date inputs.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `render-web` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field`, `anatomy.date_picker_widget` |
+| Behaviors | `controllable-state`, `overlay`, `keyboard` |
+| Flags | none |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `datePickerType` | `string` | no | The picker form: `simple` (a typed field, no calendar), `single` or `range`. Default `single`. |
+| `value` | `string` | no | Controlled date as `m/d/Y` text, or a `[start, end]` pair of texts for `range`. |
+| `defaultValue` | `string` | no | Uncontrolled initial date, in the same shape as `value`. |
+| `onChange` | `function` | no | Called with the new value (text, or the pair for `range`) when a day is pressed or typed text parses. |
+| `open` | `boolean` | no | Controlled open state of the calendar. |
+| `onOpenChange` | `function` | no | Called with the next open state. |
+| `minDate` | `string` | no | Earliest selectable date, `m/d/Y`; earlier days draw disabled. |
+| `maxDate` | `string` | no | Latest selectable date, `m/d/Y`; later days draw disabled. |
+| `locale` | `object` | no | Calendar names: `{ months, weekdays, firstDayOfWeek }`; English with Sunday first by default. |
+| `short` | `boolean` | no | Narrows a `simple` picker to the short input width. |
+| `isReadOnly` | `boolean` | no | Read-only inputs; the calendar never opens. |
+| `disabled` | `boolean` | no | Disables every input. |
+| `inputs` | `array` | no | The fields as data (DatePickerInput props each), used when no children are given. |
+| `children` | `node` | no | The DatePickerInput fields - one, or two for `range`. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `calendarHeight` | `control.date_picker_calendar_height` |
+| `calendarPaddingBottom` | `control.date_picker_calendar_padding_bottom` |
+| `calendarPaddingInline` | `control.date_picker_calendar_padding_inline` |
+| `calendarPaddingTop` | `control.date_picker_calendar_padding_top` |
+| `calendarWidth` | `control.date_picker_calendar_width` |
+| `dayFocusInsetSelected` | `control.date_picker_day_focus_inset_selected` |
+| `dayFocusWidthSelected` | `control.date_picker_day_focus_width_selected` |
+| `daySize` | `control.date_picker_day_size` |
+| `daysHeight` | `control.date_picker_days_height` |
+| `headerHeight` | `control.date_picker_header_height` |
+| `monthGap` | `control.date_picker_month_gap` |
+| `navIconSize` | `control.field_icon_size` |
+| `navSize` | `control.date_picker_nav_size` |
+| `todayMarkOffset` | `control.date_picker_today_mark_offset` |
+| `todayMarkSize` | `control.date_picker_today_mark_size` |
+| `weekdayHeight` | `control.date_picker_weekday_height` |
+| `yearPadding` | `control.date_picker_year_padding` |
+| `yearWidth` | `control.date_picker_year_width` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| simple | `{"datePickerType":"simple","inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| shortSimple | `{"datePickerType":"simple","short":true,"inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| default | `{"datePickerType":"single","inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| value | `{"datePickerType":"single","value":"03/15/2024","inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| sm | `{"datePickerType":"single","inputs":[{"size":"sm","labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| lg | `{"datePickerType":"single","inputs":[{"size":"lg","labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| invalid | `{"datePickerType":"single","inputs":[{"invalid":true,"invalidText":"Enter a valid date.","labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| disabled | `{"datePickerType":"single","disabled":true,"inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| readOnly | `{"datePickerType":"single","isReadOnly":true,"value":"03/15/2024","inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| range | `{"datePickerType":"range","inputs":[{"labelText":"Start date","placeholder":"mm/dd/yyyy"},{"labelText":"End date","placeholder":"mm/dd/yyyy"}]}` |
+| open | `{"datePickerType":"single","open":true,"value":"03/15/2024","inputs":[{"labelText":"Date","placeholder":"mm/dd/yyyy"}]}` |
+| openRange | `{"datePickerType":"range","open":true,"value":["03/12/2024","03/18/2024"],"inputs":[{"labelText":"Start date","placeholder":"mm/dd/yyyy"},{"labelText":"End date","placeholder":"mm/dd/yyyy"}]}` |
+
+## DatePickerInput
+
+DatePickerInput is one date field of a DatePicker - the label, the text field at the width the picker's type assigns and the calendar icon; it must be composed inside DatePicker, with no upstream visual reference of its own - it is measured through DatePicker's samples.
+
+| | |
+|---|---|
+| Tier | `composite` |
+| Platform | `both` |
+| Reference | `none` (`@carbon/react`) |
+| Enums | `anatomy.label`, `feedback.field` |
+| Behaviors | `controllable-state`, `overlay` |
+| Flags | `requires_parent` - renders only inside its parent; `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template |
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `id` | `string` | no | The input element id the label names. |
+| `labelText` | `string` | yes | The label drawn above the field. |
+| `hideLabel` | `boolean` | no | Skips the label element. |
+| `placeholder` | `string` | no | The empty value hint, `mm/dd/yyyy` by default. |
+| `size` | `string` | no | Field height on the field scale: `sm`, `md`, `lg`. Default `md`. |
+| `helperText` | `string` | no | Message under the field while valid. |
+| `invalid` | `boolean` | no | Marks the field invalid. |
+| `invalidText` | `string` | no | Message under the field while invalid. |
+| `warn` | `boolean` | no | Marks the field warned. |
+| `warnText` | `string` | no | Message under the field while warned. |
+| `disabled` | `boolean` | no | Disables the field. |
+| `isReadOnly` | `boolean` | no | Read-only value; the picker never opens. |
+| `pickerIndex` | `number` | no | The seat index the parent DatePicker assigns. |
+| `testID` | `string` | no | Test identifier forwarded to the root. |
+
+### Metrics
+
+| Metric | Rule |
+|---|---|
+| `height` | `control.field_height` |
+| `heightLarge` | `size.size_large` |
+| `heightSmall` | `size.size_small` |
+| `iconSize` | `control.field_icon_size` |
+| `radius` | `control.field_radius` |
+| `width` | `control.date_picker_input_width` |
+| `widthRange` | `control.date_picker_range_input_width` |
+| `widthShort` | `control.date_picker_short_input_width` |
+| `widthSimple` | `control.date_picker_simple_input_width` |
+| `widthSimpleMessage` | `control.date_picker_simple_input_width_message` |
+
+### States (sample.js)
+
+| State | Props |
+|---|---|
+| default | `{"labelText":"Date"}` |
+| invalid | `{"invalid":true,"invalidText":"Enter a valid date.","labelText":"Date"}` |
 
 ## DatePickerSkeleton
 

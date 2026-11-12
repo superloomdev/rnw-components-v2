@@ -4156,7 +4156,7 @@
       "carbon_twin": "DatePicker",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DatePickerInput",
@@ -4191,7 +4191,7 @@
         "requires_parent",
         "no_reference"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "DatePickerSkeleton",

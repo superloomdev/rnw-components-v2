@@ -141,6 +141,8 @@ import ExpandableTileSample from './component/molecule/tile/sample.expandable-ti
 import SelectableTileSample from './component/molecule/tile/sample.selectable-tile.js';
 import TileSample from './component/molecule/tile/sample.js';
 import TileGroupSample from './component/molecule/tile/sample.tile-group.js';
+import DatePickerSample, { FRAME as DatePickerFrame } from './component/composite/date-picker/sample.date-picker.js';
+import DatePickerInputSample from './component/composite/date-picker/sample.date-picker-input.js';
 import DatePickerSkeletonSample, { FRAME as DatePickerSkeletonFrame } from './component/composite/date-picker/sample.date-picker-skeleton.js';
 import PageHeaderSample, { FRAME as PageHeaderFrame } from './component/composite/page-header/sample.page-header.js';
 import TearsheetSample, { FRAME as TearsheetFrame } from './component/composite/tearsheet/sample.tearsheet.js';
@@ -288,6 +290,8 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'SelectableTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: SelectableTileSample }),
   Object.freeze({ name: 'Tile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileSample }),
   Object.freeze({ name: 'TileGroup', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileGroupSample }),
+  Object.freeze({ name: 'DatePicker', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: 'anatomy.date_picker_widget', frame: DatePickerFrame, sample: DatePickerSample }),
+  Object.freeze({ name: 'DatePickerInput', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: DatePickerInputSample }),
   Object.freeze({ name: 'DatePickerSkeleton', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: DatePickerSkeletonFrame, sample: DatePickerSkeletonSample }),
   Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: PageHeaderFrame, sample: PageHeaderSample }),
   Object.freeze({ name: 'Tearsheet', family: 'Tearsheet', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TearsheetFrame, sample: TearsheetSample }),

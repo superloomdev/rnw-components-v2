@@ -3984,6 +3984,56 @@
       "test": "tearsheet.test.js",
       "testName": "the left influencer box is the cell plus the end rule",
       "why": "the influencer box is the 256 cell plus the 1px end rule (257 upstream)"
+    },
+    {
+      "id": "date-picker-calendar-height",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": "height: ctx.metric('DatePicker', 'calendarHeight'),",
+      "replace": "height: ctx.metric('DatePicker', 'calendarWidth'),",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "draws at the theme's geometry with the March 2024 grid and the selected day",
+      "why": "the calendar box is the 336 height cell, not the 288 width (_flatpickr.scss:132)"
+    },
+    {
+      "id": "date-picker-day-grid-lead",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": "1 - lead + w * DAYS_PER_WEEK + d",
+      "replace": "1 + w * DAYS_PER_WEEK + d",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "draws at the theme's geometry with the March 2024 grid and the selected day",
+      "why": "the grid opens on the week holding the first of the month, led by the previous month's days"
+    },
+    {
+      "id": "date-picker-range-fill",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": ": inRange ? ctx.color('date_picker_day_container_range')",
+      "replace": ": inRange ? ctx.color('date_picker_day_container_selected')",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "a range draws its two ends selected and the days between in the range fill",
+      "why": "the days inside a range take the range fill, not the selected fill"
+    },
+    {
+      "id": "date-picker-range-order",
+      "file": "component/composite/date-picker/date-picker.web.js",
+      "find": "commit(compareDates(date, start) < 0 ? [date, start] : [start, date]);",
+      "replace": "commit([start, date]);",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "a range takes its start, then its end in date order, and closes",
+      "why": "a range end pressed before its start swaps into date order"
+    },
+    {
+      "id": "date-picker-system-adapter",
+      "file": "component/composite/date-picker/date-picker.native.js",
+      "find": "return React.createElement(system && System !== null ? System : Drawn, props);",
+      "replace": "return React.createElement(Drawn, props);",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "the host adapter takes the field's seat with the date and no calendar draws",
+      "why": "a system widget with its adapter present seats the OS picker instead of the calendar"
     }
   ]
 }
