@@ -14,7 +14,7 @@ export default Object.freeze({
     right: Object.freeze({ upstream: '.cds--pagination__right', ours: '[data-part="right"]', measure: 'box' }),
     texts: Object.freeze({ upstream: '.cds--pagination__text', ours: '[data-part="text"]', measure: 'text', all: true }),
     count: Object.freeze({ upstream: '.cds--pagination__items-count', ours: '[data-part="count"]', measure: 'box' }),
-    selects: Object.freeze({ upstream: '.cds--select-input', ours: '[data-part="root"] [role="combobox"]', measure: 'box', all: true }),
+    selects: Object.freeze({ upstream: '.cds--select-input', ours: '[data-part="root"] [data-part="inlineFrame"]', measure: 'box', all: true }),
     buttons: Object.freeze({ upstream: '.cds--pagination__button', ours: '[data-part="button"]', measure: 'box', all: true }),
     buttonGlyphs: Object.freeze({ upstream: '.cds--pagination__button svg', ours: '[data-part="button"] svg', measure: 'box', all: true })
   })

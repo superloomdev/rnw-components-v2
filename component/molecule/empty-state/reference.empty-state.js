@@ -21,7 +21,9 @@ export default Object.freeze({
     content: Object.freeze({ upstream: '.c4p--empty-state__content', ours: '[data-part="content"]', measure: 'box' }),
     header: Object.freeze({ upstream: '.c4p--empty-state__header', ours: '[data-part="header"]', measure: 'text' }),
     subtitle: Object.freeze({ upstream: '.c4p--empty-state__subtitle', ours: '[data-part="subtitle"]', measure: 'text' }),
-    action: Object.freeze({ upstream: '.c4p--empty-state__action', ours: '[data-part="action"]', measure: 'box', optional: true }),
+    // The action is the button itself (`EmptyStateContent` `__action-button`,
+    // probe part `action`)
+    action: Object.freeze({ upstream: '.c4p--empty-state__action-button', ours: '[data-part="action"] > button', measure: 'box', optional: true }),
     link: Object.freeze({ upstream: '.c4p--empty-state__link', ours: '[data-part="link"]', measure: 'box', optional: true })
   })
 });

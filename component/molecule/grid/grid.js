@@ -37,7 +37,11 @@ export default function Grid (ctx) {
       display: 'flex',
       flexDirection: holdsRows === true ? 'column' : 'row',
       flexWrap: holdsRows === true ? undefined : 'wrap',
+      // The grid takes its container's width, the breakpoint ceiling only
+      // caps it (`.cds--css-grid` / `.cds--grid`: inline-size 100%,
+      // max-inline-size 99rem)
       maxWidth: fullWidth === true ? undefined : ctx.metric('Grid', 'maxWidth'),
+      width: '100%',
       paddingEnd: holdsRows === true ? ctx.metric('Grid', 'margin') + ctx.metric('Grid', 'gutter') / 2 : ctx.metric('Grid', 'margin'),
       paddingStart: holdsRows === true ? ctx.metric('Grid', 'margin') + ctx.metric('Grid', 'gutter') / 2 : ctx.metric('Grid', 'margin'),
       rowGap: rowGap === 0 ? undefined : rowGap

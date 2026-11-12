@@ -2678,8 +2678,8 @@
     {
       "id": "pagination-skeleton-gap",
       "file": "component/molecule/pagination/pagination-skeleton.js",
-      "find": "marginEnd: last === true ? 0 : gap",
-      "replace": "marginEnd: 0",
+      "find": "key: key, style: { marginEnd: gap } },",
+      "replace": "key: key, style: { marginEnd: 0 } },",
       "runner": "node",
       "test": "pagination-skeleton.test.js",
       "testName": "carbon / default: the bars read the skeleton width cells",
@@ -2704,6 +2704,36 @@
       "test": "pagination-nav.test.js",
       "testName": "carbon / default: the active page carries aria-current",
       "why": "the active page must carry aria-current=page"
+    },
+    {
+      "id": "pagination-page-range",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "const pageRange = typeof props.pageRangeText === 'function' ? props.pageRangeText(page, totalPages1) : 'of ' + totalPages1 + ' ' + (totalPages1 === 1 ? 'page' : 'pages');",
+      "replace": "const pageRange = '';",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "the left block holds the count, the right block the page range",
+      "why": "the right block draws the page range after the page select (upstream Pagination.js:259-262)"
+    },
+    {
+      "id": "row-half-gutter",
+      "file": "component/molecule/grid/row.js",
+      "find": "const half = ctx.metric('Row', 'gutter') / 2;",
+      "replace": "const half = 0;",
+      "runner": "node",
+      "test": "row.test.js",
+      "testName": "the row pulls back by half the gutter under a condensed and a narrow grid",
+      "why": "the flexbox row pulls back by half the regular gutter in every grid kind"
+    },
+    {
+      "id": "pagination-nav-row-order",
+      "file": "component/molecule/pagination/pagination-nav.js",
+      "find": "for (let i = startOffset + cuts.front; i < totalItems - 1 - cuts.back; i = i + 1) {",
+      "replace": "for (let i = startOffset + cuts.front; i <= totalItems - 1 - cuts.back; i = i + 1) {",
+      "runner": "node",
+      "test": "pagination-nav.test.js",
+      "testName": "default: the page buttons and the overflow pickers",
+      "why": "the visible middle ends before the back overflow (upstream PaginationNav.js:281)"
     },
     {
       "id": "grid-column-span",
@@ -3888,22 +3918,32 @@
     {
       "id": "card-footer-only",
       "file": "component/molecule/card/card.js",
-      "find": "(!atTop && actions !== null) || primary !== null || secondary !== null",
-      "replace": "false",
+      "find": "const footer = (!atTop && actions !== null) || hasButton",
+      "replace": "const footer = false",
       "runner": "node",
       "test": "card.test.js",
       "testName": "the footer renders only with bottom actions or a button",
       "why": "the footer renders only with bottom actions or a button"
     },
     {
+      "id": "card-zone-group",
+      "file": "component/molecule/card/card.js",
+      "find": "accessibilityRole: holdsControls ? 'group' : 'button',",
+      "replace": "accessibilityRole: 'button',",
+      "runner": "node",
+      "test": "card.test.js",
+      "testName": "a clickable card is a button, a group when it holds controls, never a button in a button",
+      "why": "react-native-web draws a button role as <button>; a card holding controls must not nest buttons"
+    },
+    {
       "id": "empty-state-action-gap",
       "file": "component/molecule/empty-state/empty-state.js",
-      "find": "marginTop: gap('actionGap')",
-      "replace": "marginTop: 0",
+      "find": "marginBottom: gap('actionGap')",
+      "replace": "marginBottom: 0",
       "runner": "node",
       "test": "empty-state.test.js",
       "testName": "the action renders an sm tertiary button in its seat",
-      "why": "the action gap separates the action from the subtitle"
+      "why": "the action gap separates the action from the link (upstream __action-button margin-block-end)"
     },
     {
       "id": "page-header-title-min-height",

@@ -8,7 +8,9 @@ export default Object.freeze({
       const kids = n.children ? n.children.map(function (c, j) {
         return node(c, i + '-' + j);
       }) : undefined;
-      return React.createElement(upstream.TreeNode, { disabled: n.disabled === true, isExpanded: n.expanded === true, key: i, label: n.label, renderIcon: n.icon === 'document' ? upstream.Document : undefined, value: n.id }, kids);
+      // As the probe mount: each node carries its `id` (selection and the
+      // parent's expansion key on it) and the icon through `upstream.icon`
+      return React.createElement(upstream.TreeNode, { disabled: n.disabled === true, id: n.id, isExpanded: n.expanded === true, key: i, label: n.label, renderIcon: typeof n.icon === 'string' ? upstream.icon(n.icon) : undefined, value: n.id }, kids);
     };
     return React.createElement(upstream.TreeView, {
       active: props.active,

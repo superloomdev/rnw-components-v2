@@ -74,7 +74,7 @@ export default function DatePickerSkeleton (ctx) {
     const containers = range === true
       ? [drawPicker({ hideLabel: props.hideLabel, key: 'start', marginEnd: 1, width: width }),
         drawPicker({ hideLabel: props.hideLabel, key: 'end', width: width })]
-      : [drawPicker({ hideLabel: props.hideLabel, width: width })];
+      : [drawPicker({ hideLabel: props.hideLabel, key: 'single', width: width })];
 
     return React.createElement(View, {
       accessibilityElementsHidden: true,

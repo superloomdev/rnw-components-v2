@@ -6,7 +6,14 @@ export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 800 }),
   mount: function (React, upstream, props) {
-    return React.createElement(upstream.PaginationNav, props);
+    // Upstream reads `page` only (`PaginationNav.js:151`); our sample seeds
+    // `defaultPage`, so the mount passes it as the probe mount does
+    return React.createElement(upstream.PaginationNav, {
+      itemsShown: props.itemsShown,
+      page: props.page !== undefined ? props.page : props.defaultPage,
+      size: props.size,
+      totalItems: props.totalItems
+    });
   },
   parts: Object.freeze({
     nav: Object.freeze({ upstream: '.cds--pagination-nav', ours: '[data-part="nav"]', measure: 'box' }),

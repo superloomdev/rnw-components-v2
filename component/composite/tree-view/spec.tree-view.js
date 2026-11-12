@@ -14,6 +14,7 @@ export default Object.freeze({
   leafPaddingStartNestedIcon: 'control.tree_leaf_padding_start_nested_icon',
   labelTextPaddingStart: 'control.tree_label_text_padding_start',
   labelPaddingEnd: 'control.tree_label_padding_end',
+  labelGap: 'spacing.spacing_03',
   heightSmall: 'size.size_xsmall',
   heightMedium: 'size.size_small'
 });

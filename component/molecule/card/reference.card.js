@@ -8,7 +8,9 @@ export default Object.freeze({
       actionIcons: (props.actionIcons || []).map(function (s) {
         return { id: s.label, icon: s.icon === 'edit' ? upstream.Edit : upstream.TrashCan, iconDescription: s.label, onClick: s.onPress };
       }),
-      actionsPlacement: props.actionsPlacement,
+      // ProductiveCard defaults to `top` (`ProductiveCard.js:15`); the probe
+      // mount passes `bottom` unless a state names `top`, as our default does
+      actionsPlacement: props.actionsPlacement || 'bottom',
       children: props.children,
       clickZone: props.clickZone,
       description: props.description,
@@ -23,15 +25,18 @@ export default Object.freeze({
     });
   },
   parts: Object.freeze({
-    root: Object.freeze({ upstream: '.c4p--card', ours: ':scope > div, :scope > a, :scope > button', measure: 'box' }),
+    root: Object.freeze({ upstream: '.c4p--card', ours: '[data-part="root"]', measure: 'box' }),
     header: Object.freeze({ upstream: '.c4p--card__header', ours: '[data-part="header"]', measure: 'box' }),
     label: Object.freeze({ upstream: '.c4p--card__label', ours: '[data-part="label"]', measure: 'text' }),
     title: Object.freeze({ upstream: '.c4p--card__title', ours: '[data-part="title"]', measure: 'text' }),
     description: Object.freeze({ upstream: '.c4p--card__description', ours: '[data-part="description"]', measure: 'text' }),
-    body: Object.freeze({ upstream: '.c4p--card__body', ours: '[data-part="body"]', measure: 'box' }),
+    body: Object.freeze({ upstream: '.c4p--card__body', ours: '[data-part="content"]', measure: 'box' }),
     footer: Object.freeze({ upstream: '.c4p--card__footer', ours: '[data-part="footer"]', measure: 'box', optional: true }),
     actions: Object.freeze({ upstream: '.c4p--card__actions', ours: '[data-part="actions"]', measure: 'box', all: true, optional: true }),
-    buttons: Object.freeze({ upstream: '.cds--btn', ours: '[data-part="footer"] button', measure: 'box', all: true, optional: true }),
+    // Upstream `.cds--btn` is every productive action icon and footer
+    // button, in document order; ours draws an icon button's face apart
+    // from its press target
+    buttons: Object.freeze({ upstream: '.cds--btn', ours: '[data-part="footer"] > button, [data-testid="icon-button-face"]', measure: 'box', all: true, optional: true }),
     overflowTrigger: Object.freeze({ upstream: '.cds--overflow-menu', ours: '[data-part="actions"] [role="button"]', measure: 'box', optional: true })
   })
 });

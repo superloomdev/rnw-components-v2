@@ -8,6 +8,22 @@ The page's header stack: breadcrumb row, title row (icon + heading +
 actions), subtitle, tags; `scrollY`/`collapseHeader` drive the collapsed
 bar. Upstream is the product-patterns `PageHeader`.
 
+U2 repair (upstream quoted, probe `PageHeader.json` at 1280): the content
+sits inside `control.page_header_padding_inline` (32: breadcrumb items, title
+text and page actions 32 in from each edge, the grid's 16 padding plus the
+column's 16); without a breadcrumb row the title row starts 32 down
+(`_page-header.scss:410-412`); the last row is followed by a buffer, 32 after
+the title row and 16 after a subtitle or the content row or before the tags
+(`__last-row-buffer--active`); a 1 px `color.page_header_divider` rule closes
+the header (`:114`). The drawn fill is the `::before` layer at full opacity
+(`:88-101`), so the root keeps `color.page_header_container` and an
+absolute layer paints `color.page_header_container_scrolled` (probe: root
+background white, paint layer-01). The page actions take their label as
+`children` and their `kind`; the title row and the actions wrap below the
+available width. `children` is the content row (`__available-row`, 16 under
+the title row, 8 under a subtitle). The 32 and 44 literals wait for cells
+(`CONTRACT-REQUESTS.md`, U2). The sample mirrors the probe's eight states.
+
 ### Decisions
 
 Composes `Breadcrumb`, `Button`, `Icon`, `Tag`; `scrollY` is a prop (no
@@ -36,10 +52,11 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 |---|---|---|---|
 | `breadcrumbs` | `array` | no | Breadcrumb items `{ label, href }` above the title. |
 | `collapseHeader` | `boolean` | no | Collapses the header rows. |
-| `pageActions` | `array` | no | Action items `{ label, onPress }` right of the title. |
+| `children` | `node` | no | The content row under the title or subtitle (upstream `children`, the available row). |
+| `pageActions` | `array` | no | Action items `{ label, kind, onPress }` right of the title; `kind` is a Button kind, default `primary`. |
 | `scrollY` | `number` | no | Scroll offset driving the collapsed bar. |
 | `subtitle` | `string` | no | The subtitle under the title. |
-| `tags` | `array` | no | Tag items `{ label }` under the subtitle. |
+| `tags` | `array` | no | Tag items `{ label, type }` under the subtitle; `type` is a Tag kind. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 | `title` | `string` | yes | The page title. |
 | `titleIcon` | `string` | no | A semantic icon name beside the title. |
@@ -64,8 +81,11 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 
 | State | Props |
 |---|---|
-| default | `{"breadcrumbs":[{"label":"Home","href":"#"},{"label":"Library","href":"#"}],"pageActions":[{"label":"Create"},{"label":"Edit"}],"subtitle":"Description text","title":"Page title"}` |
-| collapsed | `{"breadcrumbs":[{"label":"Home","href":"#"},{"label":"Library","href":"#"}],"collapseHeader":true,"pageActions":[{"label":"Create"},{"label":"Edit"}],"subtitle":"Description text","title":"Page title"}` |
-| tags | `{"breadcrumbs":[{"label":"Home","href":"#"},{"label":"Library","href":"#"}],"pageActions":[{"label":"Create"},{"label":"Edit"}],"subtitle":"Description text","tags":[{"label":"tag-one"},{"label":"tag-two"}],"title":"Page title"}` |
-| noBreadcrumbs | `{"pageActions":[{"label":"Create"},{"label":"Edit"}],"subtitle":"Description text","title":"Page title"}` |
-| icon | `{"breadcrumbs":[{"label":"Home","href":"#"},{"label":"Library","href":"#"}],"pageActions":[{"label":"Create"},{"label":"Edit"}],"subtitle":"Description text","title":"Page title","titleIcon":"accessibility"}` |
+| default | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"}],"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"subtitle":"Optional subtitle if necessary","tags":[{"label":"Tag one","type":"blue"},{"label":"Tag two","type":"green"}],"title":"Page title"}` |
+| title | `{"title":"Page title"}` |
+| breadcrumbs | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"}],"title":"Page title"}` |
+| subtitle | `{"subtitle":"Optional subtitle if necessary","title":"Page title"}` |
+| actions | `{"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"title":"Page title"}` |
+| children | `{"children":"Available row content","title":"Page title"}` |
+| tags | `{"tags":[{"label":"Tag one","type":"blue"},{"label":"Tag two","type":"green"}],"title":"Page title"}` |
+| icon | `{"title":"Page title","titleIcon":"document"}` |

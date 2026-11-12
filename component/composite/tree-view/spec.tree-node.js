@@ -5,6 +5,8 @@ export default Object.freeze({
   toggleSize: 'control.tree_toggle_size',
   iconSize: 'control.tree_icon_size',
   iconGap: 'control.tree_icon_gap',
+  toggleOffset: 'control.tree_toggle_offset',
+  labelPaddingEnd: 'control.tree_label_padding_end',
   focusWidth: 'control.tree_focus_width',
   indicatorWidth: 'control.tree_node_indicator_width',
   paddingStart: 'control.tree_node_padding_start',

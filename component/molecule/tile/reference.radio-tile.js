@@ -18,7 +18,9 @@ export default Object.freeze({
     // upstream's .cds--tile__checkmark svg carries border-radius 50% (_tile.scss:191-195)
     // over a transparent background (probe markGlyphs backgroundColor: zero alpha) -
     // the radius paints nothing, so the glyph compares box + fill only
-    markGlyphs: Object.freeze({ upstream: '.cds--tile__checkmark svg', ours: ':scope > div svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true }),
-    inputs: Object.freeze({ upstream: '.cds--tile-input', ours: ':scope input', measure: 'box', all: true, optional: true })
+    // The upstream `.cds--tile-input` is visually hidden (`_tile.scss:355-357`
+    // `visually-hidden`): the measure gate reads it as a part upstream
+    // never draws, so it is not a measured part
+    markGlyphs: Object.freeze({ upstream: '.cds--tile__checkmark svg', ours: ':scope > div svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true })
   })
 });

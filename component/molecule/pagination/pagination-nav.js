@@ -1,6 +1,6 @@
 // Info: PaginationNav molecule. A row of page buttons with overflow
 // pickers and previous/next ghost buttons. First and last pages always
-// show; the cuts fold the middle into overflow selects. The active page
+// show; the cuts fold the middle into overflow pickers. The active page
 // is `aria-current="page"` with the indicator bar; a polite live region
 // announces "Page n of m".
 //
@@ -46,11 +46,17 @@ export default function PaginationNav (ctx) {
     // else the per-size fallback
     const [navWidth, setNavWidth] = React.useState(undefined);
     const isSm = Utils.isNumber(navWidth) && navWidth < ctx.metric('PaginationNav', 'breakpointSm');
-    const numberOfPages = props.size === 'sm' ? (itemsShown === 4 ? 4 : 5) : props.size === 'md' ? Math.min(Math.max(itemsShown, 4), 7) : 4;
-    const displayed = itemsShown >= 4 && !isSm ? itemsShown : numberOfPages;
+    // Upstream PaginationNav.js:155-166 (md: 4 or 5, sm: clamped 4..7) and
+    // the effect's floor of 4 (`:198-202`)
+    const numberOfPages = props.size === 'md' ? (itemsShown === 4 ? 4 : 5) : props.size === 'sm' ? Math.min(Math.max(itemsShown, 4), 7) : 4;
+    const displayed = Math.max(itemsShown >= 4 && !isSm ? itemsShown : numberOfPages, 4);
     const cuts = calculateCuts(page, totalItems, displayed);
     const height = ctx.metric('PaginationNav', props.size === 'sm' ? 'heightSmall' : props.size === 'md' ? 'heightMedium' : 'height');
-    // One page button or the overflow select for a hidden range
+    // The press area grows past a compact face on every side by the same
+    // amount, so a face of any width keeps the target minimum
+    const reach = -ctx.pressTarget({ height: height, width: height }).top;
+    const hit = React.createElement(View, { 'aria-hidden': true, dataSet: { part: 'hit' }, style: { bottom: -reach, left: -reach, outlineStyle: 'none', position: 'absolute', right: -reach, top: -reach } });
+    // One page button or the overflow picker for a hidden range
     const pageButton = function (index) {
       const active = index === page;
       const interaction = 'page-' + index;
@@ -80,45 +86,51 @@ export default function PaginationNav (ctx) {
           }];
         }
       },
-      React.createElement(View, { 'aria-hidden': true, style: ctx.pressTarget(null) }),
+      hit,
       React.createElement(View, { style: { alignItems: 'center', flexGrow: 1, justifyContent: 'center' } },
         React.createElement(Text, { style: [{ color: ctx.color('pagination_nav_page_label') }, ctx.typeStyle(active ? 'pagination_nav_page_active' : 'pagination_nav_page')] }, String(index + 1))),
       React.createElement(View, { dataSet: { part: 'activeBar' }, style: { alignSelf: 'center', backgroundColor: active ? ctx.color('pagination_nav_indicator') : 'transparent', height: ctx.metric('PaginationNav', 'indicatorHeight'), width: ctx.metric('PaginationNav', 'indicatorWidth') } }));
     };
-    const overflow = function (hidden, hiddenPages) {
-      return React.createElement(ctx.Registry.Select, {
-        inline: true,
-        items: hiddenPages.map(function (i) {
-          return { label: String(i + 1), value: String(i) };
-        }),
-        key: 'overflow-' + hidden,
-        onChange: function (v) {
-          setPage(Number(v));
-        },
-        placeholder: '…'
-      });
-    };
-    // The row: first page, front overflow, the visible middle, back
-    // overflow, the last page
-    const items = [];
-    items.push(pageButton(0));
-    const firstMiddle = cuts.front;
-    const lastMiddle = totalItems - 1 - cuts.back;
-    if (cuts.front > 0) {
-      items.push(overflow('front', Array.from({ length: cuts.front }, function (_, i) {
-        return i + 1;
-      })));
-    }
-    for (let i = firstMiddle; i <= lastMiddle; i = i + 1) {
-      if (i > 0 && i < totalItems - 1) {
-        items.push(pageButton(i));
+    // Upstream PaginationOverflow (`:108-160`): one hidden page is a page
+    // button, more are a page-sized picker under the horizontal overflow
+    // glyph; the picker lists the hidden pages
+    const overflow = function (hidden, fromIndex, count) {
+      if (count === 1) {
+        return pageButton(fromIndex);
       }
+      if (count < 1) {
+        return null;
+      }
+      return React.createElement(View, { dataSet: { part: 'overflow' }, key: 'overflow-' + hidden },
+        React.createElement(ctx.Registry.OverflowMenu, {
+          fillActiveLeaf: null,
+          fillHoverLeaf: 'pagination_nav_page_container_hover',
+          fillLeaf: null,
+          focusRingLeaf: 'pagination_nav_focus',
+          icon: 'overflow',
+          iconColor: 'pagination_nav_page_label',
+          iconDescription: 'Select page number',
+          items: Array.from({ length: count }, function (_, i) {
+            return { label: String(fromIndex + i + 1), onPress: function () {
+              setPage(fromIndex + i);
+            } };
+          }),
+          triggerHeight: height,
+          triggerWidth: height
+        }));
+    };
+    // The row, upstream's order (`:255-301`): the first page, the front
+    // overflow, the visible middle, the back overflow, the last page
+    const startOffset = displayed <= 4 && page > 1 ? 0 : 1;
+    const items = [];
+    if (displayed >= 5 || page <= 1) {
+      items.push(pageButton(0));
     }
-    if (cuts.back > 0) {
-      items.push(overflow('back', Array.from({ length: cuts.back }, function (_, i) {
-        return lastMiddle + 1 + i;
-      })));
+    items.push(overflow('front', startOffset, cuts.front));
+    for (let i = startOffset + cuts.front; i < totalItems - 1 - cuts.back; i = i + 1) {
+      items.push(pageButton(i));
     }
+    items.push(overflow('back', totalItems - cuts.back - 1, cuts.back));
     if (totalItems > 1) {
       items.push(pageButton(totalItems - 1));
     }
@@ -154,7 +166,7 @@ export default function PaginationNav (ctx) {
     React.createElement(View, {
       'aria-atomic': true,
       'aria-live': 'polite',
-      style: { height: 1, left: -9999, overflow: 'hidden', position: 'absolute', width: 1 }
+      style: { height: 0, overflow: 'hidden', position: 'absolute', width: 0 }
     },
     React.createElement(View, { accessibilityLabel: 'Page ' + (page + 1) + ' of ' + totalItems })));
   }

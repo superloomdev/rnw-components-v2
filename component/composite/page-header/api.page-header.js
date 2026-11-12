@@ -4,10 +4,11 @@ export default Object.freeze({
   props: Object.freeze({
     breadcrumbs: { type: 'array', required: false, description: 'Breadcrumb items `{ label, href }` above the title.' },
     collapseHeader: { type: 'boolean', required: false, description: 'Collapses the header rows.' },
-    pageActions: { type: 'array', required: false, description: 'Action items `{ label, onPress }` right of the title.' },
+    children: { type: 'node', required: false, description: 'The content row under the title or subtitle (upstream `children`, the available row).' },
+    pageActions: { type: 'array', required: false, description: 'Action items `{ label, kind, onPress }` right of the title; `kind` is a Button kind, default `primary`.' },
     scrollY: { type: 'number', required: false, description: 'Scroll offset driving the collapsed bar.' },
     subtitle: { type: 'string', required: false, description: 'The subtitle under the title.' },
-    tags: { type: 'array', required: false, description: 'Tag items `{ label }` under the subtitle.' },
+    tags: { type: 'array', required: false, description: 'Tag items `{ label, type }` under the subtitle; `type` is a Tag kind.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' },
     title: { type: 'string', required: true, description: 'The page title.' },
     titleIcon: { type: 'string', required: false, description: 'A semantic icon name beside the title.' },
@@ -21,8 +22,8 @@ export default Object.freeze({
     'color.page_header_bar_collapsed', 'control.page_header_row_gap', 'type.page_header_title', 'color.page_header_title',
     'control.page_header_title_min_height', 'control.page_header_title_icon_size', 'control.page_header_title_icon_gap',
     'type.page_header_subtitle', 'color.page_header_subtitle', 'control.page_header_subtitle_gap',
-    'control.page_header_tags_padding_block', 'control.page_header_tags_padding_end', 'type.heading03', 'type.heading04',
-    'type.body01', 'type.body_compact_02', 'type.label01', 'type.breadcrumb_small', 'font.family.sans'
+    'control.page_header_tags_padding_block', 'control.page_header_tags_padding_end', 'color.page_header_divider', 'type.heading03', 'type.heading04',
+    'type.body01', 'type.body_compact_01', 'type.body_compact_02', 'type.label01', 'type.breadcrumb_small', 'font.family.sans'
   ]),
   colors: Object.freeze([])
 });

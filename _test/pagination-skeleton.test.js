@@ -45,6 +45,8 @@ describe('PaginationSkeleton: every sample state under every template', function
         assert.equal(root.style.borderTopColor, cssValue('borderTopColor', tokens['color.pagination_divider']));
         assert.equal(texts.length, 4);
         assert.equal(texts[0].style.marginRight, tokens['control.pagination_text_gap'] + 'px');
+        // Every bar keeps its end gap, the last included (`_pagination.scss:278-281`)
+        assert.equal(texts[3].style.marginRight, tokens['control.pagination_text_gap'] + 'px');
 
       });
     }

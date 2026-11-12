@@ -128,11 +128,11 @@ import ListItemSample, { FRAME as ListItemFrame } from './component/molecule/tex
 import ContainedListSample, { FRAME as ContainedListFrame } from './component/composite/contained-list/sample.contained-list.js';
 import ContainedListItemSample from './component/composite/contained-list/sample.contained-list-item.js';
 import CardSample from './component/molecule/card/sample.card.js';
-import EmptyStateSample from './component/molecule/empty-state/sample.empty-state.js';
+import EmptyStateSample, { FRAME as EmptyStateFrame } from './component/molecule/empty-state/sample.empty-state.js';
 import ColumnSample from './component/molecule/grid/sample.column.js';
 import GridSample from './component/molecule/grid/sample.grid.js';
 import RowSample from './component/molecule/grid/sample.row.js';
-import PaginationSample from './component/molecule/pagination/sample.pagination.js';
+import PaginationSample, { FRAME as PaginationFrame } from './component/molecule/pagination/sample.pagination.js';
 import PaginationNavSample from './component/molecule/pagination/sample.pagination-nav.js';
 import PaginationSkeletonSample from './component/molecule/pagination/sample.pagination-skeleton.js';
 import RadioTileSample from './component/molecule/tile/sample.radio-tile.js';
@@ -142,7 +142,7 @@ import SelectableTileSample from './component/molecule/tile/sample.selectable-ti
 import TileSample from './component/molecule/tile/sample.js';
 import TileGroupSample from './component/molecule/tile/sample.tile-group.js';
 import DatePickerSkeletonSample, { FRAME as DatePickerSkeletonFrame } from './component/composite/date-picker/sample.date-picker-skeleton.js';
-import PageHeaderSample from './component/composite/page-header/sample.page-header.js';
+import PageHeaderSample, { FRAME as PageHeaderFrame } from './component/composite/page-header/sample.page-header.js';
 import TearsheetSample, { FRAME as TearsheetFrame } from './component/composite/tearsheet/sample.tearsheet.js';
 import TreeNodeSample from './component/composite/tree-view/sample.tree-node.js';
 import TreeViewSample from './component/composite/tree-view/sample.tree-view.js';
@@ -275,11 +275,11 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'ContainedList', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: ContainedListFrame, sample: ContainedListSample }),
   Object.freeze({ name: 'ContainedListItem', family: 'ContainedList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: ContainedListItemSample }),
   Object.freeze({ name: 'Card', family: 'Card', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: CardSample }),
-  Object.freeze({ name: 'EmptyState', family: 'EmptyState', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: EmptyStateSample }),
+  Object.freeze({ name: 'EmptyState', family: 'EmptyState', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: EmptyStateFrame, sample: EmptyStateSample }),
   Object.freeze({ name: 'Column', family: 'Grid', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: ColumnSample }),
   Object.freeze({ name: 'Grid', family: 'Grid', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: GridSample }),
   Object.freeze({ name: 'Row', family: 'Grid', tier: 'molecule', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: null, sample: RowSample }),
-  Object.freeze({ name: 'Pagination', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationSample }),
+  Object.freeze({ name: 'Pagination', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: PaginationFrame, sample: PaginationSample }),
   Object.freeze({ name: 'PaginationNav', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationNavSample }),
   Object.freeze({ name: 'PaginationSkeleton', family: 'Pagination', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PaginationSkeletonSample }),
   Object.freeze({ name: 'RadioTile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: RadioTileSample }),
@@ -289,7 +289,7 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'Tile', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileSample }),
   Object.freeze({ name: 'TileGroup', family: 'Tile', tier: 'molecule', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TileGroupSample }),
   Object.freeze({ name: 'DatePickerSkeleton', family: 'DatePicker', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: DatePickerSkeletonFrame, sample: DatePickerSkeletonSample }),
-  Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: PageHeaderSample }),
+  Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: PageHeaderFrame, sample: PageHeaderSample }),
   Object.freeze({ name: 'Tearsheet', family: 'Tearsheet', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TearsheetFrame, sample: TearsheetSample }),
   Object.freeze({ name: 'TreeNode', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: TreeNodeSample }),
   Object.freeze({ name: 'TreeView', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TreeViewSample })

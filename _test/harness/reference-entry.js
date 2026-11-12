@@ -137,6 +137,11 @@ function Cell (props) {
   if (element !== null && Array.isArray(props.state.wrappers)) {
     for (let i = props.state.wrappers.length - 1; i >= 0; i = i - 1) {
       const descriptor = props.state.wrappers[i];
+      // A wrapper the reference mount already draws in upstream's own form
+      // (the flexbox grid around a Row) stays on our page only
+      if (descriptor && descriptor.reference === false) {
+        continue;
+      }
       const factory = descriptor && typeof descriptor.component === 'string'
         ? UPSTREAM[reference.kind][descriptor.component]
         : undefined;

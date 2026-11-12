@@ -43,3 +43,17 @@ describe('Pagination: every sample state under every template', function () {
     }
   }
 });
+
+describe('Pagination: the blocks follow upstream order', function () {
+  // Upstream Pagination.js:221-282: the item count closes the left block;
+  // the page range follows the page select in the right block
+  test('the left block holds the count, the right block the page range', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const { root } = await renderPagination(Registry, SAMPLE[0].props);
+    const left = root.querySelector('[data-part="left"]');
+    const right = root.querySelector('[data-part="right"]');
+    assert.notEqual(left.querySelector('[data-part="count"]'), null, 'the count sits in the left block');
+    assert.equal(left.querySelector('[data-part="count"]').textContent, '1–10 of 103 items');
+    assert.equal(right.querySelector('[data-part="text"]').textContent, 'of 11 pages');
+  });
+});

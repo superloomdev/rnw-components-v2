@@ -173,7 +173,9 @@ export default function TreeView (ctx) {
     };
     const labelNode = props.hideLabel === true
       ? null
-      : React.createElement(Text, { style: [{ color: ctx.color('field_label'), paddingEnd: ctx.metric('TreeView', 'labelPaddingEnd') }, ctx.typeStyle('field_label')] }, Utils.isString(props.label) ? props.label : null);
+      // The `cds--label` gap under the label (`form/_form.scss` margin-block-end
+      // `$spacing-03`; probe: label 16 tall, tree 24 below its top)
+      : React.createElement(Text, { style: [{ alignSelf: 'flex-start', color: ctx.color('field_label'), marginBottom: ctx.metric('TreeView', 'labelGap'), paddingEnd: ctx.metric('TreeView', 'labelPaddingEnd') }, ctx.typeStyle('field_label')] }, Utils.isString(props.label) ? props.label : null);
     const items = flat.map(function (f, i) {
       return React.createElement(ctx.Registry.TreeNode, {
         key: i, depth: f.depth, disabled: f.disabled, expanded: f.expanded, isParent: f.isParent,
@@ -200,7 +202,9 @@ export default function TreeView (ctx) {
         testID: props.testID
       },
       labelNode,
-      React.createElement(View, { accessibilityRole: 'group', dataSet: { part: 'tree' }, role: 'group', style: { backgroundColor: ctx.color('layer_01') } }, items)));
+      // `.cds--tree` paints nothing; each node paints its own container
+      // (probe: the tree transparent, the nodes the container cell)
+      React.createElement(View, { accessibilityRole: 'group', dataSet: { part: 'tree' }, role: 'group' }, items)));
   }
 
   TreeViewComponent.displayName = 'TreeView';

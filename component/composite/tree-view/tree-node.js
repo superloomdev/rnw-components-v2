@@ -32,20 +32,52 @@ export default function TreeNode (ctx) {
     const focused = context.focusEnabled === props.index;
     const toggle = isParent ? React.createElement(View, {
       dataSet: { part: 'toggle' },
-      style: { alignItems: 'center', height: ctx.metric('TreeNode', 'toggleSize'), justifyContent: 'center', marginEnd: ctx.metric('TreeNode', 'iconGap'), transform: expanded ? [] : [{ rotate: '-90deg' }], width: ctx.metric('TreeNode', 'toggleSize') }
+      // The 24 toggle box pulls back by the offset and keeps it after
+      // (probe: toggle x 48 = row 36 + 16 - 4, margin -4 / 4, its 16 caret)
+      style: { alignItems: 'center', height: ctx.metric('TreeNode', 'toggleSize'), justifyContent: 'center', marginEnd: ctx.metric('TreeNode', 'toggleOffset'), marginStart: -ctx.metric('TreeNode', 'toggleOffset'), transform: expanded ? [] : [{ rotate: '-90deg' }], width: ctx.metric('TreeNode', 'toggleSize') }
     },
-    React.createElement(ctx.Registry.Icon, { color: 'tree_node_icon', name: 'caret_down', size: ctx.metric('TreeNode', 'toggleSize') })) : null;
+    React.createElement(ctx.Registry.Icon, { color: 'tree_node_icon', name: 'caret_down', size: ctx.metric('TreeNode', 'iconSize') })) : null;
     const icon = hasIcon ? React.createElement(View, { dataSet: { part: 'icon' }, style: { marginEnd: ctx.metric('TreeNode', 'iconGap') } },
       React.createElement(ctx.Registry.Icon, { color: 'tree_node_icon', name: props.icon, size: ctx.metric('TreeNode', 'iconSize') })) : null;
-    const label = React.createElement(View, {
-      dataSet: { part: 'label' },
-      style: { alignItems: 'center', flexDirection: 'row', marginStart: -offset * indent, paddingStart: offset * indent }
-    },
-    toggle, icon,
-    React.createElement(Text, {
-      dataSet: { part: 'text' },
-      style: [{ color: disabled ? ctx.color('tree_node_label_disabled') : selected ? ctx.color('tree_node_label_selected') : ctx.color('tree_node_label'), paddingStart: ctx.metric('TreeNode', 'labelTextPaddingStart') }, ctx.typeStyle('tree_node_label')]
-    }, props.label));
+    // Upstream nests a child's row inside its parent's padding (probe:
+    // depth-1 nodes x 52, width 304) and the label cancels the sum to span
+    // the tree (`TreeNode.js` calcOffset; probe: every label x 0, width 320,
+    // margin-left -40 / -16 / -56, padding-left the same, padding-right 16).
+    // Our rows are flat: a row steps in by its depth in indents and its
+    // label reaches back over that and the row's own start padding
+    const rowPad = ctx.metric('TreeNode', leafPad);
+    const stepIn = depth * indent;
+    // The label paints the hover and selected fills, the ring and the ink;
+    // the row keeps the container (probe: `labels` carry them, `nodes` the
+    // container cell in every state)
+    const label = function (state) {
+      const live = !disabled;
+      const hovered = live && state.hovered === true;
+      const ring = live && focused && state.focused === true;
+      return React.createElement(View, {
+        dataSet: { part: 'label' },
+        key: 'label',
+        style: {
+          alignItems: 'center',
+          alignSelf: 'stretch',
+          backgroundColor: live && selected ? ctx.color(hovered ? 'tree_node_container_selected_hover' : 'tree_node_container_selected') : hovered ? ctx.color('tree_node_container_hover') : 'transparent',
+          flexDirection: 'row',
+          flexGrow: 1,
+          marginStart: -(stepIn + rowPad),
+          outlineColor: ring ? ctx.color('tree_focus') : undefined,
+          outlineOffset: ring ? -ctx.metric('TreeNode', 'focusWidth') : undefined,
+          outlineStyle: ring ? 'solid' : undefined,
+          outlineWidth: ring ? ctx.metric('TreeNode', 'focusWidth') : undefined,
+          paddingEnd: ctx.metric('TreeNode', 'labelPaddingEnd'),
+          paddingStart: offset * indent
+        }
+      },
+      toggle, icon,
+      React.createElement(Text, {
+        dataSet: { part: 'text' },
+        style: [{ color: disabled ? ctx.color('tree_node_label_disabled') : selected ? ctx.color('tree_node_label_selected') : hovered ? ctx.color('tree_node_label_hover') : ctx.color('tree_node_label'), paddingStart: ctx.metric('TreeNode', 'labelTextPaddingStart') }, ctx.typeStyle('tree_node_label')]
+      }, props.label));
+    };
     return React.createElement(Pressable, {
       accessibilityRole: 'treeitem',
       'aria-current': active ? 'true' : undefined,
@@ -57,26 +89,28 @@ export default function TreeNode (ctx) {
       onFocus: props.onFocus,
       onPress: props.onPress,
       ref: props.rootRef,
-      style: function (state) {
-        return [{
-          alignItems: 'center',
-          backgroundColor: selected ? (state.hovered === true ? ctx.color('tree_node_container_selected_hover') : ctx.color('tree_node_container_selected')) : (state.hovered === true ? ctx.color('tree_node_container_hover') : ctx.color('tree_node_container')),
-          borderStartColor: active ? ctx.color('tree_node_indicator') : 'transparent',
-          borderStartWidth: ctx.metric('TreeNode', 'indicatorWidth'),
-          flexDirection: 'row',
-          height: height,
-
-          outlineColor: focused && state.focused === true ? ctx.color('tree_focus') : undefined,
-          outlineStyle: focused && state.focused === true ? 'solid' : undefined,
-          outlineWidth: focused && state.focused === true ? ctx.metric('TreeNode', 'focusWidth') : undefined,
-          paddingEnd: ctx.metric('TreeNode', 'leafPaddingBlock'),
-          paddingStart: ctx.metric('TreeNode', leafPad)
-        }, props.style];
-      },
+      style: [{
+        alignItems: 'center',
+        backgroundColor: ctx.color(disabled ? 'tree_node_container_disabled' : 'tree_node_container'),
+        flexDirection: 'row',
+        // A floor, as upstream's label `min-block-size`: scaled text grows the row
+        minHeight: height,
+        marginStart: stepIn,
+        outlineStyle: 'none',
+        paddingStart: rowPad
+      }, props.style],
       focusable: focused && !disabled,
       tabIndex: disabled ? undefined : focused ? 0 : -1,
       testID: props.testID
-    }, label);
+    }, function (state) {
+      // The active bar is an overlay at the tree's edge, as upstream's
+      // `::before`: it takes no room from the row (probe: node
+      // `borderLeftWidth` 0)
+      return [
+        label(state),
+        active ? React.createElement(View, { 'aria-hidden': true, dataSet: { part: 'indicator' }, key: 'indicator', style: { backgroundColor: ctx.color('tree_node_indicator'), bottom: 0, position: 'absolute', start: -stepIn, top: 0, width: ctx.metric('TreeNode', 'indicatorWidth') } }) : null
+      ];
+    });
   }
 
   TreeNodeComponent.displayName = 'TreeNode';

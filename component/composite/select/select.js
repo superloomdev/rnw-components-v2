@@ -97,7 +97,17 @@ export default function Select (ctx) {
     });
 
     // The indicator: the theme's own dropdown glyph, in the field's indicator color for the state
-    const caret = React.createElement(View, { style: { marginStart: iconGap, transform: state.open ? [{ rotate: '180deg' }] : [] } },
+    // An inline parent may seat the indicator inside the end padding, at a
+    // set distance from the frame's end, as upstream's absolute arrow does
+    const indicatorInPadding = inline === true && Utils.isNumber(props.indicatorEnd);
+    const caretSeat = indicatorInPadding ? {
+      bottom: 0,
+      end: props.indicatorEnd - (Utils.isNumber(props.paddingEnd) ? props.paddingEnd : 0),
+      justifyContent: 'center',
+      position: 'absolute',
+      top: 0
+    } : { marginStart: iconGap };
+    const caret = React.createElement(View, { style: [caretSeat, { transform: state.open ? [{ rotate: '180deg' }] : [] }] },
       React.createElement(ctx.Registry.Icon, { name: 'dropdown_indicator', size: iconSize, color: presentation.indicator }));
 
     // Render the error icon while invalid
@@ -243,11 +253,14 @@ export default function Select (ctx) {
       style: [{ position: 'relative' }, presentation.root, (compact === true || inline === true) ? { paddingTop: 0 } : null]
     }),
     labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-    React.createElement(View, { ref: frameRef, style: inline === true ? {
+    React.createElement(View, { dataSet: inline === true ? { part: 'inlineFrame' } : undefined, ref: frameRef, style: inline === true ? {
       alignItems: 'center',
       alignSelf: 'stretch',
-      backgroundColor: inlineHovered === true && Utils.isString(props.hoverLeaf) ? ctx.color(props.hoverLeaf) : 'transparent',
+      backgroundColor: inlineHovered === true && Utils.isString(props.hoverLeaf) ? ctx.color(props.hoverLeaf) : Utils.isString(props.fillLeaf) ? ctx.color(props.fillLeaf) : 'transparent',
+      borderEndColor: Utils.isObject(props.dividerEnd) ? ctx.color(props.dividerEnd.colorLeaf) : undefined,
+      borderEndWidth: Utils.isObject(props.dividerEnd) ? props.dividerEnd.width : undefined,
       flexDirection: 'row',
+      minHeight: Utils.isNumber(props.height) ? props.height : undefined,
       paddingEnd: Utils.isNumber(props.paddingEnd) ? props.paddingEnd : 0,
       paddingStart: Utils.isNumber(props.paddingStart) ? props.paddingStart : 0
     } : presentation.frame },

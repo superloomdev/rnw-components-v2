@@ -55,7 +55,9 @@ export default function Column (ctx) {
       : { paddingEnd: gutterHalfE, paddingStart: gutterHalfS };
     return React.createElement(View, { style: track },
       React.createElement(View, { dataSet: { part: 'column' }, style: style, testID: props.testID },
-        Utils.isString(props.children) ? React.createElement(ctx.ReactNative.Text, { style: ctx.typeStyle('body_compact_01') }, props.children) : props.children));
+        // A text child takes the page's primary text ink, as upstream's bare
+        // div inherits the body color (`$text-primary`)
+        Utils.isString(props.children) ? React.createElement(ctx.ReactNative.Text, { style: [{ color: ctx.color('text_primary') }, ctx.typeStyle('body_compact_01')] }, props.children) : props.children));
   }
 
   ColumnComponent.displayName = 'Column';

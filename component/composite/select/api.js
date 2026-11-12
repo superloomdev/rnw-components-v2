@@ -27,7 +27,11 @@ export default Object.freeze({
     inline: { type: 'boolean', required: false, description: 'Composition prop: the transparent member form a Pagination uses: no frame, label or helper row; the parent gives the height.' },
     paddingStart: { type: 'number', required: false, description: 'Composition prop with `inline`: padding before the value, from the parent.' },
     paddingEnd: { type: 'number', required: false, description: 'Composition prop with `inline`: padding after the indicator, from the parent.' },
-    hoverLeaf: { type: 'string', required: false, description: 'Composition prop with `inline`: the container color leaf under hover.' }
+    hoverLeaf: { type: 'string', required: false, description: 'Composition prop with `inline`: the container color leaf under hover.' },
+    fillLeaf: { type: 'string', required: false, description: 'Composition prop with `inline`: the container color leaf at rest (the pagination\'s disabled select keeps the bar\'s fill).' },
+    height: { type: 'number', required: false, description: 'Composition prop with `inline`: the frame\'s minimum height, so the select fills its parent\'s bar (the pagination).' },
+    indicatorEnd: { type: 'number', required: false, description: 'Composition prop with `inline`: seats the indicator inside the end padding, its end edge this far from the frame\'s end (the pagination: `_select.scss:269-271` plus the pagination\'s -0.5rem shift).' },
+    dividerEnd: { type: 'object', required: false, description: 'Composition prop with `inline`: `{ width, colorLeaf }` - a rule on the frame\'s end edge (the pagination\'s page-size select).' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),
