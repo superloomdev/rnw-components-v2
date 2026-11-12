@@ -46,6 +46,9 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 
 ## Component patterns
 
+- An absolute child of a bordered frame hangs from the frame's padding box, so `top: '100%'` lands one border width short of the field's bottom edge: the DatePicker calendar sat at 63 vs 64 until its seat spanned the border box (`bottom: borderSide - borderBottomWidth`) (Plan 0162 U3).
+- A failing `assert.equal(node, null)` on a jsdom element prints the whole element and drove a fire run to a 3 GB guard kill; assert `node === null` as a boolean (Plan 0162 U3).
+- `readOnly` as an identifier trips the banned-verb lint rule; quote it as a key (`'readOnly': ...`) where an upstream prop needs the name, and name the local something else (Plan 0162 U3).
 - A low-contrast outline is an inset `box-shadow`, not a border: a border changes the box and shifts every inner measurement by its width.
 - Inline widths that the reference derives from its container are `100%` capped by the family's width cell (`notification_inline_width`), never a fixed width; the toast keeps the fixed cell.
 - An overlay heading that the reference pulls up over its label is a token-derived negative margin (header space minus heading line height, minus the label line height and gap relative to the body padding); never a measured constant.
