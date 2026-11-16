@@ -15,10 +15,11 @@
 // containment degrades, it never blocks a run.
 //
 // Every kill appends one line to _test/test-results/guard.log, resolved
-// from this file's repo root rather than the caller's cwd. A pid once
-// seen under the child stays watched after a reparent, so a detached
-// grandchild that outlives its parent still counts against the ceilings
-// and still dies; the run ends only when every seen pid is gone.
+// from this file's repo root rather than the caller's cwd and led by the
+// time of the kill, so a line can be matched to the run that caused it.
+// A pid once seen under the child stays watched after a reparent, so a
+// detached grandchild that outlives its parent still counts against the
+// ceilings and still dies; the run ends only when every seen pid is gone.
 
 import { execFileSync, spawn } from 'node:child_process';
 import { appendFileSync, closeSync, mkdirSync, openSync, writeSync } from 'node:fs';
@@ -348,7 +349,7 @@ function terminate (reason, sample) {
   writeSync(2, line + '\n');
   try {
     mkdirSync(join(REPO_ROOT, '_test', 'test-results'), { recursive: true });
-    appendFileSync(LOG_FILE, line + '\n');
+    appendFileSync(LOG_FILE, new Date().toISOString() + ' ' + line + '\n');
   } catch {
     // The log is best-effort; the kill already happened
   }

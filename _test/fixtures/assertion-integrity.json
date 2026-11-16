@@ -36,6 +36,16 @@
       "why": "reparented pids dropped from the kill order must fail the orphan-kill assertion"
     },
     {
+      "id": "guard-log-time-off",
+      "file": "scripts/guard.js",
+      "find": "appendFileSync(LOG_FILE, new Date().toISOString() + ' ' + line + '\\n');",
+      "replace": "appendFileSync(LOG_FILE, line + '\\n');",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a kill is written to the guard log with the time it happened",
+      "why": "a kill line without its time cannot be matched to the run that caused it"
+    },
+    {
       "id": "update-loop-threshold-off",
       "file": "_test/harness/render.js",
       "find": "const LIMIT = 2000;",
