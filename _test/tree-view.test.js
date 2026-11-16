@@ -4,7 +4,7 @@ import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { act } from 'react';
 import * as factories from 'rnw-components/all';
-import { buildSystem } from './harness/system.js';
+import { buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 afterEach(cleanup);
 async function keydown (element, key) {
@@ -53,5 +53,17 @@ describe('TreeView: aria surface and selection', function () {
     });
     assert.equal(items[2].getAttribute('aria-selected'), 'true', 'Enter selects the focused leaf');
     assert.equal(items[0].getAttribute('aria-selected'), 'false', 'single selection leaves the others unselected');
+  });
+});
+describe('TreeView: the label', function () {
+  test('the label sits the theme offset below the tree top', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const offset = buildNative('carbon').tokens['control.tree_label_offset'];
+    const container = await render(React.createElement(Registry.TreeView, { label: 'Tree view', nodes: NODES }));
+    const label = Array.from(container.querySelectorAll('[dir="auto"]')).find(function (el) {
+      return el.textContent === 'Tree view';
+    });
+    assert.notEqual(label, undefined, 'the label draws');
+    assert.equal(label.style.marginTop, offset + 'px');
   });
 });

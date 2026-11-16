@@ -32,7 +32,10 @@ label reaches back over that and the row's start padding. The active bar is
 an overlay at the tree's edge, as upstream's `::before` (row border 0). The
 toggle box pulls back by `control.tree_toggle_offset` and keeps it after
 (toggle x 48, margin -4 / 4) and draws the 16 caret. The label sits
-`spacing_03` above the tree (`form/_form.scss` `cds--label` margin-block-end).
+`spacing_03` above the tree (`form/_form.scss` `cds--label` margin-block-end),
+and `control.tree_label_offset` below the tree's top: upstream's label is
+inline-block, so it sits in a line box with the page's strut (fidelity label
+y 2, tree y 26).
 Rows take `minHeight`, so scaled text grows them. The reference passes each
 row's `id`, as the probe mount does: upstream selection keys on it.
 
@@ -142,6 +145,7 @@ TreeView is a hierarchical list of nodes that expand, collapse and select, one a
 | `labelTextPaddingStart` | `control.tree_label_text_padding_start` |
 | `labelPaddingEnd` | `control.tree_label_padding_end` |
 | `labelGap` | `spacing.spacing_03` |
+| `labelOffset` | `control.tree_label_offset` |
 | `heightSmall` | `size.size_xsmall` |
 | `heightMedium` | `size.size_small` |
 

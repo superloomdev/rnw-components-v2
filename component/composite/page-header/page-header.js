@@ -24,12 +24,20 @@ export default function PageHeader (ctx) {
     const actions = Utils.isArray(props.pageActions) ? props.pageActions : [];
     const tags = Utils.isArray(props.tags) ? props.tags : [];
     const hasCrumbs = !collapsed && !Utils.isEmptyArray(crumbs);
+    // The breadcrumb row: the trail spans the breadcrumb column, 12 below
+    // the row's top in the header's own label-01 type and 4 gaps
+    // (`_page-header.scss:277-285,320-324,333-347`; fidelity breadcrumb y 12,
+    // height 15.98, width 1216 without page actions)
     const breadcrumb = hasCrumbs ? React.createElement(View, {
       dataSet: { part: 'breadcrumb' },
-      style: { justifyContent: 'center', minHeight: ctx.metric('PageHeader', 'breadcrumbHeight') }
-    }, React.createElement(ctx.Registry.Breadcrumb, { items: crumbs.map(function (c) {
-      return { children: c.label, href: c.href };
-    }) })) : null;
+      style: { minHeight: ctx.metric('PageHeader', 'breadcrumbHeight'), paddingTop: ctx.metric('PageHeader', 'breadcrumbPaddingTop') }
+    }, React.createElement(ctx.Registry.Breadcrumb, {
+      gap: ctx.metric('PageHeader', 'breadcrumbGap'),
+      items: crumbs.map(function (c) {
+        return { href: c.href, label: c.label };
+      }),
+      typeLeaf: 'page_header_breadcrumb'
+    })) : null;
     // The title column and the page actions share the row; below the
     // available width the actions wrap under the title (`:439-447,494-506`)
     const titleRow = React.createElement(View, {
@@ -37,7 +45,9 @@ export default function PageHeader (ctx) {
       style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: hasCrumbs ? 0 : ctx.metric('PageHeader', 'titleOffsetNoBreadcrumb') }
     },
     React.createElement(View, { dataSet: { part: 'title' }, style: { alignItems: 'center', flexDirection: 'row', flexShrink: 1, minHeight: ctx.metric('PageHeader', 'titleMinHeight') } },
-      Utils.isString(props.titleIcon) ? React.createElement(View, { dataSet: { part: 'titleIcon' }, style: { marginEnd: ctx.metric('PageHeader', 'titleIconGap') } },
+      // The icon sits the theme's offset below the title's center
+      // (`_page-header.scss:487-495`; fidelity titleIcon y 44.78)
+      Utils.isString(props.titleIcon) ? React.createElement(View, { dataSet: { part: 'titleIcon' }, style: { marginEnd: ctx.metric('PageHeader', 'titleIconGap'), transform: [{ translateY: ctx.metric('PageHeader', 'titleIconOffset') }] } },
         React.createElement(ctx.Registry.Icon, { color: 'page_header_title', name: props.titleIcon, size: ctx.metric('PageHeader', 'titleIconSize') })) : null,
       React.createElement(Text, { dataSet: { part: 'titleText' }, style: [{ color: ctx.color('page_header_title'), flexShrink: 1 }, ctx.typeStyle('page_header_title')] }, props.title)),
     !Utils.isEmptyArray(actions) ? React.createElement(View, { dataSet: { part: 'actions' }, style: { flexDirection: 'row', flexWrap: 'wrap' } },

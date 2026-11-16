@@ -4174,6 +4174,66 @@
       "test": "page-header.test.js",
       "testName": "the subtitle presents its line height as the unitless ratio",
       "why": "a px line height of 19.99998 rounds up to 20 and draws the subtitle 1 lower than upstream's unitless body-01"
+    },
+    {
+      "id": "page-header-breadcrumb-type",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "      typeLeaf: 'page_header_breadcrumb'\n",
+      "replace": "      typeLeaf: undefined\n",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "the header's breadcrumb is label-01 (_page-header.scss:320-324,342-347)"
+    },
+    {
+      "id": "page-header-breadcrumb-padding",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "paddingTop: ctx.metric('PageHeader', 'breadcrumbPaddingTop')",
+      "replace": "paddingTop: 0",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "the header's breadcrumb sits $spacing-04 below the row top (_page-header.scss:320-324)"
+    },
+    {
+      "id": "page-header-breadcrumb-labels",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "        return { href: c.href, label: c.label };\n",
+      "replace": "        return { children: c.label, href: c.href };\n",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "a breadcrumb item draws its `label`; passed as children it drew an empty link"
+    },
+    {
+      "id": "breadcrumb-item-gap",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "gap: Utils.isNumber(props.gap) ? props.gap : ctx.metric(",
+      "replace": "gap: ctx.metric(",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "a composing parent's gap reaches every item (_page-header.scss:333-339)"
+    },
+    {
+      "id": "page-header-title-icon-offset",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "transform: [{ translateY: ctx.metric('PageHeader', 'titleIconOffset') }]",
+      "replace": "transform: []",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the title icon takes the theme offset",
+      "why": "the title icon sits the theme's offset below the title's center (_page-header.scss:487-495)"
+    },
+    {
+      "id": "tree-view-label-offset",
+      "file": "component/composite/tree-view/tree-view.js",
+      "find": "marginTop: ctx.metric('TreeView', 'labelOffset'), ",
+      "replace": "",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "the label sits the theme offset below the tree top",
+      "why": "the tree's inline-block label sits 2 down its line box (fidelity label y 2)"
     }
   ]
 }

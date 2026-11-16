@@ -30,6 +30,10 @@ and no landmark.
 - **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
 - **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
 
+A composing parent may hand the list and every item its own type set and
+item gap (`typeLeaf`, `gap`); the page header's breadcrumb row does, with
+label-01 and its 4 gap.
+
 ## Breadcrumb
 
 Breadcrumb draws the page trail: a row of links separated by slashes, the current page unlinked and an `{ overflow: [...] }` entry collapsing to a menu, with a trailing slash unless `noTrailingSlash`.
@@ -50,6 +54,8 @@ Breadcrumb draws the page trail: a row of links separated by slashes, the curren
 | `items` | `array` | yes | The trail: `{ label, href, isCurrentPage, onPress, visited }` entries, or `{ overflow: [{ label, href, onPress }] }` for the overflow menu. |
 | `noTrailingSlash` | `boolean` | no | Draws no separator after the last item. |
 | `size` | `string` | no | One of `variants`: `md` (the default) or `sm` - the breadcrumb type and gaps. |
+| `typeLeaf` | `string` | no | Composition prop: a composing parent's type set leaf for the list and every item, in place of the size's. |
+| `gap` | `number` | no | Composition prop: a composing parent's item gap, in place of the size's. |
 | `accessibilityLabel` | `string` | no | The nav landmark's name. Default `Breadcrumb`. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 
@@ -104,6 +110,8 @@ BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page o
 | `last` | `boolean` | no | Composition prop: the last item draws no separator. |
 | `noTrailingSlash` | `boolean` | no | Composition prop: draws no separator. |
 | `size` | `string` | no | Composition prop: `sm` or `md`, from Breadcrumb. |
+| `typeLeaf` | `string` | no | Composition prop: the type set leaf Breadcrumb hands down, in place of the size's. |
+| `gap` | `number` | no | Composition prop: the item gap Breadcrumb hands down, in place of the size's. |
 
 ### Metrics
 

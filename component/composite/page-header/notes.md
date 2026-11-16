@@ -20,6 +20,19 @@ available width. `children` is the content row (`__available-row`, 16 under
 the title row, 8 under a subtitle). The 32 and 44 literals wait for cells
 (`CONTRACT-REQUESTS.md`, U2). The sample mirrors the probe's eight states.
 
+M6 gate (upstream quoted): the breadcrumb row draws the trail across the
+breadcrumb column, `control.page_header_breadcrumb_padding_top` below the row's
+top, in `type.page_header_breadcrumb` (label-01 on the list, items and
+links, `_page-header.scss:320-324,342-347`) with
+`control.page_header_breadcrumb_gap` between items (`:333-339`), through the
+Breadcrumb's `typeLeaf` and `gap` composition props; the items carry their
+`label` (they were handed `children` and drew empty links). The title icon
+sits `control.page_header_title_icon_offset` below the title's center: the
+upstream icon is inline in a wrapper, `vertical-align: middle` in the
+heading-04 line box, then `translateY(-$spacing-01)` (`:487-495`; fidelity
+titleIcon y 44.78125). The subtitle presents its line height as the unitless
+ratio, as upstream's (y 89 vs 88 under a px height).
+
 ## Decisions
 
 Composes `Breadcrumb`, `Button`, `Icon`, `Tag`; `scrollY` is a prop (no

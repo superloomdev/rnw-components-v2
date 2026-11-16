@@ -22,7 +22,7 @@ export default Object.freeze({
     'control.tree_icon_gap', 'control.tree_focus_width', 'control.tree_node_indicator_width',
     'control.tree_node_padding_start', 'control.tree_leaf_padding_block', 'control.tree_leaf_padding_start',
     'control.tree_leaf_padding_start_icon', 'control.tree_leaf_padding_start_nested_icon',
-    'control.tree_label_text_padding_start', 'control.tree_label_padding_end',
+    'control.tree_label_text_padding_start', 'control.tree_label_padding_end', 'control.tree_label_offset',
     'size.size_xsmall', 'size.size_small', 'type.tree_node_label', 'type.field_label',
     'color.tree_node_container', 'color.tree_node_container_hover', 'color.tree_node_container_selected',
     'color.tree_node_container_selected_hover', 'color.tree_node_label', 'color.tree_node_label_hover',

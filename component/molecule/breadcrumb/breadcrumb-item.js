@@ -44,14 +44,14 @@ export default function BreadcrumbItem (ctx) {
     const small = props.size === 'sm';
     const metrics = {
       caretSize: ctx.metric('BreadcrumbItem', 'caretSize'),
-      gap: ctx.metric('BreadcrumbItem', small ? 'gapSmall' : 'gap'),
+      gap: Utils.isNumber(props.gap) ? props.gap : ctx.metric('BreadcrumbItem', small ? 'gapSmall' : 'gap'),
       linkMinWidthSmall: ctx.metric('BreadcrumbItem', 'linkMinWidthSmall'),
       overflowHeight: ctx.metric('BreadcrumbItem', small ? 'overflowHeightSmall' : 'overflowHeight'),
       overflowIconOffset: ctx.metric('BreadcrumbItem', 'overflowIconOffset'),
       overflowUnderlineWidth: ctx.metric('BreadcrumbItem', 'overflowUnderlineWidth'),
       overflowWidth: ctx.metric('BreadcrumbItem', 'overflowWidth')
     };
-    const type = small ? 'breadcrumb_small' : 'breadcrumb';
+    const type = Utils.isString(props.typeLeaf) ? props.typeLeaf : small ? 'breadcrumb_small' : 'breadcrumb';
     const current = props.isCurrentPage === true;
 
     // The content: the overflow menu, the link or the link-styled text

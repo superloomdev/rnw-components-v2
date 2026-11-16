@@ -25,3 +25,7 @@ and no landmark.
 - **BreadcrumbItem** (requires_parent): must be composed inside Breadcrumb; measured through Breadcrumb's samples.
 - **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
 - **BreadcrumbItem** (no_reference): no standalone upstream mount; measured through Breadcrumb's samples.
+
+A composing parent may hand the list and every item its own type set and
+item gap (`typeLeaf`, `gap`); the page header's breadcrumb row does, with
+label-01 and its 4 gap.

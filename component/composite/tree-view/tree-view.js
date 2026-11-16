@@ -174,8 +174,9 @@ export default function TreeView (ctx) {
     const labelNode = props.hideLabel === true
       ? null
       // The `cds--label` gap under the label (`form/_form.scss` margin-block-end
-      // `$spacing-03`; probe: label 16 tall, tree 24 below its top)
-      : React.createElement(Text, { style: [{ alignSelf: 'flex-start', color: ctx.color('field_label'), marginBottom: ctx.metric('TreeView', 'labelGap'), paddingEnd: ctx.metric('TreeView', 'labelPaddingEnd') }, ctx.typeStyle('field_label')] }, Utils.isString(props.label) ? props.label : null);
+      // `$spacing-03`; probe: label 16 tall, tree 24 below its top), and the
+      // offset its inline-block box takes in the line box above it (label y 2)
+      : React.createElement(Text, { style: [{ alignSelf: 'flex-start', color: ctx.color('field_label'), marginBottom: ctx.metric('TreeView', 'labelGap'), marginTop: ctx.metric('TreeView', 'labelOffset'), paddingEnd: ctx.metric('TreeView', 'labelPaddingEnd') }, ctx.typeStyle('field_label')] }, Utils.isString(props.label) ? props.label : null);
     const items = flat.map(function (f, i) {
       return React.createElement(ctx.Registry.TreeNode, {
         key: i, depth: f.depth, disabled: f.disabled, expanded: f.expanded, isParent: f.isParent,

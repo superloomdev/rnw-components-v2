@@ -28,8 +28,8 @@ export default Object.freeze({
     nodes: Object.freeze({ upstream: '.cds--tree-node', ours: '[data-part="node"]', measure: 'box', all: true }),
     labels: Object.freeze({ upstream: '.cds--tree-node__label', ours: '[data-part="label"]', measure: 'box', all: true }),
     texts: Object.freeze({ upstream: '.cds--tree-node__label__text', ours: '[data-part="text"]', measure: 'text', all: true }),
-    toggles: Object.freeze({ upstream: '.cds--tree-node__toggle', ours: '[data-part="toggle"]', measure: 'box', all: true, optional: true }),
-    toggleGlyphs: Object.freeze({ upstream: '.cds--tree-node__toggle svg', ours: '[data-part="toggle"] svg', measure: 'box', all: true, optional: true }),
+    toggles: Object.freeze({ upstream: '.cds--tree-parent-node__toggle', ours: '[data-part="toggle"]', measure: 'box', all: true, optional: true }),
+    toggleGlyphs: Object.freeze({ upstream: '.cds--tree-parent-node__toggle svg', ours: '[data-part="toggle"] svg', measure: 'box', all: true, optional: true }),
     icons: Object.freeze({ upstream: '.cds--tree-node__icon', ours: '[data-part="icon"] svg', measure: 'box', all: true, optional: true })
   })
 });

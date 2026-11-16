@@ -15,6 +15,7 @@ export default Object.freeze({
   labelTextPaddingStart: 'control.tree_label_text_padding_start',
   labelPaddingEnd: 'control.tree_label_padding_end',
   labelGap: 'spacing.spacing_03',
+  labelOffset: 'control.tree_label_offset',
   heightSmall: 'size.size_xsmall',
   heightMedium: 'size.size_small'
 });
