@@ -29,7 +29,12 @@ const MODULES = join(TEST, 'node_modules');
 const PORT = 5301;
 
 const CHECK = process.argv.indexOf('--contract-check') !== -1;
-const ROWS = process.argv.slice(2).filter(function (arg) { return arg.indexOf('--') !== 0; });
+// `--viewport <width>` probes at another window width (a breakpoint rule
+// read from the window, not the body) and writes `<Row>@<width>.json`
+const VIEWPORT_AT = process.argv.indexOf('--viewport');
+const VIEWPORT = VIEWPORT_AT === -1 ? null : Number(process.argv[VIEWPORT_AT + 1]);
+const ROWS = process.argv.slice(2).filter(function (arg, i) { return arg.indexOf('--') !== 0 && i + 1 !== VIEWPORT_AT; });
+const SUFFIX = VIEWPORT === null ? '' : '@' + VIEWPORT;
 
 // The fields every part reports: its box, the computed properties the recipe
 // measures, and the trimmed text
@@ -723,7 +728,7 @@ async function main () {
   await new Promise(function (done) { app.listen(PORT, done); });
   const browser = await chromium.launch();
   // The gate's own width (`playwright.config.js:22`): modal and notification widths are breakpoint rules
-  const page = await browser.newPage({ viewport: { width: 1280, height: 2400 } });
+  const page = await browser.newPage({ viewport: { width: VIEWPORT === null ? 1280 : VIEWPORT, height: 2400 } });
   const mounts = {};
   for (const row of ROWS) {
     mounts[row] = (await import(join(RECIPES, 'probe', row + '.mount.js'))).default;
@@ -733,11 +738,11 @@ async function main () {
   await page.waitForTimeout(400);
   for (const row of ROWS) {
     const result = await probeRow(page, row, mounts[row]);
-    const file = join(RECIPES, 'probe', row + '.json');
+    const file = join(RECIPES, 'probe', row + SUFFIX + '.json');
     writeFileSync(file, JSON.stringify(result, null, 2) + '\n');
     process.stdout.write('wrote ' + file + '\n');
     if (Array.isArray(mounts[row].cells)) {
-      const cellsFile = join(RECIPES, 'probe', row + '.cells.txt');
+      const cellsFile = join(RECIPES, 'probe', row + SUFFIX + '.cells.txt');
       writeFileSync(cellsFile, cellsCheck(mounts[row], result));
       process.stdout.write('wrote ' + cellsFile + '\n');
     }

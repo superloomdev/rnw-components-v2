@@ -33,6 +33,20 @@ heading-04 line box, then `translateY(-$spacing-01)` (`:487-495`; fidelity
 titleIcon y 44.78125). The subtitle presents its line height as the unitless
 ratio, as upstream's (y 89 vs 88 under a px height).
 
+U4a (upstream quoted, probe `PageHeader.json` at 1280): with page actions
+and no action bar the breadcrumb row is the left section's share of the
+content width plus both gutters, `0.6 * (100% + 2 * $spacing-05)`
+(`PageHeader/_page-header.scss:36-39,167-171`; the class is set at
+`es/components/PageHeader/PageHeader.js:311`), its action column takes 40 %
+(`:232-242`) and the breadcrumb column the rest (`:299-304`), each column
+inside 16 of gutter. One cell, `control.page_header_breadcrumb_ratio`
+(0.6), is read twice: the row is that share of the content width widened
+by `grid.gutter`, the column that share of the row. Probe `default`: row
+748.796875, column 449.28125, list 417.28125; `breadcrumbs` (no page
+actions): row 1248, list 1216. Below `breakpoint.md` upstream sets
+`widthIsNarrow` from the window (`PageHeader.tsx:787-788`) and the row
+drops the page-actions limit, so the split is not drawn there.
+
 ## Decisions
 
 Composes `Breadcrumb`, `Button`, `Icon`, `Tag`; `scrollY` is a prop (no

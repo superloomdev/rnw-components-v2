@@ -18,7 +18,7 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'color.page_header_container', 'color.page_header_container_scrolled', 'color.page_header_shadow',
-    'control.page_header_padding_inline', 'control.page_header_breadcrumb_height', 'control.page_header_breadcrumb_gap', 'control.page_header_breadcrumb_padding_top', 'type.page_header_breadcrumb',
+    'control.page_header_padding_inline', 'control.page_header_breadcrumb_height', 'control.page_header_breadcrumb_gap', 'control.page_header_breadcrumb_padding_top', 'control.page_header_breadcrumb_ratio', 'type.page_header_breadcrumb', 'grid.gutter', 'breakpoint.md',
     'color.page_header_bar_collapsed', 'control.page_header_row_gap', 'type.page_header_title', 'color.page_header_title',
     'control.page_header_title_min_height', 'control.page_header_title_icon_size', 'control.page_header_title_icon_gap', 'control.page_header_title_icon_offset',
     'type.page_header_subtitle', 'color.page_header_subtitle', 'control.page_header_subtitle_gap',

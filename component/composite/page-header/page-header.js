@@ -24,20 +24,35 @@ export default function PageHeader (ctx) {
     const actions = Utils.isArray(props.pageActions) ? props.pageActions : [];
     const tags = Utils.isArray(props.tags) ? props.tags : [];
     const hasCrumbs = !collapsed && !Utils.isEmptyArray(crumbs);
+    // Below md the window is narrow and the row follows the action-bar
+    // rules instead (`PageHeader.tsx:787-788`); an unknown window is not
+    const viewport = ctx.behaviors.useViewportSize();
+    const narrow = viewport.width > 0 && viewport.width < ctx.metric('PageHeader', 'bpMd');
     // The breadcrumb row: the trail spans the breadcrumb column, 12 below
     // the row's top in the header's own label-01 type and 4 gaps
     // (`_page-header.scss:277-285,320-324,333-347`; fidelity breadcrumb y 12,
     // height 15.98, width 1216 without page actions)
-    const breadcrumb = hasCrumbs ? React.createElement(View, {
-      dataSet: { part: 'breadcrumb' },
-      style: { minHeight: ctx.metric('PageHeader', 'breadcrumbHeight'), paddingTop: ctx.metric('PageHeader', 'breadcrumbPaddingTop') }
-    }, React.createElement(ctx.Registry.Breadcrumb, {
+    const trail = hasCrumbs ? React.createElement(ctx.Registry.Breadcrumb, {
       gap: ctx.metric('PageHeader', 'breadcrumbGap'),
       items: crumbs.map(function (c) {
         return { href: c.href, label: c.label };
       }),
       typeLeaf: 'page_header_breadcrumb'
-    })) : null;
+    }) : null;
+    // With page actions and no action bar the row is the breadcrumb
+    // section's share of the content width plus both gutters (`:167-171`),
+    // and its breadcrumb column the same share of the row beside the
+    // action column (`:232-242,299-304`), inside its gutter halves (probe
+    // default: row 748.8, column 449.28, list 417.28 at 1280)
+    const half = ctx.metric('PageHeader', 'gutter') / 2;
+    const share = (ctx.metric('PageHeader', 'breadcrumbRatio') * 100) + '%';
+    const split = trail !== null && !narrow && !Utils.isEmptyArray(actions);
+    const breadcrumb = hasCrumbs ? React.createElement(View, {
+      dataSet: { part: 'breadcrumb' },
+      style: { minHeight: ctx.metric('PageHeader', 'breadcrumbHeight'), paddingTop: ctx.metric('PageHeader', 'breadcrumbPaddingTop') }
+    }, split ? React.createElement(View, { dataSet: { part: 'breadcrumbRow' }, style: { marginEnd: -half, marginStart: -half } },
+      React.createElement(View, { style: { width: share } },
+        React.createElement(View, { dataSet: { part: 'breadcrumbColumn' }, style: { paddingEnd: half, paddingStart: half, width: share } }, trail))) : trail) : null;
     // The title column and the page actions share the row; below the
     // available width the actions wrap under the title (`:439-447,494-506`)
     const titleRow = React.createElement(View, {

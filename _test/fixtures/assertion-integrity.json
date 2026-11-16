@@ -4216,6 +4216,26 @@
       "why": "a breadcrumb item draws its `label`; passed as children it drew an empty link"
     },
     {
+      "id": "page-header-breadcrumb-share",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "paddingEnd: half, paddingStart: half, width: share",
+      "replace": "paddingEnd: half, paddingStart: half",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "with page actions the row and its breadcrumb column take the section share inside the gutters",
+      "why": "with page actions the breadcrumb column is the left section's 60 % of the row (_page-header.scss:36-39,232-242,299-304; probe list 417.28 at 1280)"
+    },
+    {
+      "id": "page-header-breadcrumb-narrow",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "trail !== null && !narrow && ",
+      "replace": "trail !== null && ",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "without page actions, or below md, the trail spans the whole row",
+      "why": "below md upstream sets widthIsNarrow and drops the page-actions row limit (PageHeader.tsx:787-788, PageHeader.js:311)"
+    },
+    {
       "id": "breadcrumb-item-gap",
       "file": "component/molecule/breadcrumb/breadcrumb-item.js",
       "find": "gap: Utils.isNumber(props.gap) ? props.gap : ctx.metric(",

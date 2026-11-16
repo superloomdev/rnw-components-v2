@@ -1,6 +1,7 @@
 // PageHeader row tests: the title row renders without breadcrumbs; the
 // breadcrumb row draws its trail in the header's own type, gap and top
-// padding; the title icon takes the theme's offset.
+// padding; the title icon takes the theme's offset; with page actions the
+// breadcrumb row and column take the section share.
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as factories from 'rnw-components/all';
@@ -47,5 +48,41 @@ describe('PageHeader: the breadcrumb row and the title icon', function () {
     const container = await render(React.createElement(Registry.PageHeader, { title: 'Title', titleIcon: 'document' }));
     const icon = container.querySelector('[data-part="titleIcon"]');
     assert.match(icon.style.transform, new RegExp('translateY\\(' + t['control.page_header_title_icon_offset'] + 'px\\)'));
+  });
+});
+describe('PageHeader: the breadcrumb section share', function () {
+  const crumbs = [{ href: '#', label: 'Breadcrumb 1' }, { href: '#', label: 'Breadcrumb 2' }];
+  const actions = [{ kind: 'secondary', label: 'Secondary button' }, { kind: 'primary', label: 'Primary button' }];
+  test('with page actions the row and its breadcrumb column take the section share inside the gutters', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const t = buildNative('carbon').tokens;
+    const share = (t['control.page_header_breadcrumb_ratio'] * 100) + '%';
+    const half = t['grid.gutter'] / 2;
+    const container = await render(React.createElement(Registry.PageHeader, { breadcrumbs: crumbs, pageActions: actions, title: 'Title' }));
+    const row = container.querySelector('[data-part="breadcrumbRow"]');
+    assert.equal(row.style.marginLeft, -half + 'px');
+    assert.equal(row.style.marginRight, -half + 'px');
+    assert.equal(row.firstChild.style.width, share);
+    const column = row.querySelector('[data-part="breadcrumbColumn"]');
+    assert.equal(column.style.width, share);
+    assert.equal(column.style.paddingLeft, half + 'px');
+    assert.equal(column.style.paddingRight, half + 'px');
+    assert.equal(column.querySelector('[role="list"]') !== null, true, 'the trail sits in the column');
+  });
+  test('without page actions, or below md, the trail spans the whole row', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const t = buildNative('carbon').tokens;
+    const plain = await render(React.createElement(Registry.PageHeader, { breadcrumbs: crumbs, title: 'Title' }));
+    assert.equal(plain.querySelector('[data-part="breadcrumbRow"]') === null, true, 'no split without page actions');
+    await cleanup();
+    const width = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: t['breakpoint.md'] - 1, writable: true });
+    try {
+      const narrow = await render(React.createElement(Registry.PageHeader, { breadcrumbs: crumbs, pageActions: actions, title: 'Title' }));
+      assert.equal(narrow.querySelector('[data-part="breadcrumb"] [role="list"]') !== null, true, 'the trail renders below md');
+      assert.equal(narrow.querySelector('[data-part="breadcrumbRow"]') === null, true, 'no split below md');
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+    }
   });
 });
