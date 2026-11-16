@@ -126,6 +126,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
 
+  // The web text feature that keeps common ligatures under tracking
+  const LIGATURES = '\'liga\' 1';
+
+
   /********************************************************************
   Read a type set by its leaf name and resolve its family token, so the
   result spreads straight into a Text style. On native the emitted
@@ -137,10 +141,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   unitless CSS ratio, which keeps fractional products on the subpixel
   grid. A native host without the injected PixelRatio cannot draw text;
   asking for a type style is then a hard error, never a guessed grid.
+  On web, common ligatures stay on under tracking: a browser drops them
+  for a tracked run, `font-variant-ligatures` cannot bring them back, and
+  the reference's reset turns the feature itself on for every element
+  (`_reset.scss:102` `font-feature-settings: 'liga' 1`), so a wrapped line
+  holding `fi` drew a tracking step wider per pair. Native text shapes
+  its ligatures itself and carries no such key.
 
   @param {String} name - e.g. 'body01'
 
-  @return {Object} - { fontFamily, fontSize, fontWeight, letterSpacing, lineHeight }
+  @return {Object} - { fontFamily, fontSize, fontWeight, letterSpacing,
+                     lineHeight }, and `fontFeatureSettings` on web
   *********************************************************************/
   function typeStyle (name) {
 
@@ -173,14 +184,16 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       }
     }
 
-    // Return the style with the family token resolved
-    return {
+    // Build the style with the family token resolved
+    const style = {
       fontFamily: token('font.family.' + set.fontFamily),
       fontSize: fontSize,
       fontWeight: set.fontWeight,
       letterSpacing: letterSpacing,
       lineHeight: lineHeight
     };
+    // Return it; a web run also turns the ligature feature on
+    return platform.isNative ? style : Object.assign(style, { fontFeatureSettings: LIGATURES });
 
   }
 
@@ -759,16 +772,19 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   occluding it with the surface color, when the field is focused or
   populated. A member whose reference distinguishes it from the family
   reads its own cell (`text_input_container_hover`,
-  `select_outline_disabled`).
+  `select_outline_disabled`); an owner whose reference draws a read-only
+  field names its container and outline leaves for that state.
 
   @param {Object} state   - { focused, hovered, disabled, invalid, populated,
-                            highlighted }: `highlighted` marks that the open
-                            list carries the highlight, moving the field's
-                            ring onto the highlighted option
-  @param {Object} options - { member, height, radius, surface, trailing }: the
-                            member ('text_input' | 'select'), the field's own
-                            height and radius, the color leaf it sits on and
-                            whether a trailing icon sits in the frame
+                            highlighted, readOnly }: `highlighted` marks that
+                            the open list carries the highlight, moving the
+                            field's ring onto the highlighted option
+  @param {Object} options - { member, height, radius, surface, trailing,
+                            outlineDisabled, containerReadOnly, outlineReadOnly }:
+                            the member ('text_input' | 'select'), the field's
+                            own height and radius, the color leaf it sits on,
+                            whether a trailing icon sits in the frame and the
+                            owner's own disabled and read-only leaves
 
   @return {Object} - { root, frame, label, message, raised, placeholder,
                      value, placeholderColor, indicator, invalidIcon, iconGap };
@@ -785,6 +801,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const placement = enumValue('anatomy.label');
     const disabled = state.disabled === true;
     const invalid = !disabled && state.invalid === true;
+    const viewOnly = !disabled && state['readOnly'] === true;
     const open = state.open === true;
     const focused = !disabled && (state.focused === true || (open && mode === 'outline'));
     const hovered = !disabled && state.hovered === true && !(open && mode === 'underline');
@@ -800,11 +817,14 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     };
 
     // Frame colors and widths for the state; an owner may name a dedicated
-    // outline leaf that applies only while disabled
+    // outline leaf that applies only while disabled, and read-only leaves
+    // that hold under the pointer and the focus ring and give way to invalid
     const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled
-      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');
+      : disabled && member !== 'text_input' ? member + '_outline_disabled'
+        : viewOnly && !invalid && Utils.isString(options.outlineReadOnly) ? options.outlineReadOnly : cell('field_outline');
     const container = disabled ? 'field_container_disabled'
-      : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
+      : viewOnly && Utils.isString(options.containerReadOnly) ? options.containerReadOnly
+        : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
     const width = token(focused ? 'control.field_outline_width_focus' : 'control.field_outline_width');
     const paddingInline = token('control.field_padding_inline');
     const paddingEnd = options.trailing === true ? token('control.field_icon_inset') : paddingInline;

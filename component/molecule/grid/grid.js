@@ -32,7 +32,10 @@ export default function Grid (ctx) {
     const holdsRows = React.Children.toArray(props.children).some(function (child) {
       return child !== null && child !== undefined && child.type !== undefined && child.type.displayName === 'Row';
     });
-    const context = Object.freeze({ breakpoint: breakpoint, gutterEnd: narrow === true ? ctx.metric('Grid', 'gutter') / 2 : gutter / 2, gutterStart: narrow === true ? 0 : gutter / 2, mode: holdsRows === true ? 'rows' : 'columns', rowGap: rowGap, narrow: narrow });
+    // A condensed flexbox grid pads its columns' block ends by the condensed
+    // gutter's half too (`_flex-grid.scss:317-319`)
+    const gutterBlock = condensed === true && holdsRows === true ? gutter / 2 : 0;
+    const context = Object.freeze({ breakpoint: breakpoint, gutterBlock: gutterBlock, gutterEnd: narrow === true ? ctx.metric('Grid', 'gutter') / 2 : gutter / 2, gutterStart: narrow === true ? 0 : gutter / 2, mode: holdsRows === true ? 'rows' : 'columns', rowGap: rowGap, narrow: narrow });
     const style = {
       display: 'flex',
       flexDirection: holdsRows === true ? 'column' : 'row',

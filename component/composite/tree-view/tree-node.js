@@ -37,7 +37,10 @@ export default function TreeNode (ctx) {
       style: { alignItems: 'center', height: ctx.metric('TreeNode', 'toggleSize'), justifyContent: 'center', marginEnd: ctx.metric('TreeNode', 'toggleOffset'), marginStart: -ctx.metric('TreeNode', 'toggleOffset'), transform: expanded ? [] : [{ rotate: '-90deg' }], width: ctx.metric('TreeNode', 'toggleSize') }
     },
     React.createElement(ctx.Registry.Icon, { color: 'tree_node_icon', name: 'caret_down', size: ctx.metric('TreeNode', 'iconSize') })) : null;
-    const icon = hasIcon ? React.createElement(View, { dataSet: { part: 'icon' }, style: { marginEnd: ctx.metric('TreeNode', 'iconGap') } },
+    // The icon keeps the gap on both sides (`_treeview.scss:216-218`
+    // margin-inline `$spacing-03` `$spacing-03`; probe icons x 40 = 32 + 8);
+    // after a toggle the toggle's end margin holds its start (`:220-227`)
+    const icon = hasIcon ? React.createElement(View, { dataSet: { part: 'icon' }, style: { marginEnd: ctx.metric('TreeNode', 'iconGap'), marginStart: isParent ? 0 : ctx.metric('TreeNode', 'iconGap') } },
       React.createElement(ctx.Registry.Icon, { color: 'tree_node_icon', name: props.icon, size: ctx.metric('TreeNode', 'iconSize') })) : null;
     // Upstream nests a child's row inside its parent's padding (probe:
     // depth-1 nodes x 52, width 304) and the label cancels the sum to span

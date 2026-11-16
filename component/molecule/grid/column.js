@@ -50,9 +50,10 @@ export default function Column (ctx) {
     if (offset > 0) {
       track.marginStart = (offset * 100 / columns) + '%';
     }
+    const gutterBlock = Utils.isNumber(context.gutterBlock) ? context.gutterBlock : 0;
     const style = mode === 'columns'
       ? { marginEnd: gutterHalfE, marginStart: gutterHalfS }
-      : { paddingEnd: gutterHalfE, paddingStart: gutterHalfS };
+      : { paddingBottom: gutterBlock, paddingEnd: gutterHalfE, paddingStart: gutterHalfS, paddingTop: gutterBlock };
     return React.createElement(View, { style: track },
       React.createElement(View, { dataSet: { part: 'column' }, style: style, testID: props.testID },
         // A text child takes the page's primary text ink, as upstream's bare

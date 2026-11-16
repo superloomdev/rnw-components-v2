@@ -22,6 +22,27 @@
 - **Icon.** As the reference's field icon: the calendar, drawn in the
   disabled icon color on a disabled or read-only field; the error glyph in
   its place on an invalid field; none on a valid `simple` field.
+- **Field states.** A disabled field draws the picker's own transparent
+  bottom border (`date_picker_input_outline_disabled`;
+  `date-picker/_date-picker.scss:116-118`), and a read-only one a transparent
+  fill over the subtle border (`date_picker_input_container_readonly`,
+  `date_picker_input_outline_readonly`; `:307-309`) through the field
+  presentation's read-only state; focus and invalid still win over the
+  read-only outline. The range's in-range fill is the theme's
+  `date_picker_day_container_range` (`_flatpickr.scss:518-521`, `$highlight`
+  under `$text-primary`).
+- **Reference stage.** The harness leaves each interaction state with
+  Escape and a click outside, and two upstream states it reaches are ones a
+  person's next press would not show. Escape on a field drops the
+  calendar's `open` class without closing the picker (`DatePicker.js:308`),
+  so the next press opens nothing (flatpickr `index.js:1248-1255`; U4 focus
+  run: `value @pressed` and `open @pressed` 2.51%, upstream drew no
+  calendar); a click outside re-reads the first field alone
+  (`index.js:927-931`) and empties an open range, whose view then falls to
+  the current month (U3 month x 75.8 vs 89.5; U4 `openRange @hover` 2.34%,
+  no selection upstream). The stage closes a picker left without its class
+  before the next key, focus or press, and an open state restores the
+  value's selection and month, after the field's own handlers.
 - **Platform.** The row is `split`: the web half always draws. The native
   half reads `anatomy.date_picker_widget`: `system` keeps the drawn labels,
   fields and messages and seats the host's `adapters.DatePicker` (props

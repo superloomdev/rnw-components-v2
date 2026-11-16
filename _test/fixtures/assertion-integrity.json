@@ -688,7 +688,7 @@
     {
       "id": "context-field-disabled-outline-border",
       "file": "component/context.js",
-      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
+      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled'\n        : viewOnly && !invalid && Utils.isString(options.outlineReadOnly) ? options.outlineReadOnly : cell('field_outline');",
       "replace": "    const outline = cell('field_outline');",
       "runner": "node",
       "test": "select.test.js",
@@ -4084,6 +4084,96 @@
       "test": "file-uploader.test.js",
       "testName": "the button picks through the host adapter and names the chosen files",
       "why": "several chosen files name the button \"<n> files\" (FileUploaderButton.js handleOnChange)"
+    },
+    {
+      "id": "date-picker-input-outline-disabled",
+      "file": "component/composite/date-picker/date-picker-input.js",
+      "find": "      outlineDisabled: 'date_picker_input_outline_disabled',\n",
+      "replace": "",
+      "runner": "node",
+      "test": "date-picker-input.test.js",
+      "testName": "a disabled field draws its own outline and a read-only field its own fill and outline",
+      "why": "a disabled date picker input's bottom border is transparent, not the field's disabled outline (_date-picker.scss:116-118)"
+    },
+    {
+      "id": "date-picker-input-readonly",
+      "file": "component/composite/date-picker/date-picker-input.js",
+      "find": "      'readOnly': viewOnly\n",
+      "replace": "      'readOnly': false\n",
+      "runner": "node",
+      "test": "date-picker-input.test.js",
+      "testName": "a disabled field draws its own outline and a read-only field its own fill and outline",
+      "why": "a read-only date picker input is transparent over the subtle border (_date-picker.scss:307-309)"
+    },
+    {
+      "id": "row-condensed-block-gutter",
+      "file": "component/molecule/grid/grid.js",
+      "find": "    const gutterBlock = condensed === true && holdsRows === true ? gutter / 2 : 0;\n",
+      "replace": "    const gutterBlock = 0;\n",
+      "runner": "node",
+      "test": "row.test.js",
+      "testName": "a condensed grid pads each column block end by half the condensed gutter, the others not at all",
+      "why": "a condensed flexbox grid pads its columns' block ends by half the condensed gutter (_flex-grid.scss:317-319)"
+    },
+    {
+      "id": "pagination-button-square",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "          width: size - ctx.metric('Pagination', 'dividerWidth')\n",
+      "replace": "          width: size\n",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "each button is the size square and its face one rule narrower",
+      "why": "the pagination button's start rule sits inside the size square (_pagination.scss:224-228)"
+    },
+    {
+      "id": "select-inline-sized",
+      "file": "component/composite/select/select.js",
+      "find": "    const sized = compact === true || inline === true;\n",
+      "replace": "    const sized = compact === true;\n",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Pagination: parts match the rendered upstream",
+      "why": "an inline select sizes to its widest option rounded up, as the platform select (probe Pagination selects 71)"
+    },
+    {
+      "id": "tree-node-leaf-icon-start",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "marginStart: isParent ? 0 : ctx.metric('TreeNode', 'iconGap') } },",
+      "replace": "marginStart: 0 } },",
+      "runner": "node",
+      "test": "tree-node.test.js",
+      "testName": "a leaf icon keeps the gap on both sides, a parent icon only at its end",
+      "why": "a leaf's icon carries margin-inline $spacing-03 on both sides (_treeview.scss:216-218)"
+    },
+    {
+      "id": "type-style-ligatures",
+      "file": "component/context.js",
+      "find": "    return platform.isNative ? style : Object.assign(style, { fontFeatureSettings: LIGATURES });",
+      "replace": "    return style;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "default: token, color, typeStyle resolve from the built theme",
+      "why": "a tracked run keeps its common ligatures, as the reference's reset asks (_reset.scss:102)"
+    },
+    {
+      "id": "empty-state-subtitle-ratio",
+      "file": "component/molecule/empty-state/empty-state.js",
+      "find": "ctx.textPresentation(ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle'))",
+      "replace": "ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle')",
+      "runner": "node",
+      "test": "empty-state.test.js",
+      "testName": "the subtitle presents its line height as the unitless ratio",
+      "why": "a px line height of 19.99998 rounds up to 20 and draws the subtitle 1 lower than upstream's unitless body-01"
+    },
+    {
+      "id": "page-header-subtitle-ratio",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "ctx.textPresentation(ctx.typeStyle('page_header_subtitle'))",
+      "replace": "ctx.typeStyle('page_header_subtitle')",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the subtitle presents its line height as the unitless ratio",
+      "why": "a px line height of 19.99998 rounds up to 20 and draws the subtitle 1 lower than upstream's unitless body-01"
     }
   ]
 }

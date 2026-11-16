@@ -20,6 +20,13 @@ the end padding 16 from the end (`_pagination.scss` select rules,
 `height`, `indicatorEnd`, `dividerEnd` (the page-size select's end rule) and
 `fillLeaf` (disabled).
 
+M6 gate (upstream quoted): each button is the size square with its start
+rule inside it (`_pagination.scss:224-228`; probe buttons 40, ours drew 41),
+so the IconButton face is one rule narrower. The two selects size as the
+platform select does, to the widest option rounded up to the whole pixel
+(probe selects 71 = 16 + ceil(18.125) + 36 for `10`..`50`; the page select
+sizes to `11` on every page, not to the shown page).
+
 PaginationNav (`PaginationNav.js:155-301`): `md` shows 4 or 5 pages and `sm`
 clamps to 4..7 (they were swapped); the row is upstream's order over
 calculateCuts (the middle ended one page late); a single hidden page is a

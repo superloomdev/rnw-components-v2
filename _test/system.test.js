@@ -130,7 +130,9 @@ describe('context: reads', function () {
       const style = ctx.typeStyle('body01');
       assert.equal(style.fontSize, built.tokens['type.body01'].fontSize);
       assert.equal(style.fontFamily, built.tokens['font.family.' + built.tokens['type.body01'].fontFamily]);
-      assert.deepEqual(Object.keys(style).sort(), ['fontFamily', 'fontSize', 'fontWeight', 'letterSpacing', 'lineHeight']);
+      assert.deepEqual(Object.keys(style).sort(), ['fontFamily', 'fontFeatureSettings', 'fontSize', 'fontWeight', 'letterSpacing', 'lineHeight']);
+      // _reset.scss:102 keeps common ligatures on under tracking
+      assert.equal(style.fontFeatureSettings, "'liga' 1");
     });
   }
 

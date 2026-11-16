@@ -41,6 +41,10 @@ export default function Select (ctx) {
     // keeps its own accessible name instead
     const compact = props.compact === true;
     const inline = props.inline === true;
+    // A compact or inline select is a platform select drawn bare: its width
+    // is its widest option's, rounded up to the whole pixel (probe
+    // Pagination: selects 71 = 16 + ceil(18.125) + 36)
+    const sized = compact === true || inline === true;
     const items = Utils.isArray(props.items) ? props.items : [];
     // Group entries ({ label, items, disabled? }) flatten to their options
     // for the behavior: selection, keyboard traversal and the sizer all work
@@ -238,7 +242,7 @@ export default function Select (ctx) {
       // The layout event's width arrives already rounded, so ceil cannot
       // recover a fraction the event lost; the positioner reads the sizer's
       // true fractional box instead, and the seat rounds up to match it
-      onLayout: compact === true ? intrinsic.measure : undefined,
+      onLayout: sized === true ? intrinsic.measure : undefined,
       style: { alignSelf: 'flex-start', height: 0, overflow: 'hidden', position: 'absolute' }
     },
     [placeholder].concat(flatItems.map(function (item) {
@@ -286,7 +290,7 @@ export default function Select (ctx) {
       style: { alignItems: 'center', alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, outlineStyle: 'none' }
     }),
     React.createElement(View, {
-      style: { flexGrow: 1, width: compact === true && sizerWidth !== undefined ? sizerWidth : undefined }
+      style: { flexGrow: 1, width: sized === true && sizerWidth !== undefined ? sizerWidth : undefined }
     },
     React.createElement(Text, {
       numberOfLines: 1,

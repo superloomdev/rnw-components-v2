@@ -29,10 +29,14 @@ export default Object.freeze({
     // The overflow-aware breadcrumb, button set and tag set keep hidden
     // sizing copies offscreen ahead of the drawn ones (probe: x -1212,
     // -463, -1216 first), so a part reads the drawn breadcrumb only and
-    // the page actions and tags are left to the perceptual gate
-    breadcrumb: Object.freeze({ upstream: '.c4p--page-header__breadcrumb-row :not(.c4p--breadcrumb-with-overflow__breadcrumb-container--hidden) > .cds--breadcrumb', ours: '[data-part="breadcrumb"] [role="list"]', measure: 'box', optional: true }),
+    // the page actions and tags are left to the perceptual gate. The
+    // hidden copy's list sits in a bare `nav` inside the hidden container
+    // (`BreadcrumbWithOverflow.js:56-60`); the drawn list's `nav` carries
+    // the container class itself (`:151-155`)
+    breadcrumb: Object.freeze({ upstream: '.c4p--page-header__breadcrumb-row nav.c4p--breadcrumb-with-overflow__breadcrumb-container > .cds--breadcrumb', ours: '[data-part="breadcrumb"] [role="list"]', measure: 'box', optional: true }),
     title: Object.freeze({ upstream: '.c4p--page-header__titleText', ours: '[data-part="titleText"]', measure: 'text' }),
     titleIcon: Object.freeze({ upstream: '.c4p--page-header__title-icon', ours: '[data-part="titleIcon"] svg', measure: 'box', optional: true }),
-    subtitle: Object.freeze({ upstream: '.c4p--page-header__subtitle', ours: '[data-part="subtitle"]', measure: 'text', optional: true })
+    // The subtitle column holds its text in a span (`PageHeader.js:344`)
+    subtitle: Object.freeze({ upstream: '.c4p--page-header__subtitle-text', ours: '[data-part="subtitle"]', measure: 'text', optional: true })
   })
 });

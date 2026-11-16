@@ -87,9 +87,12 @@ export default function Pagination (ctx) {
       },
       value: String(page)
     }));
-    // The buttons: ghost IconButtons with the divider at their start
+    // The buttons: ghost IconButtons with the divider at their start, inside
+    // the size square (`_pagination.scss:224-228` block and inline size the
+    // height, border-inline-start 1px in the border box; probe buttons 40,
+    // glyph x 731.5 = 719 + 1 + 11.5), so the face is one divider narrower
     const button = function (icon, label, atEnd, onPress) {
-      return React.createElement(View, { dataSet: { part: 'button' }, style: { borderStartColor: ctx.color('pagination_divider'), borderStartWidth: ctx.metric('Pagination', 'dividerWidth'), height: size } },
+      return React.createElement(View, { dataSet: { part: 'button' }, style: { borderStartColor: ctx.color('pagination_divider'), borderStartWidth: ctx.metric('Pagination', 'dividerWidth'), height: size, width: size } },
         React.createElement(ctx.Registry.IconButton, {
           align: 'top',
           disabled: disabled || atEnd,
@@ -97,7 +100,8 @@ export default function Pagination (ctx) {
           kind: 'ghost',
           label: label,
           onPress: onPress,
-          size: props.size === 'sm' ? 'sm' : props.size === 'lg' ? 'lg' : 'md'
+          size: props.size === 'sm' ? 'sm' : props.size === 'lg' ? 'lg' : 'md',
+          width: size - ctx.metric('Pagination', 'dividerWidth')
         }));
     };
     const label = Utils.isString(props.itemsPerPageText) ? props.itemsPerPageText : 'Items per page:';

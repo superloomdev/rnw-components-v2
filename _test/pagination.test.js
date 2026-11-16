@@ -57,3 +57,25 @@ describe('Pagination: the blocks follow upstream order', function () {
     assert.equal(right.querySelector('[data-part="text"]').textContent, 'of 11 pages');
   });
 });
+
+describe('Pagination: the buttons', function () {
+  // _pagination.scss:224-228: the button is the size square with its start
+  // rule inside the border box, so the face is one rule narrower
+  test('each button is the size square and its face one rule narrower', async function () {
+    for (const template of TEMPLATE_NAMES) {
+      const tokens = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      for (const [size, cell] of [['sm', 'size.size_small'], [undefined, 'size.size_medium'], ['lg', 'size.size_large']]) {
+        const { root } = await renderPagination(Registry, Object.assign({}, SAMPLE[0].props, { size: size }));
+        const side = tokens[cell];
+        const rule = tokens['control.pagination_divider_width'];
+        for (const button of root.querySelectorAll('[data-part="button"]')) {
+          assert.equal(button.style.width, side + 'px', template + ' ' + size + ' square');
+          assert.equal(button.style.borderLeftWidth, rule + 'px', template + ' ' + size + ' rule');
+          assert.equal(button.querySelector('[data-testid="icon-button-face"]').style.width, (side - rule) + 'px', template + ' ' + size + ' face');
+        }
+        await cleanup();
+      }
+    }
+  });
+});

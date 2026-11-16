@@ -27,7 +27,11 @@ export default function EmptyState (ctx) {
     // under it at its own width (`__action-button`, `__link` inline-block)
     const content = React.createElement(View, { dataSet: { part: 'content' }, style: { flexShrink: 1 } },
       Utils.isString(props.title) ? React.createElement(Text, { dataSet: { part: 'header' }, style: [{ color: ctx.color('empty_state_title'), paddingBottom: gap('titleGap'), textAlign: 'left' }, ctx.typeStyle(small ? 'empty_state_title_small' : 'empty_state_title')] }, props.title) : null,
-      Utils.isString(props.subtitle) ? React.createElement(Text, { dataSet: { part: 'subtitle' }, style: [{ color: ctx.color('empty_state_subtitle'), paddingBottom: gap('subtitleGap'), textAlign: 'left' }, ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle')] }, props.subtitle) : null,
+      // The subtitle's fractional line height (body-01, 20 * 0.99999) is
+      // presented as the unitless ratio, as upstream's, so its half-leading
+      // floors as upstream's does (a px height rounds up to 20 and drew the
+      // text 1 lower: fidelity subtitle y 37 vs 36)
+      Utils.isString(props.subtitle) ? React.createElement(Text, { dataSet: { part: 'subtitle' }, style: [{ color: ctx.color('empty_state_subtitle'), paddingBottom: gap('subtitleGap'), textAlign: 'left' }, ctx.textPresentation(ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle'))] }, props.subtitle) : null,
       props.action && Utils.isString(props.action.text) ? React.createElement(View, { dataSet: { part: 'action' }, style: { alignSelf: 'flex-start', flexDirection: 'row', marginBottom: gap('actionGap') } },
         React.createElement(ctx.Registry.Button, { children: props.action.text, kind: props.action.kind || 'tertiary', onPress: props.action.onClick, pressFloor: true, size: 'sm' })) : null,
       props.link && Utils.isString(props.link.text) ? React.createElement(View, { dataSet: { part: 'link' }, style: { alignSelf: 'flex-start' } }, React.createElement(ctx.Registry.Link, { children: props.link.text, href: props.link.href })) : null);

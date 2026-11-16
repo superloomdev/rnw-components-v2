@@ -57,7 +57,7 @@ Name.spec = SPEC;
 |---|---|---|
 | `ctx.token('spacing.spacing_05')` | the emitted value | the theme lacks it |
 | `ctx.color('interactive')` | `color.interactive` | same |
-| `ctx.typeStyle('body01')` | `{ fontFamily, fontSize, fontWeight, letterSpacing, lineHeight }` with the family token resolved; on native `lineHeight` is resolved on the host's physical pixel grid (`PixelRatio.roundToNearestPixel`) | same, and a native host without `PixelRatio` |
+| `ctx.typeStyle('body01')` | `{ fontFamily, fontSize, fontWeight, letterSpacing, lineHeight }` with the family token resolved, plus `fontFeatureSettings: "'liga' 1"` on web (common ligatures kept under tracking); on native `lineHeight` is resolved on the host's physical pixel grid (`PixelRatio.roundToNearestPixel`) | same, and a native host without `PixelRatio` |
 | `ctx.metric('Name', 'height')` | the spec entry resolved | no sheet, no metric, bad rule |
 | `ctx.enum('anatomy.label')` | the theme's choice, checked against the contract's list | not an enum, value outside the list |
 | `ctx.icon('close', 16)` | `{ viewBox, paths }`; the set's own 16px glyph when it has one | the theme lacks the icon |

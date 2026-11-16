@@ -2,8 +2,8 @@
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as factories from 'rnw-components/all';
-import { buildSystem } from './harness/system.js';
-import { React, cleanup, render } from './harness/render.js';
+import { buildNative, buildSystem } from './harness/system.js';
+import { React, cleanup, cssValue, render } from './harness/render.js';
 afterEach(cleanup);
 describe('PageHeader: the title row', function () {
   test('the title row renders without breadcrumbs', async function () {
@@ -13,5 +13,14 @@ describe('PageHeader: the title row', function () {
     assert.notEqual(title, null, 'the title row renders');
     assert.equal(container.querySelector('[data-part="breadcrumb"]'), null, 'no breadcrumb row without breadcrumbs');
     assert.match(title.getAttribute('style'), /min-height:\s*32px|min-height:\s*40px/, 'the title keeps its min height');
+  });
+});
+describe('PageHeader: the subtitle', function () {
+  test('the subtitle presents its line height as the unitless ratio', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const set = buildNative('carbon').tokens['type.page_header_subtitle'];
+    const container = await render(React.createElement(Registry.PageHeader, { subtitle: 'Subtitle', title: 'Title' }));
+    const subtitle = container.querySelector('[data-part="subtitle"]');
+    assert.equal(subtitle.style.lineHeight, cssValue('lineHeight', String(set.lineHeight / set.fontSize)));
   });
 });

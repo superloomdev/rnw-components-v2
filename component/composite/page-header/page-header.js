@@ -44,7 +44,9 @@ export default function PageHeader (ctx) {
       actions.map(function (a, i) {
         return React.createElement(ctx.Registry.Button, { children: a.label, key: i, kind: a.kind || 'primary', onPress: a.onPress, size: 'md' });
       })) : null);
-    const subtitle = !collapsed && Utils.isString(props.subtitle) ? React.createElement(Text, { dataSet: { part: 'subtitle' }, style: [{ color: ctx.color('page_header_subtitle'), marginTop: ctx.metric('PageHeader', 'subtitleGap') }, ctx.typeStyle('page_header_subtitle')] }, props.subtitle) : null;
+    // The subtitle's fractional line height is presented as the unitless
+    // ratio, as upstream's (fidelity subtitle y 89 vs 88 under a px height)
+    const subtitle = !collapsed && Utils.isString(props.subtitle) ? React.createElement(Text, { dataSet: { part: 'subtitle' }, style: [{ color: ctx.color('page_header_subtitle'), marginTop: ctx.metric('PageHeader', 'subtitleGap') }, ctx.textPresentation(ctx.typeStyle('page_header_subtitle'))] }, props.subtitle) : null;
     // The content row: 16 under the title row, 8 under a subtitle (`:589-601`)
     const available = !collapsed && props.children !== undefined && props.children !== null ? React.createElement(View, {
       dataSet: { part: 'available' },

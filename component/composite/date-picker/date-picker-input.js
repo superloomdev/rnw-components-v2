@@ -82,24 +82,29 @@ export default function DatePickerInput (ctx) {
     const height = ctx.metric('DatePickerInput', SIZES[props.size] || 'height');
     const surface = Utils.isString(props.surface) ? props.surface
       : Utils.isString(ctx.config.FIELD_SURFACE) ? ctx.config.FIELD_SURFACE : 'background';
+    const viewOnly = picker['isReadOnly'] === true || props['isReadOnly'] === true;
     const presentation = ctx.fieldPresentation({
       disabled: state.disabled,
       focused: state.focused,
       hovered: state.hovered,
       invalid: invalid,
-      populated: state.populated
+      populated: state.populated,
+      'readOnly': viewOnly
     }, {
       member: 'text_input',
       height: height,
       radius: ctx.metric('DatePickerInput', 'radius'),
       surface: surface,
-      trailing: true
+      trailing: true,
+      outlineDisabled: 'date_picker_input_outline_disabled',
+      containerReadOnly: 'date_picker_input_container_readonly',
+      outlineReadOnly: 'date_picker_input_outline_readonly'
     });
 
     // One icon ends at the frame's icon inset (its end padding): the
     // calendar, drawn disabled on a disabled or read-only field, or the
     // error glyph on an invalid one; a valid `simple` field draws none
-    const locked = state.disabled === true || picker['isReadOnly'] === true || props['isReadOnly'] === true;
+    const locked = state.disabled === true || viewOnly;
     const iconName = invalid && !locked ? 'invalid' : 'calendar';
     const iconColor = locked ? 'icon_disabled' : invalid ? presentation.invalidIcon : 'icon_primary';
     const icon = type === 'simple' && !invalid ? null : React.createElement(View, {
@@ -153,7 +158,7 @@ export default function DatePickerInput (ctx) {
       presentation: presentation,
       props: Object.assign({}, props, {
         helperText: props.warn === true && Utils.isString(props.warnText) ? props.warnText : props.helperText,
-        isReadOnly: picker['isReadOnly'] === true || props['isReadOnly'] === true,
+        isReadOnly: viewOnly,
         label: props.hideLabel === true ? undefined : props.labelText
       }),
       rootProps: { dataSet: { part: 'input' }, testID: props.testID },

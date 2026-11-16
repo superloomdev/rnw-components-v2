@@ -26,6 +26,12 @@ columns' padding (probe `Row.json`: rows margin-left -16 in all states). The
 Row reference draws the probe's FlexGrid itself and the sample's Grid wrapper
 is `reference: false` (upstream's `Grid` is the CSS grid).
 
+M6 gate (upstream quoted): a condensed flexbox grid also pads every column's
+block ends by half the condensed gutter (`@carbon/grid`
+`_flex-grid.scss:317-319`, `padding-block: $condensed-gutter * 0.5`), so a
+condensed row of one text line is 19 tall, not 18 (fidelity `condensed`
+columns height 18 vs 19).
+
 ## Platform
 
 `platform.support` is `both`.

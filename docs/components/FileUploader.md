@@ -27,6 +27,12 @@
 - **Not drawn.** A name cut by the item's width shows no tooltip (upstream
   wraps a cut name in one); the uploader's list keeps no files across a
   remount, as upstream's internal list; `warn` has no upstream look here.
+- **Ligatures.** The description and the error body each hold two `fi`
+  pairs ("file", "files"); the reference's reset keeps common ligatures on
+  under tracking (`_reset.scss:102`), so its lines were one tracking step
+  narrower per pair (description 264.16 vs 263.64, error body 260.44 vs
+  259.63). The type style turns the ligature feature on for every web run;
+  `font-variant-ligatures` alone left the widths unchanged (U4 sweep 2).
 
 ## FileUploader
 

@@ -234,7 +234,11 @@ test.describe('perceptual', function () {
         }
         const pngA = PNG.sync.read(a);
         const pngB = PNG.sync.read(b);
-        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + ' @' + ours[state].sample.rootX + ',' + ours[state].sample.rootY + ' upstream ' + pngB.width + 'x' + pngB.height + ' @' + upstream[state].sample.rootX + ',' + upstream[state].sample.rootY);
+        // A side without a sample root is compared whole, uncropped
+        const at = function (sample) {
+          return sample === null ? ' @whole' : ' @' + sample.rootX + ',' + sample.rootY;
+        };
+        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + at(ours[state].sample) + ' upstream ' + pngB.width + 'x' + pngB.height + at(upstream[state].sample));
         const percent = Math.round(perceptualRatio(a, b) * 10000) / 100;
         ratios.push(state + ' ' + percent + '%');
         if (percent > row.diff_budget) {
