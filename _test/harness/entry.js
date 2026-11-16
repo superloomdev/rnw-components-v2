@@ -60,7 +60,7 @@ const Themer = themer({ Utils: Utils, Debug: Debug });
 const Lib = { React: React, ReactNative: ReactNative, Svg: Svg, Utils: Utils, Debug: Debug, Themer: Themer };
 
 const status = { adaptive: adaptive, cells: 0, components: Object.keys(factories), errors: [], form: form, ready: false, scheme: schemeName, template: templateName, textScale: textScale };
-window.__showcase = status;
+window.showcaseStatus = status;
 
 window.addEventListener('error', function (event) {
   status.errors.push(String(event.message));

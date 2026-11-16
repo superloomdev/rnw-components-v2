@@ -286,6 +286,9 @@ jobs:
             exit 1
           fi
           echo "PASS: the Playwright config owns the cap"
+      - name: G18 - No name starts with an underscore
+        run: |
+          node scripts/names-check.js
 
   publish:
     name: Publish

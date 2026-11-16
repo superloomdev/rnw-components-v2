@@ -5,7 +5,7 @@
 // components of the diff mask (8-neighbour, components under 4 px dropped),
 // the three most frequent exact rgba under each in ours.png and upstream.png,
 // and the reference parts whose box holds the component's centre on each
-// side (mapped through the same _bodyX/_bodyY fields cropTo reads).
+// side (mapped through the same bodyX/bodyY fields cropTo reads).
 //
 // Usage: node ../scripts/guard.js --seconds 300 -- node scripts/diff-probe.js <dump-dir> [out.md]
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -109,17 +109,17 @@ const topColors = function (png, pixels, width) {
 // coordinates by its own box; no origin means the whole cell shot, whose
 // margin shifts body coordinates by MARGIN
 const offsetOf = function (origin) {
-  if (origin !== null && origin !== undefined && typeof origin._bodyX === 'number' && typeof origin._bodyY === 'number') {
-    return { dx: -origin._bodyX, dy: -origin._bodyY, frame: 'crop ' + Math.round(origin.width) + 'x' + Math.round(origin.height) + ' at body ' + Math.round(origin._bodyX) + ',' + Math.round(origin._bodyY) };
+  if (origin !== null && origin !== undefined && typeof origin.bodyX === 'number' && typeof origin.bodyY === 'number') {
+    return { dx: -origin.bodyX, dy: -origin.bodyY, frame: 'crop ' + Math.round(origin.width) + 'x' + Math.round(origin.height) + ' at body ' + Math.round(origin.bodyX) + ',' + Math.round(origin.bodyY) };
   }
   return { dx: MARGIN, dy: MARGIN, frame: 'cell shot (margin ' + MARGIN + ')' };
 };
 
 const boxOf = function (part, offset) {
-  if (part === null || part === undefined || part.visible !== true || typeof part._bodyX !== 'number') {
+  if (part === null || part === undefined || part.visible !== true || typeof part.bodyX !== 'number') {
     return null;
   }
-  return { x: part._bodyX + offset.dx, y: part._bodyY + offset.dy, width: part.width, height: part.height };
+  return { x: part.bodyX + offset.dx, y: part.bodyY + offset.dy, width: part.width, height: part.height };
 };
 
 const describe = function (part) {
@@ -160,13 +160,13 @@ for (const component of readdirSync(dir, { withFileTypes: true })) {
       const upstreamOffset = offsetOf(frame.upstreamOrigin);
       const bodyFramed = function (states) {
         return states !== null && Object.keys(states).some(function (name) {
-          return states[name] !== null && typeof states[name]._bodyX === 'number';
+          return states[name] !== null && typeof states[name].bodyX === 'number';
         });
       };
       const lines = ['## ' + component.name + ' / ' + scheme.name + ' / ' + key.name, '',
         'ratio ' + frame.ratio + '% > ' + budget + '% | frame ' + diff.width + 'x' + diff.height,
-        'ours parts: ' + (bodyFramed(frame.ours) ? oursOffset.frame : 'no _bodyX frame (origin-relative x,y only)') +
-          ' | upstream parts: ' + (bodyFramed(frame.upstream) ? upstreamOffset.frame : 'no _bodyX frame (origin-relative x,y only)'),
+        'ours parts: ' + (bodyFramed(frame.ours) ? oursOffset.frame : 'no bodyX frame (origin-relative x,y only)') +
+          ' | upstream parts: ' + (bodyFramed(frame.upstream) ? upstreamOffset.frame : 'no bodyX frame (origin-relative x,y only)'),
         '', '| # | x | y | w | h | px | % |', '|---|---|---|---|---|---|---|'];
       for (const [index, comp] of components(diff).entries()) {
         lines.push('| ' + (index + 1) + ' | ' + comp.x + ' | ' + comp.y + ' | ' + comp.width + ' | ' + comp.height +

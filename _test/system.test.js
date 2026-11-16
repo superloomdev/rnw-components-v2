@@ -528,14 +528,22 @@ describe('context: pressPresentation', function () {
   const t = buildNative('default').tokens;
   const easing = 'cubic-bezier(' + t['motion.easing_standard_productive'].join(', ') + ')';
 
-  test('the phase follows the state: disabled, selected, pressed, hovered, focused, rest', function () {
+  test('the phase follows the state: disabled, selected, pressed, hovered, focused, enabled', function () {
     const ctx = probeWith({});
-    assert.equal(ctx.pressPresentation({}, prefix).phase, '');
-    assert.equal(ctx.pressPresentation({ focused: true }, prefix).phase, '_focus');
-    assert.equal(ctx.pressPresentation({ focused: true, selected: true }, prefix).phase, '_selected');
-    assert.equal(ctx.pressPresentation({ hovered: true, selected: true }, prefix).phase, '_selected');
-    assert.equal(ctx.pressPresentation({ hovered: true, pressed: true }, prefix).phase, '_active');
-    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).phase, '_disabled');
+    assert.equal(ctx.pressPresentation({}, prefix).phase, 'enabled');
+    assert.equal(ctx.pressPresentation({ focused: true }, prefix).phase, 'focus');
+    assert.equal(ctx.pressPresentation({ focused: true, selected: true }, prefix).phase, 'selected');
+    assert.equal(ctx.pressPresentation({ hovered: true, selected: true }, prefix).phase, 'selected');
+    assert.equal(ctx.pressPresentation({ hovered: true, pressed: true }, prefix).phase, 'active');
+    assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, prefix).phase, 'disabled');
+  });
+
+  test('stateLeaf: the enabled state reads the base leaf; every other state joins it as the tail', function () {
+    const ctx = probeWith({});
+    assert.equal(ctx.stateLeaf('button_primary_border', 'enabled'), 'button_primary_border');
+    assert.equal(ctx.stateLeaf('button_primary_border', 'hover'), 'button_primary_border_hover');
+    assert.equal(ctx.stateLeaf('shadow.button_primary', 'disabled'), 'shadow.button_primary_disabled');
+    assert.equal(ctx.stateLeaf('icon_button_ghost_icon', 'unselected'), 'icon_button_ghost_icon_unselected');
   });
 
   test('highlight: the container paints the state\'s cell; the layer is not drawn', function () {
@@ -543,7 +551,7 @@ describe('context: pressPresentation', function () {
     assert.deepEqual(ctx.pressPresentation({}, prefix), {
       container: { backgroundColor: t['color.button_primary_container'], transitionDuration: t['motion.duration_fast_01'] + 'ms', transitionProperty: 'background-color', transitionTimingFunction: easing },
       layer: { opacity: 0, pointerEvents: 'none' },
-      phase: ''
+      phase: 'enabled'
     });
     assert.equal(ctx.pressPresentation({ hovered: true }, prefix).container.backgroundColor, t['color.button_primary_container_hover']);
     assert.equal(ctx.pressPresentation({ pressed: true }, prefix).container.backgroundColor, t['color.button_primary_container_active']);
@@ -576,12 +584,12 @@ describe('context: pressPresentation', function () {
   test('colors: an explicit map replaces the prefix convention; every phase key must be present', function () {
     const ctx = probeWith({});
     const palette = {
-      '': null,
-      _active: 'button_primary_container_active',
-      _disabled: null,
-      _focus: null,
-      _hover: 'button_primary_container_hover',
-      _selected: null
+      enabled: null,
+      active: 'button_primary_container_active',
+      disabled: null,
+      focus: null,
+      hover: 'button_primary_container_hover',
+      selected: null
     };
     const rest = ctx.pressPresentation({}, '', { colors: palette });
     assert.equal(rest.container.backgroundColor, 'transparent');
@@ -589,7 +597,7 @@ describe('context: pressPresentation', function () {
     assert.equal(ctx.pressPresentation({ pressed: true }, '', { colors: palette }).container.backgroundColor, t['color.button_primary_container_active']);
     assert.equal(ctx.pressPresentation({ pressed: true, disabled: true }, '', { colors: palette }).container.backgroundColor, 'transparent');
     const missing = Object.assign({}, palette);
-    delete missing._active;
+    delete missing.active;
     assert.throws(function () {
       ctx.pressPresentation({}, '', { colors: missing });
     }, /colors must map every phase/);
@@ -597,22 +605,22 @@ describe('context: pressPresentation', function () {
       ctx.pressPresentation({}, '', { colors: 'not-a-map' });
     }, /colors must be an object/);
     assert.throws(function () {
-      ctx.pressPresentation({}, '', { colors: Object.assign({}, palette, { _hover: 42 }) });
+      ctx.pressPresentation({}, '', { colors: Object.assign({}, palette, { hover: 42 }) });
     }, /must name a color leaf or null/);
     assert.throws(function () {
-      ctx.pressPresentation({ hovered: true }, '', { colors: Object.assign({}, palette, { _hover: 'no_such_leaf' }) });
+      ctx.pressPresentation({ hovered: true }, '', { colors: Object.assign({}, palette, { hover: 'no_such_leaf' }) });
     }, /token "color\.no_such_leaf" is not in the theme/);
   });
 
   test('separateLayers: ripple mounts the hover and the active fills as two layers', function () {
     const ctx = probeWith({ 'feedback.press': 'ripple' });
     const palette = {
-      '': null,
-      _active: 'button_primary_container_active',
-      _disabled: null,
-      _focus: null,
-      _hover: 'button_primary_container_hover',
-      _selected: null
+      enabled: null,
+      active: 'button_primary_container_active',
+      disabled: null,
+      focus: null,
+      hover: 'button_primary_container_hover',
+      selected: null
     };
     const rest = ctx.pressPresentation({}, '', { colors: palette, separateLayers: true });
     assert.equal(rest.container.backgroundColor, 'transparent');

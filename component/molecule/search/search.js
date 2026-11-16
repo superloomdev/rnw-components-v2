@@ -40,22 +40,22 @@ export default function Search (ctx) {
 
   // The clear's palette: the field action's container cells
   const PALETTE = Object.freeze({
-    '': null,
-    _active: 'field_action_container_active',
-    _disabled: null,
-    _focus: null,
-    _hover: 'field_action_container_hover',
-    _selected: null
+    enabled: null,
+    active: 'field_action_container_active',
+    disabled: null,
+    focus: null,
+    hover: 'field_action_container_hover',
+    selected: null
   });
 
   // The collapsed trigger's palette: its own hover rule, not the field's
   const COLLAPSED_PALETTE = Object.freeze({
-    '': null,
-    _active: 'background_hover',
-    _disabled: null,
-    _focus: null,
-    _hover: 'background_hover',
-    _selected: null
+    enabled: null,
+    active: 'background_hover',
+    disabled: null,
+    focus: null,
+    hover: 'background_hover',
+    selected: null
   });
 
 

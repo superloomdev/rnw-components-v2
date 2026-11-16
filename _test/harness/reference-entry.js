@@ -107,7 +107,7 @@ if (set === 'primary') {
 }
 
 const status = { ready: false, errors: [], cells: 0, unmeasured: [] };
-window.__reference = status;
+window.referenceStatus = status;
 
 window.addEventListener('error', function (event) {
   status.errors.push(String(event.message));

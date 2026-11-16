@@ -38,7 +38,7 @@ export default function Button (ctx) {
   });
 
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
-  const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
+  const PLAIN_PHASES = Object.freeze({ enabled: 'enabled', hover: 'hover', active: 'active', focus: 'enabled', disabled: 'disabled', selected: 'enabled' });
 
 
   /********************************************************************
@@ -70,27 +70,27 @@ export default function Button (ctx) {
     // and tertiary-inverse maps) and point the border at another leaf
     const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined || props.fillFocusLeaf !== undefined
       ? {
-        '': props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container',
-        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_hover'),
-        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : 'button_' + kind + '_container_active'),
-        _focus: props.fillFocusLeaf !== undefined ? props.fillFocusLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus'),
-        _disabled: 'button_' + kind + '_container_disabled',
-        _selected: 'button_' + kind + '_container_selected'
+        enabled: props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container',
+        hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_hover'),
+        active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : 'button_' + kind + '_container_active'),
+        focus: props.fillFocusLeaf !== undefined ? props.fillFocusLeaf : (props.fillLeaf !== undefined ? props.fillLeaf : 'button_' + kind + '_container_focus'),
+        disabled: 'button_' + kind + '_container_disabled',
+        selected: 'button_' + kind + '_container_selected'
       }
       : null;
     const press = ctx.pressPresentation(state, 'button_' + kind + '_container', fillMap !== null ? { colors: fillMap } : undefined);
     const contentLeaf = Utils.isString(props.labelLeaf)
       ? ((state.hovered === true || state.pressed === true) && Utils.isString(props.labelHoverLeaf) ? props.labelHoverLeaf : props.labelLeaf)
-      : 'button_' + kind + '_label' + press.phase;
+      : ctx.stateLeaf('button_' + kind + '_label', press.phase);
     const borderLeaf = state.pressed === true
-      ? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase])
-      : Utils.isString(props.borderLeaf) ? props.borderLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
+      ? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : ctx.stateLeaf('button_' + kind + '_border', PLAIN_PHASES[press.phase]))
+      : Utils.isString(props.borderLeaf) ? props.borderLeaf : ctx.stateLeaf('button_' + kind + '_border', PLAIN_PHASES[press.phase]);
     // Upstream's focus rule comes after hover, so a focused face under the
     // pointer paints the focus leaf; a press still wins, whose rule is last
     const containerLayer = Utils.isString(props.fillFocusLeaf) && state.focused === true && state.pressed !== true
       ? Object.assign({}, press.container, { backgroundColor: ctx.color(props.fillFocusLeaf) })
       : press.container;
-    const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
+    const shadow = ctx.token(ctx.stateLeaf('shadow.button_' + kind, PLAIN_PHASES[press.phase]));
 
     // The focus ring; a ring drawn with the border gives way to a pressed border
     // the kind states apart from its rest border, and keeps the kind's elevation

@@ -34,12 +34,12 @@ export default function PasswordInput (ctx) {
 
   // The toggle's palette: the password action's own container cells
   const PALETTE = Object.freeze({
-    '': null,
-    _active: 'password_toggle_container_active',
-    _disabled: null,
-    _focus: null,
-    _hover: 'password_toggle_container_hover',
-    _selected: null
+    enabled: null,
+    active: 'password_toggle_container_active',
+    disabled: null,
+    focus: null,
+    hover: 'password_toggle_container_hover',
+    selected: null
   });
 
 

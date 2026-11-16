@@ -40,11 +40,11 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
       }
     }
     paint(ours, 24, 30, [255, 0, 0]);
-    const origin = { _bodyX: 0, _bodyY: 8, width: 10, height: 10, visible: true };
-    const otherOrigin = { ...origin, _bodyY: 0 };
+    const origin = { bodyX: 0, bodyY: 8, width: 10, height: 10, visible: true };
+    const otherOrigin = { ...origin, bodyY: 0 };
     const parts = {
       frame: origin,
-      action: { _bodyX: 4, _bodyY: 10, width: 2, height: 2, visible: true }
+      action: { bodyX: 4, bodyY: 10, width: 2, height: 2, visible: true }
     };
     const a = cropTo(PNG.sync.write(ours), origin);
     const b = cropTo(PNG.sync.write(upstream), otherOrigin);
@@ -59,7 +59,7 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
     const ours = image(10, 10);
     const upstream = image(10, 10);
     paint(ours, 5, 5, [255, 0, 0]);
-    const frame = { _bodyX: 0, _bodyY: 0, width: 10, height: 10, visible: true };
+    const frame = { bodyX: 0, bodyY: 0, width: 10, height: 10, visible: true };
     const masked = maskOmitted(PNG.sync.write(ours), PNG.sync.write(upstream),
       { frame: frame, action: frame }, ['action'], 'frame', frame, 0);
     assert.deepEqual(masked.lines, ['mask action covers the anchor frame']);
@@ -70,8 +70,8 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
   test('a proven omission excludes its own profile pixels but not the focus ring', function () {
     const ours = image(120, 120);
     const upstream = image(120, 120);
-    const face = { _bodyX: 30, _bodyY: 30, width: 40, height: 40, visible: true };
-    const icon = { _bodyX: 19, _bodyY: 40, width: 1, height: 20, visible: true };
+    const face = { bodyX: 30, bodyY: 30, width: 40, height: 40, visible: true };
+    const icon = { bodyX: 19, bodyY: 40, width: 1, height: 20, visible: true };
     paint(ours, 39, 70, [255, 0, 0]);
     paint(ours, 70, 51, [0, 0, 255]);
     const source = profileOf(face, PNG.sync.write(upstream));
@@ -89,7 +89,7 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
     const png = image(60, 60);
     paint(png, 27, 23, [240, 240, 240]);
     paint(png, 27, 27, [15, 98, 254]);
-    const state = { thumb: { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true, _paintCenter: true } };
+    const state = { thumb: { bodyX: 0, bodyY: 0, width: 14, height: 14, visible: true, paintCenter: true } };
     samplePaint(state, PNG.sync.write(png));
     assert.equal(state.thumb.paint, 'rgb(15, 98, 254)');
   });
@@ -97,8 +97,8 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
   test('a proven omitted surface does not become the underlying part paint', function () {
     const png = image(60, 60);
     paint(png, 27, 23, [230, 224, 233]);
-    const state = { host: { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true } };
-    const cover = { _bodyX: 0, _bodyY: 0, width: 14, height: 5, visible: true };
+    const state = { host: { bodyX: 0, bodyY: 0, width: 14, height: 14, visible: true } };
+    const cover = { bodyX: 0, bodyY: 0, width: 14, height: 5, visible: true };
     samplePaint(state, PNG.sync.write(png), [cover]);
     assert.equal(state.host.paint, undefined);
     samplePaint(state, PNG.sync.write(png), [{ ...cover, visible: false }]);
@@ -109,7 +109,7 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
     const a = image(60, 60);
     const b = image(60, 60);
     paint(a, 27, 25, [255, 0, 0]);
-    const face = { _bodyX: 0, _bodyY: 0, width: 14, height: 14, visible: true, _profileDepth: 5 };
+    const face = { bodyX: 0, bodyY: 0, width: 14, height: 14, visible: true, profileDepth: 5 };
     const ours = profileOf(face, PNG.sync.write(a));
     const upstream = profileOf(face, PNG.sync.write(b));
     assert.equal(ours.inside.length, 5);
@@ -120,7 +120,7 @@ describe('fidelity pipeline: coordinate and omission contracts', function () {
   test('a shot clipped away from the body margin still samples the measured point', function () {
     const png = image(60, 60);
     paint(png, 26, 13, [15, 98, 254]);
-    const state = { trigger: { _bodyX: 0, _bodyY: 0, width: 32, height: 48, visible: true } };
+    const state = { trigger: { bodyX: 0, bodyY: 0, width: 32, height: 48, visible: true } };
     samplePaint(state, PNG.sync.write(png));
     assert.equal(state.trigger.paint, 'rgb(255, 255, 255)', 'the unframed read lands off the part');
     samplePaint(state, PNG.sync.write(png), undefined, { dx: 10, dy: 10 });

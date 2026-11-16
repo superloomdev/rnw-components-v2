@@ -83,7 +83,7 @@ The generated probe page's entry: each row's mount file rendered as one
 cell per recipe state, in the reference page's cell shape. A mount may
 fix the body's height (`bodyHeight`) or stage it (`stage`: the body
 becomes the containing block for the fixed or absolute layers inside
-it), and `window.__probePrepare(row, state)` lets the driver call the
+it), and `window.prepareProbe(row, state)` lets the driver call the
 mount's `prepare(body, props)` for one cell.
 
 @param {Array} rows - Row names
@@ -127,7 +127,7 @@ function fixtureTextStyle (name) {
   };
 }
 const upstream = Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, icon: icon, fixtureTextStyle: fixtureTextStyle });
-window.__probePrepare = function (row, state) {
+window.prepareProbe = function (row, state) {
   const mount = MOUNTS[row];
   if (mount === undefined || typeof mount.prepare !== 'function') {
     return;
@@ -174,7 +174,7 @@ root.appendChild(grid);
 document.fonts.ready.then(function () {
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      window.__probe = { ready: true };
+      window.probeStatus = { ready: true };
     });
   });
 });
@@ -289,7 +289,7 @@ async function prepare (page, row, state, mount) {
     return;
   }
   await page.evaluate(function (input) {
-    window.__probePrepare(input.row, input.state);
+    window.prepareProbe(input.row, input.state);
   }, { row: row, state: state });
   await page.waitForTimeout(400);
 
@@ -734,7 +734,7 @@ async function main () {
     mounts[row] = (await import(join(RECIPES, 'probe', row + '.mount.js'))).default;
   }
   await page.goto('http://localhost:' + PORT + '/');
-  await page.waitForFunction(function () { return window.__probe && window.__probe.ready === true; }, null, { timeout: 30000 });
+  await page.waitForFunction(function () { return window.probeStatus && window.probeStatus.ready === true; }, null, { timeout: 30000 });
   await page.waitForTimeout(400);
   for (const row of ROWS) {
     const result = await probeRow(page, row, mounts[row]);

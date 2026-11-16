@@ -62,8 +62,8 @@ export default function ToggleWeb (ctx) {
     const prefix = selected ? 'switch_track_selected' : 'switch_track';
     const press = ctx.pressPresentation({ hovered: state.hovered, pressed: state.pressed, focused: state.focused, disabled: state.disabled }, prefix);
     const phase = press.phase;
-    const handleLeaf = 'switch_handle' + (selected ? '_selected' : '') + phase;
-    const outlineLeaf = 'switch_outline' + phase;
+    const handleLeaf = ctx.stateLeaf('switch_handle' + (selected ? '_selected' : ''), phase);
+    const outlineLeaf = ctx.stateLeaf('switch_outline', phase);
 
     // The theme's handle anatomy: `fixed` reads the base size in every
     // state, `grows` reads the pressed and selected sizes

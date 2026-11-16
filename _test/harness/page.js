@@ -50,11 +50,11 @@ export async function openShowcase (page, template, component, options) {
     (options && options.dir === 'rtl' ? '&dir=rtl' : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
-    return window.__showcase && window.__showcase.ready === true;
+    return window.showcaseStatus && window.showcaseStatus.ready === true;
   }, null, { timeout: 30000 });
 
   const status = await page.evaluate(function () {
-    return window.__showcase;
+    return window.showcaseStatus;
   });
   // Every declared face finishes before any measurement reads text: an
   // unloaded face paints the system fallback and corrupts the comparison
@@ -95,7 +95,7 @@ export async function openReference (page, component, set, scheme, state) {
   await page.emulateMedia({ colorScheme: scheme === 'dark' ? 'dark' : 'light' });
   await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : '') + (typeof state === 'string' ? '&state=' + encodeURIComponent(state) : ''));
   await page.waitForFunction(function () {
-    return window.__reference && window.__reference.ready === true;
+    return window.referenceStatus && window.referenceStatus.ready === true;
   }, null, { timeout: 30000 });
   await page.evaluate(function () {
     return Promise.all([...document.fonts].map(function (face) {
@@ -112,7 +112,7 @@ export async function openReference (page, component, set, scheme, state) {
   }
 
   return page.evaluate(function () {
-    return window.__reference;
+    return window.referenceStatus;
   });
 
 }
@@ -140,7 +140,7 @@ shadow roots with ' >>> '.
                          ink of text and drawn paths (their color with the
                          opacity of every element above them, shadow hosts
                          included), plus the part's box relative to the body
-                         (`_bodyX`, `_bodyY`) for pixel sampling
+                         (`bodyX`, `bodyY`) for pixel sampling
 
 @return {Promise<Object>} - state label -> part name -> measurement | null
 *********************************************************************/
@@ -401,9 +401,9 @@ export async function readParts (page, name, parts, side, origin, options) {
           : pseudo !== null || (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
         measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && opacity > 0 && drawn;
         if (input.extended) {
-          measured._paintCenter = part.paintCenter === true;
+          measured.paintCenter = part.paintCenter === true;
           if (Number.isInteger(part.profileDepth) && part.profileDepth > 0) {
-            measured._profileDepth = part.profileDepth;
+            measured.profileDepth = part.profileDepth;
           }
           if (part.measure === 'box') {
             measured.boxShadow = style.boxShadow;
@@ -421,8 +421,8 @@ export async function readParts (page, name, parts, side, origin, options) {
           if (ink !== null) {
             measured.ink = withOpacity(ink, opacity);
           }
-          measured._bodyX = rect.x + pseudoX - bodyRect.x;
-          measured._bodyY = (strip === null ? rect.y + pseudoY : stripTop) - bodyRect.y;
+          measured.bodyX = rect.x + pseudoX - bodyRect.x;
+          measured.bodyY = (strip === null ? rect.y + pseudoY : stripTop) - bodyRect.y;
         }
         state[partName] = measured;
       }
@@ -636,7 +636,7 @@ export async function hideOutsideLayers (body) {
         candidate.style.visibility = 'hidden';
       }
     });
-    element.__hiddenLayers = hidden;
+    element.hiddenLayers = hidden;
   });
 
 }
@@ -652,11 +652,11 @@ Restore the layers `hideOutsideLayers` hid for a cell's body.
 export async function restoreLayers (body) {
 
   await body.evaluate(function (element) {
-    const hidden = element.__hiddenLayers || [];
+    const hidden = element.hiddenLayers || [];
     hidden.forEach(function (node) {
       node.style.visibility = '';
     });
-    delete element.__hiddenLayers;
+    delete element.hiddenLayers;
   });
 
 }
@@ -1620,14 +1620,14 @@ export async function refocusPanel (page, name, state, refocus, side) {
   // out of the refocus; scrollIntoView is restored after the settle window
   await page.evaluate(function () {
     const proto = HTMLElement.prototype;
-    if (window.__refocusFocus === undefined) {
-      window.__refocusFocus = proto.focus;
+    if (window.refocusOriginalFocus === undefined) {
+      window.refocusOriginalFocus = proto.focus;
       proto.focus = function (options) {
-        return window.__refocusFocus.call(this, Object.assign({}, options || {}, { preventScroll: true }));
+        return window.refocusOriginalFocus.call(this, Object.assign({}, options || {}, { preventScroll: true }));
       };
     }
-    if (window.__refocusSiv === undefined) {
-      window.__refocusSiv = Element.prototype.scrollIntoView;
+    if (window.refocusOriginalScrollIntoView === undefined) {
+      window.refocusOriginalScrollIntoView = Element.prototype.scrollIntoView;
     }
     Element.prototype.scrollIntoView = function () {};
   });
@@ -1636,7 +1636,7 @@ export async function refocusPanel (page, name, state, refocus, side) {
   });
   await page.waitForTimeout(100);
   await page.evaluate(function () {
-    Element.prototype.scrollIntoView = window.__refocusSiv;
+    Element.prototype.scrollIntoView = window.refocusOriginalScrollIntoView;
   });
   return true;
 

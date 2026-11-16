@@ -51,6 +51,15 @@ Name.spec = SPEC;
 - Other components come from `ctx.Registry.<Name>` at render time, never by import. Atoms compose no library component.
 - `react-native-svg` is `ctx.Svg` and only `Icon` touches it.
 
+## Names
+
+A name we declare never starts with an underscore: an identifier, a parameter, a property or data key, a page global, a file or a folder. Gate G18 (`scripts/names-check.js`, also `_test/names.test.js`) fails on one.
+
+- A state is a plain word: `enabled` (the upstream's word for the resting state), `hover`, `active`, `focus`, `disabled`, `selected`. A component keeps the word and `ctx.stateLeaf(base, state)` adds the token tail, in one place. Never key a map, compare or return a tail such as `'_hover'`.
+- Text is not a name: a citation in a comment, a regular expression, a path, and a token name tail joined to its base where it is written (`'switch_track' + (selected ? '_selected' : '')`), or kept in a list or variable whose only use is that join.
+- The exceptions are names someone else owns: the `_test` folder, `__dirname`, `__filename`, `__proto__`, the `__DEV__` global and an upstream object's own member (`_flatpickr`). A new exception goes on the script's allowlist with its owner.
+- The underscore between the words of a token name is this library's separator; it never leads.
+
 ## The context (`ctx`)
 
 | Read | Returns | Throws when |
@@ -62,7 +71,8 @@ Name.spec = SPEC;
 | `ctx.enum('anatomy.label')` | the theme's choice, checked against the contract's list | not an enum, value outside the list |
 | `ctx.icon('close', 16)` | `{ viewBox, paths }`; the set's own 16px glyph when it has one | the theme lacks the icon |
 | `ctx.focusPresentation(focused)` | style fragment for the theme's `feedback.focus` mode | - |
-| `ctx.pressPresentation(state, palette)` | `{ container, layer, engaged }` for the theme's `feedback.press` mode; `palette` is `{ rest, hover, active, content }` color leaves (`null` fill = none); `engaged` is true while a highlight fill replaces the rest fill | a leaf the theme lacks |
+| `ctx.pressPresentation(state, prefix, options)` | `{ container, layer, phase }` (`hoverLayer` with `options.separateLayers`) for the theme's `feedback.press` mode; the fill of each state is `ctx.stateLeaf(prefix, state)`, or `options.colors`, a map from every state word (`enabled`, `hover`, `active`, `focus`, `disabled`, `selected`) to a color leaf (`null` paints nothing); `phase` is the state word in effect | a leaf the theme lacks, a map missing a state |
+| `ctx.stateLeaf('button_primary_border', 'hover')` | `button_primary_border_hover`; the resting state `enabled` returns the base leaf itself | - |
 | `ctx.fieldPresentation(state, options)` | `{ root, frame, label, raised, placeholder }` for the theme's `feedback.field` frame and `anatomy.label` placement; `options` is `{ height, paddingInline, radius, surface, disabledBorder }` (`disabledBorder` a color leaf, `border_disabled` by default, `null` for none) | a leaf the theme lacks |
 
 A component that shows press or a field frame uses the presentation, never its own branch on the enum, and always mounts the parts a presentation may hide (the state layer, the label), so the element tree and the accessibility tree are the same under every template. The tokens a presentation reads are declared in the calling component's `api.tokens`.

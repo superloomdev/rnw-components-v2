@@ -433,11 +433,33 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
+  Build a role cell's leaf for a state. The resting state, `enabled` (the
+  upstream's word for it), reads the base leaf itself; every other state
+  joins the base leaf as its tail. A component keeps the plain state word
+  and builds the leaf here, in one place.
+
+  @param {String} base  - The cell's leaf without a state, e.g. 'button_primary_border'
+  @param {String} state - The state word: 'enabled', 'hover', 'active',
+                          'focus', 'disabled', 'selected', or a family's own
+                          (an icon button toggle's 'unselected')
+
+  @return {String} - The leaf, e.g. 'button_primary_border_hover'
+  *********************************************************************/
+  function stateLeaf (base, state) {
+
+    // The resting state is the base leaf; any other state is its tail
+    return state === 'enabled' ? base : base + '_' + state;
+
+  }
+
+
+  /********************************************************************
   The press presentation the theme chose for a control whose fills are
   role cells, as two style fragments: one for the container and one for
   the state layer every such control always mounts, so the element tree
   never depends on the theme. The fill in each state is the theme's own
-  cell (`<prefix>` + '', '_hover', '_active', '_focus', '_disabled'); under
+  cell (`stateLeaf(prefix, state)`: the prefix itself while `enabled`, the
+  upstream's word for the resting state, else the state joined); under
   `highlight` the container paints it, under `ripple` a state layer over
   the resting container paints it, under `opacity` the resting container
   fades by the theme's state opacity. A disabled control paints its
@@ -447,8 +469,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {String}  prefix                  - The fill cell's leaf prefix, e.g. 'button_primary_container'
   @param {Object}  [options]               - Optional overrides
   @param {Object}  [options.colors]        - An explicit map naming a leaf per
-                                           phase ('', '_hover', '_active',
-                                           '_focus', '_disabled', '_selected');
+                                           phase ('enabled', 'hover', 'active',
+                                           'focus', 'disabled', 'selected');
                                            every key must be present, and a
                                            null leaf paints nothing
   @param {Boolean} [options.separateLayers] - Split hover and active into two
@@ -457,9 +479,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   @return {Object} - { container, layer, phase } (`hoverLayer` joins when
                      separateLayers is set); `phase` names the state whose
-                     cells are in effect ('', '_hover', '_active', '_focus',
-                     '_disabled' or '_selected'), so a component reads its
-                     label and border cells for the same state
+                     cells are in effect ('enabled', 'hover', 'active',
+                     'focus', 'disabled' or 'selected'), so a component reads
+                     its label and border cells for the same state through
+                     `stateLeaf`
   *********************************************************************/
   function pressPresentation (state, prefix, options) {
 
@@ -469,17 +492,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // while `interaction` follows the live pointer or focus for the layer
     const mode = enumValue('feedback.press');
     const live = state.disabled !== true;
-    const interaction = !live ? '_disabled'
-      : state.pressed === true ? '_active'
-        : state.hovered === true ? '_hover'
-          : state.focused === true ? '_focus' : '';
-    const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;
-    const rest = state.selected === true && live ? '_selected' : !live ? '_disabled' : '';
+    const interaction = !live ? 'disabled'
+      : state.pressed === true ? 'active'
+        : state.hovered === true ? 'hover'
+          : state.focused === true ? 'focus' : 'enabled';
+    const phase = !live ? 'disabled' : state.selected === true ? 'selected' : interaction;
+    const rest = state.selected === true && live ? 'selected' : !live ? 'disabled' : 'enabled';
 
     // An explicit color map replaces the prefix convention: each phase key
     // must exist so a missing mapping fails loudly, and a null leaf is a
     // deliberate "paints nothing", not a missing cell
-    const PHASE_KEYS = ['', '_hover', '_active', '_focus', '_disabled', '_selected'];
+    const PHASE_KEYS = ['enabled', 'hover', 'active', 'focus', 'disabled', 'selected'];
     const map = options !== undefined && options !== null && options.colors !== undefined ? options.colors : null;
     if (map !== null) {
       if (!Utils.isObject(map)) {
@@ -495,7 +518,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       }
     }
     const fillOf = function (ph) {
-      const leaf = map === null ? prefix + ph : map[ph];
+      const leaf = map === null ? stateLeaf(prefix, ph) : map[ph];
       return leaf === null ? 'transparent' : color(leaf);
     };
     const fill = fillOf(phase);
@@ -517,7 +540,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     // Opacity: the resting fill, faded by the theme's state opacity
     if (mode === 'opacity') {
-      const fade = interaction === '_active' ? token('state.pressed_opacity') : interaction === '_hover' ? token('state.hover_opacity') : 0;
+      const fade = interaction === 'active' ? token('state.pressed_opacity') : interaction === 'hover' ? token('state.hover_opacity') : 0;
       const result = {
         container: Object.assign({ backgroundColor: fillOf(rest), opacity: 1 - fade }, transition('opacity')),
         layer: hiddenLayer,
@@ -536,12 +559,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const result = {
       container: { backgroundColor: fillOf(rest) },
       layer: separate
-        ? Object.assign({ backgroundColor: fillOf('_active'), opacity: live && state.pressed === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'))
-        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
+        ? Object.assign({ backgroundColor: fillOf('active'), opacity: live && state.pressed === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'))
+        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && interaction !== 'enabled' ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
       phase: phase
     };
     if (separate) {
-      result.hoverLayer = Object.assign({ backgroundColor: fillOf('_hover'), opacity: live && state.hovered === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'));
+      result.hoverLayer = Object.assign({ backgroundColor: fillOf('hover'), opacity: live && state.hovered === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'));
     }
     return result;
 
@@ -1050,6 +1073,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     metric: metric,
     pressPresentation: pressPresentation,
     pressTarget: pressTarget,
+    stateLeaf: stateLeaf,
     textPresentation: textPresentation,
     token: token,
     tokenAt: tokenAt,
