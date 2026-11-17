@@ -140,6 +140,8 @@ Vendor-free prose. Required when the row carries a flag that demands an explanat
 - `npm run check -- <Name>` after every edit: lint on the changed files, purity scan, this component's tests.
 - `npm run batch` at batch close (LOW): everything, plus browser gates, screenshots, docs regeneration and the defects list.
 - `npm run verify` before any push to `main`.
+- A test asserts primitives and plain data, never a live object: `assert.equal(node === null, true, 'the menu is closed')`, not `assert.equal(node, null)`. A failing assertion formats its operands, and a rendered node is a graph with no practical end. The test host labels a live operand that slips through and will refuse it.
+- Every run goes through `scripts/guard.js`, which counts footprint (resident, compressed and swapped memory). A run it kills proves nothing: fix the test until it fails by assertion.
 
 ## Layer-4 review checklist (HIGH, contact sheet)
 
