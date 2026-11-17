@@ -20,7 +20,8 @@ describe('Tearsheet: actions and close', function () {
     }));
     const button = container.querySelector('[data-part="buttonSet"] [role="button"]');
     assert.notEqual(button, null, 'the action row draws a button');
-    assert.match(button.getAttribute('style'), /80px/, 'the action button is the action height cell (80)');
+    const seat = container.querySelector('[data-part="buttonSet"] > div');
+    assert.equal(seat.style.minHeight, '80px', 'the action seat is the action height cell (80)');
   });
 
   test('a passive tearsheet draws the close button', async function () {

@@ -229,14 +229,16 @@ export default function Tearsheet (ctx) {
     }, nodeOf(props.influencer, 'influencer'));
 
     // The action row: the seat paints the actions container and the top
-    // rule under main only; buttons right-aligned, a ghost grows left
+    // rule under main only; buttons right-aligned, a ghost grows left.
+    // Each seat is the action height cell tall and the filling button
+    // stretches to it, as upstream sizes the action button itself
     const buttons = actions.map(function (action, i) {
       const ghost = (action && action.kind) === 'ghost';
       return React.createElement(View, {
         key: 'action-' + i,
         style: ghost
-          ? { flexBasis: '50%', flexGrow: 1, flexShrink: 1 }
-          : { flexBasis: seatWidth, flexGrow: 0, flexShrink: 1, maxWidth: metrics.actionMaxWidth }
+          ? { flexBasis: '50%', flexGrow: 1, flexShrink: 1, minHeight: metrics.actionHeight }
+          : { flexBasis: seatWidth, flexGrow: 0, flexShrink: 1, maxWidth: metrics.actionMaxWidth, minHeight: metrics.actionHeight }
       },
       React.createElement(ctx.Registry.Button, {
         buttonRef: i === 0 ? firstActionRef : undefined,

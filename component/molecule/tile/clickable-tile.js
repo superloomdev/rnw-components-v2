@@ -63,8 +63,6 @@ export default function ClickableTile (ctx) {
     // mounts only when it draws (never on the disabled face)
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
       accessibilityRole: Utils.isString(props.href) ? 'link' : 'button',
-      'aria-disabled': disabled ? true : undefined,
-      disabled: disabled,
       href: disabled ? undefined : props.href,
       style: [{
         backgroundColor: backgroundColor,
