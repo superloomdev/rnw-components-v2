@@ -20,6 +20,13 @@ describe('fire: the mutation proof classifier', function () {
     assert.equal(isMutationProof({ status: null, signal: 'SIGTERM', stdout: '', stderr: 'terminated' }), false);
   });
 
+  test('a failure that names only the test file is a dead process, not a proof', function () {
+    const dead = "✖ failing tests:\n\ntest at menu-item.test.js:1:1\n✖ menu-item.test.js (104460.971667ms)\n  'test failed'\n";
+    assert.equal(isMutationProof({ status: 1, signal: null, stdout: dead, stderr: '' }), false);
+    assert.equal(isMutationProof({ status: 1, signal: null, stdout: 'not ok 1 - menu-item.test.js\n', stderr: '' }), false);
+    assert.equal(isMutationProof({ status: 1, signal: null, stdout: dead + '  ✖ carbon: a width prop fixes the width (14.5ms)\n', stderr: '' }), true);
+  });
+
   test('a non-failure status is not a mutation proof', function () {
     assert.equal(isMutationProof({ status: 137, signal: null, stdout: '', stderr: '' }), false);
     assert.equal(isMutationProof({ status: 134, signal: null, stdout: 'FATAL ERROR: heap', stderr: '' }), false);

@@ -105,7 +105,7 @@ function runTest (row) {
   // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
     ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-timeout=60000 --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
@@ -114,7 +114,7 @@ function runTest (row) {
     const detail = String(error.stdout || '') + String(error.stderr || error.message);
     say(1, detail.split('\n').slice(-30).join('\n') + '\n');
     // The inner guard's own kill codes: the planted run ran away on memory
-    // or time; the row records KILLED and the runner moves on
+    // or time; the row records KILLED (a broken row) and the runner moves on
     if (error.status === 137 || error.status === 124) {
       return { killed: error.status === 137 ? 'memory' : 'time' };
     }
@@ -164,9 +164,12 @@ for (const row of rows) {
     continue;
   }
 
-  // Plant the edit, run, restore, verify the restore
+  // Plant the edit, run, restore, verify the restore. A run that proves
+  // nothing (its child died, or the pattern named no test) is kept as the
+  // row's fault: the file is restored and the next row still runs
   let failedUnderMutation;
   let killed = null;
+  let fault = null;
   try {
     writeFileSync(target, text.replaceAll(row.find, row.replace));
     say(1, 'MUTATE  ' + row.id + '\n');
@@ -175,6 +178,8 @@ for (const row of rows) {
       killed = result.killed;
     }
     failedUnderMutation = result !== true;
+  } catch (error) {
+    fault = error.message;
   } finally {
     writeFileSync(target, original);
   }
@@ -186,19 +191,30 @@ for (const row of rows) {
     continue;
   }
 
-  say(1, 'RECOVER ' + row.id + '\n');
-  const recovered = runTest(row) === true;
+  // A planted run that proved nothing is a broken row
+  if (fault !== null) {
+    broken.push(fault);
+    say(1, 'BROKEN  ' + row.id + '  (' + fault + ')\n');
+    continue;
+  }
 
-  // A guard-killed plant still proves the mutation when the clean run
-  // passes: the plant made the test not pass and the guard contained the
-  // cost (D43). A killed row whose recover fails stays a failure
+  // The clean run must pass again; one that proves nothing is a fault too
+  say(1, 'RECOVER ' + row.id + '\n');
+  let recovered = false;
+  try {
+    recovered = runTest(row) === true;
+  } catch (error) {
+    broken.push(error.message);
+    say(1, 'BROKEN  ' + row.id + '  (' + error.message + ')\n');
+    continue;
+  }
+
+  // A kill is never a proof: it says the harness lost control of the
+  // planted run, nothing about the test. The row is broken until its test
+  // fails by assertion (2026-11-17: four rows had passed as kills for weeks)
   if (killed !== null) {
-    if (!recovered) {
-      broken.push(row.id + ': KILLED (' + killed + ') and still failing restored');
-      say(1, 'KILLED  ' + row.id + '  (' + killed + ') -> restored (still failing)\n');
-    } else {
-      say(1, 'FIRED-KILLED ' + row.id + '  (' + killed + ')  (' + row.test + ')\n');
-    }
+    broken.push(row.id + ': KILLED (' + killed + ') - a kill is not a proof; the test must fail by assertion');
+    say(1, 'KILLED  ' + row.id + '  (' + killed + ') -> restored' + (recovered ? '' : ' (still failing)') + '\n');
     continue;
   }
   let mark = 'FIRED  ';

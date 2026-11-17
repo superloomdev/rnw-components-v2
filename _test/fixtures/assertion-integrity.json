@@ -7,9 +7,9 @@
   "rows": [
     {
       "id": "guard-rss-inverted",
-      "file": "scripts/guard.js",
-      "find": "sample.maxRssMb > procMb",
-      "replace": "sample.maxRssMb > 1000000000",
+      "file": "scripts/guard-memory.js",
+      "find": "sample.maxMemoryMb > limits.procMb",
+      "replace": "sample.maxMemoryMb > 1000000000",
       "runner": "node",
       "test": "guard.test.js",
       "testName": "a child past the per-process memory ceiling is killed and reported 137",
@@ -44,6 +44,46 @@
       "test": "guard.test.js",
       "testName": "a kill is written to the guard log with the time it happened",
       "why": "a kill line without its time cannot be matched to the run that caused it"
+    },
+    {
+      "id": "guard-footprint-ignored",
+      "file": "scripts/guard-memory.js",
+      "find": "memory.set(pid, footprint > resident ? footprint : resident);",
+      "replace": "memory.set(pid, resident);",
+      "runner": "node",
+      "test": "guard-memory.test.js",
+      "testName": "a process counts as its footprint when that is larger than its resident size",
+      "why": "a guard that counts resident size alone misses a runaway whose pages the system compresses (2026-11-17, 367 GB at 2.1 GB resident)"
+    },
+    {
+      "id": "guard-pressure-ignored",
+      "file": "scripts/guard-memory.js",
+      "find": "  if (critical === true) {\n    return 'pressure';\n  }",
+      "replace": "",
+      "runner": "node",
+      "test": "guard-memory.test.js",
+      "testName": "critical system pressure ends the run under every ceiling",
+      "why": "the system floor must end a run whatever the per-process numbers say"
+    },
+    {
+      "id": "assert-guard-live-passed-through",
+      "file": "_test/harness/assert-guard.js",
+      "find": "    return original.call(target, safeActual, safeExpected, message);",
+      "replace": "    return original.call(target, actual, expected, message);",
+      "runner": "node",
+      "test": "assert-guard.test.js",
+      "testName": "a failing identity assertion over a node prints a bounded message and holds no node",
+      "why": "a live node handed to node:assert is formatted without bound when the assertion fails"
+    },
+    {
+      "id": "fire-file-failure-accepted",
+      "file": "_test/fire-selection.js",
+      "find": " && !/\\.(test|spec)\\.js$/.test(match[1]);",
+      "replace": ";",
+      "runner": "node",
+      "test": "fire-result.test.js",
+      "testName": "a failure that names only the test file is a dead process, not a proof",
+      "why": "a test file whose process died prints a failure line for the file; that is not a named test failing"
     },
     {
       "id": "update-loop-threshold-off",

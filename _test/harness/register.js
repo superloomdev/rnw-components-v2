@@ -8,6 +8,10 @@
 // The real react-native-svg is exercised by the browser tier, where esbuild
 // applies the same aliases a host bundler does, and by the native gate.
 //
+// `assert-guard.js` loads first: it keeps live objects (DOM nodes, rendered
+// instances) out of assertion failures, for every test file.
+//
 // Usage: node --import ./harness/register.js --test
 
+import './assert-guard.js';
 import './dom.js';

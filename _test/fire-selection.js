@@ -46,10 +46,13 @@ export function getFireSelection (rows, args) {
 
 /********************************************************************
 A child's termination is a mutation proof only when the test suite ran
-and failed normally: status 1 with a failing-test marker in its output.
-A signal kill (SIGKILL on a dead runner, SIGTERM), a non-failure status
-(heap tripwires exit 134/137), or output with no failing marker means
-the harness died, not that the mutation tripped an assertion.
+and a named test failed: status 1 with that test's failure line in its
+output. A signal kill (SIGKILL on a dead runner, SIGTERM), a non-failure
+status (heap tripwires exit 134/137), or output with no failing marker
+means the harness died, not that the mutation tripped an assertion. So
+does a failure line that names only the test file: `node --test` prints
+`✖ <file>.test.js ... 'test failed'` when the file's own process dies
+(2026-11-17: a process that ran away for 104 s was read as a failing test).
 
 @param {Object} error - The execSync error: { status, signal, stdout, stderr }
 
@@ -70,6 +73,18 @@ export function isMutationProof (error) {
 
   // Status 1 without a failing-test marker is a crash, not an assertion
   const detail = String(error.stdout || '') + String(error.stderr || error.message || '');
-  return /✖|not ok|failed/.test(detail);
+
+  // node:test names each failure `✖ <name> (<ms>)` or `not ok <n> - <name>`;
+  // a name that is a test file is that file's process ending, not a test
+  const named = detail.split('\n').some(function (line) {
+    const match = /^\s*(?:✖|not ok \d+ -)\s+(.+?)(?:\s+\(\d+(?:\.\d+)?ms\))?\s*$/.exec(line);
+    return match !== null && match[1] !== 'failing tests:' && !/\.(test|spec)\.js$/.test(match[1]);
+  });
+  if (named) {
+    return true;
+  }
+
+  // Playwright counts its failing tests: `N failed`
+  return /^\s*\d+ failed\b/m.test(detail);
 
 }
