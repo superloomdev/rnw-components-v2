@@ -119,9 +119,10 @@ export default function ExpandableTile (ctx) {
       overflow: expanded ? undefined : 'hidden',
       maxHeight: expanded ? undefined : baseHeight + pad,
       padding: padding
-    }, ring];
+    }];
 
-    // In the interactive mode the chevron alone takes the toggle
+    // In the interactive mode the chevron alone takes the toggle and draws
+    // the ring (`_tile.scss:247-250`, the interactive chevron's own focus)
     if (interactive) {
       return React.createElement(View, {
         style: boxStyle,
@@ -134,7 +135,7 @@ export default function ExpandableTile (ctx) {
         'aria-expanded': expanded,
         'aria-disabled': disabled ? true : undefined,
         disabled: disabled,
-        style: seatStyle
+        style: [seatStyle, { outlineStyle: 'none' }, ring]
       }), chevronGlyph));
     }
 
@@ -144,7 +145,7 @@ export default function ExpandableTile (ctx) {
       'aria-expanded': expanded,
       'aria-disabled': disabled ? true : undefined,
       disabled: disabled,
-      style: boxStyle,
+      style: boxStyle.concat(ring),
       testID: props.testID
     }),
     above, below,

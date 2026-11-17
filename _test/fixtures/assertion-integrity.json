@@ -4284,6 +4284,26 @@
       "test": "tree-view.test.js",
       "testName": "the label sits the theme offset below the tree top",
       "why": "the tree's inline-block label sits 2 down its line box (fidelity label y 2)"
+    },
+    {
+      "id": "select-inline-focus-ring",
+      "file": "component/composite/select/select.js",
+      "find": "}, ctx.focusRing('field', { focused: state.focused || state.open })] : presentation.frame },",
+      "replace": "}] : presentation.frame },",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "a focused select rings its inline frame from the field cells",
+      "why": "an inline select must draw the field focus ring on its frame, as every upstream select input does"
+    },
+    {
+      "id": "expandable-tile-chevron-ring",
+      "file": "component/molecule/tile/expandable-tile.js",
+      "find": "style: [seatStyle, { outlineStyle: 'none' }, ring]",
+      "replace": "style: [seatStyle, { outlineStyle: 'none' }]",
+      "runner": "node",
+      "test": "expandable-tile.test.js",
+      "testName": "interactive: the focused chevron draws the ring, the face none",
+      "why": "the interactive chevron draws the tile's focus ring, or keyboard focus shows nothing"
     }
   ]
 }

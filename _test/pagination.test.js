@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/pagination/sample.pagination.js';
 import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { act } from 'react';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
@@ -77,5 +78,22 @@ describe('Pagination: the buttons', function () {
         await cleanup();
       }
     }
+  });
+});
+
+describe('Pagination: the selects draw the field focus ring', function () {
+  // Upstream `_select.scss:121-122`: every select input, the inline one
+  // included, draws a 2px outline inside its edge on focus
+  test('a focused select rings its inline frame from the field cells', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = buildSystem('carbon', factories);
+    const { root } = await renderPagination(Registry, SAMPLE[0].props);
+    const frame = root.querySelector('[data-part="inlineFrame"]');
+    assert.equal(frame.style.outlineWidth, '');
+    await act(async function () {
+      frame.firstElementChild.focus();
+    });
+    assert.equal(frame.style.outlineWidth, t['control.field_focus_width'] + 'px');
+    assert.equal(frame.style.outlineColor, cssValue('outlineColor', t['color.field_focus_ring']));
   });
 });

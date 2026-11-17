@@ -73,4 +73,20 @@ describe('ExpandableTile: press behavior', function () {
     assert.equal(root.getAttribute('aria-expanded'), 'true');
   });
 
+  // Upstream `_tile.scss:247-250`: the interactive chevron draws its own
+  // focus outline; the tile face takes no focus in that mode
+  test('interactive: the focused chevron draws the ring, the face none', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = buildSystem('carbon', factories);
+    const root = await renderExpandableTile(Registry, { below: 'Below the fold content', children: 'Above the fold content', interactive: true });
+    const chevron = root.querySelector('[role="button"]');
+    await act(async function () {
+      chevron.focus();
+    });
+    assert.equal(chevron.style.outlineStyle, 'solid');
+    assert.equal(chevron.style.outlineWidth, t['control.tile_focus_width'] + 'px');
+    assert.equal(chevron.style.outlineColor, cssValue('outlineColor', t['color.tile_focus']));
+    assert.equal(root.style.outlineWidth, '');
+  });
+
 });

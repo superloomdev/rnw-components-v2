@@ -257,7 +257,9 @@ export default function Select (ctx) {
       style: [{ position: 'relative' }, presentation.root, (compact === true || inline === true) ? { paddingTop: 0 } : null]
     }),
     labelled ? React.createElement(Text, Object.assign({}, select.labelProps, { style: presentation.label }), props.label) : null,
-    React.createElement(View, { dataSet: inline === true ? { part: 'inlineFrame' } : undefined, ref: frameRef, style: inline === true ? {
+    // An inline frame draws no field border, but takes the field's focus
+    // ring as every upstream select input does (`_select.scss:121-122`)
+    React.createElement(View, { dataSet: inline === true ? { part: 'inlineFrame' } : undefined, ref: frameRef, style: inline === true ? [{
       alignItems: 'center',
       alignSelf: 'stretch',
       backgroundColor: inlineHovered === true && Utils.isString(props.hoverLeaf) ? ctx.color(props.hoverLeaf) : Utils.isString(props.fillLeaf) ? ctx.color(props.fillLeaf) : 'transparent',
@@ -267,7 +269,7 @@ export default function Select (ctx) {
       minHeight: Utils.isNumber(props.height) ? props.height : undefined,
       paddingEnd: Utils.isNumber(props.paddingEnd) ? props.paddingEnd : 0,
       paddingStart: Utils.isNumber(props.paddingStart) ? props.paddingStart : 0
-    } : presentation.frame },
+    }, ctx.focusRing('field', { focused: state.focused || state.open })] : presentation.frame },
     React.createElement(Pressable, Object.assign({}, select.triggerProps, getA11yState({ invalid: invalid ? true : undefined }), {
       onHoverIn: inline === true ? function (e) {
         if (typeof select.triggerProps.onHoverIn === 'function') {
