@@ -13,8 +13,8 @@ describe('EmptyState: the action seat', function () {
       title: 'EmptyState title'
     }));
     const seat = container.querySelector('[data-part="action"]');
-    assert.notEqual(seat, null, 'the action seat renders');
-    assert.notEqual(seat.querySelector('button'), null, 'a button sits in the seat');
+    assert.equal(seat !== null, true, 'the action seat renders');
+    assert.equal(seat.querySelector('button') !== null, true, 'a button sits in the seat');
     // Upstream `.c4p--empty-state__action-button` margin-block-end 16, before the link
     const actionGap = buildNative('default').tokens['control.empty_state_action_gap'];
     assert.equal(seat.style.marginBottom, actionGap + 'px', 'the action seat carries the action gap below it');

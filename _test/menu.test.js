@@ -82,7 +82,7 @@ describe('Menu: every sample state under every template', function () {
         const items = parts.items();
 
         // The surface's container cells
-        assert.notEqual(parts.surface, null);
+        assert.equal(parts.surface !== null, true);
         assert.equal(parts.surface.style.backgroundColor, cssValue('backgroundColor', t[props.backgroundToken === 'background' ? 'color.menu_container_background' : 'color.list_container']));
         assert.equal(parts.surface.style.paddingTop, t['control.menu_padding_block'] + 'px');
         assert.equal(parts.surface.style.paddingBottom, t['control.menu_padding_block'] + 'px');
@@ -191,7 +191,7 @@ describe('Menu: every sample state under every template', function () {
             continue;
           }
           const group = parts.surface.querySelector('[role="group"][aria-label="' + kind + '"]');
-          assert.notEqual(group, null, 'the ' + kind + ' run mounts role="group" named ' + kind);
+          assert.equal(group !== null, true, 'the ' + kind + ' run mounts role="group" named ' + kind);
         }
 
         // The border variant outlines the surface; the surface is capped
@@ -202,7 +202,7 @@ describe('Menu: every sample state under every template', function () {
         // A selected item reads the selected fill and label cells
         if (radioEntry !== undefined || props.items.some(function (item) { return item.selected === true; }) || props.items.some(function (item) { return (item.items || []).some(function (sub) { return sub.selected === true; }); })) {
           const chosen = parts.surface.querySelector('[aria-checked="true"]');
-          assert.notEqual(chosen, null, 'the selected option mounts');
+          assert.equal(chosen !== null, true, 'the selected option mounts');
           assert.equal(chosen.previousElementSibling.style.backgroundColor, cssValue('backgroundColor', t['color.menu_item_container_selected']));
           const chosenLabel = chosen.previousElementSibling.querySelector('[dir="auto"]');
           assert.equal(chosenLabel.style.color, cssValue('color', t['color.menu_item_label_selected']), 'the selected label cell');
@@ -289,7 +289,7 @@ describe('Menu: behavior through the DOM', function () {
         closed = closed + 1;
       }
     }));
-    assert.equal(container.querySelector('[role="menu"]'), null);
+    assert.equal(container.querySelector('[role="menu"]') === null, true);
 
     const parts = await renderMenu(Registry, {
       items: [{ label: 'A' }, { label: 'B', disabled: true }, { label: 'C' }],
@@ -364,7 +364,7 @@ describe('Menu: a nested selectable still reserves the mark seat', function () {
       y: 8
     });
     const item = parts.items()[0];
-    assert.notEqual(parts.mark(item).querySelector('svg'), null, 'the plain top-level item mounts the mark seat');
+    assert.equal(parts.mark(item).querySelector('svg') !== null, true, 'the plain top-level item mounts the mark seat');
   });
 
 });
@@ -376,8 +376,8 @@ describe('Menu: an open hosted menu focuses its items', function () {
     const container = await render(React.createElement(Registry.OverlayHost, { testID: 'menu-host' },
       React.createElement(Registry.Menu, { items: [{ label: 'One' }, { label: 'Two' }], open: true, x: 8, y: 8 })));
     const item = container.querySelector('[role="menuitem"]');
-    assert.notEqual(item, null, 'the hosted menu mounts its items');
-    assert.equal(document.activeElement, item, 'the first enabled item takes focus on open');
+    assert.equal(item !== null, true, 'the hosted menu mounts its items');
+    assert.equal(document.activeElement === item, true, 'the first enabled item takes focus on open');
     await cleanup();
   });
 

@@ -81,7 +81,7 @@ for (const template of TEMPLATE_NAMES) {
     test('the trigger is the primary icon button, labeled and announcing the popup', async function () {
       const { root } = await renderCombo(buildSystem(template, factories), { label: 'Create', items: ITEMS });
       const trigger = root.querySelector('[aria-haspopup]');
-      assert.notEqual(trigger, null, template);
+      assert.equal(trigger !== null, true, template);
       assert.equal(trigger.getAttribute('aria-label'), 'Additional actions', template);
       assert.equal(trigger.getAttribute('aria-expanded'), 'false', template);
       assert.equal(trigger.getAttribute('aria-haspopup'), 'true', template);
@@ -91,7 +91,7 @@ for (const template of TEMPLATE_NAMES) {
       const t = buildNative(template).tokens;
       const { root } = await renderCombo(buildSystem(template, factories), { label: 'Create', items: ITEMS, size: 'xs' });
       const face = root.querySelector('[data-testid="icon-button-face"]');
-      assert.notEqual(face, null, template);
+      assert.equal(face !== null, true, template);
       assert.equal(face.style.width, t['size.size_small'] + 'px', template);
       assert.equal(face.style.height, t['size.size_small'] + 'px', template);
     });
@@ -107,7 +107,7 @@ for (const template of TEMPLATE_NAMES) {
         root.querySelector('[role="button"]').click();
       });
       assert.equal(pressed, 1, template);
-      assert.equal(container.querySelector('[role="menu"]'), null, template);
+      assert.equal(container.querySelector('[role="menu"]') === null, true, template);
     });
 
     test('pressing the trigger opens the menu against the container\'s edges', async function () {
@@ -118,7 +118,7 @@ for (const template of TEMPLATE_NAMES) {
         trigger.click();
       });
       const menu = container.querySelector('[role="menu"]');
-      assert.notEqual(menu, null, 'the menu mounts, ' + template);
+      assert.equal(menu !== null, true, 'the menu mounts, ' + template);
       assert.equal(trigger.getAttribute('aria-expanded'), 'true', template);
       // `bottom` opens at the container's bottom edge, at its left edge, at
       // its measured width
@@ -142,7 +142,7 @@ for (const template of TEMPLATE_NAMES) {
         root.querySelector('[aria-haspopup]').click();
       });
       assert.equal(glyph.style.transform, 'rotate(180deg)', 'open, ' + template);
-      assert.notEqual(container.querySelector('[role="menu"]'), null, 'menu still open, ' + template);
+      assert.equal(container.querySelector('[role="menu"]') !== null, true, 'menu still open, ' + template);
     });
 
     test('a -start or -end alignment takes the menu\'s natural width and aligns the matching edge', async function () {
@@ -156,7 +156,7 @@ for (const template of TEMPLATE_NAMES) {
         root.querySelector('[aria-haspopup]').click();
       });
       const menu = container.querySelector('[role="menu"]');
-      assert.notEqual(menu, null, template);
+      assert.equal(menu !== null, true, template);
       assert.equal(menu.style.width, '', 'natural width, ' + template);
       // The surface's end hangs on the container's end
       assert.equal(menu.style.left.endsWith('px'), true, template);
@@ -178,7 +178,7 @@ for (const template of TEMPLATE_NAMES) {
         item.click();
       });
       assert.deepEqual(chosen, ITEMS[0], template);
-      assert.equal(container.querySelector('[role="menu"]'), null, 'closed after a choice, ' + template);
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'closed after a choice, ' + template);
     });
 
     test('disabled silences both seats', async function () {
@@ -191,7 +191,7 @@ for (const template of TEMPLATE_NAMES) {
       await act(async function () {
         trigger.click();
       });
-      assert.equal(container.querySelector('[role="menu"]'), null, 'a disabled trigger opens nothing, ' + template);
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'a disabled trigger opens nothing, ' + template);
       assert.equal(trigger.getAttribute('aria-disabled'), 'true', template);
     });
 

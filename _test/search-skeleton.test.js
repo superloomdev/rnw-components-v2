@@ -41,7 +41,7 @@ describe('SearchSkeleton: every sample state under every template', function () 
         const bars = Array.from(container.querySelectorAll('[aria-hidden="true"]'));
         assert.equal(bars.length, 1, 'the search field has no label placeholder');
         assert.equal(Number.parseFloat(bars[0].style.height), tokens[HEIGHTS[state.props.size || 'md']]);
-        assert.equal(container.querySelector('button'), null);
+        assert.equal(container.querySelector('button') === null, true);
       });
     }
   }

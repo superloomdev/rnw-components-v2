@@ -265,7 +265,7 @@ describe('Slider: every sample state under every template', function () {
           assert.equal(node.message.style.marginTop, t['control.field_message_gap'] + 'px', template);
           assert.equal(Number.parseFloat(node.message.style.marginLeft || node.message.style.marginInlineStart), t['control.field_message_inset'], template);
         } else {
-          assert.equal(node.message, null, template + ': no message without invalidText');
+          assert.equal(node.message === null, true, template + ': no message without invalidText');
         }
 
         // Row and bounds
@@ -351,7 +351,7 @@ describe('Slider: every sample state under every template', function () {
         // The member field: a spinbutton at the slider's own widths, no
         // NumberInput (its 150 minimum and steppers never appear)
         if (hiddenInput) {
-          assert.equal(node.input, null, template + ': hideTextInput removes the field');
+          assert.equal(node.input === null, true, template + ': hideTextInput removes the field');
           assert.equal(Number.parseFloat(node.thumb.parentElement.style.width), baseSize, template + ': the tooltip anchor is the base-sized face box');
         } else {
           assert.equal(node.input.getAttribute('role'), 'spinbutton', template);
@@ -739,7 +739,7 @@ describe('Slider: hidden-field tooltip member', function () {
       });
     });
     const popover = container.querySelector('[role="tooltip"]');
-    assert.notEqual(popover, null, 'the hidden field leaves the badge on the thumb');
+    assert.equal(popover !== null, true, 'the hidden field leaves the badge on the thumb');
     assert.equal(popover.firstElementChild.style.paddingLeft, t['spacing.spacing_03'] + 'px',
       'the badge pins the tighter spacing, not the shared inline cell');
     assert.notEqual(t['spacing.spacing_03'], t['control.tooltip_padding_inline'],

@@ -50,12 +50,12 @@ describe('CheckboxSkeleton: the label block alone, under every template', functi
       assert.equal(Number.parseFloat(seat.style.top), t['spacing.spacing_01'], template);
 
       // No control and no text: a skeleton paints only
-      assert.equal(container.querySelector('[role="checkbox"]'), null, template);
-      assert.equal(container.querySelector('button'), null, template);
-      assert.equal(container.querySelector('input'), null, template);
-      assert.equal(container.querySelector('[role]'), null, template);
-      assert.equal(container.querySelector('[tabindex]'), null, template);
-      assert.equal(container.querySelector('[aria-label]'), null, template);
+      assert.equal(container.querySelector('[role="checkbox"]') === null, true, template);
+      assert.equal(container.querySelector('button') === null, true, template);
+      assert.equal(container.querySelector('input') === null, true, template);
+      assert.equal(container.querySelector('[role]') === null, true, template);
+      assert.equal(container.querySelector('[tabindex]') === null, true, template);
+      assert.equal(container.querySelector('[aria-label]') === null, true, template);
       assert.equal(container.textContent.trim(), '', template);
     });
   }

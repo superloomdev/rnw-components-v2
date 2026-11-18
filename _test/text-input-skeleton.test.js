@@ -45,8 +45,8 @@ describe('TextInputSkeleton: every sample state under every template', function 
         const field = bars[bars.length - 1];
         assert.equal(Number.parseFloat(field.style.height), tokens[HEIGHTS[state.props.size || 'md']]);
         // Nothing interactive: a skeleton paints only
-        assert.equal(container.querySelector('button'), null);
-        assert.equal(container.querySelector('input'), null);
+        assert.equal(container.querySelector('button') === null, true);
+        assert.equal(container.querySelector('input') === null, true);
       });
     }
   }

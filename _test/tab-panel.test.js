@@ -22,7 +22,7 @@ describe('TabPanel: every sample state under every template', function () {
         const t = registryFor(template);
         const container = await render(React.createElement(t.TabPanel, state.props));
         const panel = container.querySelector('[role="tabpanel"]');
-        assert.notEqual(panel, null);
+        assert.equal(panel !== null, true);
         const tokens = buildNative(template).tokens;
         assert.equal(panel.style.padding, tokens['control.tab_panel_padding'] + 'px', 'the panel padding is the theme cell');
       });
@@ -37,7 +37,7 @@ describe('TabPanel: a bare string child renders inside a text element', function
     const t = registryFor('carbon');
     const container = await render(React.createElement(t.TabPanel, { children: 'Panel content' }));
     const panel = container.querySelector('[role="tabpanel"]');
-    assert.notEqual(panel, null);
+    assert.equal(panel !== null, true);
     const bare = Array.prototype.filter.call(panel.childNodes, function (node) { return node.nodeType === 3; });
     assert.equal(bare.length, 0, 'a raw string beside the View warns on web and crashes native');
     assert.equal(panel.textContent, 'Panel content');

@@ -70,7 +70,7 @@ describe('Tooltip: every sample state under every template', function () {
         const parts = await renderTooltip(registryFor(template), props);
 
         if (props.defaultOpen !== true) {
-          assert.equal(parts.popover, null);
+          assert.equal(parts.popover === null, true);
           return;
         }
 
@@ -108,22 +108,22 @@ describe('Tooltip: popover behavior', function () {
 
   test('a touch opens the popover where no pointer exists', async function () {
     const parts = await renderTooltip(registryFor('carbon'), { children: 'Anchor', label: 'Touch tip', enterDelayMs: 0 });
-    assert.equal(parts.popover, null);
+    assert.equal(parts.popover === null, true);
     await act(async function () {
       parts.root.dispatchEvent(new Event('touchend', { bubbles: true }));
     });
     const reopened = parts.root.querySelector('[role="tooltip"]');
-    assert.notEqual(reopened, null);
+    assert.equal(reopened !== null, true);
     assert.equal(reopened.querySelector('[dir="auto"]').textContent, 'Touch tip');
   });
 
   test('Escape closes an open popover', async function () {
     const parts = await renderTooltip(registryFor('carbon'), { children: 'Anchor', label: 'Tip', defaultOpen: true });
-    assert.notEqual(parts.popover, null);
+    assert.equal(parts.popover !== null, true);
     await act(async function () {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
     });
-    assert.equal(parts.root.querySelector('[role="tooltip"]'), null);
+    assert.equal(parts.root.querySelector('[role="tooltip"]') === null, true);
   });
 
   test('open is controllable through onOpenChange', async function () {
@@ -138,18 +138,18 @@ describe('Tooltip: popover behavior', function () {
       }
     }));
     const root = container.firstElementChild;
-    assert.notEqual(root.querySelector('[role="tooltip"]'), null);
+    assert.equal(root.querySelector('[role="tooltip"]') !== null, true);
     await act(async function () {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
     });
     assert.deepEqual(seen, [false]);
-    assert.notEqual(root.querySelector('[role="tooltip"]'), null);
+    assert.equal(root.querySelector('[role="tooltip"]') !== null, true);
   });
 
   test('a centered top tooltip centers its caret in a full-span row, not by margin or percent', async function () {
     const t = buildNative('carbon').tokens;
     const parts = await renderTooltip(registryFor('carbon'), { children: 'Anchor', label: 'Tip', defaultOpen: true });
-    assert.notEqual(parts.caret, null);
+    assert.equal(parts.caret !== null, true);
     // The clipping box keeps its cells; the wrapper spans the popover and
     // hangs off the anchor-facing edge, centering the box in the row
     assert.equal(parts.caret.style.width, t['control.tooltip_caret_width'] + 'px');
@@ -183,7 +183,7 @@ describe('Tooltip: native', function () {
     // The positioning box mounts `absolute` at window coordinates inside the
     // host's bounds; the shift (percents of the box) lives on the box on
     // every platform, and the bubble keeps its max width inside it
-    assert.notEqual(parts.popover, null);
+    assert.equal(parts.popover !== null, true);
     assert.equal(parts.popover.style.position, 'absolute');
     assert.notEqual(parts.popover.style.transform.indexOf('translateX'), -1);
     assert.equal(parts.bubble.style.maxWidth, t['control.tooltip_max_width'] + 'px');
@@ -209,7 +209,7 @@ describe('Tooltip: native', function () {
       });
     });
     const caret = root.querySelector('[role="tooltip"] [aria-hidden="true"]');
-    assert.notEqual(caret, null);
+    assert.equal(caret !== null, true);
     const row = caret.parentElement;
     assert.equal(row.style.position, 'absolute');
     assert.equal(row.style.left, '0px');

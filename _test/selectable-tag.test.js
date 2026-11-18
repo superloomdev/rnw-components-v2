@@ -111,7 +111,7 @@ describe('SelectableTag: every sample state under every template', function () {
           assert.ok(parts.icon !== null);
           assert.equal(parts.icon.parentElement.style.display, selected && !marked && typeof props.icon !== 'string' ? 'none' : 'flex');
         } else {
-          assert.equal(parts.icon, null);
+          assert.equal(parts.icon === null, true);
         }
 
         // A toggle: role button, aria-pressed, named by the label

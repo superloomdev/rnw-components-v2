@@ -46,7 +46,7 @@ describe('Toggletip: the information bubble', function () {
       parts.button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
       parts.button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(document.activeElement, parts.button, 'the trigger holds DOM focus after a pointer open');
+    assert.equal(document.activeElement === parts.button, true, 'the trigger holds DOM focus after a pointer open');
     const face = parts.button.parentElement;
     const cs = getComputedStyle(face);
     assert.ok(cs.outlineStyle === 'solid' || cs.boxShadow !== 'none' || cs.borderColor !== 'rgba(0, 0, 0, 0)',
@@ -64,7 +64,7 @@ describe('Toggletip: the information bubble', function () {
       button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
       button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(document.activeElement, button, 'the trigger still holds DOM focus');
+    assert.equal(document.activeElement === button, true, 'the trigger still holds DOM focus');
     const cs = getComputedStyle(button.parentElement);
     const ringDrawn = cs.outlineStyle === 'solid' || (cs.boxShadow !== '' && cs.boxShadow !== 'none');
     assert.equal(ringDrawn, false, 'keyboard: a pointer focus draws no ring');

@@ -113,7 +113,7 @@ describe('Link: every sample state under every template', function () {
           assert.equal(svg.querySelector('path').getAttribute('d'), glyph.paths[0].d);
           assert.equal(svg.getAttribute('fill'), t['color.' + leaf]);
         } else {
-          assert.equal(iconWrap, null);
+          assert.equal(iconWrap === null, true);
         }
 
         // The accessibility answer: a named link over its text

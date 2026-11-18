@@ -29,7 +29,7 @@ describe('ModalBody: the member draws its cells', function () {
       assert.equal(prose.textContent, 'The body.');
       assert.equal(prose.style.fontSize, t['type.dialog_body'].fontSize + 'px');
       assert.equal(prose.style.color, cssValue('color', t['color.dialog_body']));
-      assert.equal(body.querySelector('[role="region"]'), null, 'no region without scrolling');
+      assert.equal(body.querySelector('[role="region"]') === null, true, 'no region without scrolling');
       await cleanup();
     });
 
@@ -39,16 +39,16 @@ describe('ModalBody: the member draws its cells', function () {
       const rendered = await render(React.createElement(Registry.ModalBody, { hasScrollingContent: true, children: 'Long.' }));
       const body = rendered.firstElementChild;
       const region = body.querySelector('[role="region"]');
-      assert.notEqual(region, null, 'a scrolling body is a region');
+      assert.equal(region !== null, true, 'a scrolling body is a region');
       const scroller = region.firstElementChild.firstElementChild;
       const endSpace = scroller.children[scroller.children.length - 1];
       assert.equal(endSpace.style.height, t['control.dialog_scroll_end_space'] + 'px', 'the scroll end space follows the last child');
       const fade = body.querySelector('svg');
       if (t['anatomy.dialog_scroll_fade'] === 'shown') {
-        assert.notEqual(fade, null, 'the shown fade draws');
+        assert.equal(fade !== null, true, 'the shown fade draws');
         assert.equal(fade.parentElement.getAttribute('aria-hidden'), 'true', 'the fade wrapper is decorative');
       } else {
-        assert.equal(fade, null, 'no fade under hidden');
+        assert.equal(fade === null, true, 'no fade under hidden');
       }
       await cleanup();
     });
@@ -58,7 +58,7 @@ describe('ModalBody: the member draws its cells', function () {
       const Registry = buildSystem(template, factories);
       const rendered = await render(React.createElement(Registry.ModalBody, { hasScrollingContent: true, children: 'Long.' }));
       const region = rendered.querySelector('[data-part="modalBody"]');
-      assert.notEqual(region, null, 'the measured part exists');
+      assert.equal(region !== null, true, 'the measured part exists');
       assert.equal(region.getAttribute('role'), 'region', 'the measured part is the scroll region');
       assert.equal(region.style.overflowY, 'auto', 'the scroll region clips to its scrollport');
       assert.equal(region.style.paddingTop, t['control.dialog_body_padding_top'] + 'px');

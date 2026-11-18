@@ -195,7 +195,7 @@ describe('IconButton: states drive the theme through the DOM', function () {
 
   test('the compact tooltip opens on hover and names the button', async function () {
     const parts = await renderIconButton(registryFor('carbon'), { icon: 'add', label: 'Add thing', enterDelayMs: undefined });
-    assert.equal(parts.popover(), null);
+    assert.equal(parts.popover() === null, true);
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
     await act(async function () {
       await new Promise(function (resolve) {
@@ -203,7 +203,7 @@ describe('IconButton: states drive the theme through the DOM', function () {
       });
     });
     const popover = parts.popover();
-    assert.notEqual(popover, null);
+    assert.equal(popover !== null, true);
     assert.equal(popover.querySelector('[dir="auto"]').textContent, 'Add thing');
   });
 

@@ -63,7 +63,7 @@ describe('TreeView: the label', function () {
     const label = Array.from(container.querySelectorAll('[dir="auto"]')).find(function (el) {
       return el.textContent === 'Tree view';
     });
-    assert.notEqual(label, undefined, 'the label draws');
+    assert.equal(label !== undefined, true, 'the label draws');
     assert.equal(label.style.marginTop, offset + 'px');
   });
 });

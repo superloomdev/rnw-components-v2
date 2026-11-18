@@ -51,7 +51,7 @@ describe('MultiSelect + FilterableMultiSelect: every sample state under every te
             assert.equal(parts.trigger.getAttribute('aria-labelledby'), parts.label.id);
             assert.equal(parts.trigger.getAttribute('aria-label'), null);
           } else {
-            assert.equal(parts.label, null);
+            assert.equal(parts.label === null, true);
             assert.equal(parts.trigger.getAttribute('aria-labelledby'), null);
             assert.equal(parts.trigger.getAttribute('aria-label'), props.accessibilityLabel);
           }
@@ -66,9 +66,9 @@ describe('MultiSelect + FilterableMultiSelect: every sample state under every te
             const close = parts.count.querySelector('[role="button"]');
             assert.equal(close === null, false, 'the count member keeps its close control');
             assert.equal(close.getAttribute('aria-label'), 'Clear selection');
-            assert.equal(parts.count.querySelector('[aria-describedby]'), null, 'the member draws no tooltip');
+            assert.equal(parts.count.querySelector('[aria-describedby]') === null, true, 'the member draws no tooltip');
           } else {
-            assert.equal(parts.count, null);
+            assert.equal(parts.count === null, true);
           }
 
           // The control: a combobox; the value text on the press-only owner,
@@ -92,7 +92,7 @@ describe('MultiSelect + FilterableMultiSelect: every sample state under every te
           const message = invalid && props.invalidText ? props.invalidText
             : props.helperText ? props.helperText : null;
           if (message === null) {
-            assert.equal(parts.message, null);
+            assert.equal(parts.message === null, true);
             assert.equal(parts.trigger.getAttribute('aria-describedby'), null);
           } else {
             assert.equal(parts.message.textContent, message);
@@ -188,7 +188,7 @@ describe('MultiSelect: the list through the DOM', function () {
       parts.options()[0].click();
     });
     assert.deepEqual(calls, [['alpha'], []], 'a second press unchecks the same row');
-    assert.equal(parts.count, null);
+    assert.equal(parts.count === null, true);
   });
 
   test('the count member clears every selected value and refocuses the field', async function () {
@@ -202,7 +202,7 @@ describe('MultiSelect: the list through the DOM', function () {
       parts.count.querySelector('[role="button"]').click();
     });
     assert.deepEqual(calls, [[]]);
-    assert.equal(parts.count, null);
+    assert.equal(parts.count === null, true);
     assert.equal(parts.live.textContent, 'All items cleared');
     assert.equal(parts.root.ownerDocument.activeElement === parts.trigger, true, 'the trigger keeps focus');
   });
@@ -248,7 +248,7 @@ describe('MultiSelect: the list through the DOM', function () {
     });
     await press(parts.trigger, 'Backspace');
     assert.deepEqual(calls, [[]]);
-    assert.equal(parts.count, null);
+    assert.equal(parts.count === null, true);
   });
 
   test('arrow keys move the highlight; the first highlighted row draws the mounted border', async function () {
@@ -280,7 +280,7 @@ describe('MultiSelect: the list through the DOM', function () {
     // new highlighted row to the generic field ring
     await press(parts.trigger, 'ArrowDown');
     options = parts.options();
-    assert.equal(ringOf(options[0]), undefined);
+    assert.equal(ringOf(options[0]) === undefined, true);
     assert.equal(options[1].style.outlineStyle, 'solid');
     assert.equal(options[1].style.outlineColor, cssValue('outlineColor', t['color.field_focus_ring']));
   });
@@ -393,7 +393,7 @@ describe('MultiSelect: the list through the DOM', function () {
       parts.trigger.click();
       parts.caret.click();
     });
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.deepEqual(calls, []);
   });
 
@@ -467,7 +467,7 @@ describe('MultiSelect: the list through the DOM', function () {
       onOpenChange: function (next) { opens.push(next); }
     });
     assert.equal(parts.trigger.contains(parts.caret), true, 'the caret seat sits inside the trigger');
-    assert.equal(parts.caret.querySelector('[role="button"]'), null, 'the caret nests no second toggle');
+    assert.equal(parts.caret.querySelector('[role="button"]') === null, true, 'the caret nests no second toggle');
     assert.equal(parts.root.ownerDocument.defaultView.getComputedStyle(parts.caret).pointerEvents, 'none');
     await act(async function () {
       parts.trigger.focus();

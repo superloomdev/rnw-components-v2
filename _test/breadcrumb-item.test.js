@@ -26,10 +26,10 @@ describe('BreadcrumbItem: the member draws its cells', function () {
       assert.equal(li.getAttribute('role'), 'listitem');
       assert.equal(li.style.marginRight, t['control.breadcrumb_gap'] + 'px');
       const link = li.querySelector('[role="link"]');
-      assert.notEqual(link, null);
+      assert.equal(link !== null, true);
       assert.equal(link.getAttribute('href'), '#home');
       const separator = li.querySelector(':scope > [dir="auto"]');
-      assert.notEqual(separator, null);
+      assert.equal(separator !== null, true);
       assert.equal(separator.textContent, '/');
       assert.equal(separator.style.color, cssValue('color', t['color.breadcrumb_separator']));
       assert.equal(separator.style.marginLeft, t['control.breadcrumb_gap'] + 'px');
@@ -53,7 +53,7 @@ describe('BreadcrumbItem: the member draws its cells', function () {
       const Registry = buildSystem(template, factories);
       const rendered = await render(React.createElement(Registry.BreadcrumbItem, { isCurrentPage: true, label: 'Product A' }));
       const li = rendered.firstElementChild;
-      assert.equal(li.querySelector('[role="link"]'), null, 'the current page is not a link');
+      assert.equal(li.querySelector('[role="link"]') === null, true, 'the current page is not a link');
       const text = li.querySelector('[dir="auto"]');
       assert.equal(text.getAttribute('aria-current'), 'page');
       assert.equal(text.style.color, cssValue('color', t['color.breadcrumb_current']));

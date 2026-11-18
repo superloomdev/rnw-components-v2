@@ -48,7 +48,7 @@ describe('Heading: level drives the type set and the semantic level', function (
         const container = await render(sections(Registry,
           React.createElement(Registry.Heading, null, 'Level ' + level), depth));
         const heading = container.querySelector('h' + level);
-        assert.notEqual(heading, null);
+        assert.equal(heading !== null, true);
         assert.equal(heading.getAttribute('aria-level'), String(level));
         assert.equal(heading.style.fontSize, t['type.heading0' + (7 - level)].fontSize + 'px');
         assert.equal(heading.style.color, cssValue('color', t['color.text_primary']));
@@ -62,7 +62,7 @@ describe('Heading: level drives the type set and the semantic level', function (
     const Registry = buildSystem('default', HEADING_FACTORIES);
     const container = await render(sections(Registry, React.createElement(Registry.Heading, null, 'Deep'), 7));
     const heading = container.querySelector('h6');
-    assert.notEqual(heading, null);
+    assert.equal(heading !== null, true);
     assert.equal(heading.getAttribute('aria-level'), '6');
     assert.equal(heading.style.fontSize, t['type.heading01'].fontSize + 'px');
   });
@@ -71,7 +71,7 @@ describe('Heading: level drives the type set and the semantic level', function (
     const Registry = buildSystem('default', HEADING_FACTORIES);
     const container = await render(React.createElement(Registry.Section, { level: 4 },
       React.createElement(Registry.Heading, null, 'Override')));
-    assert.notEqual(container.querySelector('h4'), null);
+    assert.equal(container.querySelector('h4') !== null, true);
   });
 
   test('an invalid Section level throws a named TypeError', async function () {

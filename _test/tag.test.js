@@ -98,7 +98,7 @@ describe('Tag: every sample state under every template', function () {
           assert.equal(parts.icon.getAttribute('aria-hidden'), 'true');
           assert.equal(parts.icon.parentElement.style.paddingRight, t['control.tag_padding_icon'] + 'px');
         } else {
-          assert.equal(parts.icon, null);
+          assert.equal(parts.icon === null, true);
         }
 
         // A tag is not a control: no role, no tabindex
@@ -120,7 +120,7 @@ describe('Tag: composition props', function () {
     });
     const trailing = parts.root.querySelector('[data-testid="tag-close"]');
     assert.ok(trailing !== null);
-    assert.equal(trailing.previousElementSibling, parts.label.parentElement);
+    assert.equal(trailing.previousElementSibling === parts.label.parentElement, true);
   });
 
   test('the leaf props override the computed container, label and icon leaves', async function () {

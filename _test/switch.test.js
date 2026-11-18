@@ -25,7 +25,7 @@ describe('Switch: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the segment draws its label', async function () {
         const container = await render(React.createElement(registryFor(template).Switch, state.props));
         const segment = container.querySelector('[role="tab"]');
-        assert.notEqual(segment, null);
+        assert.equal(segment !== null, true);
         assert.equal(segment.getAttribute('aria-selected'), 'false');
         assert.equal(segment.previousElementSibling.textContent, state.props.text);
       });

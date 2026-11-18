@@ -139,14 +139,14 @@ describe('CheckboxGroup: every sample state under every template', function () {
           assert.equal(describedby, null);
         } else {
           const text = document.getElementById(describedby);
-          assert.notEqual(text, null, 'aria-describedby points at the rendered message');
+          assert.equal(text !== null, true, 'aria-describedby points at the rendered message');
           assert.equal(text.textContent, expected[0]);
           assert.equal(text.style.fontSize, t['type.field_helper'].fontSize + 'px');
           assert.equal(text.style.color, cssValue('color', t['color.' + expected[1]]));
           const row = text.parentElement;
           const icon = row.querySelector('svg');
           if (expected[2]) {
-            assert.notEqual(icon, null);
+            assert.equal(icon !== null, true);
             assert.equal(icon.getAttribute('fill'), t['color.selection_invalid_icon']);
             assert.equal(icon.getAttribute('width'), t['size.icon_01'] + '');
             assert.equal(icon.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
@@ -154,7 +154,7 @@ describe('CheckboxGroup: every sample state under every template', function () {
             assert.equal(icon.parentElement.style.marginTop, t['border.width_01'] + 'px');
             assert.equal(text.style.marginLeft, t['spacing.spacing_03'] + 'px');
           } else {
-            assert.equal(icon, null);
+            assert.equal(icon === null, true);
             assert.equal(text.style.marginLeft, '0px');
           }
           // The message gap shares the last row's bottom margin when rows precede it
@@ -299,7 +299,7 @@ describe('CheckboxGroup: item state through the DOM', function () {
 
   test('an empty group renders the named group with no controls', async function () {
     const parts = await renderGroup(registryFor('carbon'), { legendText: 'Options' });
-    assert.notEqual(parts.root, null);
+    assert.equal(parts.root !== null, true);
     assert.equal(parts.root.getAttribute('aria-labelledby'), parts.legend.id);
     assert.equal(parts.rows.length, 0);
   });

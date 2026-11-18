@@ -50,7 +50,7 @@ describe('OverflowMenu: the trigger squares off the size scale under every templ
         const sides = { xs: 'size.size_xsmall', sm: 'size.size_small', md: 'size.size_medium', lg: 'control.icon_button_size' };
         const container = await render(React.createElement(registryFor(template).OverflowMenu, state.props));
         const face = container.querySelector('[data-testid="icon-button-face"]');
-        assert.notEqual(face, null, 'the trigger face mounts');
+        assert.equal(face !== null, true, 'the trigger face mounts');
         const side = state.props.size || 'md';
         assert.equal(face.style.width, t[sides[side]] + 'px', 'the side comes off the size scale');
         const open = state.props.open === true;
@@ -59,7 +59,7 @@ describe('OverflowMenu: the trigger squares off the size scale under every templ
           cssValue('backgroundColor', t[open ? 'color.overflow_menu_trigger_open' : 'color.button_ghost_container']),
           open ? 'open: the open fill' : 'rest: the ghost rest fill');
         const glyph = face.querySelector('svg');
-        assert.notEqual(glyph, null, 'the overflow icon draws');
+        assert.equal(glyph !== null, true, 'the overflow icon draws');
       });
     }
   }
@@ -75,7 +75,7 @@ describe('OverflowMenu: the open panel', function () {
       const t = nativeFor(template).tokens;
       const container = await render(React.createElement(registryFor(template).OverflowMenu, OPEN.props));
       const panel = container.querySelector('[role="menu"]');
-      assert.notEqual(panel, null, 'the panel mounts while open');
+      assert.equal(panel !== null, true, 'the panel mounts while open');
       assert.equal(panel.style.width, t['control.overflow_menu_width'] + 'px', 'the width cell');
       assert.equal(panel.style.backgroundColor, cssValue('backgroundColor', t['color.list_container']), 'the list container fill');
       const connector = panel.children[0];
@@ -109,26 +109,26 @@ describe('OverflowMenu: the open panel', function () {
       trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     const panel = container.querySelector('[role="menu"]');
-    assert.notEqual(panel, null, 'the trigger opens the panel');
+    assert.equal(panel !== null, true, 'the trigger opens the panel');
     const buttons = panel.querySelectorAll('[role="menuitem"]');
-    assert.equal(document.activeElement, buttons[0], 'the first enabled option takes focus on open');
+    assert.equal(document.activeElement === buttons[0], true, 'the first enabled option takes focus on open');
     // ArrowDown roves to the second option
     await act(async function () {
       buttons[0].dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' }));
     });
-    assert.equal(document.activeElement, buttons[1], 'ArrowDown roves to the next option');
+    assert.equal(document.activeElement === buttons[1], true, 'ArrowDown roves to the next option');
     // ArrowUp wraps back
     await act(async function () {
       buttons[1].dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowUp' }));
     });
-    assert.equal(document.activeElement, buttons[0], 'ArrowUp roves back');
+    assert.equal(document.activeElement === buttons[0], true, 'ArrowUp roves back');
     // Escape closes and refocuses the trigger
     await act(async function () {
       buttons[0].dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closes the panel');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closes the panel');
     assert.equal(closed, 1, 'onClose fired once');
-    assert.equal(document.activeElement, trigger, 'Escape refocuses the trigger');
+    assert.equal(document.activeElement === trigger, true, 'Escape refocuses the trigger');
   });
 
   test('Escape on the trigger closes the open panel too', async function () {
@@ -143,12 +143,12 @@ describe('OverflowMenu: the open panel', function () {
     await act(async function () {
       trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the trigger opens the panel');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the trigger opens the panel');
     // The window the Escape can land in: the panel mounts before its options take focus
     await act(async function () {
       trigger.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape from the trigger closes the panel');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape from the trigger closes the panel');
     assert.equal(closed, 1, 'onClose fired once');
     await cleanup();
   });
@@ -169,8 +169,8 @@ describe('OverflowMenu: the open panel', function () {
     await act(async function () {
       button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'the press closes the panel');
-    assert.equal(document.activeElement, trigger, 'the press refocuses the trigger');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'the press closes the panel');
+    assert.equal(document.activeElement === trigger, true, 'the press refocuses the trigger');
   });
 
 });
@@ -187,11 +187,11 @@ describe('OverflowMenu: `open` seeds and re-syncs, never locks', function () {
       }
     }));
     const panel = container.querySelector('[role="menu"]');
-    assert.notEqual(panel, null, 'open: true mounts the panel');
+    assert.equal(panel !== null, true, 'open: true mounts the panel');
     await act(async function () {
       panel.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closes a seeded panel');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closes a seeded panel');
     assert.equal(closed, 1, 'onClose fired once for the open -> close cycle');
   });
 
@@ -207,15 +207,15 @@ describe('OverflowMenu: `open` seeds and re-syncs, never locks', function () {
       await act(async function () {
         panel.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
       });
-      assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed the seeded panel');
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closed the seeded panel');
       await act(async function () {
         root.render(React.createElement(registryFor('carbon').OverflowMenu, { items: OPEN.props.items, open: false }));
       });
-      assert.equal(container.querySelector('[role="menu"]'), null, 'open: false keeps it closed');
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'open: false keeps it closed');
       await act(async function () {
         root.render(React.createElement(registryFor('carbon').OverflowMenu, { items: OPEN.props.items, open: true }));
       });
-      assert.notEqual(container.querySelector('[role="menu"]'), null, 'open: true again re-syncs it open');
+      assert.equal(container.querySelector('[role="menu"]') !== null, true, 'open: true again re-syncs it open');
     } finally {
       await act(async function () {
         root.unmount();
@@ -237,12 +237,12 @@ describe('OverflowMenu: `open` seeds and re-syncs, never locks', function () {
     await act(async function () {
       panel.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'a click inside the panel does not close it');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'a click inside the panel does not close it');
     assert.equal(closed, 0, 'onClose quiet inside');
     await act(async function () {
       document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'a click outside closes the panel');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'a click outside closes the panel');
     assert.equal(closed, 1, 'onClose fired once');
   });
 
@@ -266,7 +266,7 @@ describe('OverflowMenu: focus to the trigger and direction-only placement', func
     await act(async function () {
       option.dispatchEvent(leaving);
     });
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the panel stays open when focus moves to the trigger');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the panel stays open when focus moves to the trigger');
     assert.equal(closed, 0, 'onClose did not fire');
   });
 
@@ -276,7 +276,7 @@ describe('OverflowMenu: focus to the trigger and direction-only placement', func
       open: true
     }));
     const panel = container.querySelector('[role="menu"]');
-    assert.notEqual(panel, null, 'the panel mounts');
+    assert.equal(panel !== null, true, 'the panel mounts');
     const anchor = container.firstElementChild;
     anchor.getBoundingClientRect = function () {
       return { x: 0, y: 620, width: 40, height: 40, top: 620, right: 40, bottom: 660, left: 0 };

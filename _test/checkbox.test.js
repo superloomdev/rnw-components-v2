@@ -116,7 +116,7 @@ describe('Checkbox: every sample state under every template', function () {
           assert.equal(svg.getAttribute('fill'), t['color.selection_mark' + (disabled ? '_disabled' : '')]);
           assert.equal(svg.querySelector('path').getAttribute('d'), glyph.paths[0].d);
         } else {
-          assert.equal(svg, null);
+          assert.equal(svg === null, true);
         }
 
         // Label and message
@@ -129,7 +129,7 @@ describe('Checkbox: every sample state under every template', function () {
         assert.equal(parts.root.parentElement.style.minHeight, (t['spacing.spacing_05'] + t['spacing.spacing_02']) + 'px');
         const message = invalid ? [props.invalidText, 'selection_message_invalid'] : props.helperText ? [props.helperText, 'selection_helper'] : null;
         if (message === null) {
-          assert.equal(parts.message, null);
+          assert.equal(parts.message === null, true);
         } else {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
@@ -139,7 +139,7 @@ describe('Checkbox: every sample state under every template', function () {
             assert.equal(parts.messageIcon.parentElement.style.marginLeft, (t['spacing.spacing_01'] + t['border.width_01']) + 'px');
             assert.equal(parts.message.style.marginLeft, t['spacing.spacing_03'] + 'px');
           } else {
-            assert.equal(parts.messageIcon, null);
+            assert.equal(parts.messageIcon === null, true);
           }
         }
 

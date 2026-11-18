@@ -21,9 +21,9 @@ describe('MenuItemGroup: the run is a named role="group"', function () {
         label: 'Edit'
       }));
       const group = container.querySelector('[role="group"]');
-      assert.notEqual(group, null, 'the group mounts');
+      assert.equal(group !== null, true, 'the group mounts');
       assert.equal(group.getAttribute('aria-label'), 'Edit', 'the group is named');
-      assert.notEqual(group.querySelector('[data-inside="yes"]'), null, 'the children render inside');
+      assert.equal(group.querySelector('[data-inside="yes"]') !== null, true, 'the children render inside');
       assert.equal(group.style.marginTop, '', 'a group adds no space of its own');
     });
   }

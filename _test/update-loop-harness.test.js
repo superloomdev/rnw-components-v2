@@ -7,7 +7,7 @@
 //
 // Run: node --import ./harness/register.js --test update-loop-harness.test.js
 
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { afterEach, describe, test } from 'node:test';
 
 import { React, cleanup, commitCount, render } from './harness/render.js';

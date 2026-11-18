@@ -36,7 +36,7 @@ describe('catalog samples: wrappers compose in every consumer', function () {
     test('Heading / ' + state.label + ' mounts at ' + EXPECTED[state.label], async function () {
       const container = await render(createSampleElement(React, Registry, 'Heading', state));
       const heading = container.querySelector(EXPECTED[state.label]);
-      assert.notEqual(heading, null, 'expected ' + EXPECTED[state.label]);
+      assert.equal(heading !== null, true, 'expected ' + EXPECTED[state.label]);
       assert.equal(heading.getAttribute('aria-level'), EXPECTED[state.label].slice(1));
     });
   }

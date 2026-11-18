@@ -75,7 +75,7 @@ describe('OverlayHost: membership, order and unregistration', function () {
     const container = await render(React.createElement(Registry.OverlayHost, { testID: 'overlay-host-layers' }, 'The app'));
     assert.match(container.textContent, /The app/);
     const root = layerRoot(container);
-    assert.notEqual(root, null);
+    assert.equal(root !== null, true);
     assert.equal(root.style.position, 'absolute');
     assert.equal(root.childElementCount, 0);
   });
@@ -86,7 +86,7 @@ describe('OverlayHost: membership, order and unregistration', function () {
     // The string lands inside a Text element, not a raw sibling of the
     // layer root - a raw string beside a View crashes a native render
     const text = container.querySelector('[dir="auto"]');
-    assert.notEqual(text, null);
+    assert.equal(text !== null, true);
     assert.match(text.textContent, /Wrapped content/);
   });
 
@@ -101,7 +101,7 @@ describe('OverlayHost: membership, order and unregistration', function () {
     // The hosted layer covers the host's space, not the viewport: the
     // scrim mounts `absolute` inside the layer root on the web too
     const scrim = root.querySelector('[data-testid="modal-scrim"]');
-    assert.notEqual(scrim, null);
+    assert.equal(scrim !== null, true);
     assert.equal(scrim.style.position, 'absolute');
     // The Modal's own mount point renders nothing while hosted: the one
     // dialog in the container is the layer root's
@@ -137,7 +137,7 @@ describe('OverlayHost: membership, order and unregistration', function () {
     const Registry = registryFor();
     const container = await render(React.createElement(Registry.Modal, { open: true, title: 'Solo' }));
     const scrim = container.querySelector('[data-testid="modal-scrim"]');
-    assert.notEqual(scrim, null);
+    assert.equal(scrim !== null, true);
     assert.equal(scrim.style.position, 'fixed');
   });
 
@@ -151,7 +151,7 @@ describe('OverlayHost: hosted overlays on a native platform', function () {
     const container = await render(React.createElement(Registry.OverlayHost, { testID: 'overlay-host-layers' },
       React.createElement(Registry.Modal, { open: true, title: 'Native' })));
     const scrim = layerRoot(container).querySelector('[data-testid="modal-scrim"]');
-    assert.notEqual(scrim, null);
+    assert.equal(scrim !== null, true);
     assert.equal(scrim.style.position, 'absolute');
   });
 
@@ -160,7 +160,7 @@ describe('OverlayHost: hosted overlays on a native platform', function () {
     const container = await render(React.createElement(Registry.OverlayHost, { testID: 'overlay-host-layers' },
       React.createElement(Registry.Menu, { items: [{ label: 'A' }], open: true })));
     const surface = layerRoot(container).querySelector('[role="menu"]');
-    assert.notEqual(surface, null);
+    assert.equal(surface !== null, true);
     assert.equal(surface.style.position, 'absolute');
   });
 
@@ -169,7 +169,7 @@ describe('OverlayHost: hosted overlays on a native platform', function () {
     const container = await render(React.createElement(Registry.OverlayHost, { testID: 'overlay-host-layers' },
       React.createElement(Registry.Tooltip, { defaultOpen: true, label: 'Tip' }, 'Anchor')));
     const popover = layerRoot(container).querySelector('[role="tooltip"]');
-    assert.notEqual(popover, null);
+    assert.equal(popover !== null, true);
     assert.equal(popover.style.position, 'absolute');
   });
 

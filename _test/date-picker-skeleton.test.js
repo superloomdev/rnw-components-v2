@@ -44,6 +44,6 @@ test('DatePickerSkeleton: range draws two pickers at the range width with the on
 
 test('DatePickerSkeleton: hideLabel drops the label placeholders only', async function () {
   const c = await skeleton({ hideLabel: true });
-  assert.equal(c.querySelector('[data-testid="date-picker-skeleton-label"]'), null);
-  assert.notEqual(c.querySelector('[data-testid="date-picker-skeleton-input"]'), null);
+  assert.equal(c.querySelector('[data-testid="date-picker-skeleton-label"]') === null, true);
+  assert.equal(c.querySelector('[data-testid="date-picker-skeleton-input"]') !== null, true);
 });

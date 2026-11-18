@@ -34,7 +34,7 @@ describe('ContentSwitcher: every sample state under every template', function ()
       test(template + ' / ' + state.label + ': the switcher draws its segments', async function () {
         const container = await render(React.createElement(registryFor(template).ContentSwitcher, state.props));
         const bar = container.querySelector('[role="tablist"]');
-        assert.notEqual(bar, null);
+        assert.equal(bar !== null, true);
         const segments = bar.querySelectorAll('[role="tab"]');
         assert.equal(segments.length, state.props.items.length);
       });

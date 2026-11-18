@@ -19,7 +19,7 @@ describe('Tearsheet: actions and close', function () {
       actions: [{ label: 'Cancel', kind: 'secondary' }, { label: 'Create', kind: 'primary' }]
     }));
     const button = container.querySelector('[data-part="buttonSet"] [role="button"]');
-    assert.notEqual(button, null, 'the action row draws a button');
+    assert.equal(button !== null, true, 'the action row draws a button');
     const seat = container.querySelector('[data-part="buttonSet"] > div');
     assert.equal(seat.style.minHeight, '80px', 'the action seat is the action height cell (80)');
   });
@@ -31,7 +31,7 @@ describe('Tearsheet: actions and close', function () {
       title: 'Title',
       children: 'Main content'
     }));
-    assert.notEqual(container.querySelector('[data-part="close"] [role="button"]'), null, 'the passive tearsheet draws its close button');
+    assert.equal(container.querySelector('[data-part="close"] [role="button"]') !== null, true, 'the passive tearsheet draws its close button');
   });
 
   test('a tearsheet with actions draws no close button', async function () {
@@ -42,7 +42,7 @@ describe('Tearsheet: actions and close', function () {
       children: 'Main content',
       actions: [{ label: 'Create', kind: 'primary' }]
     }));
-    assert.equal(container.querySelector('[data-part="close"]'), null, 'no close button with actions');
+    assert.equal(container.querySelector('[data-part="close"]') === null, true, 'no close button with actions');
   });
 
   test('an action press calls the action and does not close the tearsheet', async function () {
@@ -57,13 +57,13 @@ describe('Tearsheet: actions and close', function () {
       actions: [{ label: 'Create', kind: 'primary', onPress: function () { pressed = pressed + 1; } }]
     }));
     const button = container.querySelector('[data-part="buttonSet"] [role="button"]');
-    assert.notEqual(button, null, 'the action row draws a button');
+    assert.equal(button !== null, true, 'the action row draws a button');
     await act(async function () {
       button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     assert.equal(pressed, 1, 'the action press ran');
     assert.equal(closes, 0, 'the action press did not ask for a close');
-    assert.notEqual(container.querySelector('[data-part="container"]'), null, 'the tearsheet stays open');
+    assert.equal(container.querySelector('[data-part="container"]') !== null, true, 'the tearsheet stays open');
   });
 
 });
@@ -80,7 +80,7 @@ describe('Tearsheet: the influencer', function () {
       actions: [{ label: 'Create', kind: 'primary' }]
     }));
     const influencer = container.querySelector('[data-part="influencer"]');
-    assert.notEqual(influencer, null, 'the influencer renders');
+    assert.equal(influencer !== null, true, 'the influencer renders');
     assert.match(influencer.getAttribute('style'), /width:\s*257px/, 'the influencer box is the 256 cell plus the 1px end rule');
   });
 

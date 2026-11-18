@@ -9,10 +9,10 @@ describe('Card: the footer rule', function () {
   test('the footer renders only with bottom actions or a button', async function () {
     const Registry = buildSystem('default', factories);
     const plain = await render(React.createElement(Registry.Card, { children: 'Body', title: 'Title' }));
-    assert.equal(plain.querySelector('[data-part="footer"]'), null, 'no footer without actions or a button');
+    assert.equal(plain.querySelector('[data-part="footer"]') === null, true, 'no footer without actions or a button');
     await cleanup();
     const withButton = await render(React.createElement(Registry.Card, { children: 'Body', primaryButtonText: 'Go', title: 'Title' }));
-    assert.notEqual(withButton.querySelector('[data-part="footer"]'), null, 'a button draws the footer');
+    assert.equal(withButton.querySelector('[data-part="footer"]') !== null, true, 'a button draws the footer');
   });
 });
 describe('Card: the click zone', function () {

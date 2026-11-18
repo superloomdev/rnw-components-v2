@@ -6,7 +6,7 @@
   ],
   "rows": [
     {
-      "id": "guard-rss-inverted",
+      "id": "guard-process-ceiling-inverted",
       "file": "scripts/guard-memory.js",
       "find": "sample.maxMemoryMb > limits.procMb",
       "replace": "sample.maxMemoryMb > 1000000000",
@@ -74,6 +74,16 @@
       "test": "assert-guard.test.js",
       "testName": "a failing identity assertion over a node prints a bounded message and holds no node",
       "why": "a live node handed to node:assert is formatted without bound when the assertion fails"
+    },
+    {
+      "id": "assert-guard-refusal-off",
+      "file": "_test/harness/assert-guard.js",
+      "find": "  return process.env.ASSERT_LIVE === 'label' ? 'label' : 'refuse';",
+      "replace": "  return process.env.ASSERT_LIVE === 'refuse' ? 'refuse' : 'label';",
+      "runner": "node",
+      "test": "assert-guard.test.js",
+      "testName": "a live operand is refused by default, even when the assertion would pass",
+      "why": "a guard that only labels by default lets a new test pass a live object again"
     },
     {
       "id": "fire-file-failure-accepted",

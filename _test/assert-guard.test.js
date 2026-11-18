@@ -1,7 +1,8 @@
 // Info: The assertion guard of the test host (harness/assert-guard.js): a
 // live object never reaches node:assert, so a failing assertion prints a
-// few words, never a DOM graph. The failure text is measured here.
-import { describe, test } from 'node:test';
+// few words, never a DOM graph. Both modes are proven here: refusal, the
+// default, and label, which this file switches on for its own block.
+import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import legacy from 'node:assert';
 
@@ -36,7 +37,61 @@ function failureOf (run) {
 }
 
 
-describe('assert guard', function () {
+describe('assert guard: refusal, the default', function () {
+
+  let saved;
+  before(function () {
+    saved = process.env.ASSERT_LIVE;
+    delete process.env.ASSERT_LIVE;
+  });
+  after(function () {
+    if (saved !== undefined) {
+      process.env.ASSERT_LIVE = saved;
+    }
+  });
+
+  test('a live operand is refused by default, even when the assertion would pass', function () {
+    const node = document.createElement('div');
+    const failure = failureOf(function () {
+      assert.equal(node, node);
+    });
+    assert.equal(failure.error instanceof TypeError, true);
+    assert.equal(failure.error.message.indexOf('assert-guard.test.js:') !== -1, true);
+    assert.equal(failure.text.length < LIMIT, true);
+  });
+
+  test('a node inside a deep operand and a node passed to the legacy assert are refused', function () {
+    const node = document.createElement('li');
+    assert.equal(failureOf(function () { assert.deepEqual([node], [node]); }).error instanceof TypeError, true);
+    assert.equal(failureOf(function () { legacy.strictEqual(node, node); }).error instanceof TypeError, true);
+  });
+
+  test('primitive operands pass and fail as node:assert decides', function () {
+    const node = document.createElement('div');
+    assert.equal(node !== null, true);
+    assert.deepEqual({ a: [1, 2] }, { a: [1, 2] });
+    const failure = failureOf(function () { assert.equal(node === null, true); });
+    assert.equal(failure.error instanceof TypeError, false);
+    assert.equal(failure.error.actual, false);
+  });
+
+});
+
+
+describe('assert guard: label mode', function () {
+
+  let saved;
+  before(function () {
+    saved = process.env.ASSERT_LIVE;
+    process.env.ASSERT_LIVE = 'label';
+  });
+  after(function () {
+    if (saved === undefined) {
+      delete process.env.ASSERT_LIVE;
+    } else {
+      process.env.ASSERT_LIVE = saved;
+    }
+  });
 
   test('a DOM node, an event and a style object are live; data is not', function () {
     const node = document.createElement('div');

@@ -148,14 +148,14 @@ describe('ComboBox: the clear action', function () {
     const parts = await renderCombo('carbon', { label: 'Fruit', items: ITEMS, defaultValue: 'banana', onChange: function (v) { calls.push(v); } });
     // The clear carries its accessible name; the caret's seat is a button too
     const clear = parts.frame.querySelector('[aria-label="Clear selection"]');
-    assert.notEqual(clear, null);
+    assert.equal(clear !== null, true);
     await act(async function () {
       clear.click();
     });
     assert.deepEqual(calls, [null]);
     assert.equal(parts.input.value, '');
     // The clear seat leaves the tree once nothing is populated
-    assert.equal(parts.frame.querySelector('[aria-label="Clear selection"]'), null);
+    assert.equal(parts.frame.querySelector('[aria-label="Clear selection"]') === null, true);
   });
 
 });
@@ -167,7 +167,7 @@ describe('ComboBox: disabled and controlled', function () {
     const parts = await renderCombo('carbon', { label: 'Fruit', items: ITEMS, disabled: true, onInputChange: function (v) { calls.push(v); } });
     assert.equal(parts.input.disabled, true);
     await type(parts.input, 'a');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.deepEqual(calls, []);
     const caretPress = parts.frame.querySelector('[role="button"]');
     assert.equal(caretPress !== null, true);
@@ -188,15 +188,15 @@ describe('ComboBox: typing filters and opens the list', function () {
 
   test('a query opens the list and keeps the options whose labels include it, case-insensitive', async function () {
     const parts = await renderCombo('carbon', { label: 'Fruit', items: ITEMS });
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     await type(parts.input, 'AN');
-    assert.notEqual(parts.list(), null);
+    assert.equal(parts.list() !== null, true);
     // Disabled options stay listed and match the filter like any other
     assert.deepEqual(parts.options().map(function (o) { return o.textContent; }), ['Banana', 'Durian']);
     await type(parts.input, 'ap');
     assert.deepEqual(parts.options().map(function (o) { return o.textContent; }), ['Apple']);
     await press(parts.input, 'Escape');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
   });
 
   test('arrows highlight, Enter selects and reports, Escape closes', async function () {
@@ -210,7 +210,7 @@ describe('ComboBox: typing filters and opens the list', function () {
     assert.equal(parts.input.getAttribute('aria-activedescendant'), options[1].id);
     await press(parts.input, 'Enter');
     assert.deepEqual(calls, ['banana']);
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.equal(parts.input.value, 'Banana');
     await type(parts.input, '');
     await press(parts.input, 'Escape');

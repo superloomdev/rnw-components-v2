@@ -26,7 +26,7 @@ describe('AccordionItem: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the heading draws with its chevron and top rule', async function () {
         const container = await render(React.createElement(registryFor(template).AccordionItem, state.props));
         const heading = container.querySelector('[role="button"]');
-        assert.notEqual(heading, null);
+        assert.equal(heading !== null, true);
         assert.equal(heading.getAttribute('aria-expanded'), state.label === 'open' ? 'true' : 'false');
       });
     }
@@ -39,9 +39,9 @@ describe('AccordionItem: every sample state under every template', function () {
         title: 'Section', defaultOpen: true, children: 'body text'
       }));
       const region = container.querySelector('[role="region"]');
-      assert.notEqual(region, null, 'the body region mounts open');
+      assert.equal(region !== null, true, 'the body region mounts open');
       const text = region.querySelector('div');
-      assert.notEqual(text, null, 'the body text mounts');
+      assert.equal(text !== null, true, 'the body text mounts');
       assert.equal(text.style.color, cssValue('color', t['color.text_primary']), 'the body text takes color.text_primary');
     });
   }

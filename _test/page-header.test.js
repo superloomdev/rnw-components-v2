@@ -13,8 +13,8 @@ describe('PageHeader: the title row', function () {
     const Registry = buildSystem('default', factories);
     const container = await render(React.createElement(Registry.PageHeader, { title: 'Page title' }));
     const title = container.querySelector('[data-part="title"]');
-    assert.notEqual(title, null, 'the title row renders');
-    assert.equal(container.querySelector('[data-part="breadcrumb"]'), null, 'no breadcrumb row without breadcrumbs');
+    assert.equal(title !== null, true, 'the title row renders');
+    assert.equal(container.querySelector('[data-part="breadcrumb"]') === null, true, 'no breadcrumb row without breadcrumbs');
     assert.match(title.getAttribute('style'), /min-height:\s*32px|min-height:\s*40px/, 'the title keeps its min height');
   });
 });

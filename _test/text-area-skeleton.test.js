@@ -42,7 +42,7 @@ describe('TextAreaSkeleton: every sample state under every template', function (
         const field = bars[bars.length - 1];
         assert.equal(Number.parseFloat(field.style.height), tokens['control.text_area_skeleton_height']);
         assert.equal(tokens['control.text_area_skeleton_height'], 100, 'the source-backed 100');
-        assert.equal(container.querySelector('button'), null);
+        assert.equal(container.querySelector('button') === null, true);
       });
     }
   }

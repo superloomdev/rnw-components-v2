@@ -130,7 +130,7 @@ describe('TextInput: every sample state under every template', function () {
           assert.equal(parts.label.style.position, t['anatomy.label'] === 'floating' ? 'absolute' : '');
           assert.equal(parts.input.getAttribute('aria-labelledby'), parts.label.id);
         } else {
-          assert.equal(parts.label, null);
+          assert.equal(parts.label === null, true);
           assert.equal(parts.input.getAttribute('aria-label'), props.accessibilityLabel);
         }
 
@@ -141,11 +141,11 @@ describe('TextInput: every sample state under every template', function () {
           assert.equal(svg.querySelector('path').getAttribute('d'), (t['icon.invalid'].sizes && t['icon.invalid'].sizes[String(t['control.field_icon_size'])] || t['icon.invalid']).paths[0].d);
           assert.equal(svg.getAttribute('width'), String(t['control.field_icon_size']));
         } else {
-          assert.equal(svg, null);
+          assert.equal(svg === null, true);
         }
         const message = invalid ? [props.invalidText, 'field_message_invalid'] : props.helperText ? [props.helperText, 'field_helper' + (disabled ? '_disabled' : '')] : null;
         if (message === null) {
-          assert.equal(parts.message, null);
+          assert.equal(parts.message === null, true);
         } else {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));

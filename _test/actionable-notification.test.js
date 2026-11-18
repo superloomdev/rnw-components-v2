@@ -71,7 +71,7 @@ describe('ActionableNotification: every sample state under every template', func
 
         // The container: role, the layout width and the toast shadow
         const band = parts.band;
-        assert.notEqual(band, null);
+        assert.equal(band !== null, true);
         assert.equal(band.getAttribute('role'), 'alertdialog');
         if (inline) {
           assert.equal(band.style.width, '100%');
@@ -92,7 +92,7 @@ describe('ActionableNotification: every sample state under every template', func
 
         // The action: the inline ghost or the toast tertiary-inverse
         const action = parts.action();
-        assert.notEqual(action, null);
+        assert.equal(action !== null, true);
         assert.equal(action.parentElement.style.minHeight, t['control.notification_action_height'] + 'px');
         const seat = action.parentElement.parentElement;
         assert.equal(seat.style.marginLeft, (inline ? t['control.notification_action_inset'] : t['control.notification_toast_action_inset']) + 'px');
@@ -125,11 +125,11 @@ describe('ActionableNotification: every sample state under every template', func
         // takes the action's end space
         const close = parts.close();
         if (props.hideCloseButton === true) {
-          assert.equal(close, null);
+          assert.equal(close === null, true);
           assert.equal(seat.style.marginRight, t['control.notification_action_end_space'] + 'px', 'the action keeps the end space with no close');
           assert.equal(parts.rendered.firstElementChild.style.width, inline ? '100%' : '', 'the inline band fills its row');
         } else {
-          assert.notEqual(close, null);
+          assert.equal(close !== null, true);
         }
       });
     }
@@ -183,13 +183,13 @@ describe('ActionableNotification: trap, Escape and the close chain', function ()
     });
     await fire(parts.close(), new MouseEvent('click', { bubbles: true }));
     assert.deepEqual(calls, ['button', 'close']);
-    assert.notEqual(parts.rendered.querySelector('[role="alertdialog"]'), null);
+    assert.equal(parts.rendered.querySelector('[role="alertdialog"]') !== null, true);
   });
 
   test('a close without a veto unmounts the band', async function () {
     const parts = await renderActionable(registryFor('carbon'), { actionButtonLabel: 'Retry', title: 'T' });
     await fire(parts.close(), new MouseEvent('click', { bubbles: true }));
-    assert.equal(parts.rendered.querySelector('[role="alertdialog"]'), null);
+    assert.equal(parts.rendered.querySelector('[role="alertdialog"]') === null, true);
   });
 
 });

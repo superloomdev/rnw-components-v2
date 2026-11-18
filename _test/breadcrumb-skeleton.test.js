@@ -29,7 +29,7 @@ describe('BreadcrumbSkeleton: every sample state under every template', function
 
         // No landmark, no list roles
         assert.equal(root.getAttribute('role'), null);
-        assert.equal(rendered.querySelector('[role="navigation"]'), null);
+        assert.equal(rendered.querySelector('[role="navigation"]') === null, true);
         assert.equal(root.children.length, count);
 
         for (let index = 0; index < count; index++) {

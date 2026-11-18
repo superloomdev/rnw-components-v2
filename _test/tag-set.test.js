@@ -115,7 +115,7 @@ describe('TagSet: fit and overflow', function () {
     });
     const seat = parts.container.querySelector('button[role="button"]');
     assert.ok(seat, 'the measuring seat mounts before layouts');
-    assert.notEqual(seat.closest('[aria-hidden="true"]'), null, 'the measuring seat is hidden from assistive technology');
+    assert.equal(seat.closest('[aria-hidden="true"]') !== null, true, 'the measuring seat is hidden from assistive technology');
     assert.equal(seat.disabled === true || seat.getAttribute('aria-disabled') === 'true' || seat.getAttribute('disabled') !== null, true, 'the measuring seat is not focusable');
     await cleanup();
   });

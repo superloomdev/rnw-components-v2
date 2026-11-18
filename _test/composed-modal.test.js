@@ -64,13 +64,13 @@ describe('ComposedModal: every sample state under every template', function () {
         const parts = await renderComposed(registryFor(template), props);
 
         // The scrim fills with the scrim cell at the overlay stacking
-        assert.notEqual(parts.scrim, null);
+        assert.equal(parts.scrim !== null, true);
         assert.equal(parts.scrim.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_scrim']));
         assert.equal(parts.scrim.style.zIndex, String(t['stacking.overlay']));
 
         // The container: surface cells, the size's width and height ratios of the layer space
         const dialog = parts.dialog;
-        assert.notEqual(dialog, null);
+        assert.equal(dialog !== null, true);
         assert.equal(dialog.getAttribute('aria-modal'), 'true');
         assert.equal(dialog.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_container']));
         assert.equal(dialog.style.borderBottomWidth, t['control.dialog_border_width'] + 'px', 'the border draws on all four sides');
@@ -115,10 +115,10 @@ describe('ComposedModal: every sample state under every template', function () {
 
         // The footer: absent when passive, else the actions height and the ratio widths
         if (props.footer === undefined) {
-          assert.equal(parts.footer, null);
+          assert.equal(parts.footer === null, true);
         } else {
           const footer = parts.footer;
-          assert.notEqual(footer, null);
+          assert.equal(footer !== null, true);
           assert.equal(footer.style.height, t['control.dialog_actions_height'] + 'px');
           const seats = Array.from(footer.children);
           const three = props.footer.secondaryButtons !== undefined;
@@ -151,13 +151,13 @@ describe('ComposedModal: the scrolling body and the fade', function () {
         open: true
       });
       const region = parts.body.querySelector('[role="region"]');
-      assert.notEqual(region, null, template + ': the scrolling body is a region');
+      assert.equal(region !== null, true, template + ': the scrolling body is a region');
       // The fade seat draws only where `anatomy.dialog_scroll_fade` is `shown`
       const fade = parts.body.querySelector('svg');
       if (t['anatomy.dialog_scroll_fade'] === 'shown') {
-        assert.notEqual(fade, null, template + ': the shown fade draws');
+        assert.equal(fade !== null, true, template + ': the shown fade draws');
       } else {
-        assert.equal(fade, null, template + ': no fade under hidden');
+        assert.equal(fade === null, true, template + ': no fade under hidden');
       }
       await cleanup();
     }
@@ -165,7 +165,7 @@ describe('ComposedModal: the scrolling body and the fade', function () {
 
   test('a body without hasScrollingContent stays a plain box', async function () {
     const parts = await renderComposed(registryFor('carbon'), { children: 'B', header: { title: 'T' }, open: true });
-    assert.equal(parts.body.querySelector('[role="region"]'), null);
+    assert.equal(parts.body.querySelector('[role="region"]') === null, true);
   });
 
 });
@@ -181,14 +181,14 @@ describe('ComposedModal: behavior through the DOM', function () {
     });
     const buttons = parts.footer.querySelectorAll('[role="button"]');
     assert.equal(buttons.length, 2);
-    assert.equal(document.activeElement, buttons[0], 'the secondary holds the initial focus');
+    assert.equal(document.activeElement === buttons[0], true, 'the secondary holds the initial focus');
     // And a non-danger dialog lands it on the close button
     const plain = await renderComposed(registryFor('carbon'), {
       footer: { primaryButtonText: 'Save', secondaryButtonText: 'Cancel' },
       header: { title: 'T' },
       open: true
     });
-    assert.equal(document.activeElement, plain.close.querySelector('[role="button"]'), 'the close holds the initial focus');
+    assert.equal(document.activeElement === plain.close.querySelector('[role="button"]'), true, 'the close holds the initial focus');
   });
 
   test('onClose returning false vetoes the close', async function () {
@@ -203,7 +203,7 @@ describe('ComposedModal: behavior through the DOM', function () {
     });
     await fire(parts.close.querySelector('[role="button"]'), new MouseEvent('click', { bubbles: true }));
     assert.equal(called, 1);
-    assert.notEqual(parts.rendered.querySelector('[role="dialog"]'), null, 'the vetoed dialog stays mounted');
+    assert.equal(parts.rendered.querySelector('[role="dialog"]') !== null, true, 'the vetoed dialog stays mounted');
   });
 
   test('outside press closes only a passive dialog; preventCloseOnClickOutside blocks it', async function () {
@@ -336,7 +336,7 @@ describe('ComposedModal: an unbounded dialog waits for its layer space', functio
     const hidden = await render(React.createElement(StagedHost, { ctx: captured, size: { width: 0, height: 0 } },
       React.createElement(Registry.ComposedModal, { open: true, header: { title: 'T' }, children: 'B' })));
     const before = hidden.querySelector('[role="dialog"], [role="alertdialog"]');
-    assert.notEqual(before, null);
+    assert.equal(before !== null, true);
     assert.equal(before.style.opacity, '0', 'an unmeasured host means an unpainted dialog');
     await cleanup();
     const shown = await render(React.createElement(StagedHost, { ctx: captured, size: { width: 640, height: 400 } },

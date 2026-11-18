@@ -68,7 +68,7 @@ describe('InlineNotification: every sample state under every template', function
 
         // The container: width, min height, the marker, the fill and the low-contrast outline
         const container = parts.container;
-        assert.notEqual(container, null);
+        assert.equal(container !== null, true);
         assert.equal(container.getAttribute('role'), 'status');
         assert.equal(container.style.width, '100%');
         assert.equal(container.style.maxWidth, t['control.notification_inline_width'] + 'px');
@@ -112,11 +112,11 @@ describe('InlineNotification: every sample state under every template', function
         // The close: in flow at the end unless hidden, the 48 seat
         const close = parts.close();
         if (props.hideCloseButton === true) {
-          assert.equal(close, null);
+          assert.equal(close === null, true);
         } else {
-          assert.notEqual(close, null);
+          assert.equal(close !== null, true);
           const closeSvg = close.querySelector('svg');
-          assert.notEqual(closeSvg, null);
+          assert.equal(closeSvg !== null, true);
         }
       });
     }
@@ -141,13 +141,13 @@ describe('InlineNotification: the close chain', function () {
     });
     await fire(closeButton(parts.close()), new MouseEvent('click', { bubbles: true }));
     assert.deepEqual(calls, ['button', 'close']);
-    assert.notEqual(parts.rendered.querySelector('[role="status"]'), null, 'the vetoed band stays mounted');
+    assert.equal(parts.rendered.querySelector('[role="status"]') !== null, true, 'the vetoed band stays mounted');
   });
 
   test('a close without a veto unmounts the band', async function () {
     const parts = await renderInline(registryFor('carbon'), { title: 'T' });
     await fire(closeButton(parts.close()), new MouseEvent('click', { bubbles: true }));
-    assert.equal(parts.rendered.querySelector('[role="status"]'), null);
+    assert.equal(parts.rendered.querySelector('[role="status"]') === null, true);
   });
 
 });

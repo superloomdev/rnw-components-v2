@@ -25,7 +25,7 @@ describe('IconTab: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': a square icon tab with a name', async function () {
         const container = await render(React.createElement(registryFor(template).IconTab, state.props));
         const tab = container.querySelector('[role="tab"]');
-        assert.notEqual(tab, null);
+        assert.equal(tab !== null, true);
         assert.equal(tab.getAttribute('aria-label'), state.props.label);
       });
     }
