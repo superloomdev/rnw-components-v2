@@ -1,11 +1,14 @@
 // Info: Grid/Row/Column. The CSS-grid form gives each column its span of
-// the track count less the gutter; a span of 0 draws nothing.
+// the track count less the gutter; a span of 0 draws nothing. Column's
+// sample draws inside its Grid (`requires_parent`): bare, its auto track
+// grows along a column container's height (iOS walk, M6 gate).
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/grid/sample.grid.js';
+import COLUMN_SAMPLE from '../component/molecule/grid/sample.column.js';
 import { TEMPLATES, buildSystem } from './harness/system.js';
 import { React, cleanup, render } from './harness/render.js';
 
@@ -30,4 +33,22 @@ describe('Grid: every sample state under every template', function () {
       assert.equal(container.firstElementChild.children.length, 1);
     });
   }
+});
+
+describe('Column: the sample draws inside its Grid', function () {
+  test('carbon / default: the wrapper is a Grid, whose row the auto track grows along', async function () {
+    const Registry = buildSystem('carbon', factories);
+    const state = COLUMN_SAMPLE[0];
+    const wrappers = Array.isArray(state.wrappers) ? state.wrappers : [];
+    assert.equal(wrappers.length, 1, 'one parent wrapper');
+    assert.equal(wrappers[0].component, 'Grid');
+    const element = wrappers.reduceRight(function (child, wrapper) {
+      return React.createElement(Registry[wrapper.component], wrapper.props, child);
+    }, React.createElement(Registry.Column, state.props));
+    const container = await render(element);
+    const track = container.querySelector('[data-part="column"]').parentElement;
+    assert.equal(track.style.flexGrow, '1', 'the auto track grows');
+    assert.equal(track.parentElement.getAttribute('data-part'), 'grid');
+    assert.equal(track.parentElement.style.flexDirection, 'row', 'along the grid row');
+  });
 });

@@ -2826,6 +2826,16 @@
       "why": "a span of 4 of 16 is 25 percent"
     },
     {
+      "id": "column-sample-in-grid",
+      "file": "component/molecule/grid/sample.column.js",
+      "find": "wrappers: Object.freeze([PARENT]) })",
+      "replace": "wrappers: Object.freeze([]) })",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: the wrapper is a Grid, whose row the auto track grows along",
+      "why": "a bare Column grows along a column container's height on native; its sample must mount it inside a Grid"
+    },
+    {
       "id": "column-span-zero",
       "file": "component/molecule/grid/column.js",
       "find": "spec === 0",

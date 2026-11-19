@@ -77,6 +77,8 @@ Column is one cell of the layout grid, spanning a number of the breakpoint's col
 |---|---|
 | default | `{"children":"Column"}` |
 
+`default` mounts inside Grid wrapper (sample composition, not a prop).
+
 ## Grid
 
 Grid is the layout grid that holds rows of columns sized per breakpoint.
