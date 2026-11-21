@@ -190,7 +190,7 @@ export default function TreeView (ctx) {
     });
     return React.createElement(TreeContext.Provider, { value: context },
       React.createElement(View, {
-        accessibilityRole: 'tree',
+        role: 'tree',
         accessibilityLabel: props.hideLabel === true ? (Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : props.label) : undefined,
         ariaLabelledBy: props.hideLabel === true ? undefined : 'tree-label',
         onKeyDown: function (e) {
@@ -205,7 +205,7 @@ export default function TreeView (ctx) {
       labelNode,
       // `.cds--tree` paints nothing; each node paints its own container
       // (probe: the tree transparent, the nodes the container cell)
-      React.createElement(View, { accessibilityRole: 'group', dataSet: { part: 'tree' }, role: 'group' }, items)));
+      React.createElement(View, { dataSet: { part: 'tree' }, role: 'group' }, items)));
   }
 
   TreeViewComponent.displayName = 'TreeView';

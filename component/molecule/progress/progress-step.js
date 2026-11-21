@@ -119,7 +119,7 @@ export default function ProgressStep (ctx) {
     // Render the step: the pressable row (glyph then text column), the
     // connector line over its edge; a list item in the indicator's list
     return React.createElement(View, {
-      accessibilityRole: 'listitem',
+      role: 'listitem',
       style: vertical
         ? { alignSelf: 'stretch', minHeight: ctx.metric('ProgressStep', 'verticalMinHeight') }
         : Object.assign({

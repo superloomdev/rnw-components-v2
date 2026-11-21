@@ -108,7 +108,7 @@ export default function Card (ctx) {
     const focused = state.focused === true;
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
       accessibilityLabel: undefined,
-      accessibilityRole: holdsControls ? 'group' : 'button',
+      role: holdsControls ? 'group' : 'button',
       'aria-disabled': disabled || undefined,
       // The zone is the card's own box: a `<button>` would otherwise shrink
       // to its content

@@ -82,7 +82,7 @@ export default function TreeNode (ctx) {
       }, props.label));
     };
     return React.createElement(Pressable, {
-      accessibilityRole: 'treeitem',
+      role: 'treeitem',
       'aria-current': active ? 'true' : undefined,
       'aria-disabled': disabled || undefined,
       'aria-expanded': isParent ? expanded : undefined,

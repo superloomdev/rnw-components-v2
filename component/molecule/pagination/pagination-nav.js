@@ -150,7 +150,7 @@ export default function PaginationNav (ctx) {
     const prevEnd = page <= 0 && !loop;
     const nextEnd = page >= totalItems - 1 && !loop;
     return React.createElement(View, {
-      accessibilityRole: 'navigation',
+      role: 'navigation',
       dataSet: { part: 'nav' },
       onLayout: function (e) {
         const w = e.nativeEvent.layout.width; if (w !== navWidth) {

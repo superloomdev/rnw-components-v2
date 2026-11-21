@@ -3,8 +3,10 @@
 // empty tree cannot pass vacuously.
 //
 // 1. No color literal, unit string, vendor name, framework import, platform
-//    read (outside component/platform.js), banned accessibility prop,
-//    createPortal, LayoutAnimation, useWindowDimensions, __DEV__, JSX.
+//    read (outside component/platform.js), banned accessibility prop, an
+//    `accessibilityRole` literal outside the Android enum (an ARIA-only
+//    name goes on `role`), createPortal, LayoutAnimation,
+//    useWindowDimensions, __DEV__, JSX.
 // 2. Every component folder is complete: factory, api, spec, sample, notes;
 //    the factory carries `.spec`; `all.js` exports exactly the discovered
 //    components, and no sample passes a composition prop.
@@ -42,6 +44,10 @@ const FORBIDDEN = [
     }
   } },
   { name: 'banned accessibility prop', pattern: /accessibilityState|accessibilityValue|accessibilityHint|accessibilityViewIsModal|importantForAccessibility/ },
+  // React Native Android backs `accessibilityRole` with the TalkBack enum
+  // and throws on any other name at mount (`ReactAccessibilityDelegate.kt`
+  // `AccessibilityRole.fromValue`); `role` maps an ARIA name on every platform
+  { name: 'accessibilityRole outside the Android enum', pattern: /accessibilityRole:[^,{}]*'(?!(none|button|dropdownlist|togglebutton|link|search|image|imagebutton|keyboardkey|text|adjustable|summary|header|alert|checkbox|combobox|menu|menubar|menuitem|progressbar|radio|radiogroup|scrollbar|spinbutton|switch|tab|tabbar|tablist|timer|list|grid|pager|scrollview|horizontalscrollview|viewgroup|webview|drawerlayout|slidingdrawer|iconmenu|toolbar)')[a-z]+'/ },
   { name: 'banned mechanism', pattern: /createPortal|LayoutAnimation|useWindowDimensions|__DEV__/ },
   { name: 'web-only visibility style', pattern: /\bvisibility\s*:/ },
   { name: 'JSX', pattern: /^\s*<[A-Z][A-Za-z.]*[\s>/]/ },

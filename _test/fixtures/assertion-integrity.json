@@ -196,6 +196,16 @@
       "why": "a color literal inside a string in shipped source must fail the purity scan"
     },
     {
+      "id": "purity-android-role",
+      "file": "component/molecule/text-list/list-item.js",
+      "find": "React.createElement(View, { role: 'listitem',",
+      "replace": "React.createElement(View, { accessibilityRole: 'listitem',",
+      "runner": "node",
+      "test": "purity.test.js",
+      "testName": "no forbidden construct in any shipped file",
+      "why": "an ARIA-only name on accessibilityRole crashes the Android Release build at mount and must fail the purity scan"
+    },
+    {
       "id": "purity-declared-tokens",
       "file": "component/contract.js",
       "find": "const ICON_REQUIRED = ['size.icon_02', 'color.icon_primary'];",
@@ -4018,8 +4028,8 @@
     {
       "id": "card-zone-group",
       "file": "component/molecule/card/card.js",
-      "find": "accessibilityRole: holdsControls ? 'group' : 'button',",
-      "replace": "accessibilityRole: 'button',",
+      "find": "role: holdsControls ? 'group' : 'button',",
+      "replace": "role: 'button',",
       "runner": "node",
       "test": "card.test.js",
       "testName": "a clickable card is a button, a group when it holds controls, never a button in a button",

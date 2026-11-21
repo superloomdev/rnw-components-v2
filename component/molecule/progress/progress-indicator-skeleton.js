@@ -48,7 +48,7 @@ export default function ProgressIndicatorSkeleton (ctx) {
     // own geometry; the label block shares the glyph's top margin
     const step = function (index) {
       return React.createElement(View, {
-        accessibilityRole: 'listitem',
+        role: 'listitem',
         key: index,
         style: vertical
           ? { alignSelf: 'stretch', minHeight: ctx.metric('ProgressIndicatorSkeleton', 'verticalMinHeight') }
