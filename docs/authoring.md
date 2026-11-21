@@ -111,6 +111,8 @@ A frozen array of `{ label, props }`. It drives the showcase states row, the bro
 
 A component that fills the width its container gives it (a field, a select) also exports `FRAME = Object.freeze({ width })`. The catalog carries it as `frame` (null for every other component), and every showcase, walker and browser gate lays that component's states out in a container of that width. Without it, the component's width is whatever each platform does with an unsized container: a browser input has an intrinsic width, a native input has none, so web and native disagree. Inside a component, a part that grows from its content uses `flexGrow: 1, flexShrink: 1, flexBasis: 'auto'`, never `flex: 1`: native layout gives `flex: 1` a zero basis, which collapses the part inside a container that sizes to its content. A sample that truncates sets a fixed `width`, not `maxWidth`: native text measures to its truncated line, the web to the box.
 
+A `requires_parent` component's samples mount inside their parent. Each state carries `wrappers`, a frozen array of `{ component, props, reference }` descriptors naming registry components, first entry outermost; `reference: false` marks a wrapper the reference mount does not reproduce (it mounts the upstream parent itself). Every consumer (showcase, browser gates, Node gates, demo walker) builds the element through `createSampleElement`, and the docs page names the wrappers. Sampled bare, a track meant to grow along its parent grows along whatever holds it: Column's auto track (`flexGrow: 1`, basis 0) grew past 189000 points in a scrolling native walk.
+
 ## Reference (`reference.js`) - rows with `reference.kind != none`
 
 ```js
