@@ -56,6 +56,10 @@ for (const row of roster.rows) {
       fail(`${row.name}: duplicate source also used by ${sources.get(key)}`);
     }
     sources.set(key, row.name);
+    const pinned = candidate.generatedFrom[row.source.package];
+    if (row.source.package !== 'local' && row.source.version !== pinned) {
+      fail(`${row.name}: source version ${row.source.version} is not the pinned ${row.source.package} ${pinned}`);
+    }
   }
   if (!nonEmpty(row.description) || !/[.!?]$/.test(row.description)) {
     fail(`${row.name}: description is not one sentence`);

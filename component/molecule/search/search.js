@@ -48,10 +48,11 @@ export default function Search (ctx) {
     selected: null
   });
 
-  // The collapsed trigger's palette: its own hover rule, not the field's
+  // The collapsed trigger's palette: its own hover rule, not the field's;
+  // pressed draws the selected fill (`_search.scss:400-402`)
   const COLLAPSED_PALETTE = Object.freeze({
     enabled: null,
-    active: 'background_hover',
+    active: 'background_selected',
     disabled: null,
     focus: null,
     hover: 'background_hover',

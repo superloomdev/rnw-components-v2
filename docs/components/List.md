@@ -4,6 +4,7 @@
 
 - **ListItem** (requires_parent): requires_parent: "must be composed inside UnorderedList; measured through UnorderedList's samples."
 - **ListItem** (no_reference): no_reference: "no standalone upstream mount; measured through UnorderedList's samples."
+- **OrderedList**: the root list (ordered and native) insets its items by `spacing.spacing_06` (`_list.scss:37-39`); the `n.` marker sits `control.text_list_ordinal_offset` before the item, inside that inset. A nested list keeps its `control.text_list_nested_indent` margin.
 
 ## ListItem
 
@@ -36,6 +37,7 @@ One row of a text list with its marker; it must be composed inside UnorderedList
 | `indent` | `control.text_list_indent` |
 | `nestedIndent` | `control.text_list_nested_indent` |
 | `nestedItemPadding` | `control.text_list_nested_item_padding` |
+| `orderedIndent` | `spacing.spacing_06` |
 | `nestedMarkerOffset` | `control.text_list_nested_marker_offset` |
 | `ordinalOffset` | `control.text_list_ordinal_offset` |
 | `markerOffset` | `control.text_list_marker_offset` |
@@ -76,6 +78,7 @@ A numbered list with `n.` markers (lower-latin `a.` nested; `native` uses the br
 | `indent` | `control.text_list_indent` |
 | `nestedIndent` | `control.text_list_nested_indent` |
 | `nestedItemPadding` | `control.text_list_nested_item_padding` |
+| `orderedIndent` | `spacing.spacing_06` |
 | `nestedMarkerOffset` | `control.text_list_nested_marker_offset` |
 | `ordinalOffset` | `control.text_list_ordinal_offset` |
 | `markerOffset` | `control.text_list_marker_offset` |
@@ -119,6 +122,7 @@ A bulleted list with en-dash markers; nested lists indent and mark squares.
 | `indent` | `control.text_list_indent` |
 | `nestedIndent` | `control.text_list_nested_indent` |
 | `nestedItemPadding` | `control.text_list_nested_item_padding` |
+| `orderedIndent` | `spacing.spacing_06` |
 | `nestedMarkerOffset` | `control.text_list_nested_marker_offset` |
 | `ordinalOffset` | `control.text_list_ordinal_offset` |
 | `markerOffset` | `control.text_list_marker_offset` |

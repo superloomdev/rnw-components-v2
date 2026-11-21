@@ -1,6 +1,11 @@
 // Info: CopyButton's measurement reference. The upstream CopyButton takes
 // iconDescription/feedback/feedbackTimeout/align/onClick and nothing else;
-// its tooltip bubble shows on hover, focus and during feedback.
+// its tooltip bubble shows on hover, focus and during feedback. It passes
+// `kind: ''`, the Default story's own argument (`CopyButton.stories.js:19`):
+// at this release `_copy-button.scss:24` draws the default colors under
+// `:where()`, so a bare CopyButton takes ButtonBase's `kind = "primary"`
+// (`Button/ButtonBase.js:23`); the next release passes `kind ?? null` to
+// restore the layer fill.
 
 export default Object.freeze({
   kind: 'render-web',
@@ -10,6 +15,7 @@ export default Object.freeze({
   body: { width: 320 },
   mount: function (React, upstream, props) {
     return React.createElement(upstream.CopyButton, {
+      kind: '',
       iconDescription: props.iconDescription,
       feedback: props.feedback,
       feedbackTimeout: props.feedbackTimeout,

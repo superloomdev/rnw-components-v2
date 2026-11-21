@@ -1,2 +1,3 @@
 - **ListItem** (requires_parent): requires_parent: "must be composed inside UnorderedList; measured through UnorderedList's samples."
 - **ListItem** (no_reference): no_reference: "no standalone upstream mount; measured through UnorderedList's samples."
+- **OrderedList**: the root list (ordered and native) insets its items by `spacing.spacing_06` (`_list.scss:37-39`); the `n.` marker sits `control.text_list_ordinal_offset` before the item, inside that inset. A nested list keeps its `control.text_list_nested_indent` margin.

@@ -26,7 +26,7 @@ A multi-line field, the same family frame grown to `rows` value lines: a label r
 
 ### Decisions
 
-- **Height.** The frame carries no fixed height: `rows` (default 4) sizes the textarea and `minHeight` holds the field height as a floor. The frame's block padding is the room one `field_value` line takes centered in that floor - `(field_height - lineHeight) / 2`, which lands both references' own numbers (11 against 40/18, 16 against 56/24).
+- **Height.** The frame carries no fixed height: `rows` (default 4) sizes the textarea and `minHeight` holds the field height as a floor. The frame's top padding is the room one `field_value` line takes centered in that floor - `(field_height - lineHeight) / 2`, 11 against 40/18; the bottom padding is `spacing.spacing_03` (`_text-area.scss:43` `padding-block: 11px $spacing-03`).
 - **Counter.** `maxCount` shows a `count/maxCount` counter and caps the input length. `anatomy.field_counter` picks the seat: `label` puts it beside the label (in the label type and color), `message` puts it at the supporting row's end (in the helper type and color). Both seats mount whenever a counter exists and only the theme's is displayed, so the element tree never depends on the template.
 - **Icon.** The invalid icon sits absolute at the frame's top end (`spacing.spacing_04` down, the icon inset in), the way the measured reference anchors it.
 - **One element tree.** The label row and the message row keep their places under every template; placement moves styles, not elements.
@@ -165,6 +165,7 @@ TextArea draws a label, a multi-line field frame of `rows` value lines and a hel
 | `iconSize` | `control.field_icon_size` |
 | `iconInsetEnd` | `control.field_icon_inset` |
 | `iconInsetTop` | `spacing.spacing_04` |
+| `paddingBottom` | `spacing.spacing_03` |
 | `messageInset` | `control.field_message_inset` |
 
 Color leaves accepted: `background`, `layer_01`, `layer_02`, `layer_03`.

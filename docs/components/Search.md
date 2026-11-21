@@ -27,7 +27,9 @@ open and back to the trigger after an Escape collapse.
 system has no expandable search element, so its values are a Superloom
 decision - the roster's `superloom_decision` flag. Its disabled icon
 reads the indicator's disabled leaf, as the expandable member does, not
-the plain search's on-color-disabled.
+the plain search's on-color-disabled. The collapsed trigger fills
+`background_hover` on hover and `background_selected` while pressed
+(`_search.scss:396-402`).
 
 ### SearchSkeleton
 

@@ -5,6 +5,7 @@ export default Object.freeze({
   indent: 'control.text_list_indent',
   nestedIndent: 'control.text_list_nested_indent',
   nestedItemPadding: 'control.text_list_nested_item_padding',
+  orderedIndent: 'spacing.spacing_06',
   nestedMarkerOffset: 'control.text_list_nested_marker_offset',
   ordinalOffset: 'control.text_list_ordinal_offset',
   markerOffset: 'control.text_list_marker_offset'

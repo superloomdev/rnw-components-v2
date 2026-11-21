@@ -103,7 +103,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Button"
       },
       "description": "Button draws a pressable label with an optional trailing icon in nine kinds and six sizes, each kind's fill, label, border and elevation per state from the theme's button role cells, and shows press feedback as the theme's feedback.press choice; the tonal and elevated kinds taken from its second reference are a Superloom decision.",
@@ -136,7 +136,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Checkbox"
       },
       "description": "Checkbox draws a box holding a check or mixed mark icon beside its label, with a helper or error message below, its outline, fill, mark, state layer and focus ring per state from the theme's selection role cells.",
@@ -165,7 +165,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TextInput"
       },
       "description": "TextInput draws a label, a single-line field frame and a helper or error message, with the frame drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells.",
@@ -196,7 +196,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Select"
       },
       "description": "Select draws the field frame it shares with TextInput around a trigger that opens an option list below it, ending in the theme's own dropdown indicator glyph; every color, width, space and type set of the frame comes from the theme's field role cells.",
@@ -229,7 +229,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "IconButton"
       },
       "description": "IconButton is a square button that shows one icon token and a tooltip label.",
@@ -259,7 +259,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TextArea"
       },
       "description": "TextArea draws a label, a multi-line field frame of `rows` value lines and a helper or error message, with an optional character counter placed by anatomy.field_counter; the frame is drawn by feedback.field, the label placed by anatomy.label and every color, width, space and type set from the theme's field role cells plus the text_area member cells.",
@@ -291,7 +291,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Dropdown"
       },
       "description": "Dropdown draws the select family's field frame around a trigger that opens an option list drawn on the theme's list role cells, turning its indicator while open and marking the selected item as anatomy.list_selected_mark says; every color, width, space and type set of the frame comes from the theme's field role cells.",
@@ -325,7 +325,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "RadioButton"
       },
       "description": "RadioButton draws a labeled radio: a ring the theme sizes with control.radio_* member cells beside the selection family's outline, fill, layer and focus cells, with a dot drawn when checked; grouped radios share one selection with roving tab index.",
@@ -354,7 +354,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Toggle"
       },
       "description": "Toggle draws a labeled switch: a track and a sliding handle whose size follows anatomy.switch_handle, an optional checked mark and state text as anatomy.switch_state_text says, and every track, handle, outline, layer and focus color from the theme's switch role cells.",
@@ -387,7 +387,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Tag"
       },
       "description": "Tag draws a non-interactive pill holding an optional leading icon and one line of text, its container, label, icon and outline from the theme's tag role cells; a type prop picks one of the theme's ten hue cells; it is a molecule because it composes Icon.",
@@ -413,7 +413,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Tabs"
       },
       "description": "Tabs draws a row of tab labels on a track with roving focus; the selected tab draws the theme's indicator as its own bottom edge and the contained variant seats each label by the theme's tab_contained_* cells.",
@@ -442,7 +442,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Menu"
       },
       "description": "Menu is a list of menu items and separators that opens at a point, roves focus over the arrows and closes on Escape, Tab, outside press or choice.",
@@ -471,7 +471,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Modal"
       },
       "description": "Modal is a dialog on a scrim layer: a header, a body, an actions row and a close button, with Escape, focus trapping and outside-press dismissal.",
@@ -502,7 +502,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToastNotification"
       },
       "description": "ToastNotification is a status band: a marker and status icon, a title, a subtitle, an optional caption and action, and a close button.",
@@ -530,7 +530,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ProgressBar"
       },
       "description": "ProgressBar draws a labeled track with a determinate or indeterminate indicator and a helper or status line, the indeterminate motion chosen by anatomy.progress_indeterminate and every color, height and radius from the theme's progress role cells; it is a molecule because it composes Icon for its status marks.",
@@ -558,7 +558,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Tooltip"
       },
       "description": "Tooltip is a short label on a bubble beside the element it describes, opening after a delay on hover or focus (on press where there is no hover), placed against its anchor and flipped to stay in view.",
@@ -618,7 +618,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "AspectRatio"
       },
       "description": "AspectRatio sizes its box to one of nine width-to-height ratios through the platform's own aspect-ratio layout and draws nothing else; a text child renders through the Text atom.",
@@ -644,7 +644,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ButtonSet"
       },
       "description": "ButtonSet lays out buttons from item data in a row, or a column when stacked, each sharing the row up to the set's item width with the theme's separator line and gap between them; a fluid set orders its buttons by kind and stacks when its container is narrower than its items' floor; the second system has no button set, so its values are a Superloom decision.",
@@ -676,7 +676,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ButtonSkeleton"
       },
       "description": "ButtonSkeleton draws the skeleton placeholder at the button's height for its size, in the button's corner and the skeleton button width; the second system has no skeleton, so its values are a Superloom decision.",
@@ -706,7 +706,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ComboButton"
       },
       "description": "ComboButton joins a primary action Button and an icon button that opens a Menu of further actions, its chevron turning while the menu is open, the action no narrower than the combo floor less the trigger and no wider than the combo ceiling; the second system has no split button, so its values are a Superloom decision.",
@@ -738,7 +738,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DangerButton"
       },
       "description": "DangerButton draws a Button of the danger kind whatever kind it is given.",
@@ -768,7 +768,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "PrimaryButton"
       },
       "description": "PrimaryButton draws a Button of the primary kind unless it is given another kind.",
@@ -798,7 +798,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SecondaryButton"
       },
       "description": "SecondaryButton draws a Button of the secondary kind unless it is given another kind.",
@@ -857,7 +857,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "IconSkeleton"
       },
       "description": "IconSkeleton is the icon family's export of the placeholder SkeletonIcon draws, at the smallest icon size; the second system has no skeleton, so its values are a Superloom decision.",
@@ -885,7 +885,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Link"
       },
       "description": "Link draws a pressable run of text in the theme's link colors for rest, hover, press, visited and disabled, underlined while hovered, focused or pressed and always when inline, in three type sizes with an optional trailing icon; the second system has no link, so its values are a Superloom decision.",
@@ -913,7 +913,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SkeletonIcon"
       },
       "description": "SkeletonIcon draws the skeleton placeholder at the smallest icon size; the second system has no skeleton, so its values are a Superloom decision.",
@@ -941,7 +941,7 @@
       "tier": "atom",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SkeletonPlaceholder"
       },
       "description": "SkeletonPlaceholder draws a box in the theme's skeleton container color with a shimmer sweeping across it in the skeleton shimmer color, sized by its props or the placeholder size; the second system has no skeleton, so its values are a Superloom decision.",
@@ -969,7 +969,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SkeletonText"
       },
       "description": "SkeletonText draws one skeleton line of the theme's text height, a heading-height line, or a paragraph of lines whose widths step back by a fixed sequence, each followed by the skeleton text gap; the second system has no skeleton, so its values are a Superloom decision.",
@@ -997,7 +997,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "InlineLoading"
       },
       "description": "InlineLoading draws a status mark beside a status text - the small Loading while active, a success or error glyph once settled, nothing while inactive - in the inline-loading cells, reporting a finished status through onSuccess after its delay; the second system has no inline loading row, so its values there are a Superloom decision.",
@@ -1025,7 +1025,7 @@
       "tier": "atom",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Loading"
       },
       "description": "Loading draws a spinner whose arc turns in the theme's loading_indicator color on the loading size square - the small form with a loading_track circle - and, with the default overlay, mounts it centered on a full-viewport loading_scrim dialog in the overlay order; anatomy.loading_motion picks the turning svg ring or the second system's half-masked bordered-circle arc.",
@@ -1056,7 +1056,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ProgressIndicator"
       },
       "description": "ProgressIndicator lays its steps out in order as a list, mounting each with its complete or current state from currentIndex and the indicator's vertical, spaceEqually and onChange - the primary's clone math; the second system has no step indicator, so its values there are a Superloom decision.",
@@ -1084,7 +1084,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ProgressIndicatorSkeleton"
       },
       "description": "ProgressIndicatorSkeleton draws the indicator's skeleton form - the primary's fixed four incomplete steps, each the dashed glyph, a label-sized skeleton block and the connector line on the step's geometry; the second system has no skeleton primitives, so its values there are a Superloom decision.",
@@ -1112,7 +1112,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ProgressStep"
       },
       "description": "ProgressStep draws one step of a ProgressIndicator - a state glyph beside the label and an optional secondary line over the connector line, the label underlining while a clickable step is hovered or pressed - and must be composed inside ProgressIndicator; the second system has no step part, so its values there are a Superloom decision.",
@@ -1143,7 +1143,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DismissibleTag"
       },
       "description": "DismissibleTag draws a Tag with a trailing close seat - a pressable cross in the tag cells that fires onClose - and reports itself as a dismissible control; it is a molecule because it composes Tag and IconButton.",
@@ -1171,7 +1171,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "OperationalTag"
       },
       "description": "OperationalTag draws a Tag as an action - the whole pill is pressable, its text reading the interactive cells and the pressed state the active layer cell, firing onClick; it is a molecule because it composes Tag.",
@@ -1201,7 +1201,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SelectableTag"
       },
       "description": "SelectableTag draws a Tag as a toggle - pressable, aria-pressed, with a selected-mark seat mounted under every template that draws the mark only where the theme's selected-mark anatomy shows it, its pressed state reading the selectable active layer; it is a molecule because it composes Tag.",
@@ -1232,7 +1232,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TagSkeleton"
       },
       "description": "TagSkeleton draws the tag's skeleton form - a pill-sized skeleton block on the tag's height and radius cells - as a stand-in while a tag loads.",
@@ -1258,7 +1258,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "CheckboxGroup"
       },
       "description": "CheckboxGroup gathers checkboxes under a legend in a vertical stack, drawing the group's invalid edge on every member and the helper or error message below while a disabled group disables every member; the second system has no checkbox group, so its values are a Superloom decision.",
@@ -1289,7 +1289,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "CheckboxSkeleton"
       },
       "description": "A label-only loading bar with the checkbox row's empty box inset.",
@@ -1315,7 +1315,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Form"
       },
       "description": "Form groups a set of fields into one form.",
@@ -1341,7 +1341,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FormGroup"
       },
       "description": "FormGroup gathers related fields under a legend, disabled or invalid as one, and must be composed inside Form.",
@@ -1369,7 +1369,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FormItem"
       },
       "description": "FormItem stacks one field's parts in a column.",
@@ -1395,7 +1395,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FormLabel"
       },
       "description": "FormLabel draws a field label in the theme's label type and color and must be composed inside Form.",
@@ -1423,7 +1423,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Heading"
       },
       "description": "Heading draws a heading in the theme's type set for its level, one level deeper inside each Section.",
@@ -1449,7 +1449,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Section"
       },
       "description": "Section raises the heading level of every Heading inside it by one, up to six.",
@@ -1475,7 +1475,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "NumberInput"
       },
       "description": "NumberInput edits numeric text with bounded step actions; the second reference has no custom steppers, so their geometry is a Superloom decision.",
@@ -1510,7 +1510,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "NumberInputSkeleton"
       },
       "description": "NumberInputSkeleton composes the field skeleton at the number field's minimum width; the second system has no skeleton, so its values are a Superloom decision.",
@@ -1538,7 +1538,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "RadioButtonGroup"
       },
       "description": "RadioButtonGroup gathers radio buttons under a legend in a row or a stack, sharing one selection with a single roving tab stop and arrow navigation, and drawing the helper or error message below; the second system has no radio group, so its values are a Superloom decision.",
@@ -1569,7 +1569,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "RadioButtonSkeleton"
       },
       "description": "A label-only loading bar at the radio row's height, with no circle.",
@@ -1595,7 +1595,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ExpandableSearch"
       },
       "description": "ExpandableSearch opens a search field from an icon action; the second system has no expandable search element, so its values are a Superloom decision.",
@@ -1628,7 +1628,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Search"
       },
       "description": "Search is an accessibly named search field with a magnifier and a clear action.",
@@ -1660,7 +1660,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SearchSkeleton"
       },
       "description": "SearchSkeleton draws the search field's placeholder; the second system has no skeleton, so its values are a Superloom decision.",
@@ -1688,7 +1688,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Slider"
       },
       "description": "A bounded numeric value adjusted by a draggable handle, keyboard controls or its optional number field.",
@@ -1720,7 +1720,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SliderSkeleton"
       },
       "description": "A non-interactive placeholder for a slider label, endpoints and track.",
@@ -1746,7 +1746,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HStack"
       },
       "description": "HStack is a Stack fixed to a row.",
@@ -1772,7 +1772,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Stack"
       },
       "description": "Stack lays its children out in a column or a row with a gap from the theme's spacing scale.",
@@ -1798,7 +1798,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "VStack"
       },
       "description": "VStack is a Stack fixed to a column.",
@@ -1824,7 +1824,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToggleSkeleton"
       },
       "description": "ToggleSkeleton draws a circle and a short bar as the toggle's placeholder; the second system has no skeleton, so its values are a Superloom decision.",
@@ -1852,7 +1852,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "PasswordInput"
       },
       "description": "PasswordInput is a text field with an action that reveals or hides its value without changing its label or validation.",
@@ -1885,7 +1885,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TextAreaSkeleton"
       },
       "description": "TextAreaSkeleton draws a label placeholder and a fixed-height text-area placeholder; the second system has no skeleton, so its values are a Superloom decision.",
@@ -1913,7 +1913,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TextInputSkeleton"
       },
       "description": "TextInputSkeleton draws a label placeholder and a field-sized placeholder; the second system has no skeleton, so its values are a Superloom decision.",
@@ -1941,7 +1941,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TimePicker"
       },
       "description": "TimePicker arranges a text time field and optional compact selects; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.",
@@ -1975,7 +1975,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TimePickerSelect"
       },
       "description": "TimePickerSelect draws one compact time option selector and must be composed inside TimePicker; its second-system values are a Superloom decision and the clock-dial picker is a deferred gap.",
@@ -2010,7 +2010,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DropdownSkeleton"
       },
       "description": "A fixed-height loading placeholder for a dropdown, with an optional label bar.",
@@ -2036,7 +2036,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SelectSkeleton"
       },
       "description": "A fixed-height loading placeholder for a select field, with an optional label bar.",
@@ -2062,7 +2062,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MultiSelect"
       },
       "description": "A multiple-choice field with value-keyed checkbox options and a clearable selection count; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.",
@@ -2097,7 +2097,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FilterableMultiSelect"
       },
       "description": "A multiple-choice field whose editable query filters options without discarding selections; the second system has no multiple-choice field, so its count member's treatment is a Superloom decision.",
@@ -2132,7 +2132,7 @@
       "tier": "provider",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Layer"
       },
       "description": "Layer raises the surface level of everything inside it, so the theme's layered surfaces, fields and borders step up one level, and paints the new level's background when asked; the second system has no layer element, so its level values are a Superloom decision.",
@@ -2160,7 +2160,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SelectItem"
       },
       "description": "SelectItem draws one option of a Select's open list from the theme's list cells; it must be composed inside Select.",
@@ -2192,7 +2192,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SelectItemGroup"
       },
       "description": "SelectItemGroup draws a group label row above its SelectItems inside a Select's open list and disables them together; it must be composed inside Select; neither reference system draws an option group header of its own, so its values are a Superloom decision.",
@@ -2225,7 +2225,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ComboBox"
       },
       "description": "ComboBox is a single-choice field whose editable input filters the open option list as you type, with a clear action once a value is chosen.",
@@ -2287,7 +2287,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Popover"
       },
       "description": "Popover anchors a floating surface with an optional caret to its trigger and leaves its open state to the caller.",
@@ -2316,7 +2316,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "PopoverContent"
       },
       "description": "PopoverContent is the floating body of a Popover; it must be composed inside Popover; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
@@ -2348,7 +2348,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DefinitionTooltip"
       },
       "description": "DefinitionTooltip underlines a term and shows its definition in a small inverse bubble when the term is pressed, or hovered when asked.",
@@ -2377,7 +2377,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Toggletip"
       },
       "description": "Toggletip pairs a label with an information button that toggles an inverse bubble of text and up to two actions.",
@@ -2406,7 +2406,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToggletipLabel"
       },
       "description": "ToggletipLabel is the text beside a Toggletip's button; it must be composed inside Toggletip.",
@@ -2437,7 +2437,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToggletipButton"
       },
       "description": "ToggletipButton is the information button that opens and closes a Toggletip; it must be composed inside Toggletip.",
@@ -2468,7 +2468,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToggletipContent"
       },
       "description": "ToggletipContent is the body text of a Toggletip's bubble; it must be composed inside Toggletip; it has no upstream visual reference because upstream draws it only inside an open parent, so it is measured through the parent's samples.",
@@ -2500,7 +2500,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ToggletipActions"
       },
       "description": "ToggletipActions lays out a Toggletip's link and button at the bubble's base; it must be composed inside Toggletip and has no upstream visual reference.",
@@ -2532,7 +2532,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
-        "version": "2.99.0",
+        "version": "2.103.0",
         "export": "TagSet"
       },
       "description": "TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag that lists them, with a searchable dialog when there are many.",
@@ -2558,7 +2558,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Tab"
       },
       "description": "Tab draws one item of a tab list - its label, optional icon and secondary line, and its selected and disabled states; it must be composed inside Tabs.",
@@ -2589,7 +2589,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabList"
       },
       "description": "TabList lays out a row of tabs with the selection indicator, keyboard movement, optional close buttons and overflow scrolling; it must be composed inside Tabs.",
@@ -2620,7 +2620,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabPanel"
       },
       "description": "TabPanel holds the content for one tab and is labelled by it; it must be composed inside Tabs; no upstream visual reference.",
@@ -2652,7 +2652,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabPanels"
       },
       "description": "TabPanels shows the panel of the selected tab and keeps the others linked but hidden; it must be composed inside Tabs; no upstream visual reference.",
@@ -2684,7 +2684,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "IconTab"
       },
       "description": "IconTab is an icon-only tab whose name appears in a tooltip.",
@@ -2713,7 +2713,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabsVertical"
       },
       "description": "TabsVertical lists tabs in a column beside their panels, with scroll fades when the list is long.",
@@ -2742,7 +2742,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabListVertical"
       },
       "description": "TabListVertical is the column of tabs inside TabsVertical; it must be composed inside Tabs; no upstream visual reference.",
@@ -2774,7 +2774,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TabsSkeleton"
       },
       "description": "TabsSkeleton draws the placeholder shape of a tab list while its content loads.",
@@ -2803,7 +2803,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ContentSwitcher"
       },
       "description": "ContentSwitcher is a row of segments where exactly one is selected, for switching between views of the same content.",
@@ -2836,7 +2836,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Switch"
       },
       "description": "Switch is one text segment of a ContentSwitcher; no upstream visual reference.",
@@ -2869,7 +2869,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "IconSwitch"
       },
       "description": "IconSwitch is one icon segment of a ContentSwitcher whose name appears in a tooltip; it must be composed inside ContentSwitcher; no upstream visual reference.",
@@ -2898,7 +2898,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuButton"
       },
       "description": "MenuButton is a button that opens a Menu of actions below or above it, its chevron turning while the menu is open.",
@@ -2927,7 +2927,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuItem"
       },
       "description": "MenuItem is one action of a Menu, with an optional icon and shortcut, a danger kind and a submenu of further items; it must be composed inside Menu.",
@@ -2958,7 +2958,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuItemDivider"
       },
       "description": "MenuItemDivider is a rule that separates groups of items in a Menu; it must be composed inside Menu.",
@@ -2989,7 +2989,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuItemGroup"
       },
       "description": "MenuItemGroup names a run of a Menu's items for assistive technology without drawing a heading; it must be composed inside Menu.",
@@ -3020,7 +3020,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuItemRadioGroup"
       },
       "description": "MenuItemRadioGroup is a named set of Menu items of which exactly one is selected and marked; it must be composed inside Menu.",
@@ -3051,7 +3051,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "MenuItemSelectable"
       },
       "description": "MenuItemSelectable is a Menu item that toggles on and off and shows a mark while it is on; it must be composed inside Menu.",
@@ -3082,7 +3082,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "OverflowMenu"
       },
       "description": "OverflowMenu is a square icon button that opens a panel of options joined to it, for actions that do not fit beside the content.",
@@ -3111,7 +3111,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "OverflowMenuItem"
       },
       "description": "OverflowMenuItem is one option row of an OverflowMenu, with an optional rule above it and a danger kind; it must be composed inside OverflowMenu.",
@@ -3140,7 +3140,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "CopyButton"
       },
       "description": "CopyButton is an icon button whose tooltip confirms a copy for a moment after it is pressed.",
@@ -3166,7 +3166,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SkipToContent"
       },
       "description": "A visually hidden link that appears on keyboard focus and moves focus past the page's navigation to its main content; web-only, because native screens have no tab order to skip.",
@@ -3194,7 +3194,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ComposedModal"
       },
       "description": "ComposedModal is the framed dialog on its own scrim layer composing ModalHeader, ModalBody and an optional ModalFooter - passive without one - with Escape, focus trapping and outside-press dismissal.",
@@ -3225,7 +3225,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ModalHeader"
       },
       "description": "ModalHeader is the header band of a ComposedModal - the eyebrow label, the heading and the close seat; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
@@ -3257,7 +3257,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ModalBody"
       },
       "description": "ModalBody is the content region of a ComposedModal - the prose body, scrollable on demand and gutterless for a form; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
@@ -3289,7 +3289,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ModalFooter"
       },
       "description": "ModalFooter is the action row of a ComposedModal - a primary action plus a secondary action or two; it must be composed inside ComposedModal, with no upstream visual reference of its own - it is measured through ComposedModal's samples.",
@@ -3323,7 +3323,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "InlineNotification"
       },
       "description": "InlineNotification is the status band that sits in the page flow: a marker and kind glyph, a title, an optional subtitle and a close button.",
@@ -3349,7 +3349,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ActionableNotification"
       },
       "description": "ActionableNotification is a status notification carrying an action: the `inline` form seats a ghost action beside the title and subtitle, the toast form a tertiary-inverse action below them with a close button.",
@@ -3375,7 +3375,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Callout"
       },
       "description": "Callout is the persistent inline message - marker, kind glyph, title and subtitle with the ghost action, no close button and no dialog role.",
@@ -3401,7 +3401,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "NotificationActionButton"
       },
       "description": "NotificationActionButton is a notification's action button - the inline ghost or the toast tertiary-inverse form; it must be composed inside ActionableNotification, with no upstream visual reference of its own - it is measured through the notification's samples.",
@@ -3430,7 +3430,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Breadcrumb"
       },
       "description": "Breadcrumb draws the page trail: a row of links separated by slashes, the current page unlinked and an `{ overflow: [...] }` entry collapsing to a menu, with a trailing slash unless `noTrailingSlash`.",
@@ -3456,7 +3456,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "BreadcrumbItem"
       },
       "description": "BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page or the overflow-menu seat; it must be composed inside Breadcrumb, with no upstream visual reference of its own - it is measured through Breadcrumb's samples.",
@@ -3485,7 +3485,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "BreadcrumbSkeleton"
       },
       "description": "BreadcrumbSkeleton draws the breadcrumb's loading form - `items` shimmer bars at the breadcrumb size with the trail's separators and `noTrailingSlash` dropping the last.",
@@ -3511,7 +3511,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Accordion"
       },
       "description": "Accordion stacks headed sections that open and close independently, each with a chevron and a divider rule.",
@@ -3540,7 +3540,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "AccordionItem"
       },
       "description": "AccordionItem is one headed section of an Accordion with its chevron, title and collapsible content; it must be composed inside Accordion and has no upstream visual reference.",
@@ -3572,7 +3572,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "AccordionSkeleton"
       },
       "description": "AccordionSkeleton draws the placeholder shape of an accordion, one section open, while its content loads.",
@@ -3601,7 +3601,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "UnorderedList"
       },
       "description": "A bulleted list with en-dash markers; nested lists indent and mark squares.",
@@ -3627,7 +3627,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "OrderedList"
       },
       "description": "A numbered list with `n.` markers (lower-latin `a.` nested; `native` uses the browser's decimal marker).",
@@ -3653,7 +3653,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ListItem"
       },
       "description": "One row of a text list with its marker; it must be composed inside UnorderedList or OrderedList, with no upstream visual reference of its own - it is measured through the lists' samples.",
@@ -3682,7 +3682,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ContainedList"
       },
       "description": "ContainedList is a labelled list of rows inside a container, with a sticky header, an optional search and rulers between rows.",
@@ -3711,7 +3711,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ContainedListItem"
       },
       "description": "ContainedListItem is one row of a ContainedList, optionally pressable, with an icon and an end action; it must be composed inside ContainedList, with no upstream visual reference of its own - it is measured through the list's samples.",
@@ -3743,7 +3743,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
-        "version": "2.99.0",
+        "version": "2.103.0",
         "export": "ProductiveCard"
       },
       "description": "Card is a productive card with a header, a body and actions in its header or footer.",
@@ -3769,7 +3769,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/ibm-products",
-        "version": "2.99.0",
+        "version": "2.103.0",
         "export": "EmptyState"
       },
       "description": "EmptyState is a title, supporting text, an action and a link under an optional illustration.",
@@ -3795,7 +3795,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Column"
       },
       "description": "Column is one cell of the layout grid, spanning a number of the breakpoint's columns with the gutter halves the family context carries; it must be composed inside Grid or Row, with no upstream visual reference of its own - it is measured through the Grid and Row samples.",
@@ -3824,7 +3824,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Grid"
       },
       "description": "Grid is the layout grid that holds rows of columns sized per breakpoint.",
@@ -3850,7 +3850,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Row"
       },
       "description": "Row is one row of a Grid; it must be composed inside Grid.",
@@ -3878,7 +3878,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Pagination"
       },
       "description": "Pagination is a bar that pages through a list, with a page-size select, item counts and previous and next buttons.",
@@ -3906,7 +3906,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "PaginationNav"
       },
       "description": "PaginationNav is a row of page buttons with overflow pickers and previous and next buttons.",
@@ -3934,7 +3934,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "PaginationSkeleton"
       },
       "description": "PaginationSkeleton is the loading placeholder of a Pagination bar.",
@@ -3960,7 +3960,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "RadioTile"
       },
       "description": "RadioTile is a selectable tile that acts as one radio option inside a TileGroup.",
@@ -3989,7 +3989,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ClickableTile"
       },
       "description": "ClickableTile is a tile that acts as one link or press target, with an optional corner icon.",
@@ -4017,7 +4017,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "ExpandableTile"
       },
       "description": "ExpandableTile is a tile that reveals its below-the-fold content when expanded from its chevron.",
@@ -4046,7 +4046,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SelectableTile"
       },
       "description": "SelectableTile is a tile that toggles its own selection like a checkbox, marked in its corner.",
@@ -4075,7 +4075,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Tile"
       },
       "description": "Tile is a container on the layer that groups related content.",
@@ -4101,7 +4101,7 @@
       "tier": "molecule",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TileGroup"
       },
       "description": "TileGroup is a labelled group of RadioTiles holding one selected value.",
@@ -4130,7 +4130,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DatePicker"
       },
       "description": "DatePicker picks a date or a date range from a calendar under one or two date inputs.",
@@ -4163,7 +4163,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DatePickerInput"
       },
       "description": "DatePickerInput is one date field of a DatePicker - the label, the text field at the width the picker's type assigns and the calendar icon; it must be composed inside DatePicker, with no upstream visual reference of its own - it is measured through DatePicker's samples.",
@@ -4198,7 +4198,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DatePickerSkeleton"
       },
       "description": "DatePickerSkeleton is the loading placeholder of a DatePicker: a label bar and one or two input bars.",
@@ -4224,7 +4224,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Filename"
       },
       "description": "Filename is the status seat of a file row: a small spinner while uploading, a close button to remove the file, or a checkmark once complete.",
@@ -4252,7 +4252,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FileUploader"
       },
       "description": "FileUploader lists the files a person picks under a title, a description and the picking button.",
@@ -4280,7 +4280,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FileUploaderButton"
       },
       "description": "FileUploaderButton is a button that opens the file chooser and reports the chosen files.",
@@ -4308,7 +4308,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FileUploaderDropContainer"
       },
       "description": "FileUploaderDropContainer is a dashed area that takes dropped files or opens the file chooser when pressed.",
@@ -4336,7 +4336,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FileUploaderItem"
       },
       "description": "FileUploaderItem is one chosen file's row: its name, its status seat and, when invalid, the error message.",
@@ -4364,7 +4364,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "FileUploaderSkeleton"
       },
       "description": "FileUploaderSkeleton is the loading placeholder of a FileUploader: a title bar, a description bar and a button placeholder.",
@@ -4390,7 +4390,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/ibm-products",
-        "version": "2.99.0",
+        "version": "2.103.0",
         "export": "PageHeader"
       },
       "description": "PageHeader is the page header: breadcrumbs, a title row with actions, subtitle and tags, collapsing on scroll.",
@@ -4416,7 +4416,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/ibm-products",
-        "version": "2.99.0",
+        "version": "2.103.0",
         "export": "Tearsheet"
       },
       "description": "Tearsheet is a large dialog for a focused task: a header, an optional influencer panel, the main content and a row of actions.",
@@ -4442,7 +4442,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TreeNode"
       },
       "description": "TreeNode is one row of a TreeView - an expandable parent or a selectable leaf with an optional icon, indented by its depth; it must be composed inside TreeView, with no upstream visual reference of its own - it is measured through the tree's samples.",
@@ -4474,7 +4474,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TreeView"
       },
       "description": "TreeView is a hierarchical list of nodes that expand, collapse and select, one at a time or several, walked by the arrow keys under an optional visible label.",
@@ -4503,7 +4503,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Content"
       },
       "description": "Content is a component in the Header family.",
@@ -4532,7 +4532,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Header"
       },
       "description": "Header is a component in the Header family.",
@@ -4561,7 +4561,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderContainer"
       },
       "description": "HeaderContainer is a component in the Header family.",
@@ -4590,7 +4590,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderGlobalAction"
       },
       "description": "HeaderGlobalAction is a component in the Header family; it must be composed inside Header.",
@@ -4621,7 +4621,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderGlobalBar"
       },
       "description": "HeaderGlobalBar is a component in the Header family; it must be composed inside Header.",
@@ -4652,7 +4652,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderMenu"
       },
       "description": "HeaderMenu is a component in the Header family; it must be composed inside Header.",
@@ -4683,7 +4683,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderMenuButton"
       },
       "description": "HeaderMenuButton is a component in the Header family; it must be composed inside Header.",
@@ -4714,7 +4714,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderMenuItem"
       },
       "description": "HeaderMenuItem is a component in the Header family; it must be composed inside Header.",
@@ -4745,7 +4745,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderName"
       },
       "description": "HeaderName is a component in the Header family; it must be composed inside Header.",
@@ -4776,7 +4776,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderNavigation"
       },
       "description": "HeaderNavigation is a component in the Header family; it must be composed inside Header.",
@@ -4807,7 +4807,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderPanel"
       },
       "description": "HeaderPanel is a component in the Header family; it must be composed inside Header.",
@@ -4838,7 +4838,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "HeaderSideNavItems"
       },
       "description": "HeaderSideNavItems is a component in the Header family; it must be composed inside Header.",
@@ -4869,7 +4869,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNav"
       },
       "description": "SideNav is a component in the Navigation family.",
@@ -4898,7 +4898,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavDetails"
       },
       "description": "SideNavDetails is a component in the Navigation family; it must be composed inside SideNav.",
@@ -4929,7 +4929,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavDivider"
       },
       "description": "SideNavDivider is a component in the Navigation family; it must be composed inside SideNav.",
@@ -4960,7 +4960,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavFooter"
       },
       "description": "SideNavFooter is a component in the Navigation family; it must be composed inside SideNav.",
@@ -4991,7 +4991,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavHeader"
       },
       "description": "SideNavHeader is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5022,7 +5022,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavIcon"
       },
       "description": "SideNavIcon is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5053,7 +5053,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavItem"
       },
       "description": "SideNavItem is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5084,7 +5084,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavItems"
       },
       "description": "SideNavItems is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5115,7 +5115,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavLink"
       },
       "description": "SideNavLink is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5146,7 +5146,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavLinkText"
       },
       "description": "SideNavLinkText is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5177,7 +5177,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavMenu"
       },
       "description": "SideNavMenu is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5208,7 +5208,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "SideNavMenuItem"
       },
       "description": "SideNavMenuItem is a component in the Navigation family; it must be composed inside SideNav.",
@@ -5239,7 +5239,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListBody"
       },
       "description": "StructuredListBody is a component in the StructuredList family; it must be composed inside StructuredListWrapper.",
@@ -5267,7 +5267,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListCell"
       },
       "description": "StructuredListCell is a component in the StructuredList family; it must be composed inside StructuredListWrapper.",
@@ -5295,7 +5295,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListHead"
       },
       "description": "StructuredListHead is a component in the StructuredList family; it must be composed inside StructuredListWrapper.",
@@ -5323,7 +5323,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListInput"
       },
       "description": "StructuredListInput is a component in the StructuredList family; it must be composed inside StructuredListWrapper.",
@@ -5351,7 +5351,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListRow"
       },
       "description": "StructuredListRow is a component in the StructuredList family; it must be composed inside StructuredListWrapper.",
@@ -5379,7 +5379,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListSkeleton"
       },
       "description": "StructuredListSkeleton is a component in the StructuredList family.",
@@ -5405,7 +5405,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "StructuredListWrapper"
       },
       "description": "StructuredListWrapper is a component in the StructuredList family.",
@@ -5431,7 +5431,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DataTable"
       },
       "description": "DataTable is a component in the DataTable family.",
@@ -5460,7 +5460,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "DataTableSkeleton"
       },
       "description": "DataTableSkeleton is a component in the DataTable family.",
@@ -5489,7 +5489,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "Table"
       },
       "description": "Table is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5520,7 +5520,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableActionList"
       },
       "description": "TableActionList is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5551,7 +5551,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableBatchAction"
       },
       "description": "TableBatchAction is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5582,7 +5582,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableBatchActions"
       },
       "description": "TableBatchActions is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5613,7 +5613,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableBody"
       },
       "description": "TableBody is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5644,7 +5644,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableCell"
       },
       "description": "TableCell is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5675,7 +5675,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableContainer"
       },
       "description": "TableContainer is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5706,7 +5706,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableExpandedRow"
       },
       "description": "TableExpandedRow is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5737,7 +5737,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableExpandHeader"
       },
       "description": "TableExpandHeader is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5768,7 +5768,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableExpandRow"
       },
       "description": "TableExpandRow is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5799,7 +5799,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableHead"
       },
       "description": "TableHead is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5830,7 +5830,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableHeader"
       },
       "description": "TableHeader is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5861,7 +5861,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableRow"
       },
       "description": "TableRow is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5892,7 +5892,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableSelectAll"
       },
       "description": "TableSelectAll is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5923,7 +5923,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableSelectRow"
       },
       "description": "TableSelectRow is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5954,7 +5954,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableToolbar"
       },
       "description": "TableToolbar is a component in the DataTable family; it must be composed inside DataTable.",
@@ -5985,7 +5985,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableToolbarAction"
       },
       "description": "TableToolbarAction is a component in the DataTable family; it must be composed inside DataTable.",
@@ -6016,7 +6016,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableToolbarContent"
       },
       "description": "TableToolbarContent is a component in the DataTable family; it must be composed inside DataTable.",
@@ -6047,7 +6047,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableToolbarMenu"
       },
       "description": "TableToolbarMenu is a component in the DataTable family; it must be composed inside DataTable.",
@@ -6078,7 +6078,7 @@
       "tier": "composite",
       "source": {
         "package": "@carbon/react",
-        "version": "1.115.0",
+        "version": "1.120.0",
         "export": "TableToolbarSearch"
       },
       "description": "TableToolbarSearch is a component in the DataTable family; it must be composed inside DataTable.",

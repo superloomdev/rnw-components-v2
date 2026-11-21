@@ -96,16 +96,17 @@ describe('TextArea: every sample state under every template', function () {
         const disabled = props.disabled === true;
         const invalid = props.invalid === true && !disabled;
         const parts = await renderField(registryFor(template), props);
-        const paddingBlock = (t['control.field_height'] - t['type.field_value'].lineHeight) / 2;
+        const paddingTop = (t['control.field_height'] - t['type.field_value'].lineHeight) / 2;
         // An edge drawn on every side costs no room in the content box
         const edgeBlock = t['feedback.field'] === 'outline' ? t['control.field_outline_width'] : 0;
 
         // The frame: the theme's field frame, grown to `rows` lines with one
-        // field height as its minimum
+        // field height as its minimum; the top padding centers one line on
+        // it, the bottom padding is its own step
         assert.equal(parts.frame.style.minHeight, t['control.field_height'] + 'px');
         assert.equal(parts.frame.style.height, '');
-        assert.equal(parts.frame.style.paddingTop, (paddingBlock - edgeBlock) + 'px');
-        assert.equal(parts.frame.style.paddingBottom, (paddingBlock - edgeBlock) + 'px');
+        assert.equal(parts.frame.style.paddingTop, (paddingTop - edgeBlock) + 'px');
+        assert.equal(parts.frame.style.paddingBottom, (t['spacing.spacing_03'] - edgeBlock) + 'px');
         assert.equal(parts.input.tagName, 'TEXTAREA');
         assert.equal(parts.input.getAttribute('rows'), '4');
         assert.equal(parts.input.style.fontSize, t['type.text_area_value'].fontSize + 'px');

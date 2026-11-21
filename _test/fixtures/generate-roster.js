@@ -14,9 +14,9 @@ const repoRoot = path.resolve(testDir, '..');
 const outFile = path.join(repoRoot, 'data', 'roster.candidate.json');
 
 const PINS = {
-  '@carbon/react': '1.115.0',
+  '@carbon/react': '1.120.0',
   '@carbon/react-native': '9.0.7',
-  '@carbon/ibm-products': '2.99.0',
+  '@carbon/ibm-products': '2.103.0',
 };
 
 const PRODUCT_FAMILIES = [

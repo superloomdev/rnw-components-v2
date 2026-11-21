@@ -61,19 +61,20 @@ export default function TextArea (ctx) {
       trailing: invalid
     });
 
-    // The frame's own delta: no fixed height, one line of block padding
-    // centered on the minimum, and the icon anchored at the frame's top.
+    // The frame's own delta: no fixed height, a top padding that centers
+    // one line on the minimum, the bottom padding's own step, and the icon
+    // anchored at the frame's top.
     // Where the frame draws its edge on every side (the outline mode), the
     // drawn width comes back out of the block padding: upstream draws that
     // edge free of the content box, so a real border would grow the frame
-    const paddingBlock = (minHeight - ctx.typeStyle('field_value').lineHeight) / 2;
+    const paddingTop = (minHeight - ctx.typeStyle('field_value').lineHeight) / 2;
     const edgeBlock = parseFloat(presentation.frame.borderWidth) || 0;
     const frame = Object.assign({}, presentation.frame);
     delete frame.height;
     frame.alignItems = 'flex-start';
     frame.minHeight = minHeight;
-    frame.paddingBottom = paddingBlock - edgeBlock;
-    frame.paddingTop = paddingBlock - edgeBlock;
+    frame.paddingBottom = ctx.metric('TextArea', 'paddingBottom') - edgeBlock;
+    frame.paddingTop = paddingTop - edgeBlock;
 
     // The label row is the label's parent and it sits at the frame's top,
     // while the family's floating top is measured from the root (which keeps
