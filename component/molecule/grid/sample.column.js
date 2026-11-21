@@ -5,6 +5,10 @@
 // on native a cell's body in a scrolling walk grew past 189000 points and
 // never settled (iOS walk, M6 gate).
 
+// The grid fills its container (`inline-size: 100%`), the reference's 1280;
+// a shrink-to-fit cell gives it no width to divide (native gate 44882105186)
+export const FRAME = Object.freeze({ width: 1280 });
+
 // The parent holds the Column
 const PARENT = Object.freeze({
   component: 'Grid',

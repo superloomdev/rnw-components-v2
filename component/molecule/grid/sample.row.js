@@ -6,6 +6,10 @@
 // grid), so the wrapper stays on our page and the grid's props reach the
 // reference as `referenceProps`.
 
+// The grid fills its container (`inline-size: 100%`), the reference's 1280;
+// a shrink-to-fit cell gives it no width to divide (native gate 44882105186)
+export const FRAME = Object.freeze({ width: 1280 });
+
 // The parent holds the Row and its columns
 const PARENT = Object.freeze({
   component: 'Grid',
