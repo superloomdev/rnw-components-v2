@@ -5,7 +5,9 @@
 // and pressed must match the reference part for part (`harness/fidelity.js`:
 // geometry, type, colors with their opacity, sampled paint, and the ring
 // and shadow pixels at the anchor part), and stay within the row's
-// diff_budget perceptually. No expected gap is set aside: a difference is a
+// diff_budget perceptually. A reference with `narrow` ({ window, width })
+// runs the `narrow` set too: both pages in that window, each body at that
+// width, for a rule read from the window. No expected gap is set aside: a difference is a
 // template, component or harness defect. A masked omission (`second.omit`,
 // proven undrawn upstream by its probe) is left out of the pixels, and a
 // mask that would cover the anchor part fails.
@@ -37,7 +39,7 @@ const NO_PRIMARY = new Set(getRoster().rows.filter(function (row) {
 test.describe('fidelity', function () {
 
   for (const component of components) {
-    const sets = ['primary'];
+    const sets = component.reference.narrow ? ['primary', 'narrow'] : ['primary'];
     for (const set of sets) {
       for (const scheme of SCHEMES) {
         test(component.name + ' / ' + set + ' / ' + scheme + ': matches the reference in every state', async function ({ page }) {

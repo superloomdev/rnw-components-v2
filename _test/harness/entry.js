@@ -50,6 +50,8 @@ const form = resolveForm(window.innerWidth);
 const adaptive = params.get('adaptive') === 'fixed' ? 'fixed' : 'auto';
 const textScale = params.get('textScale') === null ? undefined : parseFloat(params.get('textScale'));
 const rtl = params.get('dir') === 'rtl';
+// A narrow fidelity set (`reference.narrow`) draws the measured body at its own width
+const bodyWidth = params.get('width') === null ? null : Number(params.get('width'));
 if (rtl) {
   document.documentElement.dir = 'rtl';
 }
@@ -151,7 +153,7 @@ function bodyStyle (name) {
 
   const reference = references[name];
   if (measuring && reference && reference.body) {
-    return frameStyle(reference.body);
+    return frameStyle(bodyWidth === null ? reference.body : Object.assign({}, reference.body, { width: bodyWidth }));
   }
   if (frames[name]) {
     return frameStyle(frames[name]);

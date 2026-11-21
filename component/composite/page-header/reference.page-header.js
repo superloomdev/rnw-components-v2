@@ -5,6 +5,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 1280 }),
+  // Below md the header follows its action-bar rules, read from the window
+  // (`PageHeader.js:207` `innerWidth / 16 < md`, `_page-header.scss:283-297`): the
+  // narrow set draws a 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     // A sample names a row's list only when the state draws it
     return React.createElement(upstream.PageHeader, {

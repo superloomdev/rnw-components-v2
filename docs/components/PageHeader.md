@@ -100,6 +100,7 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 | `breadcrumbRatio` | `control.page_header_breadcrumb_ratio` |
 | `bufferTitle` | `control.page_header_buffer_title` |
 | `gutter` | `grid.gutter` |
+| `narrowGap` | `spacing.spacing_05` |
 | `paddingInline` | `control.page_header_padding_inline` |
 | `rowGap` | `control.page_header_row_gap` |
 | `subtitleGap` | `control.page_header_subtitle_gap` |
@@ -109,6 +110,7 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 | `titleIconGap` | `control.page_header_title_icon_gap` |
 | `titleIconOffset` | `control.page_header_title_icon_offset` |
 | `titleIconSize` | `control.page_header_title_icon_size` |
+| `titleLift` | `spacing.spacing_01` |
 | `titleMinHeight` | `control.page_header_title_min_height` |
 | `titleOffsetNoBreadcrumb` | `control.page_header_title_offset_no_breadcrumb` |
 

@@ -22,7 +22,8 @@ Open the showcase for a template and wait until it reports ready.
                               { scheme }: 'light' (default) or 'dark';
                               { hosted }: false renders a staged cell without its
                               overlay host, the way a measurement page compares
-                              against a viewport-relative upstream
+                              against a viewport-relative upstream;
+                              { width }: the measured body's width (a narrow set)
 
 @return {Promise<Object>} - { status, consoleErrors, pageErrors }
 *********************************************************************/
@@ -47,7 +48,8 @@ export async function openShowcase (page, template, component, options) {
     (options && options.adaptive ? '&adaptive=' + options.adaptive : '') +
     (options && options.textScale !== undefined ? '&textScale=' + options.textScale : '') +
     (options && options.pins ? '&pins=' + options.pins : '') +
-    (options && options.dir === 'rtl' ? '&dir=rtl' : '');
+    (options && options.dir === 'rtl' ? '&dir=rtl' : '') +
+    (options && typeof options.width === 'number' ? '&width=' + options.width : '');
   await page.goto('/' + query);
   await page.waitForFunction(function () {
     return window.showcaseStatus && window.showcaseStatus.ready === true;
@@ -86,14 +88,15 @@ ready.
 @param {String} set       - 'primary' (default) | 'second': which reference set the page mounts
 @param {String} [scheme]  - 'light' (default) | 'dark'
 @param {String} [state]   - D61: an isolating reference renders only this state label
+@param {Number} [width]   - The body's width (a narrow set)
 
 @return {Promise<Object>} - The page status ({ cells, unmeasured, errors })
 *********************************************************************/
-export async function openReference (page, component, set, scheme, state) {
+export async function openReference (page, component, set, scheme, state, width) {
 
   // The mobile upstream follows the platform's color scheme, so a dark reference asks for it
   await page.emulateMedia({ colorScheme: scheme === 'dark' ? 'dark' : 'light' });
-  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : '') + (typeof state === 'string' ? '&state=' + encodeURIComponent(state) : ''));
+  await page.goto('/reference?component=' + component + '&measure=1&set=' + (set || 'primary') + (scheme === 'dark' ? '&scheme=dark' : '') + (typeof state === 'string' ? '&state=' + encodeURIComponent(state) : '') + (typeof width === 'number' ? '&width=' + width : ''));
   await page.waitForFunction(function () {
     return window.referenceStatus && window.referenceStatus.ready === true;
   }, null, { timeout: 30000 });

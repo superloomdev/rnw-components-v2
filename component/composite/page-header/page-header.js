@@ -28,6 +28,11 @@ export default function PageHeader (ctx) {
     // rules instead (`PageHeader.tsx:787-788`); an unknown window is not
     const viewport = ctx.behaviors.useViewportSize();
     const narrow = viewport.width > 0 && viewport.width < ctx.metric('PageHeader', 'bpMd');
+    // Below md the grid has no margin (the grid `_config.scss:40-43`, `sm`),
+    // so the content sits the column's gutter half in (probe at 375: 16)
+    const half = ctx.metric('PageHeader', 'gutter') / 2;
+    const inset = narrow ? half : pad;
+    const narrowGap = ctx.metric('PageHeader', 'narrowGap');
     // The breadcrumb row: the trail spans the breadcrumb column, 12 below
     // the row's top in the header's own label-01 type and 4 gaps
     // (`_page-header.scss:277-285,320-324,333-347`; fidelity breadcrumb y 12,
@@ -44,7 +49,6 @@ export default function PageHeader (ctx) {
     // and its breadcrumb column the same share of the row beside the
     // action column (`:232-242,299-304`), inside its gutter halves (probe
     // default: row 748.8, column 449.28, list 417.28 at 1280)
-    const half = ctx.metric('PageHeader', 'gutter') / 2;
     const share = (ctx.metric('PageHeader', 'breadcrumbRatio') * 100) + '%';
     const split = trail !== null && !narrow && !Utils.isEmptyArray(actions);
     const breadcrumb = hasCrumbs ? React.createElement(View, {
@@ -54,18 +58,22 @@ export default function PageHeader (ctx) {
       React.createElement(View, { style: { width: share } },
         React.createElement(View, { dataSet: { part: 'breadcrumbColumn' }, style: { paddingEnd: half, paddingStart: half, width: share } }, trail))) : trail) : null;
     // The title column and the page actions share the row; below the
-    // available width the actions wrap under the title (`:439-447,494-506`)
+    // available width the actions wrap under the title (`:439-447,494-506`).
+    // Below md the row sits under the action bar: 16 below the breadcrumb
+    // row, without the 2 lift the wide row takes (`:379-382,388-391`; the
+    // centered 40 line stands for that lift), and the actions take their own
+    // full line 16 below the title, unwrapped (`:494-506`)
     const titleRow = React.createElement(View, {
       dataSet: { part: 'titleRow' },
-      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: hasCrumbs ? 0 : ctx.metric('PageHeader', 'titleOffsetNoBreadcrumb') }
+      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: hasCrumbs ? (narrow ? narrowGap : 0) : ctx.metric('PageHeader', 'titleOffsetNoBreadcrumb') }
     },
-    React.createElement(View, { dataSet: { part: 'title' }, style: { alignItems: 'center', flexDirection: 'row', flexShrink: 1, minHeight: ctx.metric('PageHeader', 'titleMinHeight') } },
+    React.createElement(View, { dataSet: { part: 'title' }, style: { alignItems: 'center', flexDirection: 'row', flexShrink: 1, minHeight: ctx.metric('PageHeader', 'titleMinHeight'), transform: narrow ? [{ translateY: -ctx.metric('PageHeader', 'titleLift') }] : undefined } },
       // The icon sits the theme's offset below the title's center
       // (`_page-header.scss:487-495`; fidelity titleIcon y 44.78)
       Utils.isString(props.titleIcon) ? React.createElement(View, { dataSet: { part: 'titleIcon' }, style: { marginEnd: ctx.metric('PageHeader', 'titleIconGap'), transform: [{ translateY: ctx.metric('PageHeader', 'titleIconOffset') }] } },
         React.createElement(ctx.Registry.Icon, { color: 'page_header_title', name: props.titleIcon, size: ctx.metric('PageHeader', 'titleIconSize') })) : null,
       React.createElement(Text, { dataSet: { part: 'titleText' }, style: [{ color: ctx.color('page_header_title'), flexShrink: 1 }, ctx.typeStyle('page_header_title')] }, props.title)),
-    !Utils.isEmptyArray(actions) ? React.createElement(View, { dataSet: { part: 'actions' }, style: { flexDirection: 'row', flexWrap: 'wrap' } },
+    !Utils.isEmptyArray(actions) ? React.createElement(View, { dataSet: { part: 'actions' }, style: narrow ? { flexDirection: 'row', flexWrap: 'nowrap', marginTop: narrowGap, width: '100%' } : { flexDirection: 'row', flexWrap: 'wrap' } },
       actions.map(function (a, i) {
         return React.createElement(ctx.Registry.Button, { children: a.label, key: i, kind: a.kind || 'primary', onPress: a.onPress, size: 'md' });
       })) : null);
@@ -89,7 +97,7 @@ export default function PageHeader (ctx) {
         backgroundColor: props.withoutBackground === true ? 'transparent' : ctx.color('page_header_container'),
         borderBottomColor: ctx.color('page_header_divider'),
         borderBottomWidth: props.withoutBackground === true ? 0 : 1,
-        paddingEnd: pad, paddingStart: pad
+        paddingEnd: inset, paddingStart: inset
       },
       testID: props.testID
     },

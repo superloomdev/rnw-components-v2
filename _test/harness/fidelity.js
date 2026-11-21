@@ -28,7 +28,7 @@ import { decode } from './pixels.js';
 
 export const INTERACTIONS = Object.freeze(['hover', 'focus', 'pressed']);
 export const SCHEMES = Object.freeze(['light', 'dark']);
-export const TEMPLATE = Object.freeze({ primary: 'carbon' });
+export const TEMPLATE = Object.freeze({ primary: 'carbon', narrow: 'carbon' });
 
 // Pixels around each cell body in a screenshot: wide enough for the widest ring (a 44px circle around an 18px box)
 const MARGIN = 20;
@@ -518,13 +518,20 @@ export async function runFidelity (page, component, set, scheme) {
 
   const reference = component.reference;
   const masks = {};
+  // The narrow set opens both pages in the reference's narrow window, each
+  // body at the narrow width, so a rule read from the window (a breakpoint)
+  // draws on both sides
+  const narrow = set === 'narrow' ? reference.narrow : null;
+  if (narrow !== null) {
+    await page.setViewportSize({ width: narrow.window, height: 720 });
+  }
   const isoLabels = reference.isolate === true
     ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
     : [null];
   const status = { cells: 0, errors: [], unmeasured: [] };
   const upstream = {};
   for (const isoLabel of isoLabels) {
-    const ref = await openReference(page, component.name, set, scheme, isoLabel);
+    const ref = await openReference(page, component.name, set, scheme, isoLabel, narrow === null ? undefined : narrow.width);
     status.cells += ref.cells;
     status.errors.push.apply(status.errors, ref.errors);
     status.unmeasured.push.apply(status.unmeasured, ref.unmeasured || []);
@@ -539,7 +546,7 @@ export async function runFidelity (page, component, set, scheme) {
       }
     }
   }
-  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });
+  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false, width: narrow === null ? undefined : narrow.width });
   const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];
   // An additional target's interaction keys anchor their own painted

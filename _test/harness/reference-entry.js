@@ -84,6 +84,8 @@ const only = params.get('component');
 const stateOnly = params.get('state');
 const set = 'primary';
 const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
+// A narrow fidelity set (`reference.narrow`) draws the body at its own width
+const bodyWidth = params.get('width') === null ? null : Number(params.get('width'));
 // The primary's darkest zone, and the mobile upstream's own dark theme
 const PRIMARY_DARK_ZONE = 'cds--g100';
 if (schemeName === 'dark') {
@@ -166,7 +168,7 @@ function Cell (props) {
   const body = reference.body ? (function () {
     const style = {
       display: 'block',
-      width: typeof reference.body.width === 'number' ? reference.body.width + 'px' : 'fit-content'
+      width: bodyWidth !== null ? bodyWidth + 'px' : typeof reference.body.width === 'number' ? reference.body.width + 'px' : 'fit-content'
     };
     if (typeof reference.body.height === 'number') {
       style.height = reference.body.height + 'px';
