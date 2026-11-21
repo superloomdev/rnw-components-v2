@@ -12,8 +12,8 @@ after it is pressed.
 - No clipboard access inside the component: `onClick` is the host's write.
 - The upstream `__feedback` bubble element is never emitted (the census
   marks it not built); the tooltip carries the feedback text instead.
-- The fill is the layer, as upstream draws it with no `kind`. Carbon
-  `v11.120.0` draws those colors under `:where()` (`_copy-button.scss:24`),
+- The fill is the layer, as upstream draws it with no `kind`. The pinned
+  upstream release draws those colors under `:where()` (`_copy-button.scss:24`),
   so a bare upstream CopyButton takes ButtonBase's `kind = "primary"`
   (`Button/ButtonBase.js:23`) and paints blue; its Default story passes
   `kind: ''` (`CopyButton.stories.js:19`) and `v11.121.0` passes
