@@ -13,7 +13,9 @@ export default Object.freeze({
     overflow: { type: 'array', required: false, description: '`[{ label, href, onPress }]` - composes an OverflowMenu of those options instead of a link.' },
     last: { type: 'boolean', required: false, description: 'Composition prop: the last item draws no separator.' },
     noTrailingSlash: { type: 'boolean', required: false, description: 'Composition prop: draws no separator.' },
-    size: { type: 'string', required: false, description: 'Composition prop: `sm` or `md`, from Breadcrumb.' }
+    size: { type: 'string', required: false, description: 'Composition prop: `sm` or `md`, from Breadcrumb.' },
+    typeLeaf: { type: 'string', required: false, description: 'Composition prop: the type set leaf Breadcrumb hands down, in place of the size\'s.' },
+    gap: { type: 'number', required: false, description: 'Composition prop: the item gap Breadcrumb hands down, in place of the size\'s.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md']),

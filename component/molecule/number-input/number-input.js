@@ -36,12 +36,12 @@ export default function NumberInput (ctx) {
   // The steppers' palette: the member's own action cells - its pressed
   // state keeps the hover fill, as the upstream stylesheet paints it
   const PALETTE = Object.freeze({
-    '': null,
-    _active: 'number_input_action_container_active',
-    _disabled: null,
-    _focus: null,
-    _hover: 'field_action_container_hover',
-    _selected: null
+    enabled: null,
+    active: 'number_input_action_container_active',
+    disabled: null,
+    focus: null,
+    hover: 'field_action_container_hover',
+    selected: null
   });
 
 

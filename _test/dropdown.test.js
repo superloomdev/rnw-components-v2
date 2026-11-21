@@ -202,12 +202,12 @@ describe('Dropdown: every sample state under every template', function () {
           assert.equal(parts.label.textContent, props.label);
           assert.equal(parts.trigger.getAttribute('aria-labelledby'), parts.label.id);
         } else {
-          assert.equal(parts.label, null);
+          assert.equal(parts.label === null, true);
           assert.equal(parts.trigger.getAttribute('aria-label'), props.accessibilityLabel);
         }
         const message = invalid ? [props.invalidText, 'field_message_invalid'] : props.helperText ? [props.helperText, 'field_helper' + (disabled ? '_disabled' : '')] : null;
         if (message === null) {
-          assert.equal(parts.message, null);
+          assert.equal(parts.message === null, true);
         } else {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
@@ -243,7 +243,7 @@ describe('Dropdown: the list through the DOM', function () {
       parts.options()[1].click();
     });
     assert.deepEqual(calls, ['medium']);
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.equal(parts.value.textContent, 'Medium');
   });
 
@@ -265,7 +265,7 @@ describe('Dropdown: the list through the DOM', function () {
     // The selection stays highlighted and draws the selected fill
     assert.equal(parts.options()[1].style.backgroundColor, cssValue('backgroundColor', t['color.list_item_container_selected']));
     await press(parts.trigger, 'Escape');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
   });
 
   test('a disabled option is announced, skipped by the arrows and cannot be pressed', async function () {
@@ -334,7 +334,7 @@ describe('Dropdown: the list through the DOM', function () {
     assert.equal(ring.outlineColor, cssValue('outlineColor', t['color.field_focus_ring']));
     await press(parts.trigger, 'ArrowDown');
     assert.deepEqual(calls, [true]);
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.equal(parts.trigger.getAttribute('aria-expanded'), 'false');
     assert.deepEqual(changes, []);
     assert.equal(parts.value.textContent, 'Choose a size');
@@ -349,7 +349,7 @@ describe('Dropdown: the list through the DOM', function () {
       parts.trigger.click();
     });
     await press(parts.trigger, 'ArrowDown');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
   });
 
 });

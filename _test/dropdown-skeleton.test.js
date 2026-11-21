@@ -42,23 +42,23 @@ describe('DropdownSkeleton: every sample state under every template', function (
 
         const label = container.querySelector('[data-testid="dropdown-skeleton-label"]');
         if (hideLabel) {
-          assert.equal(label, null, 'hideLabel removes only the label bar, ' + template);
+          assert.equal(label === null, true, 'hideLabel removes only the label bar, ' + template);
         } else {
-          assert.notEqual(label, null, 'label bar mounts, ' + template);
+          assert.equal(label !== null, true, 'label bar mounts, ' + template);
           assert.equal(Number.parseFloat(label.style.height), tokens['control.field_skeleton_label_height'], 'label height, ' + template);
           assert.equal(Number.parseFloat(label.style.width), tokens['control.field_skeleton_label_width'], 'label width, ' + template);
           assert.equal(Number.parseFloat(label.parentElement.style.marginBottom), tokens['spacing.spacing_03'], 'label gap, ' + template);
         }
 
         const field = container.querySelector('[data-testid="dropdown-skeleton-field"]');
-        assert.notEqual(field, null, 'field bar remains, ' + template);
+        assert.equal(field !== null, true, 'field bar remains, ' + template);
         assert.equal(Number.parseFloat(field.style.height), tokens['control.field_height'], 'field height, ' + template);
         assert.equal(field.style.width, '100%', 'field fills the wrapper, ' + template);
 
         // A skeleton paints only: no roles, no inputs
-        assert.equal(container.querySelector('button'), null, template);
-        assert.equal(container.querySelector('input'), null, template);
-        assert.equal(container.querySelector('[role]'), null, template);
+        assert.equal(container.querySelector('button') === null, true, template);
+        assert.equal(container.querySelector('input') === null, true, template);
+        assert.equal(container.querySelector('[role]') === null, true, template);
       });
 
       test(template + ' / ' + state.label + ': keeps the wrapper transparent between its label and field', async function () {
@@ -82,7 +82,7 @@ describe('DropdownSkeleton: every sample state under every template', function (
           return child.style.position === 'absolute' && child.style.top === '0px' &&
             child.style.right === '0px' && child.style.bottom === '0px' && child.style.left === '0px';
         });
-        assert.equal(cover, undefined, 'no absolute full-cover child, ' + template);
+        assert.equal(cover === undefined, true, 'no absolute full-cover child, ' + template);
 
         // The label gap and the field keep their own geometry
         const label = container.querySelector('[data-testid="dropdown-skeleton-label"]');
@@ -90,13 +90,13 @@ describe('DropdownSkeleton: every sample state under every template', function (
           assert.equal(Number.parseFloat(label.parentElement.style.marginBottom), tokens['spacing.spacing_03'], 'label gap, ' + template);
         }
         const field = container.querySelector('[data-testid="dropdown-skeleton-field"]');
-        assert.notEqual(field, null, 'field bar remains, ' + template);
+        assert.equal(field !== null, true, 'field bar remains, ' + template);
         assert.equal(Number.parseFloat(field.style.height), tokens['control.field_height'], 'field height, ' + template);
 
         // A skeleton paints only: no roles, no inputs
-        assert.equal(container.querySelector('button'), null, template);
-        assert.equal(container.querySelector('input'), null, template);
-        assert.equal(container.querySelector('[role]'), null, template);
+        assert.equal(container.querySelector('button') === null, true, template);
+        assert.equal(container.querySelector('input') === null, true, template);
+        assert.equal(container.querySelector('[role]') === null, true, template);
       });
     }
   }

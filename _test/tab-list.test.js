@@ -38,7 +38,7 @@ describe('TabList: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the bar draws its tabs', async function () {
         const container = await render(React.createElement(registryFor(template).TabList, state.props));
         const bar = container.querySelector('[role="tablist"]');
-        assert.notEqual(bar, null);
+        assert.equal(bar !== null, true);
         const tabs = Array.from(bar.querySelectorAll('[role="tab"]'));
         assert.equal(tabs.length, state.props.items.length);
       });

@@ -14,7 +14,7 @@ Build the DOM reach helpers for one component system.
 
 @param {Object} deps - { Utils }
 
-@return {Object} - { getActiveElement, focusNode, blurNode, nodeContains, queryNode, queryNodes, measureRect, getViewportSize, getComputedStyleOf, onWindowEvent, onDocumentEvent, requestFrame }
+@return {Object} - { getActiveElement, focusNode, blurNode, nodeContains, queryNode, queryNodes, measureRect, getViewportSize, getComputedStyleOf, onWindowEvent, onDocumentEvent, onNodeEvent, fileEntries, canPickFiles, pickFiles, requestFrame }
 *********************************************************************/
 export default function createDomBehaviors (deps) {
 
@@ -219,6 +219,103 @@ export default function createDomBehaviors (deps) {
 
 
   /********************************************************************
+  Listen for an event on a node, where the node takes listeners (a DOM
+  element; a native ref takes none).
+
+  @param {Object}   node    - The node
+  @param {String}   name    - Event name
+  @param {Function} handler - Listener
+
+  @return {Function} - Unsubscribe; a no-op where the node takes no listener
+  *********************************************************************/
+  function onNodeEvent (node, name, handler) {
+
+    if (node === null || node === undefined || typeof node.addEventListener !== 'function' ||
+        typeof node.removeEventListener !== 'function') {
+      return function () {};
+    }
+    node.addEventListener(name, handler);
+    return function () {
+      node.removeEventListener(name, handler);
+    };
+
+  }
+
+
+  /********************************************************************
+  The plain entries of a file list: name, size, type and the file itself.
+
+  @param {Object} list - A FileList or an array of files
+
+  @return {Array} - [{ name, size, type, file }]
+  *********************************************************************/
+  function fileEntries (list) {
+
+    if (list === null || list === undefined || typeof list.length !== 'number') {
+      return [];
+    }
+    return Array.from(list).map(function (file) {
+      return { name: file.name, size: file.size, type: file.type, file: file };
+    });
+
+  }
+
+
+  /********************************************************************
+  Whether the host can open its file chooser through a file input.
+
+  @return {Boolean} - True where a document can create elements
+  *********************************************************************/
+  function canPickFiles () {
+
+    return typeof document !== 'undefined' && typeof document.createElement === 'function' &&
+      document.body !== null && document.body !== undefined;
+
+  }
+
+
+  /********************************************************************
+  Open the host's file chooser through a hidden file input and resolve
+  with the chosen files; a cancelled chooser resolves empty.
+
+  @param {Object}  [options]          - { accept, multiple }
+  @param {Array}   [options.accept]   - File types or extensions
+  @param {Boolean} [options.multiple] - Allow several files
+
+  @return {Promise<Array|null>} - [{ name, size, type, file }]; null without a document
+  *********************************************************************/
+  function pickFiles (options) {
+
+    if (!canPickFiles()) {
+      return Promise.resolve(null);
+    }
+    const opts = options || {};
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = opts.multiple === true;
+    if (Array.isArray(opts.accept)) {
+      input.accept = opts.accept.join(',');
+    }
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    return new Promise(function (resolve) {
+      const finish = function (files) {
+        input.remove();
+        resolve(files);
+      };
+      input.addEventListener('change', function () {
+        finish(fileEntries(input.files));
+      });
+      input.addEventListener('cancel', function () {
+        finish([]);
+      });
+      input.click();
+    });
+
+  }
+
+
+  /********************************************************************
   Run a callback on the next animation frame.
 
   @param {Function} callback - Frame callback
@@ -251,6 +348,10 @@ export default function createDomBehaviors (deps) {
     getComputedStyleOf: getComputedStyleOf,
     onWindowEvent: onWindowEvent,
     onDocumentEvent: onDocumentEvent,
+    onNodeEvent: onNodeEvent,
+    fileEntries: fileEntries,
+    canPickFiles: canPickFiles,
+    pickFiles: pickFiles,
     requestFrame: requestFrame
   };
 

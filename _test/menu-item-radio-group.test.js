@@ -24,7 +24,7 @@ describe('MenuItemRadioGroup: the named group of radio options', function () {
         open: true
       }));
       const group = container.querySelector('[role="group"]');
-      assert.notEqual(group, null, 'the radio group mounts role="group"');
+      assert.equal(group !== null, true, 'the radio group mounts role="group"');
       assert.equal(group.getAttribute('aria-label'), 'Size', 'the group is named');
       const options = group.querySelectorAll('[role="menuitemradio"]');
       assert.equal(options.length, 3, 'three radio options');

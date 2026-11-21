@@ -36,12 +36,12 @@ export default function Switch (ctx) {
     const hoverCell = low ? 'content_switcher_low_contrast_container_hover' : 'content_switcher_container_hover';
     const press = ctx.pressPresentation(state, 'content_switcher', {
       colors: {
-        '': null,
-        '_active': low ? 'content_switcher_low_contrast_container_hover' : 'content_switcher_container_hover',
-        '_disabled': null,
-        '_focus': null,
-        '_hover': hoverCell,
-        '_selected': null
+        enabled: null,
+        active: low ? 'content_switcher_low_contrast_container_hover' : 'content_switcher_container_hover',
+        disabled: null,
+        focus: null,
+        hover: hoverCell,
+        selected: null
       }
     });
     const ring = state.focused === true

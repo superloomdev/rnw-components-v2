@@ -25,7 +25,7 @@ describe('CopyButton: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the icon square draws', async function () {
         const container = await render(React.createElement(registryFor(template).CopyButton, state.props));
         const button = container.querySelector('[role="button"]');
-        assert.notEqual(button, null);
+        assert.equal(button !== null, true);
       });
     }
   }

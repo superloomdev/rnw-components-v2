@@ -8,7 +8,7 @@
 // Exit 1 on any row that did not fire, did not recover, or was not restored.
 
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, writeSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,11 +35,11 @@ try {
     selection = getFireSelection(manifest.rows, args);
   }
 } catch (error) {
-  process.stderr.write(error.message);
+  say(2, error.message);
   process.exit(2);
 }
 if (selection.help) {
-  process.stdout.write(FIRE_USAGE);
+  say(1, FIRE_USAGE);
   process.exit(0);
 }
 
@@ -59,6 +59,38 @@ function sha256 (bytes) {
 
 
 /********************************************************************
+Write text to a file descriptor synchronously, all of it. Node writes
+stdout to a pipe asynchronously on macOS; this runner never yields to
+the event loop between its blocking child runs, so a write the pipe
+cannot take at once queues every later line, and process.exit drops
+the queue, the summary with it.
+
+@param {Number} fd - 1 for stdout, 2 for stderr
+@param {String} text - Text to write
+*********************************************************************/
+function say (fd, text) {
+
+  // Write until every byte is out
+  const bytes = Buffer.from(text, 'utf8');
+  let offset = 0;
+  while (offset < bytes.length) {
+
+    // A full pipe answers EAGAIN: write again once the reader drains it
+    try {
+      offset += writeSync(fd, bytes, offset);
+    } catch (error) {
+      // Any other write error ends the run
+      if (error.code !== 'EAGAIN') {
+        throw error;
+      }
+    }
+
+  }
+
+}
+
+
+/********************************************************************
 Run the row's test; report pass or fail without throwing.
 
 @param {Object} row - Manifest row
@@ -73,16 +105,16 @@ function runTest (row) {
   // guarded inside its own script and is not wrapped again
   const cmd = row.runner === 'pw'
     ? 'npm run bundle --silent && node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- npx playwright test ' + row.test + ' -g ' + JSON.stringify(row.testName)
-    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
+    : 'node ../scripts/guard.js --proc-mb 3072 --seconds 900 --sample-ms 250 -- node --import ./harness/register.js --test --test-timeout=60000 --test-name-pattern=' + JSON.stringify(row.testName) + ' ' + row.test;
   let output;
   try {
     output = execSync(cmd, { cwd: HERE, stdio: 'pipe', encoding: 'utf8' });
   } catch (error) {
-    process.stdout.write('CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
+    say(1, 'CHILD   status=' + error.status + ' signal=' + error.signal + '\n');
     const detail = String(error.stdout || '') + String(error.stderr || error.message);
-    process.stdout.write(detail.split('\n').slice(-30).join('\n') + '\n');
+    say(1, detail.split('\n').slice(-30).join('\n') + '\n');
     // The inner guard's own kill codes: the planted run ran away on memory
-    // or time; the row records KILLED and the runner moves on
+    // or time; the row records KILLED (a broken row) and the runner moves on
     if (error.status === 137 || error.status === 124) {
       return { killed: error.status === 137 ? 'memory' : 'time' };
     }
@@ -116,11 +148,11 @@ function runTest (row) {
 
 const rows = selection.rows;
 const broken = [];
-process.stdout.write('fire selection: ' + rows.length + ' of ' + manifest.rows.length + ' manifest rows\n');
+say(1, 'fire selection: ' + rows.length + ' of ' + manifest.rows.length + ' manifest rows\n');
 
 for (const row of rows) {
 
-  process.stdout.write('START   ' + row.id + '  (' + row.runner + ': ' + row.test + ')\n');
+  say(1, 'START   ' + row.id + '  (' + row.runner + ': ' + row.test + ')\n');
   const target = join(REPO, row.file);
   const original = readFileSync(target);
   const originalHash = sha256(original);
@@ -128,21 +160,26 @@ for (const row of rows) {
 
   if (!text.includes(row.find)) {
     broken.push(row.id + ': manifest search string not found in ' + row.file);
-    process.stdout.write('BROKEN  ' + row.id + '  (search string missing)\n');
+    say(1, 'BROKEN  ' + row.id + '  (search string missing)\n');
     continue;
   }
 
-  // Plant the edit, run, restore, verify the restore
+  // Plant the edit, run, restore, verify the restore. A run that proves
+  // nothing (its child died, or the pattern named no test) is kept as the
+  // row's fault: the file is restored and the next row still runs
   let failedUnderMutation;
   let killed = null;
+  let fault = null;
   try {
     writeFileSync(target, text.replaceAll(row.find, row.replace));
-    process.stdout.write('MUTATE  ' + row.id + '\n');
+    say(1, 'MUTATE  ' + row.id + '\n');
     const result = runTest(row);
     if (result !== null && typeof result === 'object' && result.killed) {
       killed = result.killed;
     }
     failedUnderMutation = result !== true;
+  } catch (error) {
+    fault = error.message;
   } finally {
     writeFileSync(target, original);
   }
@@ -150,23 +187,34 @@ for (const row of rows) {
 
   if (!restored) {
     broken.push(row.id + ': FILE NOT RESTORED - ' + row.file);
-    process.stdout.write('BROKEN  ' + row.id + '  (not restored)\n');
+    say(1, 'BROKEN  ' + row.id + '  (not restored)\n');
     continue;
   }
 
-  process.stdout.write('RECOVER ' + row.id + '\n');
-  const recovered = runTest(row) === true;
+  // A planted run that proved nothing is a broken row
+  if (fault !== null) {
+    broken.push(fault);
+    say(1, 'BROKEN  ' + row.id + '  (' + fault + ')\n');
+    continue;
+  }
 
-  // A guard-killed plant still proves the mutation when the clean run
-  // passes: the plant made the test not pass and the guard contained the
-  // cost (D43). A killed row whose recover fails stays a failure
+  // The clean run must pass again; one that proves nothing is a fault too
+  say(1, 'RECOVER ' + row.id + '\n');
+  let recovered = false;
+  try {
+    recovered = runTest(row) === true;
+  } catch (error) {
+    broken.push(error.message);
+    say(1, 'BROKEN  ' + row.id + '  (' + error.message + ')\n');
+    continue;
+  }
+
+  // A kill is never a proof: it says the harness lost control of the
+  // planted run, nothing about the test. The row is broken until its test
+  // fails by assertion (2026-11-17: four rows had passed as kills for weeks)
   if (killed !== null) {
-    if (!recovered) {
-      broken.push(row.id + ': KILLED (' + killed + ') and still failing restored');
-      process.stdout.write('KILLED  ' + row.id + '  (' + killed + ') -> restored (still failing)\n');
-    } else {
-      process.stdout.write('FIRED-KILLED ' + row.id + '  (' + killed + ')  (' + row.test + ')\n');
-    }
+    broken.push(row.id + ': KILLED (' + killed + ') - a kill is not a proof; the test must fail by assertion');
+    say(1, 'KILLED  ' + row.id + '  (' + killed + ') -> restored' + (recovered ? '' : ' (still failing)') + '\n');
     continue;
   }
   let mark = 'FIRED  ';
@@ -177,14 +225,14 @@ for (const row of rows) {
     broken.push(row.id + ': DID NOT RECOVER - clean run still fails "' + row.testName + '"');
     mark = 'NO RECOVERY';
   }
-  process.stdout.write(mark + '  ' + row.id + '  disabled -> ' + (failedUnderMutation ? 'failed' : 'PASSED') + ' -> restored' + (recovered ? '' : ' (still failing)') + '  (' + row.test + ')\n');
+  say(1, mark + '  ' + row.id + '  disabled -> ' + (failedUnderMutation ? 'failed' : 'PASSED') + ' -> restored' + (recovered ? '' : ' (still failing)') + '  (' + row.test + ')\n');
 
 }
 
-process.stdout.write('\nfire: ' + (rows.length - broken.length) + ' of ' + rows.length + ' rows fired and recovered\n');
+say(1, '\nfire: ' + (rows.length - broken.length) + ' of ' + rows.length + ' rows fired and recovered\n');
 if (broken.length > 0) {
   for (const line of broken) {
-    process.stdout.write('  ' + line + '\n');
+    say(1, '  ' + line + '\n');
   }
   process.exit(1);
 }

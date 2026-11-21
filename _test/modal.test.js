@@ -76,13 +76,13 @@ describe('Modal: every sample state under every template', function () {
         const parts = await renderModal(registryFor(template), props);
 
         // The scrim fills with the scrim cell at the overlay stacking
-        assert.notEqual(parts.scrim, null);
+        assert.equal(parts.scrim !== null, true);
         assert.equal(parts.scrim.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_scrim']));
         assert.equal(parts.scrim.style.zIndex, String(t['stacking.overlay']));
 
         // The container's surface cells and a11y
         const dialog = parts.dialog;
-        assert.notEqual(dialog, null);
+        assert.equal(dialog !== null, true);
         assert.equal(dialog.getAttribute('aria-modal'), 'true');
         assert.equal(dialog.style.backgroundColor, cssValue('backgroundColor', t['color.dialog_container']));
         assert.equal(dialog.style.borderTopLeftRadius, t['control.dialog_radius'] + 'px');
@@ -132,10 +132,10 @@ describe('Modal: every sample state under every template', function () {
         // The actions row: stretched fills the height, trailing rows right
         const row = parts.actionsRow();
         if (actions.length === 0) {
-          assert.equal(row, null);
+          assert.equal(row === null, true);
           return;
         }
-        assert.notEqual(row, null);
+        assert.equal(row !== null, true);
         const stretched = t['anatomy.dialog_actions'] === 'stretched';
         assert.equal(row.style.height, t['control.dialog_actions_height'] > 0 ? t['control.dialog_actions_height'] + 'px' : '');
         if (stretched) {
@@ -233,7 +233,7 @@ describe('Modal: the dialog width follows the layer space ratio', function () {
       const container = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: row.width, height: 400 } },
         React.createElement(system.Registry.Modal, { open: true, title: 'T', size: 'md', children: 'B' })));
       const dialog = container.querySelector('[role="dialog"], [role="alertdialog"]');
-      assert.notEqual(dialog, null);
+      assert.equal(dialog !== null, true);
       assert.equal(dialog.style.width, (row.width * t['control.dialog_width_ratio']) + 'px');
       assert.equal(dialog.style.maxHeight, (400 * t['control.dialog_height_ratio']) + 'px');
       const scrim = container.querySelector('[data-testid="modal-scrim"]');
@@ -247,7 +247,7 @@ describe('Modal: the dialog width follows the layer space ratio', function () {
     const hidden = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 0, height: 0 } },
       React.createElement(system.Registry.Modal, { open: true, title: 'T', children: 'B' })));
     const before = hidden.querySelector('[role="dialog"], [role="alertdialog"]');
-    assert.notEqual(before, null);
+    assert.equal(before !== null, true);
     assert.equal(before.style.opacity, '0', 'an unmeasured host means an unpainted dialog');
     await cleanup();
     const shown = await render(React.createElement(StagedHost, { ctx: system.ctx, size: { width: 640, height: 400 } },
@@ -280,7 +280,7 @@ describe('Modal: behavior through the DOM', function () {
     };
     const Registry = registryFor('carbon');
     const container = await render(React.createElement(Registry.Modal, { open: false, onClose: onClose, title: 'T' }));
-    assert.equal(container.querySelector('[role="dialog"]'), null);
+    assert.equal(container.querySelector('[role="dialog"]') === null, true);
 
     const parts = await renderModal(Registry, { open: true, onClose: onClose, title: 'T', children: 'Body', actions: [{ label: 'OK' }] });
     await act(async function () {

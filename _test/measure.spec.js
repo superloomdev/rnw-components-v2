@@ -238,12 +238,32 @@ test.describe('measure: primary reference', function () {
       const parts = component.reference.parts;
 
       // Upstream first: the states it can draw are the states compared
-      const reference = await openReference(page, name);
+      const isoLabels = component.reference.isolate === true
+        ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
+        : [null];
+      const reference = { cells: 0, errors: [], unmeasured: [] };
+      const upstream = {};
+      const upstreamDrawn = { drawn: new Set(), failures: [] };
+      for (const isoLabel of isoLabels) {
+        const ref = await openReference(page, name, undefined, undefined, isoLabel);
+        reference.cells += ref.cells;
+        reference.errors.push.apply(reference.errors, ref.errors);
+        reference.unmeasured.push.apply(reference.unmeasured, ref.unmeasured || []);
+        const read = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
+        // A state-page reference: the rereads and the drawn scan run on this
+        // state's page before its reads merge in (D61)
+        await rereadReopened(page, component, component.reference, 'upstream', false, read);
+        const pageDrawn = await drawnParts(page, component, component.reference, 'upstream', false, read);
+        for (const part of pageDrawn.drawn) {
+          upstreamDrawn.drawn.add(part);
+        }
+        upstreamDrawn.failures.push.apply(upstreamDrawn.failures, pageDrawn.failures);
+        for (const key of Object.keys(read)) {
+          upstream[key] = upstream[key] && typeof upstream[key] === 'object' && typeof read[key] === 'object' ? Object.assign(upstream[key], read[key]) : read[key];
+        }
+      }
       expect(reference.errors).toEqual([]);
       expect(reference.cells, name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await readParts(page, name, parts, 'upstream', undefined, { pauseAnimations: component.reference.pauseAnimations === true });
-      await rereadReopened(page, component, component.reference, 'upstream', false, upstream);
-      const upstreamDrawn = await drawnParts(page, component, component.reference, 'upstream', false, upstream);
       expect(upstreamDrawn.failures, name + ': declared targets missing upstream').toEqual([]);
 
       // Ours under the template that shares the reference's values,

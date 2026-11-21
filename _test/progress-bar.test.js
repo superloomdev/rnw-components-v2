@@ -133,7 +133,7 @@ describe('ProgressBar: every sample state under every template', function () {
           assert.equal(parts.helper.style.color, cssValue('color', t[error ? 'color.text_error' : 'color.text_secondary']));
           assert.equal(parts.helper.style.marginTop, t['spacing.spacing_03'] + 'px');
         } else {
-          assert.equal(parts.helper, null);
+          assert.equal(parts.helper === null, true);
         }
       });
     }

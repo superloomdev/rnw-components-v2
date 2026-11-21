@@ -31,7 +31,7 @@ describe('Accordion: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the sections draw a list of headed items', async function () {
         const container = await render(React.createElement(registryFor(template).Accordion, state.props));
         const list = container.querySelector('[role="list"]');
-        assert.notEqual(list, null);
+        assert.equal(list !== null, true);
         const items = list.querySelectorAll('[role="listitem"]');
         assert.equal(items.length, state.props.items.length);
         const headings = list.querySelectorAll('[role="button"]');

@@ -20,7 +20,7 @@ describe('MenuItemDivider: the rule reads the member divider cells', function ()
       const t = buildNative(template).tokens;
       const container = await render(React.createElement(buildSystem(template, factories).MenuItemDivider, {}));
       const rule = container.querySelector('[role="separator"]');
-      assert.notEqual(rule, null, 'the separator mounts');
+      assert.equal(rule !== null, true, 'the separator mounts');
       assert.equal(rule.style.height, t['control.menu_divider_width'] + 'px', 'the rule\'s width cell');
       assert.equal(rule.style.backgroundColor, cssValue('backgroundColor', t['color.menu_divider']), 'the divider color');
       assert.equal(rule.style.marginTop, t['control.menu_divider_margin_block'] + 'px', 'the block margin');

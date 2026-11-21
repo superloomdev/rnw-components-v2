@@ -141,12 +141,12 @@ describe('Select: every sample state under every template', function () {
           assert.equal(parts.label.textContent, props.label);
           assert.equal(parts.trigger.getAttribute('aria-labelledby'), parts.label.id);
         } else {
-          assert.equal(parts.label, null);
+          assert.equal(parts.label === null, true);
           assert.equal(parts.trigger.getAttribute('aria-label'), props.accessibilityLabel);
         }
         const message = invalid ? [props.invalidText, 'field_message_invalid'] : props.helperText ? [props.helperText, 'field_helper' + (disabled ? '_disabled' : '')] : null;
         if (message === null) {
-          assert.equal(parts.message, null);
+          assert.equal(parts.message === null, true);
         } else {
           assert.equal(parts.message.textContent, message[0]);
           assert.equal(parts.message.style.color, cssValue('color', t['color.' + message[1]]));
@@ -156,7 +156,7 @@ describe('Select: every sample state under every template', function () {
         assert.equal(parts.trigger.getAttribute('aria-expanded'), 'false');
         assert.equal(parts.trigger.getAttribute('aria-invalid'), invalid ? 'true' : null);
         assert.equal(parts.trigger.getAttribute('aria-disabled'), disabled ? 'true' : null);
-        assert.equal(parts.list(), null);
+        assert.equal(parts.list() === null, true);
       });
     }
   }
@@ -186,7 +186,7 @@ describe('Select: the list through the DOM', function () {
       options[1].click();
     });
     assert.deepEqual(calls, ['medium']);
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.equal(parts.value.textContent, 'Medium');
   });
 
@@ -207,7 +207,7 @@ describe('Select: the list through the DOM', function () {
     // The selection is still highlighted from the arrow keys, so it draws the selected fill
     assert.equal(parts.list().querySelectorAll('[role="option"]')[1].style.backgroundColor, cssValue('backgroundColor', t['color.list_item_container_selected']));
     await press(parts.trigger, 'Escape');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
   });
 
   test('disabled: neither a press nor a key opens the list', async function () {
@@ -216,7 +216,7 @@ describe('Select: the list through the DOM', function () {
       parts.trigger.click();
     });
     await press(parts.trigger, 'ArrowDown');
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
   });
 
   test('the trigger is sized by a hidden sizer holding the placeholder and every option', async function () {
@@ -285,6 +285,21 @@ describe('Select: the list through the DOM', function () {
     // A select under a floating label draws no placeholder, open or not
     assert.equal(parts.value.style.opacity, '0');
     assert.equal(parts.value.textContent, 'Choose');
+  });
+
+});
+
+
+describe('Select: inline composition', function () {
+
+  test('the inline form draws no frame, label or message and takes the parent paddings', async function () {
+    const Registry = registryFor('carbon');
+    const parts = await renderSelect(Registry, { inline: true, items: ITEMS, paddingStart: 16, paddingEnd: 12 });
+    assert.equal(parts.label === null, true);
+    assert.equal(parts.frame.style.borderTopWidth, '');
+    assert.equal(parts.frame.style.paddingLeft, '16px');
+    assert.equal(parts.frame.style.paddingRight, '12px');
+    assert.equal(parts.root.style.paddingTop, '0px');
   });
 
 });

@@ -86,7 +86,7 @@ describe('FloatingActionButton: every sample renders under all three templates',
         assert.equal(icon.getAttribute('fill'), t['color.fab_' + kind + '_icon']);
         if (extended === true) {
           const label = parts.label();
-          assert.notEqual(label, null);
+          assert.equal(label !== null, true);
           assert.equal(label.textContent, props.label);
           assert.equal(label.style.fontSize, t['type.fab_label'].fontSize + 'px');
           assert.equal(label.style.color, cssValue('color', t['color.fab_' + kind + '_icon']));

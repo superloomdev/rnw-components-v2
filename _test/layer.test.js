@@ -302,7 +302,7 @@ describe('seam: updates do not remount or lose input', function () {
     await act(async function () {
       setLevel(2);
     });
-    assert.equal(container.querySelector('input'), input);
+    assert.equal(container.querySelector('input') === input, true);
     assert.equal(input.value, 'keep me');
     assert.equal(input.parentElement.style.backgroundColor,
       paint(buildNative('default').tokens['color.field_03']));
@@ -439,7 +439,7 @@ describe('seam: a hosted overlay keeps the origin\'s structural contexts', funct
     }
     const container = await render(React.createElement(App));
     const input = container.querySelector('input');
-    assert.notEqual(input, null);
+    assert.equal(input !== null, true);
     // Layer level 1 paints level 2: the hosted field reads field_02
     assert.equal(input.parentElement.style.backgroundColor, paint(t['color.field_02']));
     assert.equal(container.querySelectorAll('[role="dialog"], [role="alertdialog"]').length, 1);
@@ -466,7 +466,7 @@ describe('seam: a hosted overlay keeps the origin\'s structural contexts', funct
         React.createElement(Registry.Modal, { open: true, title: 'T' },
           React.createElement(Registry.Heading, null, 'Deep')))));
     const heading = container.querySelector('h2');
-    assert.notEqual(heading, null, 'one Section in, the hosted heading is level 2');
+    assert.equal(heading !== null, true, 'one Section in, the hosted heading is level 2');
     assert.equal(heading.textContent, 'Deep');
     assert.equal(heading.getAttribute('aria-level'), '2');
   });
@@ -602,10 +602,10 @@ describe('FormGroup and Heading: relations and semantic levels', function () {
     }, React.createElement(Registry.Text, { text: 'field' })));
     const group = container.querySelector('[role="group"]');
     const legend = container.ownerDocument.getElementById(group.getAttribute('aria-labelledby'));
-    assert.notEqual(legend, null);
+    assert.equal(legend !== null, true);
     assert.equal(legend.textContent, 'Legend');
     const message = container.ownerDocument.getElementById(group.getAttribute('aria-describedby'));
-    assert.notEqual(message, null);
+    assert.equal(message !== null, true);
     assert.equal(message.textContent, 'The message.');
   });
 
@@ -626,7 +626,7 @@ describe('FormGroup and Heading: relations and semantic levels', function () {
       }
       const container = await render(element);
       const heading = container.querySelector('h' + level);
-      assert.notEqual(heading, null);
+      assert.equal(heading !== null, true);
       assert.equal(heading.getAttribute('aria-level'), String(level));
       assert.equal(heading.style.fontSize, t['type.heading0' + (7 - level)].fontSize + 'px');
     });

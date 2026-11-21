@@ -196,9 +196,19 @@ test.describe('perceptual', function () {
         return entry.name === row.name;
       });
       const componentReference = component !== undefined && component.reference !== null && component.reference !== undefined ? component.reference : undefined;
-      const reference = await openReference(page, row.name);
+      const isoLabels = componentReference !== undefined && componentReference.isolate === true && component !== undefined
+        ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
+        : [null];
+      const reference = { cells: 0, errors: [], unmeasured: [] };
+      const upstream = {};
+      for (const isoLabel of isoLabels) {
+        const ref = await openReference(page, row.name, undefined, undefined, isoLabel);
+        reference.cells += ref.cells;
+        reference.errors.push.apply(reference.errors, ref.errors);
+        reference.unmeasured.push.apply(reference.unmeasured, ref.unmeasured || []);
+        Object.assign(upstream, await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream'));
+      }
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
-      const upstream = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream');
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
       const ours = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'ours');
       const ratios = [];
@@ -224,7 +234,11 @@ test.describe('perceptual', function () {
         }
         const pngA = PNG.sync.read(a);
         const pngB = PNG.sync.read(b);
-        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + ' @' + ours[state].sample.rootX + ',' + ours[state].sample.rootY + ' upstream ' + pngB.width + 'x' + pngB.height + ' @' + upstream[state].sample.rootX + ',' + upstream[state].sample.rootY);
+        // A side without a sample root is compared whole, uncropped
+        const at = function (sample) {
+          return sample === null ? ' @whole' : ' @' + sample.rootX + ',' + sample.rootY;
+        };
+        crops.push(state + ': ours ' + pngA.width + 'x' + pngA.height + at(ours[state].sample) + ' upstream ' + pngB.width + 'x' + pngB.height + at(upstream[state].sample));
         const percent = Math.round(perceptualRatio(a, b) * 10000) / 100;
         ratios.push(state + ' ' + percent + '%');
         if (percent > row.diff_budget) {

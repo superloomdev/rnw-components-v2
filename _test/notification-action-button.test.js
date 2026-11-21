@@ -38,7 +38,7 @@ describe('NotificationActionButton: the two color maps', function () {
       const rendered = await render(React.createElement(Registry.NotificationActionButton, { label: 'Retry', variant: 'inline' }));
       const seat = rendered.firstElementChild;
       const button = seat.querySelector('[role="button"]');
-      assert.notEqual(button, null);
+      assert.equal(button !== null, true);
       assert.equal(seat.style.marginLeft, t['control.notification_action_inset'] + 'px');
       assert.equal(button.querySelector('[dir="auto"]').style.color, cssValue('color', t['color.notification_action']), 'the ghost ink');
       await fire(button, new Event('pointerover', { bubbles: true }));

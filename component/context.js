@@ -126,6 +126,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   }
 
 
+  // The web text feature that keeps common ligatures under tracking
+  const LIGATURES = '\'liga\' 1';
+
+
   /********************************************************************
   Read a type set by its leaf name and resolve its family token, so the
   result spreads straight into a Text style. On native the emitted
@@ -137,10 +141,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   unitless CSS ratio, which keeps fractional products on the subpixel
   grid. A native host without the injected PixelRatio cannot draw text;
   asking for a type style is then a hard error, never a guessed grid.
+  On web, common ligatures stay on under tracking: a browser drops them
+  for a tracked run, `font-variant-ligatures` cannot bring them back, and
+  the reference's reset turns the feature itself on for every element
+  (`_reset.scss:102` `font-feature-settings: 'liga' 1`), so a wrapped line
+  holding `fi` drew a tracking step wider per pair. Native text shapes
+  its ligatures itself and carries no such key.
 
   @param {String} name - e.g. 'body01'
 
-  @return {Object} - { fontFamily, fontSize, fontWeight, letterSpacing, lineHeight }
+  @return {Object} - { fontFamily, fontSize, fontWeight, letterSpacing,
+                     lineHeight }, and `fontFeatureSettings` on web
   *********************************************************************/
   function typeStyle (name) {
 
@@ -173,14 +184,16 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       }
     }
 
-    // Return the style with the family token resolved
-    return {
+    // Build the style with the family token resolved
+    const style = {
       fontFamily: token('font.family.' + set.fontFamily),
       fontSize: fontSize,
       fontWeight: set.fontWeight,
       letterSpacing: letterSpacing,
       lineHeight: lineHeight
     };
+    // Return it; a web run also turns the ligature feature on
+    return platform.isNative ? style : Object.assign(style, { fontFeatureSettings: LIGATURES });
 
   }
 
@@ -420,11 +433,33 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
 
   /********************************************************************
+  Build a role cell's leaf for a state. The resting state, `enabled` (the
+  upstream's word for it), reads the base leaf itself; every other state
+  joins the base leaf as its tail. A component keeps the plain state word
+  and builds the leaf here, in one place.
+
+  @param {String} base  - The cell's leaf without a state, e.g. 'button_primary_border'
+  @param {String} state - The state word: 'enabled', 'hover', 'active',
+                          'focus', 'disabled', 'selected', or a family's own
+                          (an icon button toggle's 'unselected')
+
+  @return {String} - The leaf, e.g. 'button_primary_border_hover'
+  *********************************************************************/
+  function stateLeaf (base, state) {
+
+    // The resting state is the base leaf; any other state is its tail
+    return state === 'enabled' ? base : base + '_' + state;
+
+  }
+
+
+  /********************************************************************
   The press presentation the theme chose for a control whose fills are
   role cells, as two style fragments: one for the container and one for
   the state layer every such control always mounts, so the element tree
   never depends on the theme. The fill in each state is the theme's own
-  cell (`<prefix>` + '', '_hover', '_active', '_focus', '_disabled'); under
+  cell (`stateLeaf(prefix, state)`: the prefix itself while `enabled`, the
+  upstream's word for the resting state, else the state joined); under
   `highlight` the container paints it, under `ripple` a state layer over
   the resting container paints it, under `opacity` the resting container
   fades by the theme's state opacity. A disabled control paints its
@@ -434,8 +469,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   @param {String}  prefix                  - The fill cell's leaf prefix, e.g. 'button_primary_container'
   @param {Object}  [options]               - Optional overrides
   @param {Object}  [options.colors]        - An explicit map naming a leaf per
-                                           phase ('', '_hover', '_active',
-                                           '_focus', '_disabled', '_selected');
+                                           phase ('enabled', 'hover', 'active',
+                                           'focus', 'disabled', 'selected');
                                            every key must be present, and a
                                            null leaf paints nothing
   @param {Boolean} [options.separateLayers] - Split hover and active into two
@@ -444,9 +479,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   @return {Object} - { container, layer, phase } (`hoverLayer` joins when
                      separateLayers is set); `phase` names the state whose
-                     cells are in effect ('', '_hover', '_active', '_focus',
-                     '_disabled' or '_selected'), so a component reads its
-                     label and border cells for the same state
+                     cells are in effect ('enabled', 'hover', 'active',
+                     'focus', 'disabled' or 'selected'), so a component reads
+                     its label and border cells for the same state through
+                     `stateLeaf`
   *********************************************************************/
   function pressPresentation (state, prefix, options) {
 
@@ -456,17 +492,17 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     // while `interaction` follows the live pointer or focus for the layer
     const mode = enumValue('feedback.press');
     const live = state.disabled !== true;
-    const interaction = !live ? '_disabled'
-      : state.pressed === true ? '_active'
-        : state.hovered === true ? '_hover'
-          : state.focused === true ? '_focus' : '';
-    const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;
-    const rest = state.selected === true && live ? '_selected' : !live ? '_disabled' : '';
+    const interaction = !live ? 'disabled'
+      : state.pressed === true ? 'active'
+        : state.hovered === true ? 'hover'
+          : state.focused === true ? 'focus' : 'enabled';
+    const phase = !live ? 'disabled' : state.selected === true ? 'selected' : interaction;
+    const rest = state.selected === true && live ? 'selected' : !live ? 'disabled' : 'enabled';
 
     // An explicit color map replaces the prefix convention: each phase key
     // must exist so a missing mapping fails loudly, and a null leaf is a
     // deliberate "paints nothing", not a missing cell
-    const PHASE_KEYS = ['', '_hover', '_active', '_focus', '_disabled', '_selected'];
+    const PHASE_KEYS = ['enabled', 'hover', 'active', 'focus', 'disabled', 'selected'];
     const map = options !== undefined && options !== null && options.colors !== undefined ? options.colors : null;
     if (map !== null) {
       if (!Utils.isObject(map)) {
@@ -482,7 +518,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       }
     }
     const fillOf = function (ph) {
-      const leaf = map === null ? prefix + ph : map[ph];
+      const leaf = map === null ? stateLeaf(prefix, ph) : map[ph];
       return leaf === null ? 'transparent' : color(leaf);
     };
     const fill = fillOf(phase);
@@ -504,7 +540,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
     // Opacity: the resting fill, faded by the theme's state opacity
     if (mode === 'opacity') {
-      const fade = interaction === '_active' ? token('state.pressed_opacity') : interaction === '_hover' ? token('state.hover_opacity') : 0;
+      const fade = interaction === 'active' ? token('state.pressed_opacity') : interaction === 'hover' ? token('state.hover_opacity') : 0;
       const result = {
         container: Object.assign({ backgroundColor: fillOf(rest), opacity: 1 - fade }, transition('opacity')),
         layer: hiddenLayer,
@@ -523,12 +559,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const result = {
       container: { backgroundColor: fillOf(rest) },
       layer: separate
-        ? Object.assign({ backgroundColor: fillOf('_active'), opacity: live && state.pressed === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'))
-        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
+        ? Object.assign({ backgroundColor: fillOf('active'), opacity: live && state.pressed === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'))
+        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && interaction !== 'enabled' ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),
       phase: phase
     };
     if (separate) {
-      result.hoverLayer = Object.assign({ backgroundColor: fillOf('_hover'), opacity: live && state.hovered === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'));
+      result.hoverLayer = Object.assign({ backgroundColor: fillOf('hover'), opacity: live && state.hovered === true ? 1 : 0, pointerEvents: 'none' }, transition('opacity'));
     }
     return result;
 
@@ -759,16 +795,19 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   occluding it with the surface color, when the field is focused or
   populated. A member whose reference distinguishes it from the family
   reads its own cell (`text_input_container_hover`,
-  `select_outline_disabled`).
+  `select_outline_disabled`); an owner whose reference draws a read-only
+  field names its container and outline leaves for that state.
 
   @param {Object} state   - { focused, hovered, disabled, invalid, populated,
-                            highlighted }: `highlighted` marks that the open
-                            list carries the highlight, moving the field's
-                            ring onto the highlighted option
-  @param {Object} options - { member, height, radius, surface, trailing }: the
-                            member ('text_input' | 'select'), the field's own
-                            height and radius, the color leaf it sits on and
-                            whether a trailing icon sits in the frame
+                            highlighted, readOnly }: `highlighted` marks that
+                            the open list carries the highlight, moving the
+                            field's ring onto the highlighted option
+  @param {Object} options - { member, height, radius, surface, trailing,
+                            outlineDisabled, containerReadOnly, outlineReadOnly }:
+                            the member ('text_input' | 'select'), the field's
+                            own height and radius, the color leaf it sits on,
+                            whether a trailing icon sits in the frame and the
+                            owner's own disabled and read-only leaves
 
   @return {Object} - { root, frame, label, message, raised, placeholder,
                      value, placeholderColor, indicator, invalidIcon, iconGap };
@@ -785,6 +824,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     const placement = enumValue('anatomy.label');
     const disabled = state.disabled === true;
     const invalid = !disabled && state.invalid === true;
+    const viewOnly = !disabled && state['readOnly'] === true;
     const open = state.open === true;
     const focused = !disabled && (state.focused === true || (open && mode === 'outline'));
     const hovered = !disabled && state.hovered === true && !(open && mode === 'underline');
@@ -800,11 +840,14 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     };
 
     // Frame colors and widths for the state; an owner may name a dedicated
-    // outline leaf that applies only while disabled
+    // outline leaf that applies only while disabled, and read-only leaves
+    // that hold under the pointer and the focus ring and give way to invalid
     const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled
-      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');
+      : disabled && member !== 'text_input' ? member + '_outline_disabled'
+        : viewOnly && !invalid && Utils.isString(options.outlineReadOnly) ? options.outlineReadOnly : cell('field_outline');
     const container = disabled ? 'field_container_disabled'
-      : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
+      : viewOnly && Utils.isString(options.containerReadOnly) ? options.containerReadOnly
+        : hovered ? (member === 'select' ? 'field_container_hover' : member + '_container_hover') : 'field_container';
     const width = token(focused ? 'control.field_outline_width_focus' : 'control.field_outline_width');
     const paddingInline = token('control.field_padding_inline');
     const paddingEnd = options.trailing === true ? token('control.field_icon_inset') : paddingInline;
@@ -1030,6 +1073,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     metric: metric,
     pressPresentation: pressPresentation,
     pressTarget: pressTarget,
+    stateLeaf: stateLeaf,
     textPresentation: textPresentation,
     token: token,
     tokenAt: tokenAt,

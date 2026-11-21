@@ -156,7 +156,7 @@ describe('PasswordInput: the reveal contract', function () {
       });
     });
     const popover = parts.root.querySelector('[role="tooltip"]');
-    assert.notEqual(popover, null, 'the focused reveal action opens its naming tooltip');
+    assert.equal(popover !== null, true, 'the focused reveal action opens its naming tooltip');
     const bubble = popover.firstElementChild;
     assert.equal(bubble.style.paddingTop, t['control.tooltip_compact_padding_block'] + 'px');
     assert.equal(bubble.style.paddingBottom, t['control.tooltip_compact_padding_block'] + 'px');

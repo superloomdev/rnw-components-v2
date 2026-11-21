@@ -84,18 +84,18 @@ export function samplePaint (state, shot, omitted, frame) {
   const image = decode(shot);
   for (const name of Object.keys(state)) {
     const part = state[name];
-    if (part === null || part.visible !== true || part.ink !== undefined || part._bodyX === undefined || part.width < 6 || part.height < 6) {
+    if (part === null || part.visible !== true || part.ink !== undefined || part.bodyX === undefined || part.width < 6 || part.height < 6) {
       continue;
     }
     delete part.paint;
-    const inset = part._paintCenter === true ? part.height / 2
+    const inset = part.paintCenter === true ? part.height / 2
       : Math.min(part.height / 2, Math.max(3, (parseFloat(part.borderTopWidth) || 0) + 2));
-    const x = part._bodyX + part.width / 2;
-    const y = part._bodyY + inset;
+    const x = part.bodyX + part.width / 2;
+    const y = part.bodyY + inset;
     if ((omitted || []).some(function (area) {
-      return area && area.visible === true && area._bodyX !== undefined &&
-        x >= area._bodyX && x <= area._bodyX + area.width &&
-        y >= area._bodyY && y <= area._bodyY + area.height;
+      return area && area.visible === true && area.bodyX !== undefined &&
+        x >= area.bodyX && x <= area.bodyX + area.width &&
+        y >= area.bodyY && y <= area.bodyY + area.height;
     })) {
       continue;
     }
@@ -123,37 +123,37 @@ pixels before its trailing end, one color per pixel.
 *********************************************************************/
 export function profileOf (part, shot, omitted) {
 
-  if (!shot || !part || part.visible !== true || part._bodyX === undefined) {
+  if (!shot || !part || part.visible !== true || part.bodyX === undefined) {
     return null;
   }
   const image = decode(shot);
   const sample = function (x, y) {
     if ((omitted || []).some(function (area) {
-      return area && area.visible === true && area._bodyX !== undefined &&
-        x >= MARGIN + area._bodyX - 1 && x <= MARGIN + area._bodyX + area.width + 1 &&
-        y >= MARGIN + area._bodyY - 1 && y <= MARGIN + area._bodyY + area.height + 1;
+      return area && area.visible === true && area.bodyX !== undefined &&
+        x >= MARGIN + area.bodyX - 1 && x <= MARGIN + area.bodyX + area.width + 1 &&
+        y >= MARGIN + area.bodyY - 1 && y <= MARGIN + area.bodyY + area.height + 1;
     })) {
       return null;
     }
     const pixel = image.at(x, y);
     return pixel === null ? null : [pixel.r, pixel.g, pixel.b];
   };
-  const centerX = MARGIN + part._bodyX + part.width / 2;
-  const centerY = MARGIN + part._bodyY + part.height / 2;
-  const inside = Number.isInteger(part._profileDepth) && part._profileDepth > 0
-    ? Array.from({ length: part._profileDepth }, function (_, index) { return index + 1; }) : INSIDE;
+  const centerX = MARGIN + part.bodyX + part.width / 2;
+  const centerY = MARGIN + part.bodyY + part.height / 2;
+  const inside = Number.isInteger(part.profileDepth) && part.profileDepth > 0
+    ? Array.from({ length: part.profileDepth }, function (_, index) { return index + 1; }) : INSIDE;
 
   return {
     inside: inside.map(function (offset) {
-      return sample(centerX, MARGIN + part._bodyY + offset);
+      return sample(centerX, MARGIN + part.bodyY + offset);
     }),
     left: LEFT.map(function (offset) {
-      return part._bodyX - offset < -OUTSIDE ? null : sample(MARGIN + part._bodyX - offset, centerY);
+      return part.bodyX - offset < -OUTSIDE ? null : sample(MARGIN + part.bodyX - offset, centerY);
     }),
     below: BELOW.map(function (offset) {
       // The first row strictly below the box; a fractional box would otherwise
       // let the band read the part's own bottom edge as "below"
-      return sample(MARGIN + part._bodyX + part.width - 4, MARGIN + part._bodyY + Math.ceil(part.height) - 1 + offset);
+      return sample(MARGIN + part.bodyX + part.width - 4, MARGIN + part.bodyY + Math.ceil(part.height) - 1 + offset);
     })
   };
 
@@ -221,8 +221,8 @@ is that part alone (its ring is compared by the profile).
 export function cropTo (shot, part) {
 
   const source = PNG.sync.read(shot);
-  const x = Math.max(0, Math.round(MARGIN + part._bodyX));
-  const y = Math.max(0, Math.round(MARGIN + part._bodyY));
+  const x = Math.max(0, Math.round(MARGIN + part.bodyX));
+  const y = Math.max(0, Math.round(MARGIN + part.bodyY));
   const width = Math.max(1, Math.min(source.width - x, Math.round(part.width)));
   const height = Math.max(1, Math.min(source.height - y, Math.round(part.height)));
   const out = new PNG({ width: width, height: height });
@@ -256,7 +256,7 @@ export function maskOmitted (ours, upstream, state, masked, anchor, origin, marg
 
   const lines = [];
   const boxes = masked.filter(function (name) {
-    return state[name] && state[name].visible === true && state[name]._bodyX !== undefined;
+    return state[name] && state[name].visible === true && state[name].bodyX !== undefined;
   });
   if (boxes.length === 0) {
     return { shot: ours, lines: lines };
@@ -264,23 +264,23 @@ export function maskOmitted (ours, upstream, state, masked, anchor, origin, marg
   const target = PNG.sync.read(ours);
   const source = PNG.sync.read(upstream);
   const core = anchor ? state[anchor] : null;
-  const dx = origin && origin._bodyX !== undefined ? -origin._bodyX : 0;
-  const dy = origin && origin._bodyY !== undefined ? -origin._bodyY : 0;
+  const dx = origin && origin.bodyX !== undefined ? -origin.bodyX : 0;
+  const dy = origin && origin.bodyY !== undefined ? -origin.bodyY : 0;
   const edge = margin === undefined ? MARGIN : margin;
   for (const name of boxes) {
     const part = state[name];
 
     // A mask may never cover the part the component is compared around
-    if (core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&
-      part._bodyX + part.width >= core._bodyX + core.width && part._bodyY + part.height >= core._bodyY + core.height) {
+    if (core && core.visible === true && part.bodyX <= core.bodyX && part.bodyY <= core.bodyY &&
+      part.bodyX + part.width >= core.bodyX + core.width && part.bodyY + part.height >= core.bodyY + core.height) {
       lines.push('mask ' + name + ' covers the anchor ' + anchor);
       continue;
     }
 
-    const x = Math.max(0, Math.floor(edge + dx + part._bodyX) - 1);
-    const y = Math.max(0, Math.floor(edge + dy + part._bodyY) - 1);
-    const width = Math.min(target.width, source.width, Math.ceil(edge + dx + part._bodyX + part.width) + 1) - x;
-    const height = Math.min(target.height, source.height, Math.ceil(edge + dy + part._bodyY + part.height) + 1) - y;
+    const x = Math.max(0, Math.floor(edge + dx + part.bodyX) - 1);
+    const y = Math.max(0, Math.floor(edge + dy + part.bodyY) - 1);
+    const width = Math.min(target.width, source.width, Math.ceil(edge + dx + part.bodyX + part.width) + 1) - x;
+    const height = Math.min(target.height, source.height, Math.ceil(edge + dy + part.bodyY + part.height) + 1) - y;
     if (width > 0 && height > 0) {
       PNG.bitblt(source, target, x, y, width, height, x, y);
     }
@@ -518,8 +518,27 @@ export async function runFidelity (page, component, set, scheme) {
 
   const reference = component.reference;
   const masks = {};
-  const status = await openReference(page, component.name, set, scheme);
-  const upstream = await collect(page, component, reference, 'upstream');
+  const isoLabels = reference.isolate === true
+    ? (component.sample || []).filter(function (s) { return s.cell !== false; }).map(function (s) { return s.label; })
+    : [null];
+  const status = { cells: 0, errors: [], unmeasured: [] };
+  const upstream = {};
+  for (const isoLabel of isoLabels) {
+    const ref = await openReference(page, component.name, set, scheme, isoLabel);
+    status.cells += ref.cells;
+    status.errors.push.apply(status.errors, ref.errors);
+    status.unmeasured.push.apply(status.unmeasured, ref.unmeasured || []);
+    const read = await collect(page, component, reference, 'upstream');
+    for (const key of Object.keys(read)) {
+      if (Array.isArray(read[key])) {
+        upstream[key] = (upstream[key] || []).concat(read[key]);
+      } else if (upstream[key] && typeof upstream[key] === 'object' && typeof read[key] === 'object') {
+        Object.assign(upstream[key], read[key]);
+      } else {
+        upstream[key] = read[key];
+      }
+    }
+  }
   const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false });
   const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];
@@ -571,12 +590,12 @@ export async function runFidelity (page, component, set, scheme) {
     // upstream element - is out of the cell shot's reach; each side's own
     // element shot compares its pixels instead
     const escapes = function (shot, part) {
-      if (!shot || !part || part._bodyX === undefined) {
+      if (!shot || !part || part.bodyX === undefined) {
         return false;
       }
       const image = shot instanceof PNG ? shot : PNG.sync.read(shot);
-      return part._bodyX < -MARGIN || part._bodyY < -MARGIN ||
-        MARGIN + part._bodyX + part.width > image.width || MARGIN + part._bodyY + part.height > image.height;
+      return part.bodyX < -MARGIN || part.bodyY < -MARGIN ||
+        MARGIN + part.bodyX + part.width > image.width || MARGIN + part.bodyY + part.height > image.height;
     };
     let a;
     let b;
@@ -598,8 +617,8 @@ export async function runFidelity (page, component, set, scheme) {
       if (oursSample !== undefined && oursSample !== null && upSample !== undefined && upSample !== null) {
         const crop2 = sampleWindow(oursSample, upSample);
         if (crop2 !== null) {
-          const oursCrop = { _bodyX: crop2.ours.x, _bodyY: crop2.ours.y, width: crop2.ours.width, height: crop2.ours.height };
-          const upCrop = { _bodyX: crop2.upstream.x, _bodyY: crop2.upstream.y, width: crop2.upstream.width, height: crop2.upstream.height };
+          const oursCrop = { bodyX: crop2.ours.x, bodyY: crop2.ours.y, width: crop2.ours.width, height: crop2.ours.height };
+          const upCrop = { bodyX: crop2.upstream.x, bodyY: crop2.upstream.y, width: crop2.upstream.width, height: crop2.upstream.height };
           upOrigin = upCrop;
           a = crop ? cropTo(ours.shots[key], ours.states[key][reference.origin]) : cropTo(ours.shots[key], oursCrop);
           b = crop ? cropTo(upstream.shots[key], upstream.states[key][reference.origin]) : cropTo(upstream.shots[key], upCrop);

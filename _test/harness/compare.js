@@ -5,6 +5,10 @@
 
 const TOLERANCE = 0.5;
 
+// The fields `readParts` adds for pixel sampling (the part's box in the
+// cell body, the paint-center and profile-depth hints): never compared
+const SAMPLING = Object.freeze(['bodyX', 'bodyY', 'paintCenter', 'profileDepth']);
+
 
 /********************************************************************
 Compare one measured value.
@@ -96,7 +100,7 @@ export function findDisagreements (ours, upstream, parts, extra, skip) {
         // whose kind differs (a painted box against an inked path) reads
         // different extras, and a one-sided extra is not a disagreement
         const oneSidedExtra = (extra || []).includes(property) && (u[property] === undefined || o[property] === undefined);
-        return property !== 'visible' && property !== 'characters' && property.charAt(0) !== '_' && !oneSidedExtra && !(parts[part].except || []).includes(property);
+        return property !== 'visible' && property !== 'characters' && !SAMPLING.includes(property) && !oneSidedExtra && !(parts[part].except || []).includes(property);
       });
       // A text's width is compared net of a tracking difference, which is reported on its own:
       // a reference that draws no tracking still has to place and size the text where we do.

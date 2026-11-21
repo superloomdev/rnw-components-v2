@@ -14,6 +14,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as WebUpstream from '@carbon/react';
+import * as IbmProducts from '@carbon/ibm-products';
 import { TagSet as IbmTagSet } from '@carbon/ibm-products';
 import * as UpstreamIcons from '@carbon/icons-react';
 import { Text as NativeText } from '@carbon/react-native/lib/module/components/Text/index.js';
@@ -73,12 +74,14 @@ function fixtureTextStyle (name) {
 }
 
 const UPSTREAM = {
-  'render-web': Object.assign({}, WebUpstream, { icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
+  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, Tearsheet: IbmProducts.Tearsheet, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
   'parse-rn': { Text: NativeText, getColor: getColor }
 };
 
 const params = new URLSearchParams(window.location.search);
 const only = params.get('component');
+// D61: an isolating reference (`isolate: true`) renders only this state
+const stateOnly = params.get('state');
 const set = 'primary';
 const schemeName = params.get('scheme') === 'dark' ? 'dark' : 'light';
 // The primary's darkest zone, and the mobile upstream's own dark theme
@@ -104,7 +107,7 @@ if (set === 'primary') {
 }
 
 const status = { ready: false, errors: [], cells: 0, unmeasured: [] };
-window.__reference = status;
+window.referenceStatus = status;
 
 window.addEventListener('error', function (event) {
   status.errors.push(String(event.message));
@@ -134,6 +137,11 @@ function Cell (props) {
   if (element !== null && Array.isArray(props.state.wrappers)) {
     for (let i = props.state.wrappers.length - 1; i >= 0; i = i - 1) {
       const descriptor = props.state.wrappers[i];
+      // A wrapper the reference mount already draws in upstream's own form
+      // (the flexbox grid around a Row) stays on our page only
+      if (descriptor && descriptor.reference === false) {
+        continue;
+      }
       const factory = descriptor && typeof descriptor.component === 'string'
         ? UPSTREAM[reference.kind][descriptor.component]
         : undefined;
@@ -212,7 +220,7 @@ function Reference () {
     return React.createElement('section', { key: name, className: 'family', 'data-family': rows[name].family },
       React.createElement('h2', null, name),
       React.createElement('div', { className: 'grid' }, (samples[name] || []).filter(function (state) {
-        return state.cell !== false;
+        return state.cell !== false && (stateOnly === null || state.label === stateOnly);
       }).map(function (state) {
         return React.createElement(Cell, { key: state.label, name: name, state: state });
       })));

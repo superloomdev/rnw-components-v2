@@ -64,12 +64,12 @@ export default function FloatingActionButton (ctx) {
     // names them both
     const press = ctx.pressPresentation(state, null, {
       colors: {
-        '': 'fab_' + kind + '_container',
-        _hover: 'fab_' + kind + '_layer_hover',
-        _active: 'fab_' + kind + '_layer_active',
-        _focus: 'fab_' + kind + '_container',
-        _disabled: 'fab_' + kind + '_container',
-        _selected: 'fab_' + kind + '_container'
+        enabled: 'fab_' + kind + '_container',
+        hover: 'fab_' + kind + '_layer_hover',
+        active: 'fab_' + kind + '_layer_active',
+        focus: 'fab_' + kind + '_container',
+        disabled: 'fab_' + kind + '_container',
+        selected: 'fab_' + kind + '_container'
       },
       separateLayers: true
     });

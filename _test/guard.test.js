@@ -15,6 +15,7 @@ import { describe, test } from 'node:test';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GUARD = join(HERE, '..', 'scripts', 'guard.js');
+const GUARD_LOG = join(HERE, 'test-results', 'guard.log');
 
 const RUNAWAY = 'const a=[];for(let i=0;i<5;i++)a.push(Buffer.alloc(64*1024*1024,1));setTimeout(()=>{},30000)';
 const SLEEPER = 'setTimeout(()=>{},10000)';
@@ -74,6 +75,25 @@ describe('guard', function () {
     }
     if (elapsedMs >= 4000) {
       throw new Error('kill took ' + elapsedMs + ' ms');
+    }
+
+  });
+
+  test('a kill is written to the guard log with the time it happened', function () {
+
+    const { result } = run(['--seconds', '2'], ['node', '-e', SLEEPER], 15000);
+    const kill = /^GUARD: killed time .*$/m.exec(result.stderr);
+    if (kill === null) {
+      throw new Error('no GUARD: killed time line in stderr: ' + result.stderr);
+    }
+    const logged = readFileSync(GUARD_LOG, 'utf8').split('\n').filter(function (line) {
+      return line.endsWith(kill[0]);
+    });
+    if (logged.length < 1) {
+      throw new Error('the kill is not in ' + GUARD_LOG + ': ' + kill[0]);
+    }
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z GUARD: killed time /.test(logged[logged.length - 1])) {
+      throw new Error('the logged kill does not start with its time: ' + logged[logged.length - 1]);
     }
 
   });

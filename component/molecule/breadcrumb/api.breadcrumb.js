@@ -8,6 +8,8 @@ export default Object.freeze({
     items: { type: 'array', required: true, description: 'The trail: `{ label, href, isCurrentPage, onPress, visited }` entries, or `{ overflow: [{ label, href, onPress }] }` for the overflow menu.' },
     noTrailingSlash: { type: 'boolean', required: false, description: 'Draws no separator after the last item.' },
     size: { type: 'string', required: false, description: 'One of `variants`: `md` (the default) or `sm` - the breadcrumb type and gaps.' },
+    typeLeaf: { type: 'string', required: false, description: 'Composition prop: a composing parent\'s type set leaf for the list and every item, in place of the size\'s.' },
+    gap: { type: 'number', required: false, description: 'Composition prop: a composing parent\'s item gap, in place of the size\'s.' },
     accessibilityLabel: { type: 'string', required: false, description: 'The nav landmark\'s name. Default `Breadcrumb`.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' }
   }),

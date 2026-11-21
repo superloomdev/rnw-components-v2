@@ -32,7 +32,7 @@ export default Object.freeze({
   tokens: Object.freeze([
     'control.tag_height', 'control.tag_radius', 'control.tag_padding_inline', 'control.tag_padding_icon',
     'control.tag_outline_width', 'control.tag_icon_size',
-    'size.icon_01', 'spacing.spacing_01', 'size.size_small', 'spacing.spacing_03', 'spacing.spacing_04',
+    'size.icon_01', 'spacing.spacing_01', 'control.tag_height_large', 'spacing.spacing_03', 'spacing.spacing_04',
     'type.tag_label', 'font.family.sans',
     'color.tag_container', 'color.tag_container_disabled',
     'color.tag_label', 'color.tag_label_disabled',

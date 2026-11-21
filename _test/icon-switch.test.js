@@ -25,7 +25,7 @@ describe('IconSwitch: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the segment draws its icon and name', async function () {
         const container = await render(React.createElement(registryFor(template).IconSwitch, state.props));
         const segment = container.querySelector('[role="tab"]');
-        assert.notEqual(segment, null);
+        assert.equal(segment !== null, true);
         assert.equal(segment.getAttribute('aria-label'), state.props.label);
       });
     }

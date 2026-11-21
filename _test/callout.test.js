@@ -30,7 +30,7 @@ describe('Callout: every sample state under every template', function () {
         const Registry = buildSystem(template, factories);
         const rendered = await render(React.createElement(Registry.Callout, props));
         const container = rendered.firstElementChild;
-        assert.notEqual(container, null);
+        assert.equal(container !== null, true);
 
         // No role, no close: the band is plain content
         assert.equal(container.getAttribute('role'), null);

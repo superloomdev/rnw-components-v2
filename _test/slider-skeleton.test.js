@@ -39,7 +39,7 @@ describe('SliderSkeleton: the row and its paint, under every template', function
         // The label bar stands above the row unless hidden
         const label = container.querySelector('[data-testid="slider-skeleton-label"]');
         if (state.props.hideLabel === true) {
-          assert.equal(label, null, template + ': hideLabel omits the bar');
+          assert.equal(label === null, true, template + ': hideLabel omits the bar');
         } else {
           assert.equal(Number.parseFloat(label.style.width), t['control.field_skeleton_label_width'], template);
           assert.equal(Number.parseFloat(label.style.height), t['control.field_skeleton_label_height'], template);

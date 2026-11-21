@@ -125,7 +125,7 @@ describe('FilterableMultiSelect: the query through the DOM', function () {
       parts.trigger.click();
       close.click();
     });
-    assert.equal(parts.list(), null);
+    assert.equal(parts.list() === null, true);
     assert.deepEqual(calls, []);
   });
 

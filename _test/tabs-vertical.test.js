@@ -26,7 +26,7 @@ describe('TabsVertical: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the column list and panels draw', async function () {
         const container = await render(React.createElement(registryFor(template).TabsVertical, state.props));
         const list = container.querySelector('[role="tablist"]');
-        assert.notEqual(list, null);
+        assert.equal(list !== null, true);
         const tabs = list.querySelectorAll('[role="tab"]');
         assert.equal(tabs.length, state.props.items.length);
       });

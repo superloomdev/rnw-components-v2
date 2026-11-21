@@ -6,10 +6,10 @@
   ],
   "rows": [
     {
-      "id": "guard-rss-inverted",
-      "file": "scripts/guard.js",
-      "find": "sample.maxRssMb > procMb",
-      "replace": "sample.maxRssMb > 1000000000",
+      "id": "guard-process-ceiling-inverted",
+      "file": "scripts/guard-memory.js",
+      "find": "sample.maxMemoryMb > limits.procMb",
+      "replace": "sample.maxMemoryMb > 1000000000",
       "runner": "node",
       "test": "guard.test.js",
       "testName": "a child past the per-process memory ceiling is killed and reported 137",
@@ -34,6 +34,66 @@
       "test": "guard.test.js",
       "testName": "a reparented grandchild past the ceiling is still killed",
       "why": "reparented pids dropped from the kill order must fail the orphan-kill assertion"
+    },
+    {
+      "id": "guard-log-time-off",
+      "file": "scripts/guard.js",
+      "find": "appendFileSync(LOG_FILE, new Date().toISOString() + ' ' + line + '\\n');",
+      "replace": "appendFileSync(LOG_FILE, line + '\\n');",
+      "runner": "node",
+      "test": "guard.test.js",
+      "testName": "a kill is written to the guard log with the time it happened",
+      "why": "a kill line without its time cannot be matched to the run that caused it"
+    },
+    {
+      "id": "guard-footprint-ignored",
+      "file": "scripts/guard-memory.js",
+      "find": "memory.set(pid, footprint > resident ? footprint : resident);",
+      "replace": "memory.set(pid, resident);",
+      "runner": "node",
+      "test": "guard-memory.test.js",
+      "testName": "a process counts as its footprint when that is larger than its resident size",
+      "why": "a guard that counts resident size alone misses a runaway whose pages the system compresses (2026-11-17, 367 GB at 2.1 GB resident)"
+    },
+    {
+      "id": "guard-pressure-ignored",
+      "file": "scripts/guard-memory.js",
+      "find": "  if (critical === true) {\n    return 'pressure';\n  }",
+      "replace": "",
+      "runner": "node",
+      "test": "guard-memory.test.js",
+      "testName": "critical system pressure ends the run under every ceiling",
+      "why": "the system floor must end a run whatever the per-process numbers say"
+    },
+    {
+      "id": "assert-guard-live-passed-through",
+      "file": "_test/harness/assert-guard.js",
+      "find": "    return original.call(target, safeActual, safeExpected, message);",
+      "replace": "    return original.call(target, actual, expected, message);",
+      "runner": "node",
+      "test": "assert-guard.test.js",
+      "testName": "a failing identity assertion over a node prints a bounded message and holds no node",
+      "why": "a live node handed to node:assert is formatted without bound when the assertion fails"
+    },
+    {
+      "id": "assert-guard-refusal-off",
+      "file": "_test/harness/assert-guard.js",
+      "find": "  return process.env.ASSERT_LIVE === 'label' ? 'label' : 'refuse';",
+      "replace": "  return process.env.ASSERT_LIVE === 'refuse' ? 'refuse' : 'label';",
+      "runner": "node",
+      "test": "assert-guard.test.js",
+      "testName": "a live operand is refused by default, even when the assertion would pass",
+      "why": "a guard that only labels by default lets a new test pass a live object again"
+    },
+    {
+      "id": "fire-file-failure-accepted",
+      "file": "_test/fire-selection.js",
+      "find": " && !/\\.(test|spec)\\.js$/.test(match[1]);",
+      "replace": ";",
+      "runner": "node",
+      "test": "fire-result.test.js",
+      "testName": "a failure that names only the test file is a dead process, not a proof",
+      "why": "a test file whose process died prints a failure line for the file; that is not a named test failing"
     },
     {
       "id": "update-loop-threshold-off",
@@ -248,8 +308,8 @@
     {
       "id": "context-press-focus-layer",
       "file": "component/context.js",
-      "find": "          : state.focused === true ? '_focus' : '';",
-      "replace": "          : '';",
+      "find": "          : state.focused === true ? 'focus' : 'enabled';",
+      "replace": "          : 'enabled';",
       "runner": "node",
       "test": "system.test.js",
       "testName": "the phase follows the state",
@@ -328,7 +388,7 @@
     {
       "id": "button-engaged-content",
       "file": "component/molecule/button/button.js",
-      "find": "      : 'button_' + kind + '_label' + press.phase;",
+      "find": "      : ctx.stateLeaf('button_' + kind + '_label', press.phase);",
       "replace": "      : 'button_' + kind + '_label';",
       "runner": "node",
       "test": "button.test.js",
@@ -618,7 +678,7 @@
     {
       "id": "anatomy-ripple-pressed",
       "file": "component/context.js",
-      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && interaction !== 'enabled' ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "replace": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "pw",
       "test": "anatomy.spec.js",
@@ -628,8 +688,8 @@
     {
       "id": "structural-contrast",
       "file": "component/molecule/button/button.js",
-      "find": "      : 'button_' + kind + '_label' + press.phase;",
-      "replace": "      : 'button_' + kind + '_container' + press.phase;",
+      "find": "      : ctx.stateLeaf('button_' + kind + '_label', press.phase);",
+      "replace": "      : ctx.stateLeaf('button_' + kind + '_container', press.phase);",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "every drawn text run meets the contrast minimum against its backdrop",
@@ -648,8 +708,8 @@
     {
       "id": "structural-disabled-distinct",
       "file": "component/context.js",
-      "find": "    const phase = !live ? '_disabled'",
-      "replace": "    const phase = !live ? ''",
+      "find": "    const phase = !live ? 'disabled'",
+      "replace": "    const phase = !live ? 'enabled'",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "every enabled control state paints differently from every disabled state of its component",
@@ -678,17 +738,37 @@
     {
       "id": "button-selected-surface",
       "file": "component/context.js",
-      "find": "    const phase = !live ? '_disabled' : state.selected === true ? '_selected' : interaction;",
-      "replace": "    const phase = !live ? '_disabled' : state.selected === true ? '_active' : interaction;",
+      "find": "    const phase = !live ? 'disabled' : state.selected === true ? 'selected' : interaction;",
+      "replace": "    const phase = !live ? 'disabled' : state.selected === true ? 'active' : interaction;",
       "runner": "node",
       "test": "button.test.js",
       "testName": "selected: geometry, fill and label come from the theme",
       "why": "a selected button that paints the pressed fill instead of its selected cell must fail"
     },
     {
+      "id": "context-state-leaf-enabled",
+      "file": "component/context.js",
+      "find": "    return state === 'enabled' ? base : base + '_' + state;",
+      "replace": "    return base + '_' + state;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "stateLeaf: the enabled state reads the base leaf; every other state joins it as the tail",
+      "why": "a resting state that joins a tail instead of reading the base leaf must fail"
+    },
+    {
+      "id": "names-underscore-key",
+      "file": "component/molecule/number-input/number-input.js",
+      "find": "    active: 'number_input_action_container_active',",
+      "replace": "    _active: 'number_input_action_container_active',",
+      "runner": "node",
+      "test": "names.test.js",
+      "testName": "no tracked file declares a name that starts with an underscore",
+      "why": "a palette key that starts with an underscore in shipped source must fail the names gate"
+    },
+    {
       "id": "context-field-disabled-outline-border",
       "file": "component/context.js",
-      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled' : cell('field_outline');",
+      "find": "    const outline = disabled && Utils.isString(options.outlineDisabled) ? options.outlineDisabled\n      : disabled && member !== 'text_input' ? member + '_outline_disabled'\n        : viewOnly && !invalid && Utils.isString(options.outlineReadOnly) ? options.outlineReadOnly : cell('field_outline');",
       "replace": "    const outline = cell('field_outline');",
       "runner": "node",
       "test": "select.test.js",
@@ -748,8 +828,8 @@
     {
       "id": "fidelity-state-cells",
       "file": "component/context.js",
-      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
-      "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && !Utils.isEmptyString(interaction) ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "find": "        : Object.assign({ backgroundColor: fillOf(interaction), opacity: live && interaction !== 'enabled' ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
+      "replace": "        : Object.assign({ backgroundColor: fillOf(rest), opacity: live && interaction !== 'enabled' ? 1 : 0, pointerEvents: 'none' }, transition('opacity')),",
       "runner": "node",
       "test": "button.test.js",
       "testName": "the state layer paints the interaction cell, not the resting fill",
@@ -1698,7 +1778,7 @@
     {
       "id": "fidelity-mask-origin",
       "file": "_test/harness/fidelity.js",
-      "find": "  const dy = origin && origin._bodyY !== undefined ? -origin._bodyY : 0;",
+      "find": "  const dy = origin && origin.bodyY !== undefined ? -origin.bodyY : 0;",
       "replace": "  const dy = 0;",
       "runner": "node",
       "test": "fidelity.test.js",
@@ -1708,8 +1788,8 @@
     {
       "id": "fidelity-mask-anchor-node",
       "file": "_test/harness/fidelity.js",
-      "find": "    if (core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
-      "replace": "    if (false && core && core.visible === true && part._bodyX <= core._bodyX && part._bodyY <= core._bodyY &&",
+      "find": "    if (core && core.visible === true && part.bodyX <= core.bodyX && part.bodyY <= core.bodyY &&",
+      "replace": "    if (false && core && core.visible === true && part.bodyX <= core.bodyX && part.bodyY <= core.bodyY &&",
       "runner": "node",
       "test": "fidelity.test.js",
       "testName": "an omission cannot mask the entire compared anchor",
@@ -1998,7 +2078,7 @@
     {
       "id": "fidelity-center-paint",
       "file": "_test/harness/fidelity.js",
-      "find": "    const inset = part._paintCenter === true ? part.height / 2",
+      "find": "    const inset = part.paintCenter === true ? part.height / 2",
       "replace": "    const inset = false ? part.height / 2",
       "runner": "node",
       "test": "fidelity.test.js",
@@ -2008,8 +2088,8 @@
     {
       "id": "fidelity-omitted-paint",
       "file": "_test/harness/fidelity.js",
-      "find": "        x >= area._bodyX && x <= area._bodyX + area.width &&",
-      "replace": "        false && x >= area._bodyX && x <= area._bodyX + area.width &&",
+      "find": "        x >= area.bodyX && x <= area.bodyX + area.width &&",
+      "replace": "        false && x >= area.bodyX && x <= area.bodyX + area.width &&",
       "runner": "node",
       "test": "fidelity.test.js",
       "testName": "a proven omitted surface does not become the underlying part paint",
@@ -2018,7 +2098,7 @@
     {
       "id": "fidelity-deep-focus-profile",
       "file": "_test/harness/fidelity.js",
-      "find": "    ? Array.from({ length: part._profileDepth }, function (_, index) { return index + 1; }) : INSIDE;",
+      "find": "    ? Array.from({ length: part.profileDepth }, function (_, index) { return index + 1; }) : INSIDE;",
       "replace": "    ? INSIDE : INSIDE;",
       "runner": "node",
       "test": "fidelity.test.js",
@@ -2608,12 +2688,162 @@
     {
       "id": "toggletip-button-focus-width",
       "file": "component/molecule/tooltip/spec.toggletip-button.js",
-      "find": "  focusWidth: { constant: 1 },",
+      "find": "  focusWidth: 'control.toggletip_focus_width',",
       "replace": "  focusWidth: { constant: 2 },",
       "runner": "node",
       "test": "toggletip.test.js",
       "testName": "focus draws the member's own 1 px ring at the edge under every template",
       "why": "the member's ring is the upstream 1 px edge outline; a wider ring must fail the width assertion"
+    },
+    {
+      "id": "tile-container",
+      "file": "component/molecule/tile/tile.js",
+      "find": "backgroundColor: ctx.color('tile_container')",
+      "replace": "backgroundColor: ctx.color('tile_container_hover')",
+      "runner": "node",
+      "test": "tile.test.js",
+      "testName": "carbon / default: box and type come from the theme",
+      "why": "the box paints the layer cell; the hover cell must fail the container assertion"
+    },
+    {
+      "id": "clickable-tile-disabled-behavior",
+      "file": "component/molecule/tile/clickable-tile.js",
+      "find": "      disabled: disabled,\n      onPress:",
+      "replace": "      disabled: false,\n      onPress:",
+      "runner": "node",
+      "test": "clickable-tile.test.js",
+      "testName": "carbon / disabled: face, label and icon come from the theme",
+      "why": "dropping the disabled flag the behavior reads must fail the disabled assertion"
+    },
+    {
+      "id": "selectable-tile-toggle",
+      "file": "component/molecule/tile/selectable-tile.js",
+      "find": "setSelected(!selected)",
+      "replace": "setSelected(selected)",
+      "runner": "node",
+      "test": "selectable-tile.test.js",
+      "testName": "press toggles the checked state",
+      "why": "the toggle is the row's key behavior; a no-op toggle must fail"
+    },
+    {
+      "id": "expandable-tile-collapsed-height",
+      "file": "component/molecule/tile/expandable-tile.js",
+      "find": "maxHeight: expanded ? undefined : baseHeight + pad,",
+      "replace": "maxHeight: expanded ? undefined : baseHeight,",
+      "runner": "node",
+      "test": "expandable-tile.test.js",
+      "testName": "carbon / default: fold, chevron and collapsed height come from the theme",
+      "why": "the collapsed height adds the padding allowance; dropping it must fail"
+    },
+    {
+      "id": "radio-tile-select",
+      "file": "component/molecule/tile/radio-tile.js",
+      "find": "        setChecked(true);",
+      "replace": "        setChecked(false);",
+      "runner": "node",
+      "test": "radio-tile.test.js",
+      "testName": "press selects the radio",
+      "why": "a radio only selects; inverting it must fail"
+    },
+    {
+      "id": "tile-group-single-selection",
+      "file": "component/molecule/tile/tile-group.js",
+      "find": "        checked: itemProps.checked,",
+      "replace": "        checked: true,",
+      "runner": "node",
+      "test": "tile-group.test.js",
+      "testName": "one value is checked across the group",
+      "why": "single selection is the group's key behavior; marking every tile must fail"
+    },
+    {
+      "id": "pagination-skeleton-gap",
+      "file": "component/molecule/pagination/pagination-skeleton.js",
+      "find": "key: key, style: { marginEnd: gap } },",
+      "replace": "key: key, style: { marginEnd: 0 } },",
+      "runner": "node",
+      "test": "pagination-skeleton.test.js",
+      "testName": "carbon / default: the bars read the skeleton width cells",
+      "why": "the bars sit in the text gap's rhythm; a zero gap must fail"
+    },
+    {
+      "id": "pagination-forward-end",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "pagesUnknown !== true && page >= totalPages",
+      "replace": "false",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "carbon / lastPage: the forward button ends at the last page",
+      "why": "the forward button must disable at the last page"
+    },
+    {
+      "id": "pagination-nav-active",
+      "file": "component/molecule/pagination/pagination-nav.js",
+      "find": "const active = index === page;",
+      "replace": "const active = false;",
+      "runner": "node",
+      "test": "pagination-nav.test.js",
+      "testName": "carbon / default: the active page carries aria-current",
+      "why": "the active page must carry aria-current=page"
+    },
+    {
+      "id": "pagination-page-range",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "const pageRange = typeof props.pageRangeText === 'function' ? props.pageRangeText(page, totalPages1) : 'of ' + totalPages1 + ' ' + (totalPages1 === 1 ? 'page' : 'pages');",
+      "replace": "const pageRange = '';",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "the left block holds the count, the right block the page range",
+      "why": "the right block draws the page range after the page select (upstream Pagination.js:259-262)"
+    },
+    {
+      "id": "row-half-gutter",
+      "file": "component/molecule/grid/row.js",
+      "find": "const half = ctx.metric('Row', 'gutter') / 2;",
+      "replace": "const half = 0;",
+      "runner": "node",
+      "test": "row.test.js",
+      "testName": "the row pulls back by half the gutter under a condensed and a narrow grid",
+      "why": "the flexbox row pulls back by half the regular gutter in every grid kind"
+    },
+    {
+      "id": "pagination-nav-row-order",
+      "file": "component/molecule/pagination/pagination-nav.js",
+      "find": "for (let i = startOffset + cuts.front; i < totalItems - 1 - cuts.back; i = i + 1) {",
+      "replace": "for (let i = startOffset + cuts.front; i <= totalItems - 1 - cuts.back; i = i + 1) {",
+      "runner": "node",
+      "test": "pagination-nav.test.js",
+      "testName": "default: the page buttons and the overflow pickers",
+      "why": "the visible middle ends before the back overflow (upstream PaginationNav.js:281)"
+    },
+    {
+      "id": "grid-column-span",
+      "file": "component/molecule/grid/column.js",
+      "find": "track.width = (span * 100 / columns) + '%';",
+      "replace": "track.width = (span * 100 / columns / 2) + '%';",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: the columns take the lg span of 16",
+      "why": "a span of 4 of 16 is 25 percent"
+    },
+    {
+      "id": "column-sample-in-grid",
+      "file": "component/molecule/grid/sample.column.js",
+      "find": "wrappers: Object.freeze([PARENT]) })",
+      "replace": "wrappers: Object.freeze([]) })",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: the wrapper is a Grid, whose row the auto track grows along",
+      "why": "a bare Column grows along a column container's height on native; its sample must mount it inside a Grid"
+    },
+    {
+      "id": "column-span-zero",
+      "file": "component/molecule/grid/column.js",
+      "find": "spec === 0",
+      "replace": "spec === -1",
+      "runner": "node",
+      "test": "grid.test.js",
+      "testName": "carbon / default: a span of 0 draws nothing",
+      "why": "span 0 must hide the column"
     },
     {
       "id": "ios-line-height-half-pixel",
@@ -3057,7 +3287,7 @@
     },
     {
       "file": "_test/harness/expected-gaps.js",
-      "find": "  const stale = mine.filter(function (gap) {",
+      "find": "  const stale = mine.filter(function (gap) {\n    return lines.every(function (line) { return matches(line, gap) !== true; });\n  });",
       "replace": "  const stale = [];",
       "testName": "expected gaps: a gap that no longer reproduces is stale",
       "runner": "node",
@@ -3369,10 +3599,10 @@
       "id": "breadcrumb-separator-after-last",
       "file": "component/molecule/breadcrumb/breadcrumb-item.js",
       "find": "    const separator = props.last === true && props.noTrailingSlash === true ? null",
-      "replace": "    const separator = null",
+      "replace": "    const separator = false ? null",
       "runner": "node",
       "test": "breadcrumb.test.js",
-      "testName": "carbon / default: the trail comes from the theme",
+      "testName": "carbon / noTrailingSlash: the trail comes from the theme",
       "why": "a separator drawn after the last item must fail the last-item no-separator assertion"
     },
     {
@@ -3419,7 +3649,7 @@
       "id": "button-padding-end-off",
       "file": "component/molecule/button/button.js",
       "find": "Utils.isNumber(props.paddingEnd) ? props.paddingEnd",
-      "replace": "false",
+      "replace": "false ? props.paddingEnd",
       "runner": "node",
       "test": "button.test.js",
       "testName": "focus draws the button ring from its cells; a keyboard-only theme draws it for keyboard focus, not for a pointer press",
@@ -3568,7 +3798,7 @@
     {
       "id": "button-border-active-off",
       "file": "component/molecule/button/button.js",
-      "find": "? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : 'button_' + kind + '_border' + PLAIN_PHASES[press.phase])",
+      "find": "? (Utils.isString(props.borderActiveLeaf) ? props.borderActiveLeaf : ctx.stateLeaf('button_' + kind + '_border', PLAIN_PHASES[press.phase]))",
       "replace": "? 'button_' + kind + '_border'",
       "runner": "node",
       "test": "button.test.js",
@@ -3669,7 +3899,7 @@
       "id": "modal-footer-separator-off",
       "file": "component/composite/modal/modal-footer.js",
       "find": "        index === 0 ? null : React.createElement(View, { 'aria-hidden': true, style: separatorStyle }));",
-      "replace": "        index === 0 ? null : null));",
+      "replace": "        index === 0 ? null : null);",
       "runner": "node",
       "test": "modal-footer.test.js",
       "testName": "every seat but the first draws the button-set separator",
@@ -3744,6 +3974,396 @@
       "test": "toggle.test.js",
       "testName": "the OS switch sits in a seat of the drawn track's size",
       "why": "the system seat must carry the drawn track's width for the size"
+    },
+    {
+      "id": "tree-view-aria-expanded",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "'aria-expanded': isParent ? expanded : undefined",
+      "replace": "'aria-expanded': isParent ? false : undefined",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "nodes render as treeitems with their aria state",
+      "why": "a parent node must report its expanded state"
+    },
+    {
+      "id": "tree-node-leaf-indent",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "paddingStart: offset * indent",
+      "replace": "paddingStart: offset",
+      "runner": "node",
+      "test": "tree-node.test.js",
+      "testName": "a leaf at depth 1 reports treeitem without expanded",
+      "why": "the leaf indent at depth 1 is the frozen calcOffset"
+    },
+    {
+      "id": "tree-view-arrow-down",
+      "file": "component/composite/tree-view/tree-view.js",
+      "find": "const idx = enabledIndexes[next];",
+      "replace": "const idx = enabledIndexes[enabledPos];",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "arrow keys move the focus order and aria-selected",
+      "why": "arrow keys move the focus order down the tree"
+    },
+    {
+      "id": "card-footer-only",
+      "file": "component/molecule/card/card.js",
+      "find": "const footer = (!atTop && actions !== null) || hasButton",
+      "replace": "const footer = false",
+      "runner": "node",
+      "test": "card.test.js",
+      "testName": "the footer renders only with bottom actions or a button",
+      "why": "the footer renders only with bottom actions or a button"
+    },
+    {
+      "id": "card-zone-group",
+      "file": "component/molecule/card/card.js",
+      "find": "accessibilityRole: holdsControls ? 'group' : 'button',",
+      "replace": "accessibilityRole: 'button',",
+      "runner": "node",
+      "test": "card.test.js",
+      "testName": "a clickable card is a button, a group when it holds controls, never a button in a button",
+      "why": "react-native-web draws a button role as <button>; a card holding controls must not nest buttons"
+    },
+    {
+      "id": "empty-state-action-gap",
+      "file": "component/molecule/empty-state/empty-state.js",
+      "find": "marginBottom: gap('actionGap')",
+      "replace": "marginBottom: 0",
+      "runner": "node",
+      "test": "empty-state.test.js",
+      "testName": "the action renders an sm tertiary button in its seat",
+      "why": "the action gap separates the action from the link (upstream __action-button margin-block-end)"
+    },
+    {
+      "id": "page-header-title-min-height",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "minHeight: ctx.metric('PageHeader', 'titleMinHeight')",
+      "replace": "minHeight: 0",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the title row renders without breadcrumbs",
+      "why": "the title row keeps its min height without breadcrumbs"
+    },
+    {
+      "id": "tearsheet-action-height",
+      "file": "component/composite/tearsheet/spec.tearsheet.js",
+      "find": "actionHeight: 'control.tearsheet_action_height'",
+      "replace": "actionHeight: 'control.tearsheet_inset_inline'",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "the action row draws the action height cell",
+      "why": "the action row must be the 80 action cell, not a smaller inset"
+    },
+    {
+      "id": "tearsheet-passive-close",
+      "file": "component/composite/tearsheet/tearsheet.js",
+      "find": "const hasClose = props.hasCloseIcon === undefined ? passive : props.hasCloseIcon === true;",
+      "replace": "const hasClose = false;",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "a passive tearsheet draws the close button",
+      "why": "a passive tearsheet must draw its close button"
+    },
+    {
+      "id": "tearsheet-influencer-width",
+      "file": "component/composite/tearsheet/tearsheet.js",
+      "find": "width: influencerWidth + metrics.dividerWidth",
+      "replace": "width: influencerWidth",
+      "runner": "node",
+      "test": "tearsheet.test.js",
+      "testName": "the left influencer box is the cell plus the end rule",
+      "why": "the influencer box is the 256 cell plus the 1px end rule (257 upstream)"
+    },
+    {
+      "id": "date-picker-calendar-height",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": "height: ctx.metric('DatePicker', 'calendarHeight'),",
+      "replace": "height: ctx.metric('DatePicker', 'calendarWidth'),",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "draws at the theme's geometry with the March 2024 grid and the selected day",
+      "why": "the calendar box is the 336 height cell, not the 288 width (_flatpickr.scss:132)"
+    },
+    {
+      "id": "date-picker-day-grid-lead",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": "1 - lead + w * DAYS_PER_WEEK + d",
+      "replace": "1 + w * DAYS_PER_WEEK + d",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "draws at the theme's geometry with the March 2024 grid and the selected day",
+      "why": "the grid opens on the week holding the first of the month, led by the previous month's days"
+    },
+    {
+      "id": "date-picker-range-fill",
+      "file": "component/composite/date-picker/date-picker-calendar.js",
+      "find": ": inRange ? ctx.color('date_picker_day_container_range')",
+      "replace": ": inRange ? ctx.color('date_picker_day_container_selected')",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "a range draws its two ends selected and the days between in the range fill",
+      "why": "the days inside a range take the range fill, not the selected fill"
+    },
+    {
+      "id": "date-picker-range-order",
+      "file": "component/composite/date-picker/date-picker.web.js",
+      "find": "commit(compareDates(date, start) < 0 ? [date, start] : [start, date]);",
+      "replace": "commit([start, date]);",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "a range takes its start, then its end in date order, and closes",
+      "why": "a range end pressed before its start swaps into date order"
+    },
+    {
+      "id": "date-picker-system-adapter",
+      "file": "component/composite/date-picker/date-picker.native.js",
+      "find": "return React.createElement(system && System !== null ? System : Drawn, props);",
+      "replace": "return React.createElement(Drawn, props);",
+      "runner": "node",
+      "test": "date-picker.test.js",
+      "testName": "the host adapter takes the field's seat with the date and no calendar draws",
+      "why": "a system widget with its adapter present seats the OS picker instead of the calendar"
+    },
+    {
+      "id": "file-uploader-item-outline-inset",
+      "file": "component/composite/file-uploader/file-uploader-item.js",
+      "find": "outlineOffset: -ctx.metric('FileUploaderItem', 'outlineWidth'),",
+      "replace": "outlineOffset: 0,",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "an invalid item draws the inset outline, its padding and the message under its rule",
+      "why": "the invalid outline draws inside the item's edge (focus-outline('invalid'), outline-offset -2)"
+    },
+    {
+      "id": "filename-invalid-gap",
+      "file": "component/composite/file-uploader/filename.js",
+      "find": "marginEnd: ctx.metric('Filename', 'invalidGap')",
+      "replace": "marginEnd: ctx.metric('Filename', 'seat')",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "Filename is the inset seat: the close button, the flush error glyph, the checkmark",
+      "why": "the error glyph sits flush before the close button (probe invalid icon x 268 + 16 = close x 284)"
+    },
+    {
+      "id": "file-uploader-dedupe",
+      "file": "component/composite/file-uploader/file-uploader.js",
+      "find": "return !Utils.inArray(names, entry.name);",
+      "replace": "return true;",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the uploader lists valid picks by name, reports oversize ones and deletes",
+      "why": "a multiple uploader adds a picked file only when its name is not listed yet (FileUploader.js handleChange)"
+    },
+    {
+      "id": "file-uploader-drop-accept",
+      "file": "component/composite/file-uploader/file-picking.js",
+      "find": "const refused = !Utils.isEmptyArray(accept) &&",
+      "replace": "const refused = false &&",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the drop area takes a drop, marks refused files, and ignores drops while disabled",
+      "why": "a dropped file outside a non-empty accept list is marked invalidFileType (FileUploaderDropContainer.js validateFiles)"
+    },
+    {
+      "id": "file-uploader-button-label",
+      "file": "component/composite/file-uploader/file-uploader-button.js",
+      "find": "setLabel(files.length > 1 ? files.length + ' files' : files[0].name);",
+      "replace": "setLabel(files[0].name);",
+      "runner": "node",
+      "test": "file-uploader.test.js",
+      "testName": "the button picks through the host adapter and names the chosen files",
+      "why": "several chosen files name the button \"<n> files\" (FileUploaderButton.js handleOnChange)"
+    },
+    {
+      "id": "date-picker-input-outline-disabled",
+      "file": "component/composite/date-picker/date-picker-input.js",
+      "find": "      outlineDisabled: 'date_picker_input_outline_disabled',\n",
+      "replace": "",
+      "runner": "node",
+      "test": "date-picker-input.test.js",
+      "testName": "a disabled field draws its own outline and a read-only field its own fill and outline",
+      "why": "a disabled date picker input's bottom border is transparent, not the field's disabled outline (_date-picker.scss:116-118)"
+    },
+    {
+      "id": "date-picker-input-readonly",
+      "file": "component/composite/date-picker/date-picker-input.js",
+      "find": "      'readOnly': viewOnly\n",
+      "replace": "      'readOnly': false\n",
+      "runner": "node",
+      "test": "date-picker-input.test.js",
+      "testName": "a disabled field draws its own outline and a read-only field its own fill and outline",
+      "why": "a read-only date picker input is transparent over the subtle border (_date-picker.scss:307-309)"
+    },
+    {
+      "id": "row-condensed-block-gutter",
+      "file": "component/molecule/grid/grid.js",
+      "find": "    const gutterBlock = condensed === true && holdsRows === true ? gutter / 2 : 0;\n",
+      "replace": "    const gutterBlock = 0;\n",
+      "runner": "node",
+      "test": "row.test.js",
+      "testName": "a condensed grid pads each column block end by half the condensed gutter, the others not at all",
+      "why": "a condensed flexbox grid pads its columns' block ends by half the condensed gutter (_flex-grid.scss:317-319)"
+    },
+    {
+      "id": "pagination-button-square",
+      "file": "component/molecule/pagination/pagination.js",
+      "find": "          width: size - ctx.metric('Pagination', 'dividerWidth')\n",
+      "replace": "          width: size\n",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "each button is the size square and its face one rule narrower",
+      "why": "the pagination button's start rule sits inside the size square (_pagination.scss:224-228)"
+    },
+    {
+      "id": "select-inline-sized",
+      "file": "component/composite/select/select.js",
+      "find": "    const sized = compact === true || inline === true;\n",
+      "replace": "    const sized = compact === true;\n",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "Pagination: parts match the rendered upstream",
+      "why": "an inline select sizes to its widest option rounded up, as the platform select (probe Pagination selects 71)"
+    },
+    {
+      "id": "tree-node-leaf-icon-start",
+      "file": "component/composite/tree-view/tree-node.js",
+      "find": "marginStart: isParent ? 0 : ctx.metric('TreeNode', 'iconGap') } },",
+      "replace": "marginStart: 0 } },",
+      "runner": "node",
+      "test": "tree-node.test.js",
+      "testName": "a leaf icon keeps the gap on both sides, a parent icon only at its end",
+      "why": "a leaf's icon carries margin-inline $spacing-03 on both sides (_treeview.scss:216-218)"
+    },
+    {
+      "id": "type-style-ligatures",
+      "file": "component/context.js",
+      "find": "    return platform.isNative ? style : Object.assign(style, { fontFeatureSettings: LIGATURES });",
+      "replace": "    return style;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "default: token, color, typeStyle resolve from the built theme",
+      "why": "a tracked run keeps its common ligatures, as the reference's reset asks (_reset.scss:102)"
+    },
+    {
+      "id": "empty-state-subtitle-ratio",
+      "file": "component/molecule/empty-state/empty-state.js",
+      "find": "ctx.textPresentation(ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle'))",
+      "replace": "ctx.typeStyle(small ? 'empty_state_subtitle_small' : 'empty_state_subtitle')",
+      "runner": "node",
+      "test": "empty-state.test.js",
+      "testName": "the subtitle presents its line height as the unitless ratio",
+      "why": "a px line height of 19.99998 rounds up to 20 and draws the subtitle 1 lower than upstream's unitless body-01"
+    },
+    {
+      "id": "page-header-subtitle-ratio",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "ctx.textPresentation(ctx.typeStyle('page_header_subtitle'))",
+      "replace": "ctx.typeStyle('page_header_subtitle')",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the subtitle presents its line height as the unitless ratio",
+      "why": "a px line height of 19.99998 rounds up to 20 and draws the subtitle 1 lower than upstream's unitless body-01"
+    },
+    {
+      "id": "page-header-breadcrumb-type",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "      typeLeaf: 'page_header_breadcrumb'\n",
+      "replace": "      typeLeaf: undefined\n",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "the header's breadcrumb is label-01 (_page-header.scss:320-324,342-347)"
+    },
+    {
+      "id": "page-header-breadcrumb-padding",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "paddingTop: ctx.metric('PageHeader', 'breadcrumbPaddingTop')",
+      "replace": "paddingTop: 0",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "the header's breadcrumb sits $spacing-04 below the row top (_page-header.scss:320-324)"
+    },
+    {
+      "id": "page-header-breadcrumb-labels",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "        return { href: c.href, label: c.label };\n",
+      "replace": "        return { children: c.label, href: c.href };\n",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "a breadcrumb item draws its `label`; passed as children it drew an empty link"
+    },
+    {
+      "id": "page-header-breadcrumb-share",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "paddingEnd: half, paddingStart: half, width: share",
+      "replace": "paddingEnd: half, paddingStart: half",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "with page actions the row and its breadcrumb column take the section share inside the gutters",
+      "why": "with page actions the breadcrumb column is the left section's 60 % of the row (_page-header.scss:36-39,232-242,299-304; probe list 417.28 at 1280)"
+    },
+    {
+      "id": "page-header-breadcrumb-narrow",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "trail !== null && !narrow && ",
+      "replace": "trail !== null && ",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "without page actions, or below md, the trail spans the whole row",
+      "why": "below md upstream sets widthIsNarrow and drops the page-actions row limit (PageHeader.tsx:787-788, PageHeader.js:311)"
+    },
+    {
+      "id": "breadcrumb-item-gap",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "gap: Utils.isNumber(props.gap) ? props.gap : ctx.metric(",
+      "replace": "gap: ctx.metric(",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
+      "why": "a composing parent's gap reaches every item (_page-header.scss:333-339)"
+    },
+    {
+      "id": "page-header-title-icon-offset",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "transform: [{ translateY: ctx.metric('PageHeader', 'titleIconOffset') }]",
+      "replace": "transform: []",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the title icon takes the theme offset",
+      "why": "the title icon sits the theme's offset below the title's center (_page-header.scss:487-495)"
+    },
+    {
+      "id": "tree-view-label-offset",
+      "file": "component/composite/tree-view/tree-view.js",
+      "find": "marginTop: ctx.metric('TreeView', 'labelOffset'), ",
+      "replace": "",
+      "runner": "node",
+      "test": "tree-view.test.js",
+      "testName": "the label sits the theme offset below the tree top",
+      "why": "the tree's inline-block label sits 2 down its line box (fidelity label y 2)"
+    },
+    {
+      "id": "select-inline-focus-ring",
+      "file": "component/composite/select/select.js",
+      "find": "}, ctx.focusRing('field', { focused: state.focused || state.open })] : presentation.frame },",
+      "replace": "}] : presentation.frame },",
+      "runner": "node",
+      "test": "pagination.test.js",
+      "testName": "a focused select rings its inline frame from the field cells",
+      "why": "an inline select must draw the field focus ring on its frame, as every upstream select input does"
+    },
+    {
+      "id": "expandable-tile-chevron-ring",
+      "file": "component/molecule/tile/expandable-tile.js",
+      "find": "style: [seatStyle, { outlineStyle: 'none' }, ring]",
+      "replace": "style: [seatStyle, { outlineStyle: 'none' }]",
+      "runner": "node",
+      "test": "expandable-tile.test.js",
+      "testName": "interactive: the focused chevron draws the ring, the face none",
+      "why": "the interactive chevron draws the tile's focus ring, or keyboard focus shows nothing"
     }
   ]
 }

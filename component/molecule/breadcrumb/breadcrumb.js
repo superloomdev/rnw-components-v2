@@ -4,7 +4,8 @@
 // and `size` composition props: `{ label, href, isCurrentPage }` for a
 // link or link-styled text, `{ overflow: [{ label, href, onPress }] }`
 // for the overflow menu. The separators are the item's own; the list
-// carries `type.breadcrumb` (`_small`).
+// carries `type.breadcrumb` (`_small`). A composing parent may name its own
+// type set and gap (`typeLeaf`, `gap`), which reach every item.
 
 import SPEC from './spec.breadcrumb.js';
 
@@ -32,16 +33,17 @@ export default function Breadcrumb (ctx) {
   *********************************************************************/
   function BreadcrumbComponent (props) {
 
-    // Init the items and the size
+    // Init the items, the size and a composing parent's type set
     const items = Utils.isArray(props.items) ? props.items : [];
     const small = props.size === 'sm';
+    const type = Utils.isString(props.typeLeaf) ? props.typeLeaf : small ? 'breadcrumb_small' : 'breadcrumb';
 
     // Render the landmark and its ordered list; the last item and
     // `noTrailingSlash` tell the members where the separators stop
     return React.createElement(View, {
       accessibilityLabel: Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : 'Breadcrumb',
       role: 'navigation',
-      style: ctx.typeStyle(small ? 'breadcrumb_small' : 'breadcrumb'),
+      style: ctx.typeStyle(type),
       testID: props.testID
     },
     React.createElement(View, {
@@ -50,10 +52,12 @@ export default function Breadcrumb (ctx) {
     },
     items.map(function (item, index) {
       return React.createElement(ctx.Registry.BreadcrumbItem, Object.assign({
+        gap: props.gap,
         key: index,
         last: index === items.length - 1,
         noTrailingSlash: props.noTrailingSlash === true,
-        size: props.size
+        size: props.size,
+        typeLeaf: props.typeLeaf
       }, item));
     })));
 

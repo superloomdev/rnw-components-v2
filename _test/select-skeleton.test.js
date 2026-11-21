@@ -44,23 +44,23 @@ describe('SelectSkeleton: every sample state under every template', function () 
 
         const label = container.querySelector('[data-testid="select-skeleton-label"]');
         if (hideLabel) {
-          assert.equal(label, null, 'hideLabel removes only the label bar, ' + template);
+          assert.equal(label === null, true, 'hideLabel removes only the label bar, ' + template);
         } else {
-          assert.notEqual(label, null, 'label bar mounts, ' + template);
+          assert.equal(label !== null, true, 'label bar mounts, ' + template);
           assert.equal(Number.parseFloat(label.style.height), tokens['control.field_skeleton_label_height'], 'label height, ' + template);
           assert.equal(Number.parseFloat(label.style.width), tokens['control.field_skeleton_label_width'], 'label width, ' + template);
           assert.equal(Number.parseFloat(label.parentElement.style.marginBottom), tokens['spacing.spacing_03'], 'label gap, ' + template);
         }
 
         const field = container.querySelector('[data-testid="select-skeleton-field"]');
-        assert.notEqual(field, null, 'field bar remains, ' + template);
+        assert.equal(field !== null, true, 'field bar remains, ' + template);
         assert.equal(Number.parseFloat(field.style.height), tokens['control.field_height'], 'field height, ' + template);
         assert.equal(field.style.width, '100%', 'field fills the wrapper, ' + template);
 
         // A skeleton paints only: no roles, no inputs
-        assert.equal(container.querySelector('button'), null, template);
-        assert.equal(container.querySelector('input'), null, template);
-        assert.equal(container.querySelector('[role]'), null, template);
+        assert.equal(container.querySelector('button') === null, true, template);
+        assert.equal(container.querySelector('input') === null, true, template);
+        assert.equal(container.querySelector('[role]') === null, true, template);
       });
     }
   }

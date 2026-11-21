@@ -113,13 +113,13 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
       label: 'Search',
       onExpandedChange: function (next) { calls.push(next); }
     });
-    assert.equal(parts.input, null, 'collapsed draws no input');
+    assert.equal(parts.input === null, true, 'collapsed draws no input');
     assert.ok(parts.trigger, 'collapsed draws the trigger');
     assert.equal(parts.trigger.getAttribute('aria-label'), 'Search');
     await act(async function () {
       parts.trigger.focus();
     });
-    assert.equal(parts.container.querySelector('input'), null, 'focus alone must not expand');
+    assert.equal(parts.container.querySelector('input') === null, true, 'focus alone must not expand');
     assert.deepEqual(calls, []);
   });
 
@@ -157,7 +157,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
     assert.ok(input, 'started expanded');
     await keydown(input, 'Escape');
     assert.deepEqual(calls, [true, false]);
-    assert.equal(parts.container.querySelector('input'), null, 'field unmounted after collapse');
+    assert.equal(parts.container.querySelector('input') === null, true, 'field unmounted after collapse');
     const trigger = parts.container.querySelector('button');
     assert.ok(trigger, 'trigger remounted after collapse');
     assert.equal(document.activeElement === trigger, true, 'focus returns to the remounted trigger');
@@ -178,7 +178,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
     });
     assert.deepEqual(blurs, [true], 'the owner onBlur still runs');
     assert.deepEqual(calls, [true, false], 'an empty blur asks the owner to collapse');
-    assert.equal(empty.container.querySelector('input'), null);
+    assert.equal(empty.container.querySelector('input') === null, true);
 
     const populated = await renderExpandable(registryFor('carbon'), {
       onExpandedChange: function (next) { calls.push(next); }
@@ -206,7 +206,7 @@ describe('ExpandableSearch: the expand and collapse contract', function () {
       parts.trigger.click();
     });
     assert.deepEqual(calls, [true], 'the request reaches the owner');
-    assert.equal(parts.container.querySelector('input'), null, 'the owner kept it collapsed');
+    assert.equal(parts.container.querySelector('input') === null, true, 'the owner kept it collapsed');
 
     const opened = await renderExpandable(registryFor('carbon', undefined, [LESSONS_LAYER]), { expanded: true, label: 'Search' });
     await keydown(opened.input, 'Escape');

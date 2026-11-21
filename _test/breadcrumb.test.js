@@ -55,7 +55,7 @@ describe('Breadcrumb: every sample state under every template', function () {
         const gap = t[small ? 'control.breadcrumb_gap_small' : 'control.breadcrumb_gap'];
 
         // The landmark and its ordered list at the breadcrumb type
-        assert.notEqual(parts.nav, null);
+        assert.equal(parts.nav !== null, true);
         assert.equal(parts.nav.getAttribute('aria-label'), 'Breadcrumb');
         assert.equal(parts.nav.style.fontSize, t[small ? 'type.breadcrumb_small' : 'type.breadcrumb'].fontSize + 'px');
         if (small === true) {
@@ -63,7 +63,7 @@ describe('Breadcrumb: every sample state under every template', function () {
           assert.ok(linkText !== null, 'the small link renders');
           assert.equal(linkText.style.letterSpacing, t['type.breadcrumb_small'].letterSpacing + 'px', 'the small link reads type.breadcrumb_small');
         }
-        assert.notEqual(parts.list, null);
+        assert.equal(parts.list !== null, true);
         assert.equal(parts.items.length, props.items.length);
 
         for (let index = 0; index < props.items.length; index++) {
@@ -74,7 +74,7 @@ describe('Breadcrumb: every sample state under every template', function () {
           if (item.overflow !== undefined) {
             // The overflow trigger: the breadcrumb box, the glyph and its ink
             const trigger = li.querySelector('[role="button"]');
-            assert.notEqual(trigger, null);
+            assert.equal(trigger !== null, true);
             const face = trigger.parentElement;
             assert.equal(face.style.width, t['control.breadcrumb_overflow_width'] + 'px', 'trigger width');
             assert.equal(face.style.height, (small ? t['control.breadcrumb_overflow_height_small'] : t['control.breadcrumb_overflow_height']) + 'px', 'trigger height');
@@ -97,7 +97,7 @@ describe('Breadcrumb: every sample state under every template', function () {
               assert.equal(text.style.color, cssValue('color', t['color.breadcrumb_current']));
               assert.equal(text.style.textDecorationLine, '', 'no underline');
             } else if (item.href !== undefined) {
-              assert.notEqual(link, null, 'an href item is a link');
+              assert.equal(link !== null, true, 'an href item is a link');
               assert.equal(link.getAttribute('href'), item.href);
             } else {
               assert.equal(text.style.color, cssValue('color', t['color.link_primary']), 'link-styled text');
@@ -132,7 +132,7 @@ describe('Breadcrumb: the overflow menu', function () {
     const trigger = parts.items[1].querySelector('[role="button"]');
     await fire(trigger, new MouseEvent('click', { bubbles: true }));
     const menu = parts.rendered.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'the menu mounts');
+    assert.equal(menu !== null, true, 'the menu mounts');
     // The constant offset: 10 below the trigger, 13 left of its start
     assert.equal(menu.style.top, '10px');
     assert.equal(menu.style.left, '-13px');
@@ -154,7 +154,7 @@ describe('Breadcrumb: the overflow menu', function () {
     const t = buildNative('carbon').tokens;
     await fire(trigger, new Event('focusin', { bubbles: true }));
     const underline = parts.items[1].querySelector('[data-part="focusUnderline"]');
-    assert.notEqual(underline, null, 'the underline shows while focused');
+    assert.equal(underline !== null, true, 'the underline shows while focused');
     assert.equal(underline.style.width, t['control.breadcrumb_overflow_underline_width'] + 'px');
     assert.equal(underline.style.backgroundColor, cssValue('backgroundColor', t['color.focus']));
   });

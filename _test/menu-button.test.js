@@ -28,7 +28,7 @@ describe('MenuButton: every sample state under every template', function () {
         const t = buildNative(template).tokens;
         const container = await render(React.createElement(registryFor(template).MenuButton, state.props));
         const trigger = container.querySelector('button');
-        assert.notEqual(trigger, null, 'the trigger mounts');
+        assert.equal(trigger !== null, true, 'the trigger mounts');
         const kind = state.props.kind || 'primary';
         if (kind !== 'ghost' && state.props.disabled !== true) {
           assert.equal(trigger.style.minWidth, t['control.menu_button_min_width'] + 'px', 'the floor applies where measurable');
@@ -36,15 +36,15 @@ describe('MenuButton: every sample state under every template', function () {
         const menu = container.querySelector('[role="menu"]');
         const open = state.props.open === true;
         if (open) {
-          assert.notEqual(menu, null, 'the menu mounts while open');
+          assert.equal(menu !== null, true, 'the menu mounts while open');
           assert.equal(menu.style.backgroundColor, cssValue('backgroundColor', t['color.list_container']), 'the list container fill');
           const size = state.props.size || 'lg';
           const heights = { xs: 'size.size_xsmall', sm: 'control.menu_item_height', md: 'size.size_medium', lg: 'size.size_large' };
           const item = menu.querySelector('[role="menuitem"], [role="menuitemcheckbox"]');
-          assert.notEqual(item, null);
+          assert.equal(item !== null, true);
           assert.equal(item.previousElementSibling.style.minHeight, t[heights[size]] + 'px', 'the menu takes the button size');
         } else {
-          assert.equal(menu, null, 'closed: no menu');
+          assert.equal(menu === null, true, 'closed: no menu');
         }
       });
     }
@@ -64,7 +64,7 @@ describe('MenuButton: every sample state under every template', function () {
       trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     const menu = container.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'the trigger opens the menu');
+    assert.equal(menu !== null, true, 'the trigger opens the menu');
     const rotator = trigger.querySelector('svg').parentElement;
     assert.ok(rotator.style.transform.includes('180deg'), 'the chevron turns while open');
     const first = menu.querySelector('[role="menuitem"], [role="menuitemcheckbox"]');
@@ -72,8 +72,8 @@ describe('MenuButton: every sample state under every template', function () {
       first.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     assert.deepEqual(chosen, ['First action'], 'onChange got the chosen entry');
-    assert.equal(container.querySelector('[role="menu"]'), null, 'the choice closes the menu');
-    assert.equal(document.activeElement, trigger, 'the choice refocuses the trigger');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'the choice closes the menu');
+    assert.equal(document.activeElement === trigger, true, 'the choice refocuses the trigger');
   });
 
 });
@@ -87,7 +87,7 @@ describe('MenuButton: the menu takes the trigger width', function () {
       open: true
     }));
     const menu = container.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'the menu mounts');
+    assert.equal(menu !== null, true, 'the menu mounts');
     const trigger = container.querySelector('button');
     trigger.getBoundingClientRect = function () {
       return { x: 37, y: 0, width: 192, height: 48, top: 0, right: 229, bottom: 48, left: 37 };
@@ -117,11 +117,11 @@ describe('MenuButton: `open` seeds and re-syncs, never locks', function () {
       }
     }));
     const menu = container.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'open: true mounts the menu');
+    assert.equal(menu !== null, true, 'open: true mounts the menu');
     await act(async function () {
       menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closes a seeded menu');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closes a seeded menu');
     assert.equal(closed, 1, 'onClose fired once for the open -> close cycle');
   });
 
@@ -139,11 +139,11 @@ describe('MenuButton: `open` seeds and re-syncs, never locks', function () {
       await act(async function () {
         menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
       });
-      assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed the seeded menu');
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closed the seeded menu');
       await act(async function () { root.render(el(false)); });
-      assert.equal(container.querySelector('[role="menu"]'), null, 'open: false keeps it closed');
+      assert.equal(container.querySelector('[role="menu"]') === null, true, 'open: false keeps it closed');
       await act(async function () { root.render(el(true)); });
-      assert.notEqual(container.querySelector('[role="menu"]'), null, 'open: true again re-syncs it open');
+      assert.equal(container.querySelector('[role="menu"]') !== null, true, 'open: true again re-syncs it open');
     } finally {
       await act(async function () { root.unmount(); });
       container.remove();
@@ -161,7 +161,7 @@ describe('MenuButton: the trigger press does not take focus', function () {
       open: true
     }));
     const menu = container.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'open: true mounts the menu');
+    assert.equal(menu !== null, true, 'open: true mounts the menu');
     const trigger = container.querySelector('button');
     let prevented = false;
     const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
@@ -175,7 +175,7 @@ describe('MenuButton: the trigger press does not take focus', function () {
     });
     assert.equal(prevented, true, 'the trigger mousedown prevented its default');
     assert.equal(event.defaultPrevented, true, 'the DOM event records it');
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the menu stays open');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the menu stays open');
   });
 
 });
@@ -190,12 +190,12 @@ describe('MenuButton: a re-opened menu measures the anchor at that open', functi
     }));
     const trigger = container.querySelector('button');
     const menu = container.querySelector('[role="menu"]');
-    assert.notEqual(menu, null, 'the seeded menu mounts');
+    assert.equal(menu !== null, true, 'the seeded menu mounts');
     // Close, move the trigger, open again
     await act(async function () {
       menu.querySelector('[role="menuitem"]').dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'Escape closed it');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'Escape closed it');
     trigger.getBoundingClientRect = function () {
       return { x: 37, y: 400, width: 192, height: 48, top: 400, right: 229, bottom: 448, left: 37 };
     };
@@ -203,7 +203,7 @@ describe('MenuButton: a re-opened menu measures the anchor at that open', functi
       trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
     const reopened = container.querySelector('[role="menu"]');
-    assert.notEqual(reopened, null, 'the trigger re-opened it');
+    assert.equal(reopened !== null, true, 'the trigger re-opened it');
     assert.equal(reopened.style.top, '448px', 'the menu positions from the anchor at this open');
   });
 

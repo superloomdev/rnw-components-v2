@@ -33,7 +33,7 @@ export default function IconButton (ctx) {
   const SIZES = Object.freeze({ xs: 'sizeXsmall', sm: 'sizeSmall', md: 'sizeMedium', lg: 'size' });
 
   // The press phase -> the border and elevation cell's state (they have no focus or selected cells)
-  const PLAIN_PHASES = Object.freeze({ '': '', _hover: '_hover', _active: '_active', _focus: '', _disabled: '_disabled', _selected: '' });
+  const PLAIN_PHASES = Object.freeze({ enabled: 'enabled', hover: 'hover', active: 'active', focus: 'enabled', disabled: 'disabled', selected: 'enabled' });
 
 
   /********************************************************************
@@ -65,12 +65,12 @@ export default function IconButton (ctx) {
     // to the kind's cell
     const fillMap = props.fillLeaf !== undefined || props.fillHoverLeaf !== undefined || props.fillActiveLeaf !== undefined
       ? {
-        '': props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix,
-        _hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_hover',
-        _active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_active'),
-        _focus: props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix + '_focus',
-        _disabled: containerPrefix + '_disabled',
-        _selected: containerPrefix + '_selected'
+        enabled: props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix,
+        hover: props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_hover',
+        active: props.fillActiveLeaf !== undefined ? props.fillActiveLeaf : (props.fillHoverLeaf !== undefined ? props.fillHoverLeaf : containerPrefix + '_active'),
+        focus: props.fillLeaf !== undefined ? props.fillLeaf : containerPrefix + '_focus',
+        disabled: containerPrefix + '_disabled',
+        selected: containerPrefix + '_selected'
       }
       : null;
     const press = ctx.pressPresentation(state, containerPrefix, fillMap !== null ? { colors: fillMap } : undefined);
@@ -78,14 +78,14 @@ export default function IconButton (ctx) {
     // selected cells, `selected === false` the unselected-toggle cells; any
     // other value is an ordinary button at the family cells. The toggle's
     // face keeps its paint through an interaction, as the selected face does
-    const toggle = state.selected === true ? '_selected' : props.selected === false ? '_unselected' : null;
+    const toggle = state.selected === true ? 'selected' : props.selected === false ? 'unselected' : null;
     const iconLeaf = toggle !== null && state.disabled !== true
-      ? 'icon_button_' + kind + '_icon' + toggle
+      ? ctx.stateLeaf('icon_button_' + kind + '_icon', toggle)
       : Utils.inArray(ICON_KINDS, kind)
-        ? 'icon_button_' + kind + '_icon' + press.phase
-        : 'button_' + kind + '_label' + press.phase;
-    const borderLeaf = 'button_' + kind + '_border' + PLAIN_PHASES[press.phase];
-    const shadow = ctx.token('shadow.button_' + kind + PLAIN_PHASES[press.phase]);
+        ? ctx.stateLeaf('icon_button_' + kind + '_icon', press.phase)
+        : ctx.stateLeaf('button_' + kind + '_label', press.phase);
+    const borderLeaf = ctx.stateLeaf('button_' + kind + '_border', PLAIN_PHASES[press.phase]);
+    const shadow = ctx.token(ctx.stateLeaf('shadow.button_' + kind, PLAIN_PHASES[press.phase]));
 
     // The focus ring; a ring drawn with the border gives way to a pressed
     // border the kind states apart, and keeps the kind's elevation beside it.
@@ -106,12 +106,12 @@ export default function IconButton (ctx) {
     // The toggle's resting container paint is the icon-button pair's own:
     // where the presentation's container carries the rest fill (the selected
     // phase, the resting phase, or every phase of a layered press mode), a
-    // toggle reads its `_selected` or `_unselected` cell instead of the
+    // toggle reads its `selected` or `unselected` cell instead of the
     // family's; an interaction face a highlight mode paints stays the
     // family's, and a disabled control keeps its disabled cell
     const face = toggle !== null && state.disabled !== true &&
-      (Utils.isEmptyString(press.phase) || press.phase === '_selected' || ctx.enum('feedback.press') !== 'highlight')
-      ? Object.assign({}, press.container, { backgroundColor: ctx.color('icon_button_' + kind + '_container' + toggle) })
+      (press.phase === 'enabled' || press.phase === 'selected' || ctx.enum('feedback.press') !== 'highlight')
+      ? Object.assign({}, press.container, { backgroundColor: ctx.color(ctx.stateLeaf('icon_button_' + kind + '_container', toggle)) })
       : press.container;
 
     // The button: the face carries the square and all of its paint where it

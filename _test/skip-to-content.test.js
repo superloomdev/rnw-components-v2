@@ -27,7 +27,7 @@ describe('SkipToContent: every sample state under every template', function () {
         const t = buildNative(template).tokens;
         const container = await render(React.createElement(registryFor(template).SkipToContent, state.props));
         const link = container.querySelector('a[href]');
-        assert.notEqual(link, null, 'the link mounts');
+        assert.equal(link !== null, true, 'the link mounts');
         assert.equal(link.style.width, '1px', 'rest: one pixel wide');
         assert.equal(link.style.height, '1px', 'rest: one pixel tall');
         assert.equal(link.style.overflowX, 'hidden', 'rest: clipped');
@@ -43,7 +43,7 @@ describe('SkipToContent: every sample state under every template', function () {
         assert.equal(link.style.backgroundColor, cssValue('backgroundColor', t['color.skip_link_container']), 'focused: the fill');
         assert.equal(link.style.zIndex, String(t['stacking.skip_link']), 'focused: the stacking');
         const text = link.querySelector('div');
-        assert.notEqual(text, null);
+        assert.equal(text !== null, true);
         assert.equal(text.style.fontSize, t['type.skip_link'].fontSize + 'px', 'focused: the type set');
         assert.equal(text.style.textDecoration, 'underline', 'focused: the link text is underlined, as the reference draws it');
       });
@@ -60,7 +60,7 @@ describe('SkipToContent: the web-only rule', function () {
     try {
       Platform.OS = 'ios';
       const container = await render(React.createElement(registryFor('carbon').SkipToContent, {}));
-      assert.equal(container.querySelector('a[href]'), null, 'no link mounts on ios');
+      assert.equal(container.querySelector('a[href]') === null, true, 'no link mounts on ios');
     } finally {
       Platform.OS = real;
     }

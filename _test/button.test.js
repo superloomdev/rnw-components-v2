@@ -99,9 +99,11 @@ describe('Button: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': geometry, fill and label come from the theme', async function () {
         const t = buildNative(template).tokens;
         const props = state.props;
-        // The kind's own cells for the state: disabled, then selected, then rest
+        // The kind's own cells for the state: disabled, then selected, then
+        // rest; the border has no selected cell
         const cell = 'button_' + (props.kind || 'primary');
         const phase = props.disabled ? '_disabled' : props.selected ? '_selected' : '';
+        const borderPhase = props.disabled ? '_disabled' : '';
         const parts = await renderButton(registryFor(template), props);
         const set = t['type.button_label'];
         assert.equal(parts.root.style.minHeight, t[HEIGHTS[props.size || 'lg']] + 'px');
@@ -120,7 +122,7 @@ describe('Button: every sample state under every template', function () {
         assert.equal(parts.root.style.minWidth, t['control.button_min_width'] + 'px');
         assert.equal(parts.root.style.backgroundColor, cssValue('backgroundColor', t['color.' + cell + '_container' + phase]));
         assert.equal(parts.label.style.color, cssValue('color', t['color.' + cell + '_label' + phase]));
-        assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.' + cell + '_border' + (phase === '_selected' ? '' : phase)]));
+        assert.equal(parts.root.style.borderTopColor, cssValue('borderTopColor', t['color.' + cell + '_border' + borderPhase]));
         assert.equal(parts.label.style.fontSize, set.fontSize + 'px');
         assert.equal(parts.label.style.lineHeight, set.lineHeight + 'px');
         assert.equal(parts.label.textContent, props.children);

@@ -193,8 +193,8 @@ ToggletipButton is the information button that opens and closes a Toggletip; it 
 
 | Metric | Rule |
 |---|---|
-| `focusWidth` | constant `1` (decision) |
-| `focusOffset` | constant `0` (decision) |
+| `focusWidth` | `control.toggletip_focus_width` |
+| `focusOffset` | `control.toggletip_focus_offset` |
 
 ### States (sample.js)
 

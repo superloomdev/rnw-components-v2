@@ -43,7 +43,7 @@ const EXPECTED_NAMES = [
   'getAnchoredPosition', 'getMenuPosition', 'getProgressValue', 'getSafeAreaInsets', 'getSearchHandlers',
   'isLabelMatch', 'isRtl',
   'getActiveElement', 'focusNode', 'blurNode', 'nodeContains', 'queryNode', 'queryNodes',
-  'measureRect', 'getViewportSize', 'getComputedStyleOf', 'onWindowEvent', 'onDocumentEvent', 'requestFrame',
+  'measureRect', 'getViewportSize', 'getComputedStyleOf', 'onWindowEvent', 'onDocumentEvent', 'onNodeEvent', 'fileEntries', 'canPickFiles', 'pickFiles', 'requestFrame',
   'useA11yId', 'useAccordionItemState', 'useAnchoredPosition', 'useButton', 'useCheckbox', 'useCombobox',
   'useControllableState', 'useDatePickerCalendar', 'useDisclosure', 'useEscapeKey',
   'useFocusState', 'useFocusTrap', 'useFormSubmit', 'useHeadingLevel', 'useInteractionState',

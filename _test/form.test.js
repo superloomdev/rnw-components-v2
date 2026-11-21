@@ -26,7 +26,7 @@ describe('Form: the role exists only with a name', function () {
       const container = await render(React.createElement(Registry.Form, { accessibilityLabel: 'Checkout' },
         React.createElement(Registry.Text, { text: 'fields' })));
       const form = container.querySelector('[role="form"]');
-      assert.notEqual(form, null);
+      assert.equal(form !== null, true);
       assert.equal(form.getAttribute('aria-label'), 'Checkout');
     });
   }
@@ -34,7 +34,7 @@ describe('Form: the role exists only with a name', function () {
   test('an unlabelled Form is a plain container', async function () {
     const Registry = buildSystem('default', { Form: factories.Form, Text: factories.Text });
     const container = await render(React.createElement(Registry.Form, null, 'fields'));
-    assert.equal(container.querySelector('[role="form"]'), null);
+    assert.equal(container.querySelector('[role="form"]') === null, true);
   });
 
   test('a string child renders through the registry Text in the compact type', async function () {
@@ -94,7 +94,7 @@ describe('FormGroup: the labelled fieldset', function () {
       const container = await render(React.createElement(Registry.FormGroup, { legendText: 'Legend' },
         React.createElement(Registry.Text, { text: 'field' })));
       const group = container.querySelector('[role="group"]');
-      assert.notEqual(group, null);
+      assert.equal(group !== null, true);
       const legend = container.querySelector('[id]');
       assert.equal(legend.textContent, 'Legend');
       assert.equal(legend.style.fontSize, t['type.field_label'].fontSize + 'px');

@@ -28,7 +28,7 @@ describe('Tab: every sample state under every template', function () {
       test(template + ' / ' + state.label + ': the tab draws its label and role', async function () {
         const container = await render(React.createElement(registryFor(template).Tab, state.props));
         const tab = container.querySelector('[role="tab"]');
-        assert.notEqual(tab, null);
+        assert.equal(tab !== null, true);
         assert.equal(tab.getAttribute('aria-selected'), 'false');
         assert.equal(tab.getAttribute('aria-disabled'), state.props.disabled === true ? 'true' : null);
         assert.equal(tab.previousElementSibling.textContent.includes(state.props.label), true);

@@ -213,7 +213,7 @@ describe('Loading: an inactive spinner closes then unmounts', function () {
         setTimeout(resolve, t['motion.duration_slow_02'] + 50);
       });
     });
-    assert.equal(parts.container.firstElementChild, null);
+    assert.equal(parts.container.firstElementChild === null, true);
   });
 
 });

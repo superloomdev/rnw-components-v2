@@ -90,10 +90,10 @@ describe('IconButton: every sample state under every template', function () {
         const props = state.props;
         const kind = props.kind || 'primary';
         const disabled = props.disabled === true;
-        // A toggle's resting face is the member's own cell: `_selected`
-        // when true, `_unselected` when false; every other state reads the
+        // A toggle's resting face is the member's own cell: `selected`
+        // when true, `unselected` when false; every other state reads the
         // family's cells
-        const toggle = disabled ? '' : props.selected === true ? '_selected' : props.selected === false ? '_unselected' : '';
+        const toggle = disabled ? null : props.selected === true ? 'selected' : props.selected === false ? 'unselected' : null;
         const phase = disabled ? '_disabled' : '';
         const parts = await renderIconButton(registryFor(template), props);
 
@@ -102,13 +102,13 @@ describe('IconButton: every sample state under every template', function () {
         assert.equal(parts.face.style.width, side + 'px');
         assert.equal(parts.face.style.height, side + 'px');
         assert.equal(parts.face.style.backgroundColor, cssValue('backgroundColor',
-          t[toggle !== '' ? 'color.icon_button_' + kind + '_container' + toggle : 'color.button_' + kind + '_container' + phase]));
+          t[toggle !== null ? 'color.icon_button_' + kind + '_container_' + toggle : 'color.button_' + kind + '_container' + phase]));
         assert.equal(parts.face.style.borderTopColor, cssValue('borderTopColor', t['color.button_' + kind + '_border' + phase]));
         assert.equal(parts.face.style.borderTopWidth, t['border.width_01'] + 'px');
         assert.equal(parts.face.style.borderTopLeftRadius, t['control.button_radius'] + 'px');
 
         // The one icon, sized and colored by the theme
-        const iconLeaf = toggle !== '' ? 'icon_button_' + kind + '_icon' + toggle
+        const iconLeaf = toggle !== null ? 'icon_button_' + kind + '_icon_' + toggle
           : ICON_KINDS.indexOf(kind) >= 0 ? 'icon_button_' + kind + '_icon' + phase : 'button_' + kind + '_label' + phase;
         assert.equal(parts.icon.getAttribute('width'), String(t['control.icon_button_icon_size']));
         assert.equal(parts.icon.getAttribute('height'), String(t['control.icon_button_icon_size']));
@@ -195,7 +195,7 @@ describe('IconButton: states drive the theme through the DOM', function () {
 
   test('the compact tooltip opens on hover and names the button', async function () {
     const parts = await renderIconButton(registryFor('carbon'), { icon: 'add', label: 'Add thing', enterDelayMs: undefined });
-    assert.equal(parts.popover(), null);
+    assert.equal(parts.popover() === null, true);
     await fire(parts.root, new Event('pointerover', { bubbles: true }));
     await act(async function () {
       await new Promise(function (resolve) {
@@ -203,7 +203,7 @@ describe('IconButton: states drive the theme through the DOM', function () {
       });
     });
     const popover = parts.popover();
-    assert.notEqual(popover, null);
+    assert.equal(popover !== null, true);
     assert.equal(popover.querySelector('[dir="auto"]').textContent, 'Add thing');
   });
 

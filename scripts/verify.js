@@ -384,8 +384,10 @@ if (!GATES_ONLY) {
 
     if (runCheck('fire', function () {
       // The CI 'Run fire' step's heap tripwire, mirrored so local and CI
-      // see the same child-termination behavior
-      execSync('node ../scripts/guard.js --seconds 3600 -- node fire.js', {
+      // see the same child-termination behavior. The full output goes to
+      // test-results/fire.log as on CI; each row's own guard rewrites the
+      // shared last-run.log, so that file cannot hold the fire run
+      execSync('node ../scripts/guard.js --seconds 3600 --log test-results/fire.log -- node fire.js', {
         cwd: path.join(REPO_ROOT, '_test'),
         stdio: 'inherit',
         env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=3072' }

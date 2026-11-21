@@ -8,7 +8,7 @@ const roster = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data', 'roster.ca
 
 const EXPECTED_KEYS = [
   'name', 'family', 'tier', 'source', 'description', 'platform', 'enums',
-  'behaviors', 'parent', 'reference', 'carbon_twin', 'material_twin',
+  'behaviors', 'parent', 'reference', 'carbon_twin',
   'diff_budget', 'flags', 'status',
 ];
 const NULL_KEYS = EXPECTED_KEYS.filter((k) => k !== 'name' && k !== 'source');

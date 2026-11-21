@@ -22,7 +22,7 @@ const withEnums = components.filter(function (component) {
   return rowsByName[component.name].enums.length > 0;
 });
 const TEMPLATE_NAMES = Object.keys(TEMPLATES);
-// A third render under the lessons-pinned theme, so a value only the retired
+// A third render under the lessons-pinned theme, so a value only the
 // retired template picked still distinguishes itself somewhere
 const RENDER_TEMPLATES = TEMPLATE_NAMES.concat(['lessons']);
 

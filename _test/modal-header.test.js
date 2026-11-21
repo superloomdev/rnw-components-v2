@@ -22,7 +22,7 @@ describe('ModalHeader: the member draws its cells', function () {
       const rendered = await render(React.createElement(Registry.ModalHeader, { label: 'Account', title: 'T' }));
       const header = rendered.firstElementChild;
       const closeSeat = header.nextElementSibling;
-      assert.notEqual(closeSeat, null, 'the close seat is a sibling of the header');
+      assert.equal(closeSeat !== null, true, 'the close seat is a sibling of the header');
 
       assert.equal(header.style.paddingTop, t['control.dialog_padding_top'] + 'px');
       assert.equal(header.style.paddingLeft, t['control.dialog_padding_inline'] + 'px');
@@ -43,7 +43,7 @@ describe('ModalHeader: the member draws its cells', function () {
 
       assert.equal(closeSeat.style.display, t['anatomy.dialog_close'] === 'shown' ? 'flex' : 'none');
       const closeButton = closeSeat.querySelector('[role="button"]');
-      assert.notEqual(closeButton, null);
+      assert.equal(closeButton !== null, true);
       const closeSvg = closeSeat.querySelector('svg');
       assert.equal(closeSvg.getAttribute('width'), String(t['control.dialog_close_icon_size']));
       await cleanup();

@@ -29,7 +29,12 @@ const MODULES = join(TEST, 'node_modules');
 const PORT = 5301;
 
 const CHECK = process.argv.indexOf('--contract-check') !== -1;
-const ROWS = process.argv.slice(2).filter(function (arg) { return arg.indexOf('--') !== 0; });
+// `--viewport <width>` probes at another window width (a breakpoint rule
+// read from the window, not the body) and writes `<Row>@<width>.json`
+const VIEWPORT_AT = process.argv.indexOf('--viewport');
+const VIEWPORT = VIEWPORT_AT === -1 ? null : Number(process.argv[VIEWPORT_AT + 1]);
+const ROWS = process.argv.slice(2).filter(function (arg, i) { return arg.indexOf('--') !== 0 && i + 1 !== VIEWPORT_AT; });
+const SUFFIX = VIEWPORT === null ? '' : '@' + VIEWPORT;
 
 // The fields every part reports: its box, the computed properties the recipe
 // measures, and the trimmed text
@@ -78,7 +83,7 @@ The generated probe page's entry: each row's mount file rendered as one
 cell per recipe state, in the reference page's cell shape. A mount may
 fix the body's height (`bodyHeight`) or stage it (`stage`: the body
 becomes the containing block for the fixed or absolute layers inside
-it), and `window.__probePrepare(row, state)` lets the driver call the
+it), and `window.prepareProbe(row, state)` lets the driver call the
 mount's `prepare(body, props)` for one cell.
 
 @param {Array} rows - Row names
@@ -96,6 +101,7 @@ function probeEntry (rows) {
   return `import React from 'react';
 import { createRoot } from 'react-dom/client';
 import * as WebUpstream from '@carbon/react';
+import * as IbmProducts from '@carbon/ibm-products';
 import * as UpstreamIcons from '@carbon/icons-react';
 import { bodyCompact01, bodyCompact02, fontFamilies } from '@carbon/type';
 import ICONS from ${JSON.stringify(join(REPO, 'data', 'icons.json'))};
@@ -120,8 +126,8 @@ function fixtureTextStyle (name) {
     lineHeight: set.lineHeight
   };
 }
-const upstream = Object.assign({}, WebUpstream, { icon: icon, fixtureTextStyle: fixtureTextStyle });
-window.__probePrepare = function (row, state) {
+const upstream = Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, icon: icon, fixtureTextStyle: fixtureTextStyle });
+window.prepareProbe = function (row, state) {
   const mount = MOUNTS[row];
   if (mount === undefined || typeof mount.prepare !== 'function') {
     return;
@@ -168,7 +174,7 @@ root.appendChild(grid);
 document.fonts.ready.then(function () {
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      window.__probe = { ready: true };
+      window.probeStatus = { ready: true };
     });
   });
 });
@@ -283,7 +289,7 @@ async function prepare (page, row, state, mount) {
     return;
   }
   await page.evaluate(function (input) {
-    window.__probePrepare(input.row, input.state);
+    window.prepareProbe(input.row, input.state);
   }, { row: row, state: state });
   await page.waitForTimeout(400);
 
@@ -722,21 +728,21 @@ async function main () {
   await new Promise(function (done) { app.listen(PORT, done); });
   const browser = await chromium.launch();
   // The gate's own width (`playwright.config.js:22`): modal and notification widths are breakpoint rules
-  const page = await browser.newPage({ viewport: { width: 1280, height: 2400 } });
+  const page = await browser.newPage({ viewport: { width: VIEWPORT === null ? 1280 : VIEWPORT, height: 2400 } });
   const mounts = {};
   for (const row of ROWS) {
     mounts[row] = (await import(join(RECIPES, 'probe', row + '.mount.js'))).default;
   }
   await page.goto('http://localhost:' + PORT + '/');
-  await page.waitForFunction(function () { return window.__probe && window.__probe.ready === true; }, null, { timeout: 30000 });
+  await page.waitForFunction(function () { return window.probeStatus && window.probeStatus.ready === true; }, null, { timeout: 30000 });
   await page.waitForTimeout(400);
   for (const row of ROWS) {
     const result = await probeRow(page, row, mounts[row]);
-    const file = join(RECIPES, 'probe', row + '.json');
+    const file = join(RECIPES, 'probe', row + SUFFIX + '.json');
     writeFileSync(file, JSON.stringify(result, null, 2) + '\n');
     process.stdout.write('wrote ' + file + '\n');
     if (Array.isArray(mounts[row].cells)) {
-      const cellsFile = join(RECIPES, 'probe', row + '.cells.txt');
+      const cellsFile = join(RECIPES, 'probe', row + SUFFIX + '.cells.txt');
       writeFileSync(cellsFile, cellsCheck(mounts[row], result));
       process.stdout.write('wrote ' + cellsFile + '\n');
     }

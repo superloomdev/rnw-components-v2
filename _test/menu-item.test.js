@@ -38,7 +38,7 @@ describe('MenuItem: a submenu entry draws the caret cell', function () {
       assert.equal(item.getAttribute('aria-haspopup'), 'true');
       assert.equal(item.getAttribute('aria-expanded'), 'false');
       const svg = item.parentElement.querySelector('svg');
-      assert.notEqual(svg, null, 'the caret draws');
+      assert.equal(svg !== null, true, 'the caret draws');
       const path = svg.querySelector('path');
       assert.equal(t['icon.caret_right'].paths.some(function (glyph) {
         return glyph.d === path.getAttribute('d');
@@ -58,29 +58,29 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
     const submenu = container.querySelector('[role="menu"] [role="menu"]');
-    assert.notEqual(submenu, null, 'ArrowRight opens the submenu');
+    assert.equal(submenu !== null, true, 'ArrowRight opens the submenu');
     const subItem = submenu.querySelector('[role="menuitem"]');
-    assert.equal(document.activeElement, subItem, 'the first sub-item takes focus');
+    assert.equal(document.activeElement === subItem, true, 'the first sub-item takes focus');
     // ArrowLeft closes only the submenu and refocuses the parent item
     await act(async function () {
       subItem.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowLeft' }));
     });
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu closed');
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the root stays open');
-    assert.equal(document.activeElement, item, 'focus returns to the parent item');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'the submenu closed');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the root stays open');
+    assert.equal(document.activeElement === item, true, 'focus returns to the parent item');
     // Reopen, then Escape closes only the submenu too
     await act(async function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
     const again = container.querySelector('[role="menu"] [role="menu"]');
-    assert.notEqual(again, null, 'the submenu reopened');
+    assert.equal(again !== null, true, 'the submenu reopened');
     const againItem = again.querySelector('[role="menuitem"]');
     await act(async function () {
       againItem.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
     });
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'Escape closed the submenu');
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the root survives the submenu Escape');
-    assert.equal(document.activeElement, item, 'Escape refocuses the parent item');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'Escape closed the submenu');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the root survives the submenu Escape');
+    assert.equal(document.activeElement === item, true, 'Escape refocuses the parent item');
   });
 
   test('hover opens only after the 100 ms delay: closed inside it', async function () {
@@ -88,13 +88,13 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     await act(async function () {
       item.dispatchEvent(new Event('pointerover', { bubbles: true }));
     });
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'inside the delay: still closed');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'inside the delay: still closed');
     await act(async function () {
       await new Promise(function (resolve) {
         setTimeout(resolve, 110);
       });
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'after 100 ms the submenu opens');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'after 100 ms the submenu opens');
   });
 
   test('a press on the parent keeps the submenu open; a press outside the item closes it', async function () {
@@ -102,7 +102,7 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     await act(async function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu opened');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'the submenu opened');
     const subItem = container.querySelector('[role="menu"] [role="menu"] [role="menuitem"]');
     // The press moves focus from the sub-item back to the parent: the parent
     // sits inside the item's dismissal root, so the submenu survives both
@@ -111,15 +111,15 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
       leave.relatedTarget = item;
       subItem.dispatchEvent(leave);
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'focusing the parent leaves the submenu open');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'focusing the parent leaves the submenu open');
     await act(async function () {
       item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'a press on the parent leaves the submenu open');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'a press on the parent leaves the submenu open');
     await act(async function () {
       document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'a press outside the item closes the submenu');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'a press outside the item closes the submenu');
   });
 
   test('a leaf choice inside the submenu reports, closes the submenu and leaves the controlled root open', async function () {
@@ -147,8 +147,8 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     });
     assert.deepEqual(chosen, ['Email'], 'the leaf entry reports');
     assert.equal(closed, 1, 'onClose fired once');
-    assert.equal(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu closed');
-    assert.notEqual(container.querySelector('[role="menu"]'), null, 'the controlled root stays open');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'the submenu closed');
+    assert.equal(container.querySelector('[role="menu"]') !== null, true, 'the controlled root stays open');
   });
 
   test('a leaf choice inside the submenu unmounts an uncontrolled root', async function () {
@@ -172,7 +172,7 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     await act(async function () {
       leaf.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    assert.equal(container.querySelector('[role="menu"]'), null, 'the root closed');
+    assert.equal(container.querySelector('[role="menu"]') === null, true, 'the root closed');
   });
 
 });
@@ -188,7 +188,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
     const submenu = container.querySelector('[role="menu"] [role="menu"]');
-    assert.notEqual(submenu, null, 'the submenu opened');
+    assert.equal(submenu !== null, true, 'the submenu opened');
     assert.equal(submenu.style.left, 300 + t['control.menu_submenu_offset_end'] + 'px', 'x = itemEnd + offset_end');
     assert.equal(submenu.style.top, 50 + t['control.menu_submenu_offset_block'] + 'px', 'y = itemTop + offset_block');
   });
@@ -219,7 +219,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
     const submenu = container.querySelector('[role="menu"] [role="menu"]');
-    assert.notEqual(submenu, null, 'the submenu opened');
+    assert.equal(submenu !== null, true, 'the submenu opened');
     try {
       assert.equal(submenu.style.left, 900 - 600 - t['control.menu_submenu_offset_start'] + 'px', 'x = itemStart - width - offset_start');
     } finally {
@@ -236,7 +236,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
     await act(async function () {
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'ArrowRight opens its submenu');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'ArrowRight opens its submenu');
   });
 
   test('press then ArrowRight in one act leaves the submenu open and exits', async function () {
@@ -245,7 +245,7 @@ describe('MenuItem: the submenu placement reads the member cells', function () {
       item.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       item.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
-    assert.notEqual(container.querySelector('[role="menu"] [role="menu"]'), null, 'the submenu is open');
+    assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'the submenu is open');
   });
 
 });

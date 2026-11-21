@@ -88,7 +88,7 @@ describe('ToastNotification: every sample state under every template', function 
 
         // The band's container cells
         const band = parts.band;
-        assert.notEqual(band, null);
+        assert.equal(band !== null, true);
         assert.equal(band.style.width, t['control.notification_width'] + 'px');
         assert.equal(band.style.backgroundColor, cssValue('backgroundColor', t['color.' + containerLeaf]));
         assert.equal(band.style.borderTopLeftRadius, t['control.notification_radius'] + 'px');

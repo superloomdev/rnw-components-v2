@@ -92,7 +92,7 @@ describe('ModalFooter: the member draws its cells', function () {
       const buttons = footer.querySelectorAll('[role="button"]');
       assert.equal(buttons[1].style.backgroundColor, cssValue('backgroundColor', t['color.button_danger_container']), 'the danger primary');
       const spinner = buttons[1].querySelector('[role="img"], svg');
-      assert.notEqual(spinner, null, 'the primary shows an InlineLoading');
+      assert.equal(spinner !== null, true, 'the primary shows an InlineLoading');
       await cleanup();
     });
   }

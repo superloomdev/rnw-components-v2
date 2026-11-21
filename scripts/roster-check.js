@@ -16,7 +16,7 @@ const flagNames = new Set([
 ]);
 const requiredKeys = [
   'name', 'family', 'tier', 'source', 'description', 'platform', 'enums',
-  'behaviors', 'parent', 'reference', 'carbon_twin', 'material_twin',
+  'behaviors', 'parent', 'reference', 'carbon_twin',
   'diff_budget', 'flags', 'status'
 ];
 
@@ -77,7 +77,7 @@ for (const row of roster.rows) {
       || !nonEmpty(row.reference.package)) {
     fail(`${row.name}: invalid reference`);
   }
-  if (!nonEmpty(row.carbon_twin) || !nonEmpty(row.material_twin)
+  if (!nonEmpty(row.carbon_twin)
       || row.diff_budget !== 2 || !statuses.has(row.status)) {
     fail(`${row.name}: invalid twin, diff budget, or status`);
   }

@@ -258,7 +258,7 @@ describe('Toggle: state through the DOM', function () {
   test('the resting layer paints nothing and the small mark rests at opacity 0 until checked', async function () {
     const off = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', size: 'sm' });
     assert.equal(off.layer.style.backgroundColor, 'rgba(0, 0, 0, 0)');
-    assert.notEqual(off.mark, null);
+    assert.equal(off.mark !== null, true);
     assert.equal(off.mark.style.opacity, '0');
     const on = await renderToggle(registryFor('carbon', undefined, [LESSONS_LAYER]), { label: 'L', size: 'sm', checked: true });
     assert.equal(on.mark.style.opacity, '1');

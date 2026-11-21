@@ -15,6 +15,6 @@ export default Object.freeze({
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
-  tokens: Object.freeze(['color.toggletip_icon', 'color.toggletip_icon_active', 'size.icon_01', 'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width']),
+  tokens: Object.freeze(['color.toggletip_icon', 'color.toggletip_icon_active', 'size.icon_01', 'control.button_focus_width', 'control.button_focus_offset', 'control.button_focus_gap_width', 'control.toggletip_focus_width', 'control.toggletip_focus_offset']),
   colors: Object.freeze([])
 });
