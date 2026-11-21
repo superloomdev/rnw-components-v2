@@ -11,6 +11,7 @@
     "add": { "carbon": "add" },
     "add_filled": { "carbon": "add--filled" },
     "ai_label": { "carbon": "ai-label" },
+    "arrow_left": { "carbon": "arrow--left" },
     "arrow_right": { "carbon": "arrow--right" },
     "arrow_up": { "carbon": "arrow--up" },
     "arrows_vertical": { "carbon": "arrows--vertical" },

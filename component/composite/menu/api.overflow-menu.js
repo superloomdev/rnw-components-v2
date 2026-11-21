@@ -25,6 +25,7 @@ export default Object.freeze({
     iconActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the trigger glyph\'s color leaf on press.' },
     triggerWidth: { type: 'number', required: false, description: 'Composition prop: the trigger box width; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_width`).' },
     triggerHeight: { type: 'number', required: false, description: 'Composition prop: the trigger box height; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_height`).' },
+    triggerBlockExpansion: { type: 'string', required: false, description: 'Composition prop: the trigger target\'s block expansion, IconButton\'s `blockExpansion` (the breadcrumb below md: `none`).' },
     fillLeaf: { type: 'string', required: false, description: 'Composition prop: overrides the trigger\'s rest fill leaf outright; `null` draws no fill (the breadcrumb).' },
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: overrides the trigger\'s hover fill leaf outright; `null` draws no fill.' },
     fillActiveLeaf: { type: 'string', required: false, description: 'Composition prop: overrides the trigger\'s active fill leaf outright; `null` draws no fill.' },

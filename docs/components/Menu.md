@@ -166,6 +166,7 @@ MenuButton is a button that opens a Menu of actions below or above it, its chevr
 | `onChange` | `function` | no | Called with the chosen entry's data. |
 | `onClose` | `function` | no | Called when the menu closes (Escape, Tab, outside press or after a choice). |
 | `accessibilityLabel` | `string` | no | Names the menu. |
+| `minWidth` | `number` | no | Composition prop: the trigger's width floor in place of `control.menu_button_min_width` (the page header's actions menu: 0). |
 | `testID` | `string` | no | Test identifier forwarded to the container. |
 
 ### Metrics
@@ -401,6 +402,7 @@ OverflowMenu is a square icon button that opens a panel of options joined to it,
 | `iconActiveLeaf` | `string` | no | Composition prop: the trigger glyph's color leaf on press. |
 | `triggerWidth` | `number` | no | Composition prop: the trigger box width; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_width`). |
 | `triggerHeight` | `number` | no | Composition prop: the trigger box height; default the IconButton square (the breadcrumb reads `control.breadcrumb_overflow_height`). |
+| `triggerBlockExpansion` | `string` | no | Composition prop: the trigger target's block expansion, IconButton's `blockExpansion` (the breadcrumb below md: `none`). |
 | `fillLeaf` | `string` | no | Composition prop: overrides the trigger's rest fill leaf outright; `null` draws no fill (the breadcrumb). |
 | `fillHoverLeaf` | `string` | no | Composition prop: overrides the trigger's hover fill leaf outright; `null` draws no fill. |
 | `fillActiveLeaf` | `string` | no | Composition prop: overrides the trigger's active fill leaf outright; `null` draws no fill. |

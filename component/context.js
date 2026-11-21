@@ -577,11 +577,14 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   face - before the face's first layout - covers the face exactly. An
   `inlineExpansion` of 'start' or 'end' pushes the minimum out through the
   face's named logical edge instead of centering, so two adjacent faces can
-  share one minimum-width boundary without overlapping.
+  share one minimum-width boundary without overlapping. A `blockExpansion`
+  of 'none' keeps the face's height, so lines stacked closer than the
+  minimum never overlap their neighbours' targets (the breadcrumb below md).
 
   @param {Object} face                          - { width, height }, or null
   @param {Object} [options]                     - Optional overrides
   @param {String} [options.inlineExpansion]     - 'center' (default), 'start' or 'end'
+  @param {String} [options.blockExpansion]      - 'center' (default) or 'none'
 
   @return {Object} - Style fragment
   *********************************************************************/
@@ -598,8 +601,14 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       return { bottom: 0, left: 0, outlineStyle: 'none', position: 'absolute', right: 0, top: 0 };
     }
 
+    const block = options === undefined || options === null || options.blockExpansion === undefined
+      ? 'center'
+      : options.blockExpansion;
+    if (!Utils.inArray(['center', 'none'], block)) {
+      throw new TypeError('ctx.pressTarget blockExpansion must be "center" or "none"');
+    }
     const width = Math.max(targetMin, face.width);
-    const height = Math.max(targetMin, face.height);
+    const height = block === 'none' ? face.height : Math.max(targetMin, face.height);
     const style = {
       height: height,
       outlineStyle: 'none',

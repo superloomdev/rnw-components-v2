@@ -11,8 +11,12 @@
 // no fill; focus draws the 1 px `color.focus` outline plus the underline
 // bar; the menu opens `{ top: 10, left: -13 }` off the trigger with the
 // `control.breadcrumb_overflow_caret_size` caret in
-// `color.breadcrumb_overflow_caret` and no connector. It must be
-// composed inside Breadcrumb.
+// `color.breadcrumb_overflow_caret` and no connector. The last item takes
+// no end gap (`_breadcrumb.scss:88-91`). A composing parent may draw an
+// icon link (`icon`: the glyph alone, `label` its name and its tooltip),
+// keep an item's room without drawing it (`hidden`), place it in its own
+// line box (`offsetTop`, `boxHeight`) and read its width (`onLayout`).
+// It must be composed inside Breadcrumb.
 
 import SPEC from './spec.breadcrumb-item.js';
 
@@ -53,6 +57,8 @@ export default function BreadcrumbItem (ctx) {
     };
     const type = Utils.isString(props.typeLeaf) ? props.typeLeaf : small ? 'breadcrumb_small' : 'breadcrumb';
     const current = props.isCurrentPage === true;
+    // Stacked lines keep each target to its own line (no target floor overlap)
+    const stacked = props.stacked === true;
 
     // The content: the overflow menu, the link or the link-styled text
     let content;
@@ -80,12 +86,26 @@ export default function BreadcrumbItem (ctx) {
         }),
         menuOffset: { left: -13, top: 10 },
         size: small ? 'sm' : 'md',
+        triggerBlockExpansion: stacked ? 'none' : undefined,
         triggerHeight: metrics.overflowHeight,
         triggerWidth: metrics.overflowWidth
       });
+    } else if (Utils.isString(props.icon)) {
+      content = React.createElement(ctx.Registry.Tooltip, { align: 'right', label: props.label },
+        React.createElement(ctx.Registry.Link, {
+          accessibilityLabel: props.label,
+          blockExpansion: stacked ? 'none' : undefined,
+          href: props.href,
+          icon: props.icon,
+          iconColorLeaf: props.iconColorLeaf,
+          onPress: props.onPress,
+          size: small ? 'sm' : 'md',
+          typeLeaf: type
+        }, ''));
     } else if (Utils.isString(props.href)) {
       content = React.createElement(ctx.Registry.Link, {
         'aria-current': current ? 'page' : undefined,
+        blockExpansion: stacked ? 'none' : undefined,
         href: props.href,
         minWidth: small ? metrics.linkMinWidthSmall : undefined,
         onPress: props.onPress,
@@ -102,16 +122,27 @@ export default function BreadcrumbItem (ctx) {
     }
 
     // Render the `li`: the content plus the separator, the gap on both
-    // sides of it; `last` keeps its separator unless `noTrailingSlash`
+    // sides of it; `last` keeps its separator unless `noTrailingSlash` and
+    // takes no end gap
     const separator = props.last === true && props.noTrailingSlash === true ? null
       : React.createElement(Text, {
         'aria-hidden': 'true',
         dir: 'auto',
         style: [ctx.typeStyle(type), { color: ctx.color('breadcrumb_separator'), marginStart: metrics.gap }]
       }, '/');
+    const hidden = props.hidden === true;
     return React.createElement(View, {
+      'aria-hidden': hidden ? true : undefined,
+      onLayout: props.onLayout,
       role: 'listitem',
-      style: { alignItems: 'center', flexDirection: 'row', marginEnd: metrics.gap }
+      style: {
+        alignItems: Utils.isNumber(props.offsetTop) ? 'flex-start' : 'center',
+        flexDirection: 'row',
+        height: Utils.isNumber(props.boxHeight) ? props.boxHeight : undefined,
+        marginEnd: props.last === true ? 0 : metrics.gap,
+        marginTop: Utils.isNumber(props.offsetTop) ? props.offsetTop : undefined,
+        opacity: hidden ? 0 : undefined
+      }
     }, content, separator);
 
   }

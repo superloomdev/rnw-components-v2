@@ -20,7 +20,7 @@ export default Object.freeze({
     'control.tile_padding', 'control.tile_min_height', 'control.tile_min_width',
     'control.tile_focus_width', 'control.tile_chevron_seat', 'size.icon_01',
     'color.tile_container', 'color.tile_container_hover', 'color.tile_label',
-    'color.tile_focus', 'color.tile_chevron', 'type.tile', 'font.family.sans'
+    'color.tile_focus', 'color.tile_chevron', 'color.tile_chevron_container_hover', 'type.tile', 'font.family.sans'
   ]),
   colors: Object.freeze([])
 });

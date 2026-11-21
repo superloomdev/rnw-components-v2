@@ -10,11 +10,15 @@ export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   body: Object.freeze({ width: 600, height: 200 }),
+  // Below md the list is inline around block-level items, read from the
+  // window (`_breadcrumb.scss:25-33`): the narrow set draws a 320 body in a
+  // 375 window (probe `Breadcrumb@375`)
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     const item = function (entry, index) {
       if (Array.isArray(entry.overflow)) {
         return React.createElement(upstream.BreadcrumbItem, { key: index },
-          React.createElement(upstream.OverflowMenu, { 'aria-label': 'More pages' },
+          React.createElement(upstream.OverflowMenu, { 'aria-label': 'More pages', iconDescription: 'More pages' },
             entry.overflow.map(function (option, optionIndex) {
               return React.createElement(upstream.OverflowMenuItem, { itemText: option.label !== undefined ? option.label : option, key: optionIndex });
             })));

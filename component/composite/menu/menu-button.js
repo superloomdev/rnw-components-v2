@@ -128,7 +128,7 @@ export default function MenuButton (ctx) {
       pressFloor: true,
       iconRotation: open ? 180 : 0,
       kind: kind,
-      minWidth: kind === 'ghost' ? undefined : ctx.metric('MenuButton', 'minWidth'),
+      minWidth: kind === 'ghost' ? undefined : Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('MenuButton', 'minWidth'),
       onMouseDown: function (event) {
         if (event !== undefined && event !== null && typeof event.preventDefault === 'function') {
           event.preventDefault();

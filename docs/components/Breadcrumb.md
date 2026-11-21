@@ -12,6 +12,18 @@ gap after every item but the last. `BreadcrumbItem` renders the item;
 `BreadcrumbSkeleton` renders the shimmer bars with the same separators
 and no landmark.
 
+U4c (upstream quoted, probe `Breadcrumb@375.json`, a 320 body in a 375
+window). Below `breakpoint.md` the list is `display: inline` around
+`display: flex` items (`breadcrumb/_breadcrumb.scss:25-33,43-48`),
+so every item takes its own line across the list: items 312 wide (the
+last 320) and 18 apart (15.98 small). The list stacks its items below md,
+read from the window as upstream's media query is. The last item takes no
+end gap at every width (`:88-91`). The reference's `narrow` set draws that
+side. A composing parent's items: an icon link (`icon`, `iconColorLeaf`;
+the page header's back link), an item that keeps its room unseen
+(`hidden`), its place in the parent's line box (`offsetTop`,
+`boxHeight`) and its width (`onLayout`).
+
 ### Decisions
 
 - **`requires_parent`: BreadcrumbItem must be composed inside Breadcrumb; its standalone render is for the showcase and the gates only.**
@@ -63,6 +75,7 @@ Breadcrumb draws the page trail: a row of links separated by slashes, the curren
 
 | Metric | Rule |
 |---|---|
+| `bpMd` | `breakpoint.md` |
 | `caretSize` | `control.breadcrumb_overflow_caret_size` |
 | `gap` | `control.breadcrumb_gap` |
 | `gapSmall` | `control.breadcrumb_gap_small` |
@@ -112,6 +125,13 @@ BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page o
 | `size` | `string` | no | Composition prop: `sm` or `md`, from Breadcrumb. |
 | `typeLeaf` | `string` | no | Composition prop: the type set leaf Breadcrumb hands down, in place of the size's. |
 | `gap` | `number` | no | Composition prop: the item gap Breadcrumb hands down, in place of the size's. |
+| `icon` | `string` | no | Composition prop: a semantic icon name; the item is an icon link, the glyph alone, `label` its accessible name and its tooltip (the page header's back link below md). |
+| `iconColorLeaf` | `string` | no | Composition prop: the icon link's glyph color leaf (the back link's `icon_primary`). |
+| `hidden` | `boolean` | no | Composition prop: the item keeps its room and draws nothing, hidden from assistive technology (the page header's title at the end of its trail). |
+| `offsetTop` | `number` | no | Composition prop: the item's offset from the list's top, its content at the top of its box (a parent's line box). |
+| `boxHeight` | `number` | no | Composition prop: the item's box height (a parent's line box). |
+| `onLayout` | `function` | no | Composition prop: called with the item's layout event (a parent's fit). |
+| `stacked` | `boolean` | no | Composition prop: Breadcrumb below md, one item per line; the link and overflow targets keep their line's height so neighbours never overlap. |
 
 ### Metrics
 

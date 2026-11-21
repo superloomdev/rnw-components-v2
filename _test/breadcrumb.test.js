@@ -6,7 +6,8 @@
 // item but the last (none with `noTrailingSlash`) at the
 // `control.breadcrumb_gap` (`_small`) gap; the overflow item is the
 // breadcrumb-boxed OverflowMenu and its menu opens 10 below, 13 left of
-// the trigger's start with the caret.
+// the trigger's start with the caret. Below md each item takes its own
+// line; a composing parent's icon, hidden and line-box items.
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -69,7 +70,8 @@ describe('Breadcrumb: every sample state under every template', function () {
         for (let index = 0; index < props.items.length; index++) {
           const item = props.items[index];
           const li = parts.items[index];
-          assert.equal(li.style.marginRight, gap + 'px', 'the item gap');
+          // The last item takes no end gap (`_breadcrumb.scss:88-91`)
+          assert.equal(li.style.marginRight, (index === props.items.length - 1 ? 0 : gap) + 'px', 'the item gap');
 
           if (item.overflow !== undefined) {
             // The overflow trigger: the breadcrumb box, the glyph and its ink
@@ -157,6 +159,54 @@ describe('Breadcrumb: the overflow menu', function () {
     assert.equal(underline !== null, true, 'the underline shows while focused');
     assert.equal(underline.style.width, t['control.breadcrumb_overflow_underline_width'] + 'px');
     assert.equal(underline.style.backgroundColor, cssValue('backgroundColor', t['color.focus']));
+  });
+
+});
+
+
+describe('Breadcrumb: below md and the composition items', function () {
+
+  async function belowMd (body) {
+    const t = buildNative('carbon').tokens;
+    const width = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: t['breakpoint.md'] - 1, writable: true });
+    try {
+      await body();
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+    }
+  }
+
+  test('below md every item takes its own line across the list', async function () {
+    const wide = await renderBreadcrumb(registryFor('carbon'), { items: SAMPLE[0].props.items });
+    assert.equal(wide.list.style.flexDirection, 'row', 'one line at md and up');
+    await cleanup();
+    await belowMd(async function () {
+      const parts = await renderBreadcrumb(registryFor('carbon'), { items: SAMPLE[0].props.items });
+      assert.equal(parts.list.style.flexDirection, 'column', 'one item per line below md');
+      assert.equal(parts.list.style.alignItems, 'stretch', 'each item spans the list');
+    });
+  });
+
+  test('an icon item is the glyph alone, named by its label; a hidden item keeps its room', async function () {
+    const t = buildNative('carbon').tokens;
+    const parts = await renderBreadcrumb(registryFor('carbon'), {
+      items: [
+        { boxHeight: 17, href: '#back', icon: 'arrow_left', iconColorLeaf: 'icon_primary', label: 'Back', offsetTop: 2 },
+        { hidden: true, isCurrentPage: true, label: 'Title' }
+      ]
+    });
+    const back = parts.items[0];
+    const link = back.querySelector('[role="link"]');
+    assert.equal(link.getAttribute('aria-label'), 'Back');
+    assert.equal(link.getAttribute('href'), '#back');
+    assert.equal(back.textContent, '/', 'no label text, only the separator');
+    assert.equal(back.querySelector('svg').getAttribute('fill'), t['color.icon_primary'], 'the glyph in the leaf it is given');
+    assert.equal(back.style.marginTop, '2px');
+    assert.equal(back.style.height, '17px');
+    assert.equal(back.style.alignItems, 'flex-start', 'the glyph at the top of its box');
+    assert.equal(parts.items[1].style.opacity, '0');
+    assert.equal(parts.items[1].getAttribute('aria-hidden'), 'true');
   });
 
 });

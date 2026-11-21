@@ -37,4 +37,18 @@ describe('expected-gap consumption', function () {
     assert.equal(stale.stale.length, 1);
   });
 
+  test('expected gaps: a fidelity entry applies to its own set, the primary one by default', function () {
+    const line = ['small @pressed / links / paint: rgb(1, 1, 1) here, rgb(2, 2, 2) upstream'];
+    const entry = { check: 'fidelity', component: 'Breadcrumb', part: 'links', property: 'paint' };
+    assert.equal(explainDisagreements(line, [entry], 'Breadcrumb', 'fidelity', 'primary').explained.length, 1);
+    // The narrow set neither consumes the primary entry nor finds it stale
+    const narrow = explainDisagreements([], [entry], 'Breadcrumb', 'fidelity', 'narrow');
+    assert.equal(narrow.stale.length, 0);
+    const named = Object.assign({ set: 'narrow' }, entry);
+    assert.equal(explainDisagreements(line, [named], 'Breadcrumb', 'fidelity', 'narrow').explained.length, 1);
+    assert.equal(explainDisagreements(line, [named], 'Breadcrumb', 'fidelity', 'primary').explained.length, 0);
+    // A check run with no set (measure) takes every entry
+    assert.equal(explainDisagreements(line, [named], 'Breadcrumb', 'fidelity').explained.length, 1);
+  });
+
 });

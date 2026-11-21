@@ -3,6 +3,12 @@
 One `View` on the layer groups related content; the interactive rows draw
 the same box over a press target.
 
+U4c: the interactive ExpandableTile's chevron fills with
+`color.tile_chevron_container_hover` while hovered
+(`tile/_tile.scss:227,252-255`
+`.cds--tile__chevron--interactive:hover` `$layer-hover`); the reference
+hovers it as an additional target in the `interactive` state.
+
 ## Decisions
 
 The rows carry no roster flags. The focus ring draws the tile's own

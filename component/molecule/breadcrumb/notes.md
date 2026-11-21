@@ -8,6 +8,18 @@ gap after every item but the last. `BreadcrumbItem` renders the item;
 `BreadcrumbSkeleton` renders the shimmer bars with the same separators
 and no landmark.
 
+U4c (upstream quoted, probe `Breadcrumb@375.json`, a 320 body in a 375
+window). Below `breakpoint.md` the list is `display: inline` around
+`display: flex` items (`breadcrumb/_breadcrumb.scss:25-33,43-48`),
+so every item takes its own line across the list: items 312 wide (the
+last 320) and 18 apart (15.98 small). The list stacks its items below md,
+read from the window as upstream's media query is. The last item takes no
+end gap at every width (`:88-91`). The reference's `narrow` set draws that
+side. A composing parent's items: an icon link (`icon`, `iconColorLeaf`;
+the page header's back link), an item that keeps its room unseen
+(`hidden`), its place in the parent's line box (`offsetTop`,
+`boxHeight`) and its width (`onLayout`).
+
 ## Decisions
 
 - **`requires_parent`: BreadcrumbItem must be composed inside Breadcrumb; its standalone render is for the showcase and the gates only.**

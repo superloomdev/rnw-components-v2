@@ -13,13 +13,15 @@ export default Object.freeze({
     disabled: { type: 'boolean', required: false, description: 'Draw the disabled color; no href and no activation.' },
     typeLeaf: { type: 'string', required: false, description: 'Composition prop: the type set the label draws instead of the size default - the breadcrumb own type.' },
     size: { type: 'string', required: false, description: 'One of `variants`: `sm`, `md` (the default) or `lg` - the label\'s type set.' },
-    icon: { type: 'string', required: false, description: 'A semantic icon name drawn after the label, decorative.' },
+    icon: { type: 'string', required: false, description: 'A semantic icon name drawn after the label, decorative; with an empty `children` the link is the glyph alone, named by `accessibilityLabel`.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' },
     accessibilityLabel: { type: 'string', required: false, description: 'The accessible name when it should differ from the children.' }
   }),
   composition: Object.freeze({
     inverse: { type: 'boolean', required: false, description: 'Composition prop: draws the inverse cells - `link_label_inverse` and its hover - with the inverse focus ring; a dark surface asks for it.' },
-    minWidth: { type: 'number', required: false, description: 'Composition prop: a minimum width on the face (the breadcrumb\'s small links read `control.breadcrumb_link_min_width_small`).' }
+    minWidth: { type: 'number', required: false, description: 'Composition prop: a minimum width on the face (the breadcrumb\'s small links read `control.breadcrumb_link_min_width_small`).' },
+    iconColorLeaf: { type: 'string', required: false, description: 'Composition prop: the icon\'s color leaf in place of the label\'s (the breadcrumb back link\'s `icon_primary`).' },
+    blockExpansion: { type: 'string', required: false, description: 'Composition prop: `none` keeps the target at the face\'s height, for lines stacked closer than the target floor (the breadcrumb below md); default `center`.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md', 'lg']),

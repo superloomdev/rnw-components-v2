@@ -1,6 +1,7 @@
 // Info: ExpandableTile measurement reference. The upstream tile carries
 // `TileAboveTheFoldContent` and `TileBelowTheFoldContent`; `interactive`
-// mounts a Link in the fold so the chevron alone toggles.
+// mounts a Link in the fold so the chevron alone toggles; its chevron is
+// hovered for the fill (`_tile.scss:227,252-255`).
 
 export default Object.freeze({
   kind: 'render-web',
@@ -17,6 +18,16 @@ export default Object.freeze({
     React.createElement(upstream.TileAboveTheFoldContent, null, 'Above the fold content'),
     React.createElement(upstream.TileBelowTheFoldContent, null, below));
   },
+  // The interactive chevron is its own button: hovered, it fills
+  additionalTargets: Object.freeze([
+    Object.freeze({
+      name: 'chevron',
+      interactions: Object.freeze(['hover']),
+      states: Object.freeze(['interactive']),
+      upstream: '.cds--tile__chevron--interactive',
+      ours: '[role="button"]'
+    })
+  ]),
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--tile--expandable', ours: ':scope > button, :scope > div', measure: 'box' }),
     chevron: Object.freeze({ upstream: '.cds--tile__chevron', ours: ':scope > button > div:last-child, :scope > div > button', measure: 'box' }),

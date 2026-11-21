@@ -4,9 +4,24 @@
 // Entries match a line on component, part and property ('*' covers every
 // property of the part); an entry may restrict to named states.
 
-export function explainDisagreements (lines, gaps, component, check) {
+/********************************************************************
+Whether a gap applies to a fidelity set: an entry names its `set`, and one
+without names the primary set; a check run with no set (measure) takes
+every entry.
+
+@param {Object} gap   - An expected-gaps.json entry
+@param {String} [set] - The fidelity set ('primary' or 'narrow')
+
+@return {Boolean} - True when the gap applies
+*********************************************************************/
+function inSet (gap, set) {
+  return set === undefined || (gap.set === undefined ? 'primary' : gap.set) === set;
+}
+
+
+export function explainDisagreements (lines, gaps, component, check, set) {
   const mine = gaps.filter(function (gap) {
-    return gap.check === check && gap.component === component;
+    return gap.check === check && gap.component === component && inSet(gap, set);
   });
   const matches = function (line, gap) {
     const inState = gap.states === undefined || gap.states.some(function (state) {
@@ -47,9 +62,9 @@ A gap that no longer reproduces is stale and fails until removed.
 
 @return {Object} - { unexplained, explained, stale }
 *********************************************************************/
-export function explainBudgetLines (lines, gaps, component, check) {
+export function explainBudgetLines (lines, gaps, component, check, set) {
   const mine = gaps.filter(function (gap) {
-    return gap.check === check && gap.component === component && gap.property === 'perceptual' && gap.part === '*';
+    return gap.check === check && gap.component === component && gap.property === 'perceptual' && gap.part === '*' && inSet(gap, set);
   });
   const matches = function (line, gap) {
     const key = String(line).split(':')[0];

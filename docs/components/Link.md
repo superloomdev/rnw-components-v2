@@ -41,7 +41,7 @@ Link draws a pressable run of text in the theme's link colors for rest, hover, p
 | `disabled` | `boolean` | no | Draw the disabled color; no href and no activation. |
 | `typeLeaf` | `string` | no | Composition prop: the type set the label draws instead of the size default - the breadcrumb own type. |
 | `size` | `string` | no | One of `variants`: `sm`, `md` (the default) or `lg` - the label's type set. |
-| `icon` | `string` | no | A semantic icon name drawn after the label, decorative. |
+| `icon` | `string` | no | A semantic icon name drawn after the label, decorative; with an empty `children` the link is the glyph alone, named by `accessibilityLabel`. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 | `accessibilityLabel` | `string` | no | The accessible name when it should differ from the children. |
 

@@ -1,10 +1,13 @@
 // Info: PageHeader spec sheet. Every metric names its own cell.
 export default Object.freeze({
+  backHeight: 'control.page_header_breadcrumb_back_height',
+  backOffset: 'control.page_header_breadcrumb_back_offset',
   bpMd: 'breakpoint.md',
   breadcrumbGap: 'control.page_header_breadcrumb_gap',
   breadcrumbHeight: 'control.page_header_breadcrumb_height',
   breadcrumbPaddingTop: 'control.page_header_breadcrumb_padding_top',
   breadcrumbRatio: 'control.page_header_breadcrumb_ratio',
+  breadcrumbRatioSm: 'control.page_header_breadcrumb_ratio_sm',
   bufferTitle: 'control.page_header_buffer_title',
   gutter: 'grid.gutter',
   narrowGap: 'spacing.spacing_05',

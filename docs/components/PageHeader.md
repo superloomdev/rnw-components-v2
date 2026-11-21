@@ -51,9 +51,50 @@ actions): row 1248, list 1216. Below `breakpoint.md` upstream sets
 `widthIsNarrow` from the window (`PageHeader.tsx:787-788`) and the row
 drops the page-actions limit, so the split is not drawn there.
 
+U4c (upstream quoted, probes `PageHeader@375.json` in a 320 body and
+`PageHeader.json` at 1280). Below `breakpoint.md` the breadcrumb row
+carries the action-bar class with or without page actions
+(`PageHeader.js:310` `hasActionBar || widthIsNarrow`): it spans the
+header and its breadcrumb column takes
+`control.page_header_breadcrumb_ratio_sm` (75 %, `_page-header.scss:38,287-297`;
+probe column 240, action column 80, list 208). The probe overruled the
+planning reading of the narrow trail: below md every breadcrumb item is
+`display: none` but the back link and the last item
+(`BreadcrumbWithOverflow/_breadcrumb-with-overflow.scss:66-75`), so the
+trail is an `arrow_left` icon link to the last breadcrumb in
+`icon_primary` (`:49-55`; probe backLink 24 x 16.97, glyph 16) beside the
+hidden title, not a fitted trail. Its list's 18.875 is the inline line
+box of the body-compact-01 list around the vertical-align middle item:
+`control.page_header_breadcrumb_back_offset` (1.90625) places the item
+and `control.page_header_breadcrumb_back_height` (16.96875) is its box.
+The back link's tooltip (upstream `Tooltip align="right"`) is composed.
+
+At md and up the trail fits its room by upstream's rule
+(`BreadcrumbWithOverflow.js` `checkFullyVisibleBreadcrumbItems`): the
+entries end in the title (`PageHeaderUtils.js:114-138`, hidden at scroll
+top, keeping its room and its separator, as the sizing copy has it), each
+width counts the item gap; the last, the first, then n-1, n-2 ... claim
+room, items are given back until the overflow item fits, and the overflow
+item sits after the first (first when one fits). Probe `trail` at 1280:
+Breadcrumb 1, the overflow (2, 3), 4, 5 in a 417.28 room. The page actions
+fit the same way at every width (`ButtonSetWithOverflow.js`
+`checkFullyVisibleItems`): a button set while the buttons' widths fit the
+room (40 % of the row widened by the gutter at md and up, `:498-507`; the
+whole row below md) and one `MenuButton` labelled
+`pageActionsOverflowLabel` otherwise, the actions in reverse, `danger`
+kept, every other kind the default item (`AButtonMenu`); below md the
+title takes the whole row and the actions sit start-aligned 16 under it
+(`:440-447,494-506`; probe actionSet 162.73 at x 16). Measurement is one
+`onLayout` pass (the TagSet way); a hidden overflow item is measured once
+after the title. The sample adds `trail` (five breadcrumbs and actions).
+The tags are a `TagSet` in the tags column, the right section's 25 % alt
+share of the row widened by the gutter less the column's start half and
+its `padding-inline-end` (`_page-header.scss:39,641-663`): 264 at 1280,
+32 in a 320 body, where upstream shows only the `+2` overflow tag.
+
 ### Decisions
 
-Composes `Breadcrumb`, `Button`, `Icon`, `Tag`; `scrollY` is a prop (no
+Composes `Breadcrumb`, `Button`, `Icon`, `MenuButton`, `TagSet`; `scrollY` is a prop (no
 DOM scroll read); the collapsed bar keeps the title row only.
 
 ### Platform
@@ -80,7 +121,8 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 | `breadcrumbs` | `array` | no | Breadcrumb items `{ label, href }` above the title. |
 | `collapseHeader` | `boolean` | no | Collapses the header rows. |
 | `children` | `node` | no | The content row under the title or subtitle (upstream `children`, the available row). |
-| `pageActions` | `array` | no | Action items `{ label, kind, onPress }` right of the title; `kind` is a Button kind, default `primary`. |
+| `pageActions` | `array` | no | Action items `{ label, kind, onPress }` right of the title; `kind` is a Button kind, default `primary`. A set wider than its room draws as one menu button. |
+| `pageActionsOverflowLabel` | `string` | no | The menu button's label when the page actions do not fit their room. Default `More actions`. |
 | `scrollY` | `number` | no | Scroll offset driving the collapsed bar. |
 | `subtitle` | `string` | no | The subtitle under the title. |
 | `tags` | `array` | no | Tag items `{ label, type }` under the subtitle; `type` is a Tag kind. |
@@ -93,11 +135,14 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 
 | Metric | Rule |
 |---|---|
+| `backHeight` | `control.page_header_breadcrumb_back_height` |
+| `backOffset` | `control.page_header_breadcrumb_back_offset` |
 | `bpMd` | `breakpoint.md` |
 | `breadcrumbGap` | `control.page_header_breadcrumb_gap` |
 | `breadcrumbHeight` | `control.page_header_breadcrumb_height` |
 | `breadcrumbPaddingTop` | `control.page_header_breadcrumb_padding_top` |
 | `breadcrumbRatio` | `control.page_header_breadcrumb_ratio` |
+| `breadcrumbRatioSm` | `control.page_header_breadcrumb_ratio_sm` |
 | `bufferTitle` | `control.page_header_buffer_title` |
 | `gutter` | `grid.gutter` |
 | `narrowGap` | `spacing.spacing_05` |
@@ -118,11 +163,12 @@ PageHeader is the page header: breadcrumbs, a title row with actions, subtitle a
 
 | State | Props |
 |---|---|
-| default | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"}],"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"subtitle":"Optional subtitle if necessary","tags":[{"label":"Tag one","type":"blue"},{"label":"Tag two","type":"green"}],"title":"Page title"}` |
+| default | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"}],"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"pageActionsOverflowLabel":"More actions","subtitle":"Optional subtitle if necessary","tags":[{"label":"Tag one","type":"blue"},{"label":"Tag two","type":"green"}],"title":"Page title"}` |
 | title | `{"title":"Page title"}` |
 | breadcrumbs | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"}],"title":"Page title"}` |
 | subtitle | `{"subtitle":"Optional subtitle if necessary","title":"Page title"}` |
-| actions | `{"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"title":"Page title"}` |
+| actions | `{"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"pageActionsOverflowLabel":"More actions","title":"Page title"}` |
 | children | `{"children":"Available row content","title":"Page title"}` |
 | tags | `{"tags":[{"label":"Tag one","type":"blue"},{"label":"Tag two","type":"green"}],"title":"Page title"}` |
 | icon | `{"title":"Page title","titleIcon":"document"}` |
+| trail | `{"breadcrumbs":[{"label":"Breadcrumb 1","href":"#"},{"label":"Breadcrumb 2","href":"#"},{"label":"Breadcrumb 3","href":"#"},{"label":"Breadcrumb 4","href":"#"},{"label":"Breadcrumb 5","href":"#"}],"pageActions":[{"kind":"secondary","label":"Secondary button"},{"kind":"primary","label":"Primary button"}],"pageActionsOverflowLabel":"More actions","title":"Page title"}` |

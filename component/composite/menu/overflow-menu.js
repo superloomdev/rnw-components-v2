@@ -289,6 +289,7 @@ export default function OverflowMenu (ctx) {
       focusRingLeaf: props.focusRingLeaf,
       focusRingOffset: props.focusRingOffset,
       focusRingWidth: props.focusRingWidth,
+      blockExpansion: props.triggerBlockExpansion,
       height: props.triggerHeight,
       icon: Utils.isString(props.icon) ? props.icon : 'overflow_vertical',
       iconActiveLeaf: props.iconActiveLeaf,

@@ -175,7 +175,7 @@ export default function IconButton (ctx) {
       onMouseDown: props.onMouseDown,
       onKeyDown: props.onKeyDown,
       testID: props.testID,
-      style: ctx.pressTarget({ height: buttonHeight, width: buttonWidth })
+      style: ctx.pressTarget({ height: buttonHeight, width: buttonWidth }, { blockExpansion: props.blockExpansion })
     })));
 
     // The compact tooltip names the button; a disabled one still shows it

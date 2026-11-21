@@ -1,7 +1,8 @@
 // Info: Link molecule. A pressable run of text in the theme's link colors
 // for rest, hover, press, visited and disabled, underlined while hovered,
 // focused or pressed and always when inline, in three type sizes with an
-// optional trailing icon.
+// optional trailing icon. An empty label with an icon is an icon link: the
+// glyph alone, named by `accessibilityLabel` (the breadcrumb's back link).
 //
 // Behavior: `useInteractionState` answers hovered, focused and pressed and
 // guards a disabled link's press.
@@ -75,7 +76,7 @@ export default function Link (ctx) {
         name: props.icon,
         size: ctx.metric('Link', size === 'lg' ? 'iconSizeLarge' : 'iconSize'),
         glyphSize: ctx.metric('Link', 'iconSize'),
-        color: leaf
+        color: Utils.isString(props.iconColorLeaf) ? props.iconColorLeaf : leaf
       }))
       : null;
 
@@ -90,7 +91,7 @@ export default function Link (ctx) {
       onLayout: onLayout,
       style: [{ alignItems: 'center', flexDirection: 'row', minWidth: Utils.isNumber(props.minWidth) ? props.minWidth : undefined }, ring]
     },
-    React.createElement(Text, {
+    icon !== null && Utils.isEmptyString(props.children) ? null : React.createElement(Text, {
       style: [ctx.typeStyle(Utils.isString(props.typeLeaf) ? props.typeLeaf : (size === 'sm' ? 'link_label_small' : size === 'lg' ? 'link_label_large' : 'link_label')), {
         color: ctx.color(leaf),
         textDecorationLine: underline ? 'underline' : 'none'
@@ -103,7 +104,7 @@ export default function Link (ctx) {
       'aria-disabled': disabled ? true : undefined,
       testID: props.testID,
       accessibilityLabel: props.accessibilityLabel !== undefined ? props.accessibilityLabel : props.children,
-      style: ctx.pressTarget(faceSize)
+      style: ctx.pressTarget(faceSize, { blockExpansion: props.blockExpansion })
     })));
 
   }

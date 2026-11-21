@@ -89,4 +89,17 @@ describe('ExpandableTile: press behavior', function () {
     assert.equal(root.style.outlineWidth, '');
   });
 
+  // Upstream `_tile.scss:252-255`: the interactive chevron fills while hovered
+  test('interactive: the hovered chevron fills with the chevron hover cell', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = buildSystem('carbon', factories);
+    const root = await renderExpandableTile(Registry, { below: 'Below the fold content', children: 'Above the fold content', interactive: true });
+    const chevron = root.querySelector('[role="button"]');
+    assert.equal(chevron.style.backgroundColor, '', 'no fill at rest');
+    await act(async function () {
+      chevron.dispatchEvent(new Event('mouseenter', { bubbles: false }));
+    });
+    assert.equal(chevron.style.backgroundColor, cssValue('backgroundColor', t['color.tile_chevron_container_hover']));
+  });
+
 });

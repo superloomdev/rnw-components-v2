@@ -38,6 +38,17 @@ size with no label placeholder; the second system has no skeleton, so
 its values are a Superloom decision - the roster's `superloom_decision`
 flag.
 
+### Rules under a feature flag
+
+The close-button padding rules at `search/_search.scss:93-124`
+(the `:has(~ .cds--search-close--hidden)` padding) sit inside
+`@if enabled('enable-v12-release')` (`:80`), which the pinned release
+ships switched off: the compiled `css/styles.min.css` the reference page
+serves (`_test/harness/serve.js:101`) has no `search-close--hidden)`
+selector, only the plain `.cds--search-close--hidden` rule. The pinned
+design is `padding: 0 layout.size('height')` (`:66`), which the field
+draws; no code follows the flagged rule (U4c, plan E13 (2)).
+
 ### Uncarried variants
 
 `xs` size (the field scale keeps `sm`/`md`/`lg`), `small` (deprecated

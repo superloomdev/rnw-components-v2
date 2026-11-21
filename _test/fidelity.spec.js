@@ -67,7 +67,7 @@ test.describe('fidelity', function () {
             }
           }
           expect(run.errors, 'render errors').toEqual([]);
-          const gate = explainDisagreements(run.lines, GAPS, component.name, 'fidelity');
+          const gate = explainDisagreements(run.lines, GAPS, component.name, 'fidelity', set);
           if (gate.explained.length > 0) {
             test.info().annotations.push({ type: 'fidelity', description: component.name + ': ' + gate.explained.length + ' disagreement(s) covered by expected gaps' });
           }
@@ -78,7 +78,7 @@ test.describe('fidelity', function () {
           }).map(function (key) {
             return key + ': ' + run.perceptual[key] + '% > ' + BUDGET[component.name] + '%';
           });
-          const budgetGate = explainBudgetLines(over, GAPS, component.name, 'fidelity');
+          const budgetGate = explainBudgetLines(over, GAPS, component.name, 'fidelity', set);
           expect(budgetGate.stale.map(function (gap) { return gap.part + ' / ' + gap.property + ' (' + gap.request + ')'; }), component.name + ': expected gaps no longer reproduce; remove them').toEqual([]);
           expect(budgetGate.unexplained, component.name + ' states over the diff budget').toEqual([]);
         });

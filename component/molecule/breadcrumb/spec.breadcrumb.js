@@ -4,6 +4,7 @@
 // own cells.
 
 export default Object.freeze({
+  bpMd: 'breakpoint.md',
   caretSize: 'control.breadcrumb_overflow_caret_size',
   gap: 'control.breadcrumb_gap',
   gapSmall: 'control.breadcrumb_gap_small',

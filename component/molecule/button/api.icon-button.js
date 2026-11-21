@@ -25,6 +25,7 @@ export default Object.freeze({
     buttonRef: { type: 'object', required: false, description: 'Composition prop: a ref forwarded to the root pressable (a dialog\'s initial focus).' },
     width: { type: 'number', required: false, description: 'Composition prop: a non-square trigger box width (the breadcrumb\'s overflow).' },
     height: { type: 'number', required: false, description: 'Composition prop: a non-square trigger box height (the breadcrumb\'s overflow).' },
+    blockExpansion: { type: 'string', required: false, description: 'Composition prop: `none` keeps the target at the box height, for lines stacked closer than the target floor (the breadcrumb\'s overflow below md); default `center`.' },
     iconOffset: { type: 'number', required: false, description: 'Composition prop: shifts the glyph down inside the box (the breadcrumb\'s overflow).' },
     iconHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the icon\'s color leaf on hover (the breadcrumb\'s overflow ink).' },
     iconActiveLeaf: { type: 'string', required: false, description: 'Composition prop: the icon\'s color leaf on press (the breadcrumb\'s overflow ink).' },

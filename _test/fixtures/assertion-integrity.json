@@ -2368,8 +2368,8 @@
     {
       "id": "target-min-both-axes",
       "file": "component/context.js",
-      "find": "const height = Math.max(targetMin, face.height);",
-      "replace": "const height = face.height;",
+      "find": "const height = block === 'none' ? face.height : Math.max(targetMin, face.height);",
+      "replace": "const height = block === 'none' ? face.height : face.height;",
       "runner": "node",
       "test": "adaptive.test.js",
       "testName": "pressTarget reads control.target_min on both axes",
@@ -4298,8 +4298,8 @@
     {
       "id": "page-header-breadcrumb-labels",
       "file": "component/composite/page-header/page-header.js",
-      "find": "        return { href: c.href, label: c.label };\n",
-      "replace": "        return { children: c.label, href: c.href };\n",
+      "find": "return { href: c.href, key: 'crumb:' + i + ':' + c.label, label: c.label, onPress: c.onPress };",
+      "replace": "return { children: c.label, href: c.href, key: 'crumb:' + i + ':' + c.label, onPress: c.onPress };",
       "runner": "node",
       "test": "page-header.test.js",
       "testName": "the breadcrumb row draws its trail in the header type and gap, 12 down",
@@ -4318,12 +4318,12 @@
     {
       "id": "page-header-breadcrumb-narrow",
       "file": "component/composite/page-header/page-header.js",
-      "find": "trail !== null && !narrow && ",
-      "replace": "trail !== null && ",
+      "find": "const split = trail !== null && (narrow || !Utils.isEmptyArray(actions));",
+      "replace": "const split = trail !== null && !Utils.isEmptyArray(actions);",
       "runner": "node",
       "test": "page-header.test.js",
-      "testName": "without page actions, or below md, the trail spans the whole row",
-      "why": "below md upstream sets widthIsNarrow and drops the page-actions row limit (PageHeader.tsx:787-788, PageHeader.js:311)"
+      "testName": "without page actions the trail spans the whole row; below md the row splits at the narrow share",
+      "why": "below md the breadcrumb row carries the action-bar class with or without page actions (PageHeader.js:310) and splits"
     },
     {
       "id": "breadcrumb-item-gap",
@@ -4368,12 +4368,112 @@
     {
       "id": "expandable-tile-chevron-ring",
       "file": "component/molecule/tile/expandable-tile.js",
-      "find": "style: [seatStyle, { outlineStyle: 'none' }, ring]",
-      "replace": "style: [seatStyle, { outlineStyle: 'none' }]",
+      "find": "style: [seatStyle, { backgroundColor: chevronFill, outlineStyle: 'none' }, ring]",
+      "replace": "style: [seatStyle, { backgroundColor: chevronFill, outlineStyle: 'none' }]",
       "runner": "node",
       "test": "expandable-tile.test.js",
       "testName": "interactive: the focused chevron draws the ring, the face none",
       "why": "the interactive chevron draws the tile's focus ring, or keyboard focus shows nothing"
+    },
+    {
+      "id": "page-header-breadcrumb-share-sm",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "(narrow ? ctx.metric('PageHeader', 'breadcrumbRatioSm') : ratio)",
+      "replace": "ratio",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "without page actions the trail spans the whole row; below md the row splits at the narrow share",
+      "why": "below md the breadcrumb column takes the 75 % alt share (_page-header.scss:38,287-297; probe list 208 in a 320 body)"
+    },
+    {
+      "id": "page-header-back-link",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "if (narrow && hasCrumbs && Utils.isString(last.href)",
+      "replace": "if (false && hasCrumbs && Utils.isString(last.href)",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "below md the trail is one icon link back to the last breadcrumb, in the narrow line box",
+      "why": "below md only the back link and the hidden title draw (_breadcrumb-with-overflow.scss:66-75)"
+    },
+    {
+      "id": "page-header-trail-fit",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "const position = count > 1 ? 1 : 0;",
+      "replace": "const position = 0;",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the trail keeps the last, the first, then n-1 ... and gathers the rest after the first",
+      "why": "the overflow item sits after the first item when more than one fits (BreadcrumbWithOverflow.js overflowPosition)"
+    },
+    {
+      "id": "page-header-actions-fit",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "}, 0) > actionRoom;",
+      "replace": "}, 0) > Infinity;",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the page actions are a button set while they fit and one menu button when they do not",
+      "why": "a set wider than its room draws as one menu button (ButtonSetWithOverflow.js checkFullyVisibleItems)"
+    },
+    {
+      "id": "breadcrumb-narrow-stack",
+      "file": "component/molecule/breadcrumb/breadcrumb.js",
+      "find": "style: narrow ? { alignItems: 'stretch', flexDirection: 'column' } :",
+      "replace": "style: false ? { alignItems: 'stretch', flexDirection: 'column' } :",
+      "runner": "node",
+      "test": "breadcrumb.test.js",
+      "testName": "below md every item takes its own line across the list",
+      "why": "below md the list is inline around block-level items, one per line (_breadcrumb.scss:25-33; probe Breadcrumb@375 items 18 apart)"
+    },
+    {
+      "id": "breadcrumb-last-gap",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "marginEnd: props.last === true ? 0 : metrics.gap,",
+      "replace": "marginEnd: metrics.gap,",
+      "runner": "node",
+      "test": "breadcrumb.test.js",
+      "testName": "carbon / default: the trail comes from the theme",
+      "why": "the last item takes no end gap (_breadcrumb.scss:88-91; probe Breadcrumb@375 last item 320 wide)"
+    },
+    {
+      "id": "expandable-tile-chevron-hover",
+      "file": "component/molecule/tile/expandable-tile.js",
+      "find": "state.hovered === true ? ctx.color('tile_chevron_container_hover') : undefined",
+      "replace": "state.hovered === true ? undefined : undefined",
+      "runner": "node",
+      "test": "expandable-tile.test.js",
+      "testName": "interactive: the hovered chevron fills with the chevron hover cell",
+      "why": "the interactive chevron fills with $layer-hover while hovered (_tile.scss:252-255)"
+    },
+    {
+      "id": "press-target-block-none",
+      "file": "component/context.js",
+      "find": "const height = block === 'none' ? face.height : Math.max(targetMin, face.height);",
+      "replace": "const height = Math.max(targetMin, face.height);",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "blockExpansion none keeps the face height, so stacked lines never overlap",
+      "why": "stacked breadcrumb lines 18 apart overlap their neighbours' 24-48 targets; a target that ignores blockExpansion must fail"
+    },
+    {
+      "id": "expected-gaps-set",
+      "file": "_test/harness/expected-gaps.js",
+      "find": "return set === undefined || (gap.set === undefined ? 'primary' : gap.set) === set;",
+      "replace": "return true;",
+      "runner": "node",
+      "test": "expected-gaps.test.js",
+      "testName": "expected gaps: a fidelity entry applies to its own set, the primary one by default",
+      "why": "a primary-set gap read in the narrow set is stale there and fails a narrow run that matches upstream (Breadcrumb narrow, U4c)"
+    },
+    {
+      "id": "page-header-tags-room",
+      "file": "component/composite/page-header/page-header.js",
+      "find": "const tagRoom = rowWidth < 0 ? undefined :",
+      "replace": "const tagRoom = true ? undefined :",
+      "runner": "node",
+      "test": "page-header.test.js",
+      "testName": "the tags take the right section alt share of the row widened by the gutter, less the column insets",
+      "why": "the tags column is 25 % of the row at every width (_page-header.scss:641-663); a full-row tag set shows tags upstream gathers behind +2 below md"
     }
   ]
 }

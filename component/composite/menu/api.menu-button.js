@@ -18,6 +18,7 @@ export default Object.freeze({
     onChange: { type: 'function', required: false, description: 'Called with the chosen entry\'s data.' },
     onClose: { type: 'function', required: false, description: 'Called when the menu closes (Escape, Tab, outside press or after a choice).' },
     accessibilityLabel: { type: 'string', required: false, description: 'Names the menu.' },
+    minWidth: { type: 'number', required: false, description: 'Composition prop: the trigger\'s width floor in place of `control.menu_button_min_width` (the page header\'s actions menu: 0).' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the container.' }
   }),
   kinds: Object.freeze(['primary', 'tertiary', 'ghost']),

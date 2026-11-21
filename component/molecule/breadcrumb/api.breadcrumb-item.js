@@ -15,7 +15,14 @@ export default Object.freeze({
     noTrailingSlash: { type: 'boolean', required: false, description: 'Composition prop: draws no separator.' },
     size: { type: 'string', required: false, description: 'Composition prop: `sm` or `md`, from Breadcrumb.' },
     typeLeaf: { type: 'string', required: false, description: 'Composition prop: the type set leaf Breadcrumb hands down, in place of the size\'s.' },
-    gap: { type: 'number', required: false, description: 'Composition prop: the item gap Breadcrumb hands down, in place of the size\'s.' }
+    gap: { type: 'number', required: false, description: 'Composition prop: the item gap Breadcrumb hands down, in place of the size\'s.' },
+    icon: { type: 'string', required: false, description: 'Composition prop: a semantic icon name; the item is an icon link, the glyph alone, `label` its accessible name and its tooltip (the page header\'s back link below md).' },
+    iconColorLeaf: { type: 'string', required: false, description: 'Composition prop: the icon link\'s glyph color leaf (the back link\'s `icon_primary`).' },
+    hidden: { type: 'boolean', required: false, description: 'Composition prop: the item keeps its room and draws nothing, hidden from assistive technology (the page header\'s title at the end of its trail).' },
+    offsetTop: { type: 'number', required: false, description: 'Composition prop: the item\'s offset from the list\'s top, its content at the top of its box (a parent\'s line box).' },
+    boxHeight: { type: 'number', required: false, description: 'Composition prop: the item\'s box height (a parent\'s line box).' },
+    onLayout: { type: 'function', required: false, description: 'Composition prop: called with the item\'s layout event (a parent\'s fit).' },
+    stacked: { type: 'boolean', required: false, description: 'Composition prop: Breadcrumb below md, one item per line; the link and overflow targets keep their line\'s height so neighbours never overlap.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze(['sm', 'md']),

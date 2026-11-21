@@ -704,6 +704,20 @@ describe('context: pressTarget', function () {
     }, /inlineExpansion must be "center", "start" or "end"/);
   });
 
+  test('blockExpansion none keeps the face height, so stacked lines never overlap', function () {
+    const ctx = probeWith({});
+    // An 18-point line keeps 18 and sits at the face's top; the inline
+    // minimum still applies
+    const line = ctx.pressTarget({ height: 18, width: 16 }, { blockExpansion: 'none' });
+    assert.equal(line.height, 18);
+    assert.equal(Math.abs(line.top), 0);
+    assert.equal(line.width, 24);
+    assert.equal(ctx.pressTarget({ height: 18, width: 16 }).height, 24, 'the default centers the minimum');
+    assert.throws(function () {
+      ctx.pressTarget({ height: 18, width: 16 }, { blockExpansion: 'start' });
+    }, /blockExpansion must be "center" or "none"/);
+  });
+
 });
 
 
