@@ -45,7 +45,7 @@ export default function Callout (ctx) {
     return parts.frame({ fluid: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
       parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }),
-        parts.textBlock({ owner: owner }, [
+        parts.textBlock({ narrow: narrow, owner: owner }, [
           React.createElement(ctx.ReactNative.View, { key: 'title', nativeID: titleId },
             parts.text({ lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title }))
         ])

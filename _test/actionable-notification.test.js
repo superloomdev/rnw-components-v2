@@ -137,6 +137,33 @@ describe('ActionableNotification: every sample state under every template', func
 
 });
 
+describe('ActionableNotification: below md the inline details measure their text', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': the inline text block takes its content as basis below md; the toast keeps its own', async function () {
+      const t = buildNative(template).tokens;
+      const width = t['breakpoint.md'] - 1;
+      const before = window.innerWidth;
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+      try {
+        const inline = SAMPLE.filter(function (state) { return state.props.inline === true; })[0].props;
+        const toast = SAMPLE.filter(function (state) { return state.props.inline !== true; })[0].props;
+        const inlineParts = await renderActionable(registryFor(template), inline);
+        const inlineBasis = inlineParts.band.children[0].children[1].style.flexBasis;
+        await cleanup();
+        const toastParts = await renderActionable(registryFor(template), toast);
+        const toastBasis = toastParts.band.children[0].children[1].style.flexBasis;
+        await cleanup();
+        assert.equal(inlineBasis, 'auto', 'below md the inline text block is its content, so a native layout measures the text');
+        assert.equal(toastBasis === 'auto', false, 'the toast has no narrow rule');
+      } finally {
+        Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
+      }
+    });
+  }
+
+});
+
 describe('ActionableNotification: trap, Escape and the close chain', function () {
 
   test('Escape asks for the close while closeOnEscape; false disables it', async function () {

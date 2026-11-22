@@ -35,6 +35,16 @@ file and the row is measured against the primary alone.
   `notification_close_icon` (`icon_primary` under `lowContrast`) through
   its `iconColor` prop; the kind's hover and focus still come from the
   icon-button cells.
+- **Narrow side on a device.** Below md the inline details take their
+  content's width (`_actionable-notification.scss:324-328`,
+  `_inline-notification.scss:277-281`: `flex-grow: 1` at an auto basis), so
+  the action wraps under them. The browser sizes that basis from the text's
+  max-content; a native layout sized it from a zero-basis text block as
+  empty, so the details shared their line with the action and the text
+  wrapped in the rest (native run 45024868316: ActionableNotification inline
+  120 against the web's 106, Callout 156 against 106). Below md the text
+  block's basis is therefore its content and the details do not wrap, as
+  upstream's `display: flex` details do not (`notification-parts.js`).
 - **Status icons** are plain named glyphs (`error_filled`,
   `checkmark_filled`, `information_filled`, `warning_filled`) colored by
   the marker leaf - the glyph carries the meaning.

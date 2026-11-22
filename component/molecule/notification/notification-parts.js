@@ -12,7 +12,10 @@
 // Below `breakpoint.md` an inline band follows the reference's narrow
 // rules with its spacing steps: the band is its 288 floor wide, the
 // details keep `spacing_09` at their end and take their content's width,
-// so the action wraps under them, and the close sits over that end inset
+// so the action wraps under them, and the close sits over that end inset.
+// The content's width is the text block's: a native layout sizes a
+// zero-basis block as empty, so below md its basis is its content and the
+// details hold the glyph and the text on one line (`display: flex`, no wrap)
 // (`_inline-notification.scss:26-55,272-319,400-413`,
 // `_actionable-notification.scss:44-58,327-337,605-627`; plan 0162 E13).
 //
@@ -133,7 +136,7 @@ export default function createNotificationParts (ctx) {
         flexDirection: 'row',
         flexGrow: 1,
         flexShrink: opts.narrow === true ? 1 : 0,
-        flexWrap: 'wrap',
+        flexWrap: opts.narrow === true ? 'nowrap' : 'wrap',
         marginStart: ctx.metric(opts.owner, 'detailsInset'),
         marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : ctx.metric(opts.owner, 'detailsInsetEnd'),
         minWidth: 0
@@ -173,9 +176,11 @@ export default function createNotificationParts (ctx) {
 
   /********************************************************************
   The text block: the padded column holding the title, subtitle and
-  caption rows.
+  caption rows. Below md its basis is its content, so the details measure
+  the text on every platform (`_actionable-notification.scss:324-328`
+  details `flex-grow: 1` at an auto basis), never the glyph alone.
 
-  @param {Object}   opts     - { owner, paddingBottom }
+  @param {Object}   opts     - { owner, paddingTop, paddingBottom, narrow }
   @param {Array}    children - The rows
 
   @return {Object} - React element
@@ -185,7 +190,7 @@ export default function createNotificationParts (ctx) {
     return React.createElement(View, {
       key: 'textBlock',
       style: {
-        flexBasis: 0,
+        flexBasis: opts.narrow === true ? 'auto' : 0,
         flexGrow: 1,
         flexShrink: 1,
         minWidth: 0,

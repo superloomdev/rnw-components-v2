@@ -3596,6 +3596,16 @@
       "why": "a details inset that ignores the end cell must fail the `details_inset_end` assertion"
     },
     {
+      "id": "notification-text-basis-zero-narrow",
+      "file": "component/molecule/notification/notification-parts.js",
+      "find": "      key: 'textBlock',\n      style: {\n        flexBasis: opts.narrow === true ? 'auto' : 0,",
+      "replace": "      key: 'textBlock',\n      style: {\n        flexBasis: 0,",
+      "runner": "node",
+      "test": "callout.test.js",
+      "testName": "default: the text block takes its content as basis below md, none from md",
+      "why": "a zero-basis text block below md lets a native layout size the details from the glyph alone and seat the action beside them"
+    },
+    {
       "id": "toast-action-fill-at-rest",
       "file": "component/molecule/notification/notification-action-button.js",
       "find": "      fillLeaf: null,",

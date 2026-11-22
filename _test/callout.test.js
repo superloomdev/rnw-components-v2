@@ -17,6 +17,17 @@ afterEach(cleanup);
 
 const GLYPHS = { error: 'error_filled', info: 'information_filled', 'info-square': 'information_square_filled', success: 'success', warning: 'warning_filled', 'warning-alt': 'warning_alt_filled' };
 
+// Run a body in a window of the given width, restoring the window after
+async function inWindow (width, body) {
+  const before = window.innerWidth;
+  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+  try {
+    await body();
+  } finally {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
+  }
+}
+
 describe('Callout: every sample state under every template', function () {
 
   for (const template of TEMPLATE_NAMES) {
@@ -73,6 +84,39 @@ describe('Callout: every sample state under every template', function () {
       assert.equal(container.style.width, '100%', 'the band fills its container');
       assert.equal(container.style.maxWidth, t['control.notification_inline_width'] + 'px', 'capped at the inline width cell');
       await cleanup();
+    });
+  }
+
+});
+
+describe('Callout: below md the details measure their text', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    test(template + ': the text block takes its content as basis below md, none from md', async function () {
+      const t = buildNative(template).tokens;
+      const Registry = buildSystem(template, factories);
+      const props = SAMPLE[0].props;
+      let narrowBasis = null;
+      let narrowDetailsBasis = null;
+      let narrowDetailsWrap = null;
+      await inWindow(t['breakpoint.md'] - 1, async function () {
+        const rendered = await render(React.createElement(Registry.Callout, props));
+        const details = rendered.firstElementChild.children[0];
+        narrowDetailsBasis = details.style.flexBasis;
+        narrowDetailsWrap = details.style.flexWrap;
+        narrowBasis = details.children[1].style.flexBasis;
+        await cleanup();
+      });
+      let wideBasis = null;
+      await inWindow(t['breakpoint.md'], async function () {
+        const rendered = await render(React.createElement(Registry.Callout, props));
+        wideBasis = rendered.firstElementChild.children[0].children[1].style.flexBasis;
+        await cleanup();
+      });
+      assert.equal(narrowDetailsBasis, 'auto', 'below md the details take their content width');
+      assert.equal(narrowDetailsWrap, 'nowrap', 'below md the glyph and the text share one line, as the upstream details do not wrap');
+      assert.equal(narrowBasis, 'auto', 'below md the text block is its content, so a native layout measures the text');
+      assert.equal(wideBasis === 'auto', false, 'from md the text block shares the row from a zero basis');
     });
   }
 
