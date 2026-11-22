@@ -520,7 +520,8 @@ export async function runFidelity (page, component, set, scheme) {
   const masks = {};
   // The narrow set opens both pages in the reference's narrow window, each
   // body at the narrow width, so a rule read from the window (a breakpoint)
-  // draws on both sides
+  // draws on both sides. The showcase opens with the form variants off
+  // (decision 62): the reference has no form class
   const narrow = set === 'narrow' ? reference.narrow : null;
   if (narrow !== null) {
     await page.setViewportSize({ width: narrow.window, height: 720 });
@@ -546,7 +547,7 @@ export async function runFidelity (page, component, set, scheme) {
       }
     }
   }
-  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false, width: narrow === null ? undefined : narrow.width });
+  const opened = await openShowcase(page, TEMPLATE[set], component.name, { measure: true, scheme: scheme, hosted: false, width: narrow === null ? undefined : narrow.width, adaptive: narrow === null ? undefined : 'fixed' });
   const ours = await collect(page, component, reference, 'ours', masks);
   const anchor = ANCHOR[component.name];
   // An additional target's interaction keys anchor their own painted

@@ -4474,6 +4474,16 @@
       "test": "page-header.test.js",
       "testName": "the tags take the right section alt share of the row widened by the gutter, less the column insets",
       "why": "the tags column is 25 % of the row at every width (_page-header.scss:641-663); a full-row tag set shows tags upstream gathers behind +2 below md"
+    },
+    {
+      "id": "fidelity-narrow-variants-off",
+      "file": "_test/harness/fidelity.js",
+      "find": "adaptive: narrow === null ? undefined : 'fixed' });",
+      "replace": "adaptive: undefined });",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Breadcrumb / narrow / light: matches the reference in every state",
+      "why": "a narrow set opened with the compact form variants on compares the adaptive layer with a reference that has none (the open overflow menu's rows are 48 against 40, 3.2 % over a 2 % budget) and must fail (decision 62)"
     }
   ]
 }

@@ -7,7 +7,10 @@
 // and shadow pixels at the anchor part), and stay within the row's
 // diff_budget perceptually. A reference with `narrow` ({ window, width })
 // runs the `narrow` set too: both pages in that window, each body at that
-// width, for a rule read from the window. No expected gap is set aside: a difference is a
+// width, for a rule read from the window. The narrow set opens the showcase
+// with the form variants off (`adaptive=fixed`, decision 62): it compares the
+// window rule alone; the form class's target floor and pitch are the
+// structural gate's. No expected gap is set aside: a difference is a
 // template, component or harness defect. A masked omission (`second.omit`,
 // proven undrawn upstream by its probe) is left out of the pixels, and a
 // mask that would cover the anchor part fails.
