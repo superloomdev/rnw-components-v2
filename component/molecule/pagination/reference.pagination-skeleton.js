@@ -4,6 +4,9 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 800 }),
+  // Below a 42rem container the bar keeps only the item count
+  // (`pagination/_pagination.scss:44-70`): the narrow set draws a 320 body
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream) {
     return React.createElement(upstream.PaginationSkeleton, null);
   },

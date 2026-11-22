@@ -50,6 +50,10 @@ export default Object.freeze({
   // The fixed scrim mounts inside its cell: the body stages it, matching
   // the sample's frame
   body: Object.freeze({ width: 640, height: 400, stage: true }),
+  // Below md every size spans the window at full height, read from the
+  // window (`modal/_modal.scss:81-114,190-264`): the narrow set draws a
+  // 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   oursHosted: true,
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.cds--modal', ours: '[data-testid="composed-modal-scrim"]', measure: 'box', compare: ['backgroundColor'] }),

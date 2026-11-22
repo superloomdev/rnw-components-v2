@@ -6,6 +6,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 320 }),
+  // At or below a 410 window the name's wrap is 13.5rem, not 17.5rem
+  // (`file-uploader/_file-uploader.scss:184-190`): the narrow set draws the
+  // same body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.FileUploaderItem, {
       disabled: props.disabled === true,

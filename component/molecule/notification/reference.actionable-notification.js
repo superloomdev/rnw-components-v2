@@ -16,6 +16,11 @@ let blurActionFocus = null;
 
 export default Object.freeze({
   kind: 'render-web',
+  // Below md the inline band wraps at 288 with its details and action
+  // inset, read from the window (`notification/_actionable-notification.scss:
+  // 44-58,327-337,405-416,605-627`): the narrow set draws a 320 body in a
+  // 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   // Escape is the band's own close: skip it on leave or every later
   // interaction finds an unmounted cell

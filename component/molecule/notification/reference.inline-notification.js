@@ -8,6 +8,10 @@
 
 export default Object.freeze({
   kind: 'render-web',
+  // Below md the band wraps at 288 with its details and action inset,
+  // read from the window (`notification/_inline-notification.scss:26-55,
+  // 272-286,306-319,400-413`): the narrow set draws a 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   interactions: Object.freeze(['hover', 'focus']),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.InlineNotification, {

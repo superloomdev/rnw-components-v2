@@ -3,6 +3,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 320 }),
+  // A label wider than its row is cut with an ellipsis and gains a
+  // tooltip (`TreeView/TreeNode.tsx:195-232,313`): the narrow set draws a
+  // 160 body, which cuts the labels
+  narrow: Object.freeze({ window: 375, width: 160 }),
   mount: function (React, upstream, props) {
     const node = function (n, i) {
       const kids = n.children ? n.children.map(function (c, j) {

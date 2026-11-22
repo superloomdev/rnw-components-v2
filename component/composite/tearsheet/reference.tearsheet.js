@@ -50,6 +50,11 @@ export default Object.freeze({
   },
   target: Object.freeze({ upstream: '.c4p--tearsheet .cds--modal-close', ours: '[data-part="close"] [role="button"]' }),
   body: Object.freeze({ width: 1280, height: 720, stage: true }),
+  // Below md the wide container spans the layer, the description takes
+  // the whole row and the influencer its own width, read from the window
+  // (`Tearsheet/_tearsheet.scss:298-302,392-394,469-477`): the narrow set
+  // draws a 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   oursHosted: true,
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.c4p--tearsheet', pseudo: '::before', ours: '[data-part="scrim"]', measure: 'box', compare: ['backgroundColor'] }),

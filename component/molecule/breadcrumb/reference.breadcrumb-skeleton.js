@@ -6,6 +6,10 @@ export default Object.freeze({
   kind: 'render-web',
   interactions: Object.freeze([]),
   body: Object.freeze({ width: 600, height: 80 }),
+  // Below md the list is inline around block-level items, read from the
+  // window (`breadcrumb/_breadcrumb.scss:24-33`): the narrow set draws a
+  // 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.BreadcrumbSkeleton, {
       items: props.items,

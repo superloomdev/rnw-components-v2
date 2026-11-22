@@ -6,6 +6,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 1280 }),
+  // The span classes follow the window's breakpoint
+  // (`Grid/Column.tsx:436-470`): the narrow set draws the sm side, a 320
+  // body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.FlexGrid, {
       condensed: props.condensed === true,

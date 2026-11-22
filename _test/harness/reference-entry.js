@@ -164,23 +164,25 @@ function Cell (props) {
   // layer's containing block so the surface paints inside the cell. Its
   // declared height is not shrinkable: the measurement grid's 160 px row
   // pitch must not squeeze the stage the layer covers. A `hang` reserves
-  // the room an upstream part paints outside the box, as a host must
-  const body = reference.body ? (function () {
+  // the room an upstream part paints outside the box, as a host must. A
+  // narrow set draws a body at its width where the reference declares none
+  const declared = reference.body || {};
+  const body = reference.body || bodyWidth !== null ? (function () {
     const style = {
       display: 'block',
-      width: bodyWidth !== null ? bodyWidth + 'px' : typeof reference.body.width === 'number' ? reference.body.width + 'px' : 'fit-content'
+      width: bodyWidth !== null ? bodyWidth + 'px' : typeof declared.width === 'number' ? declared.width + 'px' : 'fit-content'
     };
-    if (typeof reference.body.height === 'number') {
-      style.height = reference.body.height + 'px';
+    if (typeof declared.height === 'number') {
+      style.height = declared.height + 'px';
     }
-    const hang = reference.body.hang || {};
+    const hang = declared.hang || {};
     if (typeof hang.start === 'number') {
       style.paddingInlineStart = hang.start + 'px';
     }
     if (typeof hang.bottom === 'number') {
       style.paddingBottom = hang.bottom + 'px';
     }
-    if (reference.body.stage === true) {
+    if (declared.stage === true) {
       style.transform = 'translateZ(0)';
       style.flexShrink = 0;
     }

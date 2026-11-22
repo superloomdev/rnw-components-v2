@@ -155,6 +155,10 @@ function bodyStyle (name) {
   if (measuring && reference && reference.body) {
     return frameStyle(bodyWidth === null ? reference.body : Object.assign({}, reference.body, { width: bodyWidth }));
   }
+  // A narrow set draws the body at its width where the reference declares none
+  if (measuring && reference && bodyWidth !== null) {
+    return frameStyle(Object.assign({}, frames[name], { width: bodyWidth }));
+  }
   if (frames[name]) {
     return frameStyle(frames[name]);
   }

@@ -51,6 +51,10 @@ export default Object.freeze({
   // The row's frame, on both pages: the upstream fluid set's container
   // queries would otherwise see a zero-width inline-size container
   body: Object.freeze({ width: 640 }),
+  // The fluid set's container queries stack it, halve two items or widen
+  // one in a narrow room (`button/_button.scss:88-112`): the narrow set
+  // draws a 320 body, below three items' floors
+  narrow: Object.freeze({ window: 375, width: 320 }),
   // The element a person hovers, presses and focuses: the second button, whose
   // focus suppresses the separators beside it
   target: Object.freeze({ upstream: '.cds--btn-set .cds--btn:nth-of-type(2)', ours: SEAT(2) }),

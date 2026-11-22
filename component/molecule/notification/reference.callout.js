@@ -6,6 +6,11 @@
 
 export default Object.freeze({
   kind: 'render-web',
+  // The callout is an actionable band: below md it wraps at 288 with its
+  // details and action inset (`Notification.tsx:1342-1348`,
+  // `notification/_actionable-notification.scss:44-58,327-337,405-416`):
+  // the narrow set draws a 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   interactions: Object.freeze(['hover', 'focus', 'pressed']),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.Callout, {

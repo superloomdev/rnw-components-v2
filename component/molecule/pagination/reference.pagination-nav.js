@@ -5,6 +5,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: Object.freeze({ width: 800 }),
+  // At or below an sm window the nav shows its size's fallback count
+  // instead of `itemsShown` (`PaginationNav.tsx:378-398` `max-width:
+  // sm`): the narrow set draws a 320 body in a 320 window
+  narrow: Object.freeze({ window: 320, width: 320 }),
   mount: function (React, upstream, props) {
     // Upstream reads `page` only (`PaginationNav.js:151`); our sample seeds
     // `defaultPage`, so the mount passes it as the probe mount does

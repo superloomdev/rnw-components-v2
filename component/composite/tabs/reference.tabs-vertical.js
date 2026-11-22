@@ -9,9 +9,14 @@ import { FRAME } from './sample.tabs-vertical.js';
 
 export default Object.freeze({
   kind: 'render-web',
+  // Below md upstream draws a contained horizontal TabList instead of the
+  // vertical list, read from the window (`Tabs.tsx:91,990,1116-1126`): the
+  // narrow set draws a 320 body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     const items = Array.isArray(props.items) ? props.items : [];
-    return React.createElement('div', { style: { width: FRAME.width } },
+    // The frame's width, held inside a narrow set's body
+    return React.createElement('div', { style: { maxWidth: '100%', width: FRAME.width } },
       React.createElement('style', null, '.cds--css-grid{margin-inline:0;padding-inline:0;column-gap:0;max-inline-size:none}'),
       React.createElement(upstream.TabsVertical, {
         height: Number.isFinite(props.height) ? props.height + 'px' : undefined,

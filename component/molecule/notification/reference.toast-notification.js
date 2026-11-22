@@ -10,6 +10,10 @@
 
 export default Object.freeze({
   kind: 'render-web',
+  // From the max breakpoint the toast is 352 wide, not 288
+  // (`notification/_toast-notification.scss:28-46`): the other side is the
+  // wider window, so this set draws a 400 body in a 1600 window
+  narrow: Object.freeze({ window: 1600, width: 400 }),
   interactions: Object.freeze([]),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.ToastNotification, {

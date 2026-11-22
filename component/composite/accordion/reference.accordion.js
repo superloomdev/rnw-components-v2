@@ -6,6 +6,10 @@
 export default Object.freeze({
   kind: 'render-web',
   body: { width: 320 },
+  // The content's end padding is the inline density below a 480 window,
+  // 48 from 480 and 25 % from 640 (`accordion/_accordion.scss:202-213`):
+  // the narrow set draws the same body in a 375 window
+  narrow: Object.freeze({ window: 375, width: 320 }),
   mount: function (React, upstream, props) {
     return React.createElement(upstream.Accordion, {
       align: props.align,
