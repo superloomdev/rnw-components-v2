@@ -92,18 +92,20 @@ describe('Callout: every sample state under every template', function () {
 describe('Callout: below md the details measure their text', function () {
 
   for (const template of TEMPLATE_NAMES) {
-    test(template + ': the text block takes its content as basis below md, none from md', async function () {
+    test(template + ': below md the details measure their text and leave the action its own line', async function () {
       const t = buildNative(template).tokens;
       const Registry = buildSystem(template, factories);
       const props = SAMPLE[0].props;
       let narrowBasis = null;
       let narrowDetailsBasis = null;
       let narrowDetailsWrap = null;
+      let narrowDetailsGrow = null;
       await inWindow(t['breakpoint.md'] - 1, async function () {
         const rendered = await render(React.createElement(Registry.Callout, props));
         const details = rendered.firstElementChild.children[0];
         narrowDetailsBasis = details.style.flexBasis;
         narrowDetailsWrap = details.style.flexWrap;
+        narrowDetailsGrow = details.style.flexGrow;
         narrowBasis = details.children[1].style.flexBasis;
         await cleanup();
       });
@@ -114,6 +116,7 @@ describe('Callout: below md the details measure their text', function () {
         await cleanup();
       });
       assert.equal(narrowDetailsBasis, 'auto', 'below md the details take their content width');
+      assert.equal(narrowDetailsGrow, '0', 'below md the details shrink without growing, so a native wrapping row breaks before the action');
       assert.equal(narrowDetailsWrap, 'nowrap', 'below md the glyph and the text share one line, as the upstream details do not wrap');
       assert.equal(narrowBasis, 'auto', 'below md the text block is its content, so a native layout measures the text');
       assert.equal(wideBasis === 'auto', false, 'from md the text block shares the row from a zero basis');

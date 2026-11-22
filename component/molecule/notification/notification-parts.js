@@ -14,8 +14,9 @@
 // details keep `spacing_09` at their end and take their content's width,
 // so the action wraps under them, and the close sits over that end inset.
 // The content's width is the text block's: a native layout sizes a
-// zero-basis block as empty, so below md its basis is its content and the
+// zero-basis block as empty, so below md its basis is its content, the
 // details hold the glyph and the text on one line (`display: flex`, no wrap)
+// and they shrink without growing (see `details`)
 // (`_inline-notification.scss:26-55,272-319,400-413`,
 // `_actionable-notification.scss:44-58,327-337,605-627`; plan 0162 E13).
 //
@@ -120,7 +121,11 @@ export default function createNotificationParts (ctx) {
 
   /********************************************************************
   The details part: the icon plus the text block, with the details
-  insets.
+  insets. Below md they shrink and do not grow: upstream's details grow
+  (`_actionable-notification.scss:324-328`), but a native layout never
+  breaks a wrapping row after an item that both grows and shrinks, so the
+  action would share their line; the text is wider than the line in
+  every drawn state, so the details fill it either way.
 
   @param {Object}   opts     - { owner, kind, lowContrast, iconTop, narrow }
   @param {Array}    children - The text block
@@ -134,7 +139,7 @@ export default function createNotificationParts (ctx) {
       style: {
         flexBasis: opts.narrow === true ? 'auto' : 0,
         flexDirection: 'row',
-        flexGrow: 1,
+        flexGrow: opts.narrow === true ? 0 : 1,
         flexShrink: opts.narrow === true ? 1 : 0,
         flexWrap: opts.narrow === true ? 'nowrap' : 'wrap',
         marginStart: ctx.metric(opts.owner, 'detailsInset'),

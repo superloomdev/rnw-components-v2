@@ -43,8 +43,16 @@ file and the row is measured against the primary alone.
   empty, so the details shared their line with the action and the text
   wrapped in the rest (native run 45024868316: ActionableNotification inline
   120 against the web's 106, Callout 156 against 106). Below md the text
-  block's basis is therefore its content and the details do not wrap, as
-  upstream's `display: flex` details do not (`notification-parts.js`).
+  block's basis is its content and the details do not wrap, as upstream's
+  `display: flex` details do not. That alone changed nothing on the
+  devices (native run 45079333162, the same heights): React Native's Yoga
+  never breaks a wrapping row after an item that both grows and shrinks
+  (proven on the engine compiled from `react-native` 0.88.1's
+  `ReactCommon/yoga`: an item at a 100 % basis with grow 1 and shrink 1
+  keeps the next item on its line; grow or shrink alone breaks it). Below
+  md the details therefore shrink and do not grow. Upstream's grow differs
+  only when the text is narrower than the line beside the action, which
+  no state draws (`notification-parts.js`).
 - **Status icons** are plain named glyphs (`error_filled`,
   `checkmark_filled`, `information_filled`, `warning_filled`) colored by
   the marker leaf - the glyph carries the meaning.
