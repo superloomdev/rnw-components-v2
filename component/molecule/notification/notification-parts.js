@@ -7,9 +7,14 @@
 // the kind's 20 px status glyph (the warning glyph's inner mark in
 // `color.notification_warning_icon_inner`) beside the title and subtitle
 // text block - then any inline action and the close seat in flow at the
-// end. The insets come from the `notification` cells, never the spacing
-// scale; the owner's spec sheet names the cell a seat reads (toast's own
-// `toast` suffixed cells).
+// end. The insets come from the `notification` cells; the owner's spec
+// sheet names the cell a seat reads (toast's own `toast` suffixed cells).
+// Below `breakpoint.md` an inline band follows the reference's narrow
+// rules with its spacing steps: the band is its 288 floor wide, the
+// details keep `spacing_09` at their end and take their content's width,
+// so the action wraps under them, and the close sits over that end inset
+// (`_inline-notification.scss:26-55,272-319,400-413`,
+// `_actionable-notification.scss:44-58,327-337,605-627`; plan 0162 E13).
 //
 // Private to the family; nothing here is a registry row or a public
 // export.
@@ -45,7 +50,7 @@ factory, never during render.
 
 @param {Object} ctx - Component context
 
-@return {Object} - { frame, icon, textBlock, close }
+@return {Object} - { close, details, frame, icon, text, textBlock, useNarrow }
 *********************************************************************/
 export default function createNotificationParts (ctx) {
 
@@ -55,10 +60,24 @@ export default function createNotificationParts (ctx) {
 
 
   /********************************************************************
+  Whether the window is below md, where an inline band follows its narrow
+  rules; an unknown window is not narrow. A hook: call it in render.
+
+  @return {Boolean} - True below md
+  *********************************************************************/
+  function useNarrow () {
+
+    const width = ctx.behaviors.useViewportSize().width;
+    return width > 0 && width < ctx.token('breakpoint.md');
+
+  }
+
+
+  /********************************************************************
   The container: the marker, the fill and (under lowContrast) the kind
   outline, in a wrapping row at the owner's width.
 
-  @param {Object}   opts     - { role, testID, kind, lowContrast, width, minHeight, level, shadow }
+  @param {Object}   opts     - { role, testID, kind, lowContrast, width, minHeight, level, shadow, narrow }
   @param {Array}    children - [details, action?, close?]
 
   @return {Object} - React element
@@ -83,7 +102,7 @@ export default function createNotificationParts (ctx) {
         borderStartWidth: opts.marker === false ? 0 : ctx.metric(opts.owner, 'markerWidth'),
         flexDirection: 'row',
         flexWrap: 'wrap',
-        maxWidth: opts.fluid === true ? opts.width : undefined,
+        maxWidth: opts.fluid === true ? (opts.narrow === true ? ctx.metric(opts.owner, 'minWidth') : opts.width) : undefined,
         minWidth: opts.fluid === true ? ctx.metric(opts.owner, 'minWidth') : undefined,
         minHeight: ctx.metric(opts.owner, 'minHeight'),
         // Inline bands are `inline-size: 100%` held between upstream's 288
@@ -100,7 +119,7 @@ export default function createNotificationParts (ctx) {
   The details part: the icon plus the text block, with the details
   insets.
 
-  @param {Object}   opts     - { owner, kind, lowContrast, iconTop }
+  @param {Object}   opts     - { owner, kind, lowContrast, iconTop, narrow }
   @param {Array}    children - The text block
 
   @return {Object} - React element
@@ -110,13 +129,13 @@ export default function createNotificationParts (ctx) {
     return React.createElement(View, {
       key: 'details',
       style: {
-        flexBasis: 0,
+        flexBasis: opts.narrow === true ? 'auto' : 0,
         flexDirection: 'row',
         flexGrow: 1,
-        flexShrink: 0,
+        flexShrink: opts.narrow === true ? 1 : 0,
         flexWrap: 'wrap',
         marginStart: ctx.metric(opts.owner, 'detailsInset'),
-        marginEnd: ctx.metric(opts.owner, 'detailsInsetEnd'),
+        marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : ctx.metric(opts.owner, 'detailsInsetEnd'),
         minWidth: 0
       }
     }, children);
@@ -223,13 +242,13 @@ export default function createNotificationParts (ctx) {
   `notification_close_icon` (primary ink under lowContrast), calling the
   owner's close request.
 
-  @param {Object} opts - { owner, lowContrast, label, onPress }
+  @param {Object} opts - { owner, lowContrast, label, onPress, narrow }
 
   @return {Object} - React element
   *********************************************************************/
   function close (opts) {
 
-    return React.createElement(ctx.Registry.IconButton, {
+    const button = React.createElement(ctx.Registry.IconButton, {
       key: 'close',
       fillActiveLeaf: null,
       fillHoverLeaf: null,
@@ -242,10 +261,13 @@ export default function createNotificationParts (ctx) {
       onPress: opts.onPress,
       testID: 'notification-close'
     });
+    // Below md the close sits at the band's top end over the details' end
+    // inset (`_inline-notification.scss:400-413` static only from md)
+    return opts.narrow === true ? React.createElement(View, { key: 'close', style: { end: 0, position: 'absolute', top: 0 } }, button) : button;
 
   }
 
 
-  return { close: close, details: details, frame: frame, icon: icon, text: text, textBlock: textBlock };
+  return { close: close, details: details, frame: frame, icon: icon, text: text, textBlock: textBlock, useNarrow: useNarrow };
 
 }

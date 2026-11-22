@@ -24,6 +24,7 @@ export default function NotificationActionButton (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
+  const { useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -40,6 +41,11 @@ export default function NotificationActionButton (ctx) {
       height: ctx.metric('NotificationActionButton', 'height')
     };
     const toast = props.variant === 'toast';
+    // Below md the inline ghost wraps under the details: no block-start
+    // margin, `spacing_08` at its start (`_actionable-notification.scss:405-416`,
+    // `_inline-notification.scss:306-319`); an unknown window is not narrow
+    const windowWidth = useViewportSize().width;
+    const narrow = !toast && windowWidth > 0 && windowWidth < ctx.token('breakpoint.md');
     const lowContrast = props.lowContrast === true;
     const recolor = toast ? (lowContrast ? {} : {
       borderLeaf: 'notification_action_tertiary_inverse',
@@ -67,9 +73,9 @@ export default function NotificationActionButton (ctx) {
       style: {
         alignSelf: 'flex-start',
         marginBlockEnd: ctx.token(toast ? 'spacing.spacing_05' : 'spacing.spacing_03'),
-        marginBlockStart: toast ? 0 : ctx.token('spacing.spacing_03'),
+        marginBlockStart: toast || narrow ? 0 : ctx.token('spacing.spacing_03'),
         marginEnd: Utils.isNumber(props.marginEnd) ? props.marginEnd : undefined,
-        marginStart: toast ? ctx.token('control.notification_toast_action_inset') : ctx.token('control.notification_action_inset')
+        marginStart: toast ? ctx.token('control.notification_toast_action_inset') : narrow ? ctx.token('spacing.spacing_08') : ctx.token('control.notification_action_inset')
       }
     },
     React.createElement(View, {

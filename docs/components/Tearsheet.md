@@ -78,6 +78,7 @@ Tearsheet is a large dialog for a focused task: a header, an optional influencer
 | `actionPaddingTop` | `control.tearsheet_action_padding_top` |
 | `actionMaxWidth` | `control.tearsheet_action_max_width` |
 | `borderWidth` | `control.dialog_border_width` |
+| `bpMd` | `breakpoint.md` |
 | `closeIconSize` | `control.dialog_close_icon_size` |
 | `closeSize` | `control.icon_button_size` |
 | `descriptionGap` | `control.tearsheet_description_gap` |

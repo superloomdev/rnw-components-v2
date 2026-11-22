@@ -16,7 +16,7 @@ export default Object.freeze({
   variants: Object.freeze([]),
   tokens: Object.freeze([
     'control.tab_vertical_list_ratio', 'control.tab_vertical_fade_height',
-    'color.tab_vertical_container'
+    'color.tab_vertical_container', 'breakpoint.md'
   ]),
   colors: Object.freeze([])
 });

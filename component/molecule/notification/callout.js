@@ -38,11 +38,12 @@ export default function Callout (ctx) {
     const titleId = Utils.isString(props.titleId) ? props.titleId : generated;
     const lowContrast = props.lowContrast === true;
     const owner = 'Callout';
+    const narrow = parts.useNarrow();
 
     // Render the actionable inline band: details, then the ghost action;
     // never a close
-    return parts.frame({ fluid: true, kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
-      parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
+    return parts.frame({ fluid: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
+      parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }),
         parts.textBlock({ owner: owner }, [
           React.createElement(ctx.ReactNative.View, { key: 'title', nativeID: titleId },

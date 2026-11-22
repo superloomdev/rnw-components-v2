@@ -27,7 +27,7 @@ export default Object.freeze({
   kinds: Object.freeze([]),
   variants: Object.freeze(['narrow', 'wide']),
   tokens: Object.freeze([
-    'anatomy.dialog_close', 'stacking.overlay',
+    'anatomy.dialog_close', 'stacking.overlay', 'breakpoint.md',
     'color.dialog_scrim', 'color.dialog_container', 'color.dialog_border', 'color.dialog_heading', 'color.text_secondary',
     'color.tearsheet_divider', 'color.tearsheet_header_container', 'color.tearsheet_influencer_container',
     'color.tearsheet_main_container', 'color.tearsheet_actions_container',

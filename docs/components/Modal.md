@@ -113,6 +113,7 @@ ComposedModal is the framed dialog on its own scrim layer composing ModalHeader,
 | Metric | Rule |
 |---|---|
 | `borderWidth` | `control.dialog_border_width` |
+| `bpMd` | `breakpoint.md` |
 | `enterOffset` | `control.dialog_enter_offset` |
 | `level` | `shadow.dialog` |
 | `margin` | `control.dialog_padding_inline` |
@@ -172,6 +173,7 @@ Modal is a dialog on a scrim layer: a header, a body, an actions row and a close
 | Metric | Rule |
 |---|---|
 | `borderWidth` | `control.dialog_border_width` |
+| `bpMd` | `breakpoint.md` |
 | `level` | `shadow.dialog` |
 | `maxWidth` | `control.dialog_max_width` |
 | `minHeight` | `control.dialog_min_height` |

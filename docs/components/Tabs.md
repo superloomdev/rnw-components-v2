@@ -613,6 +613,7 @@ TabsVertical lists tabs in a column beside their panels, with scroll fades when 
 |---|---|
 | `listRatio` | `control.tab_vertical_list_ratio` |
 | `fadeHeight` | `control.tab_vertical_fade_height` |
+| `bpMd` | `breakpoint.md` |
 
 ### States (sample.js)
 

@@ -12,8 +12,14 @@ export default function Column (ctx) {
   const GridContext = createGridContext(ctx);
   const ORDER = ['sm', 'md', 'lg', 'xlg', 'max'];
 
+  // A column that names breakpoints but none at or below the current one
+  const UNSET = 'unset';
+
   // Resolve the breakpoint cascade: the largest defined bp <= the current
-  // wins; none -> the column shares the track equally (auto)
+  // wins. A column that names none shares the row (`cds--col`,
+  // `Grid/Column.tsx:133-138`); one that names only wider breakpoints has
+  // no class that applies yet: one track in the CSS grid, the whole row in
+  // the flexbox grid (`col-<bp>-<n>` sizes from its breakpoint only)
   function resolve (props, bp) {
     const index = ORDER.indexOf(bp);
     for (let i = index; i >= 0; i = i - 1) {
@@ -22,17 +28,21 @@ export default function Column (ctx) {
         return v;
       }
     }
-    return true;
+    return ORDER.some(function (name) {
+      return props[name] !== undefined && props[name] !== null;
+    }) ? UNSET : true;
   }
 
   function ColumnComponent (props) {
     const context = React.useContext(GridContext);
-    const columns = ctx.metric('Column', 'columns');
+    // The breakpoint's track count (4 at sm, 8 at md, 16 from lg)
+    const columns = ctx.token('grid.columns_' + context.breakpoint);
     const spec = resolve(props, context.breakpoint);
     if (Utils.isNumber(spec) && spec === 0) {
       return null;
     }
-    const span = Utils.isNumber(spec) ? spec : Utils.isObject(spec) && Utils.isNumber(spec.span) ? spec.span : null;
+    const unset = spec === UNSET ? (context.mode === 'columns' ? 1 : columns) : null;
+    const span = unset !== null ? unset : Utils.isNumber(spec) ? spec : Utils.isObject(spec) && Utils.isNumber(spec.span) ? spec.span : null;
     const offset = Utils.isObject(spec) && Utils.isNumber(spec.offset) ? spec.offset : 0;
     const gutterHalfS = context.gutterStart;
     const gutterHalfE = context.gutterEnd;

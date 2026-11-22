@@ -16,6 +16,6 @@ export default Object.freeze({
     'color.breadcrumb_separator',
     'type.breadcrumb', 'type.breadcrumb_small',
     'control.breadcrumb_gap', 'control.breadcrumb_gap_small',
-    'control.breadcrumb_skeleton_width', 'control.breadcrumb_skeleton_height'
+    'control.breadcrumb_skeleton_width', 'control.breadcrumb_skeleton_height', 'breakpoint.md'
   ])
 });

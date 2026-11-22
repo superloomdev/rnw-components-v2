@@ -41,6 +41,11 @@ export default function BreadcrumbSkeleton (ctx) {
       barWidth: ctx.metric('BreadcrumbSkeleton', 'barWidth'),
       gap: ctx.metric('BreadcrumbSkeleton', small ? 'gapSmall' : 'gap')
     };
+    // Below md the list is inline around its block-level items, so they
+    // stack (`breadcrumb/_breadcrumb.scss:24-33,44-49`); an unknown window
+    // is not narrow
+    const viewport = ctx.behaviors.useViewportSize();
+    const narrow = viewport.width > 0 && viewport.width < ctx.metric('BreadcrumbSkeleton', 'bpMd');
 
     // Render the row: one `li`-shaped item per bar, the separator after
     // every item, the last one only without `noTrailingSlash`
@@ -63,7 +68,7 @@ export default function BreadcrumbSkeleton (ctx) {
         }, '/')));
     }
     return React.createElement(View, {
-      style: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', maxWidth: 100 + PCT },
+      style: narrow ? { alignItems: 'stretch', flexDirection: 'column', maxWidth: 100 + PCT } : { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', maxWidth: 100 + PCT },
       testID: props.testID
     }, rows);
 

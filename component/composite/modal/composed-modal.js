@@ -7,10 +7,10 @@
 // `onClose` returning `false` vetoes the close. The container's width is
 // the size's `control.dialog_width_ratio*` of the layer space it covers
 // (`isFullWidth` spans it all) and its max height the size's
-// `control.dialog_height_ratio*`, the ratio rule replacing every
-// breakpoint read (D23/D24: the form variants carry the compact values);
-// where the cells give bounds the dialog sizes to its content inside
-// them. The container enters from `control.dialog_enter_offset` above to
+// `control.dialog_height_ratio*`; below `breakpoint.md` every size spans
+// that space, read from the window as the reference does
+// (`modal/_modal.scss:81-99`; plan 0162 E13). Where the cells give bounds
+// the dialog sizes to its content inside them. The container enters from `control.dialog_enter_offset` above to
 // rest over `motion.duration_moderate_02` (reduced motion and the
 // measurement mode draw it at rest). The body enters with
 // `useLayerSpace`; hosted or not the scrim covers its space, as the Modal
@@ -31,7 +31,7 @@ export default function ComposedModal (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, View } = ctx.ReactNative;
-  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useReducedMotion, useViewportLayer } = ctx.behaviors;
+  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useReducedMotion, useViewportLayer, useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -47,6 +47,7 @@ export default function ComposedModal (ctx) {
     const open = props.open === true;
     const metrics = {
       borderWidth: ctx.metric('ComposedModal', 'borderWidth'),
+      bpMd: ctx.metric('ComposedModal', 'bpMd'),
       enterOffset: ctx.metric('ComposedModal', 'enterOffset'),
       level: ctx.metric('ComposedModal', 'level'),
       margin: ctx.metric('ComposedModal', 'margin'),
@@ -92,8 +93,14 @@ export default function ComposedModal (ctx) {
     const suffix = size === 'md' ? '' : '_' + size;
     const space = useLayerSpace();
     const measured = Utils.isNumber(space.width) && space.width > 0 && Utils.isNumber(space.height) && space.height > 0;
-    const widthRatio = props.isFullWidth === true ? 1 : ctx.token('control.dialog_width_ratio' + suffix);
-    const heightRatio = ctx.token('control.dialog_height_ratio' + suffix);
+    // Below md the container spans the space at full height and sits at
+    // its top (`modal/_modal.scss:81-99`: inline-size 100 %, max-block-size
+    // 100 %, inset-block-start 0 until `breakpoint(md)`); an unknown window
+    // is not narrow
+    const viewport = useViewportSize();
+    const narrow = viewport.width > 0 && viewport.width < metrics.bpMd;
+    const widthRatio = props.isFullWidth === true || narrow ? 1 : ctx.token('control.dialog_width_ratio' + suffix);
+    const heightRatio = narrow ? 1 : ctx.token('control.dialog_height_ratio' + suffix);
     const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * widthRatio : undefined);
     const dialogHeight = bounded ? undefined : (Utils.isNumber(space.height) && space.height > 0 ? space.height * heightRatio : undefined);
 

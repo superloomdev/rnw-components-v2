@@ -1,6 +1,6 @@
 // Info: Tearsheet spec sheet. Every metric names a token; the theme
 // supplies the number. The insets and sizes are cells of the layer space,
-// read at render - D23/D24: no breakpoint read in a component.
+// read at render; below `breakpoint.md` the container spans the space.
 
 export default Object.freeze({
   actionHeight: 'control.tearsheet_action_height',
@@ -8,6 +8,7 @@ export default Object.freeze({
   actionPaddingTop: 'control.tearsheet_action_padding_top',
   actionMaxWidth: 'control.tearsheet_action_max_width',
   borderWidth: 'control.dialog_border_width',
+  bpMd: 'breakpoint.md',
   closeIconSize: 'control.dialog_close_icon_size',
   closeSize: 'control.icon_button_size',
   descriptionGap: 'control.tearsheet_description_gap',

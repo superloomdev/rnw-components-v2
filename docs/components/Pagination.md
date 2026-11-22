@@ -179,6 +179,7 @@ PaginationSkeleton is the loading placeholder of a Pagination bar.
 |---|---|
 | `height` | `size.size_medium` |
 | `dividerWidth` | `control.pagination_divider_width` |
+| `collapseWidth` | `control.pagination_collapse_width` |
 | `paddingInline` | `control.pagination_padding_inline` |
 | `gap` | `control.pagination_text_gap` |
 | `barHeight` | `control.skeleton_text_height` |

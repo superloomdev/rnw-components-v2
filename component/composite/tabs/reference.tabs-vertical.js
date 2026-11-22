@@ -34,7 +34,10 @@ export default Object.freeze({
       })) : null));
   },
   parts: Object.freeze({
-    list: Object.freeze({ upstream: '.cds--tabs.cds--tabs--vertical', ours: 'div:has(> div > [role="tablist"])', measure: 'box' }),
-    tab: Object.freeze({ upstream: '.cds--tabs__nav-item:first-of-type', ours: '[role="tab"]:first-of-type', measure: 'box', optional: true })
+    // The vertical list's painting box; below md neither side draws one
+    list: Object.freeze({ upstream: '.cds--tabs.cds--tabs--vertical', ours: '[data-part="list"]', measure: 'box' }),
+    // The first tab: the vertical tab, or below md the contained TabList's
+    // painting face (TabList's own `tab` part)
+    tab: Object.freeze({ upstream: '.cds--tabs__nav-item:first-of-type', ours: '[data-part="list"] [role="tab"], div:has(> [role="tab"]):first-of-type > div:first-child', measure: 'box', optional: true })
   })
 });

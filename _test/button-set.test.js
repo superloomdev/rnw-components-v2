@@ -82,16 +82,15 @@ for (const template of TEMPLATE_NAMES) {
 
   describe('ButtonSet / ' + template, function () {
 
-    test('the row shares itself between seats up to the item ceiling, with the theme\'s gap', async function () {
+    test('each seat asks for the whole row up to the item ceiling and never shrinks, with the theme\'s gap', async function () {
       const t = buildNative(template).tokens;
       const { root, seats } = await renderSet(buildSystem(template, factories), { items: ITEMS });
       assert.equal(root.style.flexDirection, 'row', template);
       assert.equal(root.style.gap, t['control.button_set_gap'] + 'px', template);
       assert.equal(seats.length, 2);
       for (const seat of seats) {
-        assert.equal(seat.style.flexGrow, '1', template);
-        assert.equal(seat.style.flexBasis, '0px', template);
-        assert.equal(seat.style.flexShrink, '1', template);
+        assert.equal(seat.style.width, '100%', template);
+        assert.equal(seat.style.flexShrink, '0', template);
         assert.equal(seat.style.maxWidth, t['control.button_set_item_max_width'] + 'px', template);
       }
       // The first seat draws no separator

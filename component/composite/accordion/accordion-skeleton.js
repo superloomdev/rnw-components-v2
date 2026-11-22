@@ -6,6 +6,10 @@
 
 import SPEC from './spec.accordion-skeleton.js';
 
+// The content's end padding follows the window with the upstream's own
+// pixel steps (`accordion/_accordion.scss:202-213`): the
+// inline density below 480, `spacing_09` from 480, the end ratio from 640
+const CONTENT_END_STEPS = Object.freeze({ density: 480, spacing: 640 });
 const PCT = '%';
 
 
@@ -20,6 +24,7 @@ export default function AccordionSkeleton (ctx) {
 
   const React = ctx.React;
   const { View } = ctx.ReactNative;
+  const { useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -48,6 +53,10 @@ export default function AccordionSkeleton (ctx) {
         setItemWidth(width);
       }
     };
+    const windowWidth = useViewportSize().width;
+    const contentEnd = windowWidth > 0 && windowWidth < CONTENT_END_STEPS.density ? headingPadding
+      : windowWidth > 0 && windowWidth < CONTENT_END_STEPS.spacing ? ctx.token('spacing.spacing_09')
+        : Math.min(ctx.metric('AccordionSkeleton', 'contentPaddingEnd'), Math.floor(itemWidth * ctx.metric('AccordionSkeleton', 'contentEndRatio')));
 
     const chevron = React.createElement(ctx.Registry.Icon, {
       color: 'accordion_icon',
@@ -81,7 +90,7 @@ export default function AccordionSkeleton (ctx) {
         height: lineHeight * 3 + lineGap * 2,
         overflow: 'hidden',
         marginStart: chevronFirst ? headingPadding + iconSize : 0,
-        paddingEnd: Math.min(ctx.metric('AccordionSkeleton', 'contentPaddingEnd'), Math.floor(itemWidth * ctx.metric('AccordionSkeleton', 'contentEndRatio'))),
+        paddingEnd: contentEnd,
         paddingStart: headingPadding
       }
     }, bars) : null;

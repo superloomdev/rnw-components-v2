@@ -27,7 +27,7 @@ export default Object.freeze({
     'control.dialog_border_width', 'control.dialog_radius', 'control.dialog_min_width', 'control.dialog_max_width', 'control.dialog_min_height',
     'control.dialog_width_ratio', 'control.dialog_width_ratio_xs', 'control.dialog_width_ratio_sm', 'control.dialog_width_ratio_lg',
     'control.dialog_height_ratio', 'control.dialog_height_ratio_xs', 'control.dialog_height_ratio_sm', 'control.dialog_height_ratio_lg',
-    'control.dialog_text_gutter_ratio', 'control.dialog_padding_inline',
+    'control.dialog_text_gutter_ratio', 'control.dialog_padding_inline', 'breakpoint.md',
     'control.icon_button_size', 'spacing.spacing_07', 'shadow.dialog',
     'font.family.sans'
   ])

@@ -12,6 +12,6 @@ export default Object.freeze({
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
-  tokens: Object.freeze(['grid.columns_lg', 'color.text_primary', 'font.family.sans']),
+  tokens: Object.freeze(['grid.columns_sm', 'grid.columns_md', 'grid.columns_lg', 'grid.columns_xlg', 'grid.columns_max', 'color.text_primary', 'font.family.sans']),
   colors: Object.freeze([])
 });

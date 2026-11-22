@@ -25,7 +25,7 @@ export default Object.freeze({
     'color.notification_action_hover', 'color.notification_action_container_hover', 'color.notification_action_tertiary_inverse',
     'color.notification_action_tertiary_inverse_hover', 'color.notification_action_tertiary_inverse_active', 'color.notification_action_tertiary_inverse_text',
     'color.notification_warning_icon_inner', 'color.text_primary', 'color.icon_primary', 'color.focus', 'color.focus_ring_inverse', 'font.family.sans',
-    'control.notification_inline_width', 'control.notification_width', 'control.notification_min_height', 'control.notification_marker_width',
+    'control.notification_inline_width', 'breakpoint.md', 'spacing.spacing_08', 'spacing.spacing_09', 'control.notification_width', 'control.notification_min_height', 'control.notification_marker_width',
     'control.notification_outline_width', 'control.notification_details_inset', 'control.notification_details_inset_end', 'control.notification_icon_top',
     'control.notification_toast_icon_top', 'control.notification_icon_gap', 'control.notification_icon_size', 'control.notification_text_padding_block',
     'control.notification_toast_text_padding_bottom', 'control.notification_title_gap', 'control.notification_action_height', 'control.notification_action_inset',

@@ -3588,8 +3588,8 @@
     {
       "id": "notification-end-inset-ignored",
       "file": "component/molecule/notification/notification-parts.js",
-      "find": "        marginEnd: ctx.metric(opts.owner, 'detailsInsetEnd'),",
-      "replace": "        marginEnd: 0,",
+      "find": "marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : ctx.metric(opts.owner, 'detailsInsetEnd'),",
+      "replace": "marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : 0,",
       "runner": "node",
       "test": "inline-notification.test.js",
       "testName": "carbon / info: the band comes from the theme",
@@ -3858,8 +3858,8 @@
     {
       "id": "callout-fluid-off",
       "file": "component/molecule/notification/callout.js",
-      "find": "fluid: true, kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID",
-      "replace": "kind: kind, lowContrast: lowContrast, owner: owner, testID: props.testID",
+      "find": "fluid: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner, testID: props.testID",
+      "replace": "kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner, testID: props.testID",
       "runner": "node",
       "test": "callout.test.js",
       "testName": "the band is fluid inside its width cell",
@@ -4078,8 +4078,8 @@
     {
       "id": "tearsheet-influencer-width",
       "file": "component/composite/tearsheet/tearsheet.js",
-      "find": "width: influencerWidth + metrics.dividerWidth",
-      "replace": "width: influencerWidth",
+      "find": "width: narrow ? undefined : influencerWidth + metrics.dividerWidth",
+      "replace": "width: narrow ? undefined : influencerWidth",
       "runner": "node",
       "test": "tearsheet.test.js",
       "testName": "the left influencer box is the cell plus the end rule",

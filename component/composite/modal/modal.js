@@ -5,10 +5,10 @@
 // focus-trap behavior; outside press closes unless
 // `preventCloseOnClickOutside`. Where the cells give no width bounds the
 // width is the size's `control.dialog_width_ratio*` of the layer space it
-// covers (the host's when hosted, else the viewport) - the ratio rule
-// replaces the reference's breakpoint tiers (D23/D24: the form variants
-// carry the compact values); where the cells give bounds, the dialog
-// sizes to its content inside them.
+// covers (the host's when hosted, else the viewport); below
+// `breakpoint.md` every size spans that space, read from the window as the
+// reference does (`modal/_modal.scss:81-99`; plan 0162 E13). Where the
+// cells give bounds, the dialog sizes to its content inside them.
 
 import SPEC from './spec.js';
 
@@ -25,7 +25,7 @@ export default function Modal (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, View } = ctx.ReactNative;
-  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useViewportLayer } = ctx.behaviors;
+  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useViewportLayer, useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -41,6 +41,7 @@ export default function Modal (ctx) {
     const open = props.open === true;
     const metrics = {
       borderWidth: ctx.metric('Modal', 'borderWidth'),
+      bpMd: ctx.metric('Modal', 'bpMd'),
       level: ctx.metric('Modal', 'level'),
       maxWidth: ctx.metric('Modal', 'maxWidth'),
       minHeight: ctx.metric('Modal', 'minHeight'),
@@ -73,8 +74,14 @@ export default function Modal (ctx) {
     const suffix = size === 'md' ? '' : '_' + size;
     const space = useLayerSpace();
     const measured = Utils.isNumber(space.width) && space.width > 0 && Utils.isNumber(space.height) && space.height > 0;
-    const widthRatio = ctx.token('control.dialog_width_ratio' + suffix);
-    const heightRatio = ctx.token('control.dialog_height_ratio' + suffix);
+    // Below md the container spans the space at full height and sits at
+    // its top (`modal/_modal.scss:81-99`: inline-size 100 %, max-block-size
+    // 100 %, inset-block-start 0 until `breakpoint(md)`); an unknown window
+    // is not narrow
+    const viewport = useViewportSize();
+    const narrow = viewport.width > 0 && viewport.width < metrics.bpMd;
+    const widthRatio = narrow ? 1 : ctx.token('control.dialog_width_ratio' + suffix);
+    const heightRatio = narrow ? 1 : ctx.token('control.dialog_height_ratio' + suffix);
     const dialogWidth = bounded ? undefined : (Utils.isNumber(space.width) && space.width > 0 ? space.width * widthRatio : undefined);
     const dialogHeight = bounded ? undefined : (Utils.isNumber(space.height) && space.height > 0 ? space.height * heightRatio : undefined);
     const passive = props.passive === true;

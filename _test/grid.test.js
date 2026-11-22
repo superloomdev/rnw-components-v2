@@ -1,7 +1,10 @@
 // Info: Grid/Row/Column. The CSS-grid form gives each column its span of
 // the track count less the gutter; a span of 0 draws nothing. Column's
 // sample draws inside its Grid (`requires_parent`): bare, its auto track
-// grows along a column container's height (iOS walk, M6 gate).
+// grows along a column container's height (iOS walk, M6 gate). The grid
+// names its breakpoint from the window: the lg window draws the samples'
+// lg spans; below md a column that names only lg takes one of four tracks
+// and the grid has no margin (plan 0162 U4d).
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,23 +17,47 @@ import { React, cleanup, render } from './harness/render.js';
 
 afterEach(cleanup);
 
+// Run a body in a window of the given width, restoring the window after
+async function inWindow (width, body) {
+  const before = window.innerWidth;
+  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+  try {
+    await body();
+  } finally {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
+  }
+}
+
 describe('Grid: every sample state under every template', function () {
   for (const template of Object.keys(TEMPLATES)) {
     for (const state of SAMPLE) {
       test(template + ' / ' + state.label + ': the columns take the lg span of 16', async function () {
-        const Registry = buildSystem(template, factories);
-        const container = await render(React.createElement(Registry.Grid, state.props));
-        const cols = Array.from(container.firstElementChild.children);
-        assert.equal(cols.length, state.props.columns.length);
-        if (state.label === 'default') {
-          assert.equal(cols[0].style.width, '25%', 'a span of 4 of 16 takes a quarter track');
-        }
+        await inWindow(1280, async function () {
+          const Registry = buildSystem(template, factories);
+          const container = await render(React.createElement(Registry.Grid, state.props));
+          const cols = Array.from(container.firstElementChild.children);
+          assert.equal(cols.length, state.props.columns.length);
+          if (state.label === 'default') {
+            assert.equal(cols[0].style.width, '25%', 'a span of 4 of 16 takes a quarter track');
+          }
+        });
       });
     }
     test(template + ' / default: a span of 0 draws nothing', async function () {
-      const Registry = buildSystem(template, factories);
-      const container = await render(React.createElement(Registry.Grid, { columns: [{ children: 'A', lg: 0 }, { children: 'B', lg: 4 }] }));
-      assert.equal(container.firstElementChild.children.length, 1);
+      await inWindow(1280, async function () {
+        const Registry = buildSystem(template, factories);
+        const container = await render(React.createElement(Registry.Grid, { columns: [{ children: 'A', lg: 0 }, { children: 'B', lg: 4 }] }));
+        assert.equal(container.firstElementChild.children.length, 1);
+      });
+    });
+    test(template + ' / default below md: an lg-only column takes one of four tracks, the grid no margin', async function () {
+      await inWindow(375, async function () {
+        const Registry = buildSystem(template, factories);
+        const container = await render(React.createElement(Registry.Grid, SAMPLE[0].props));
+        const grid = container.firstElementChild;
+        assert.equal(grid.children[0].style.width, '25%', 'one track of the four sm tracks');
+        assert.equal(grid.style.paddingLeft, '0px', 'grid.margin_sm');
+      });
     });
   }
 });

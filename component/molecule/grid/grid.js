@@ -2,8 +2,9 @@
 // Rows (flexbox form): padding from the margin cell, the kind's gutter
 // halves on each side of every column, the 16-track span math through
 // `calc`, and the `breakpoint.max` ceiling unless `fullWidth`. The grid
-// reads its laid-out width to name the breakpoint and provides the
-// family context the Row and Column read.
+// reads the window to name the breakpoint, as the reference's media
+// queries do, takes that breakpoint's margin and provides the family
+// context the Row and Column read.
 import SPEC from './spec.grid.js';
 import createGridContext from './grid-context.js';
 
@@ -20,18 +21,27 @@ export default function Grid (ctx) {
     const condensed = props.condensed === true;
     const narrow = props.narrow === true;
     const fullWidth = props.fullWidth === true;
-    const rowGap = props.withRowGap === true ? ctx.metric('Grid', 'gutter') : 0;
-    const gutter = condensed ? ctx.metric('Grid', 'gutterCondensed') : narrow ? ctx.metric('Grid', 'gutterNarrow') : ctx.metric('Grid', 'gutter');
-    const bps = ['bpSm', 'bpMd', 'bpLg', 'bpXlg', 'maxWidth'];
-    let breakpoint = 'max';
-    for (let i = 0; i < bps.length; i = i + 1) {
-      if (Utils.isNumber(width) && width < ctx.metric('Grid', bps[i])) {
-        breakpoint = BREAKPOINTS[i]; break;
-      }
-    }
+    // The row gap: the gutter, half of it in a narrow grid, none in a
+    // condensed flexbox grid (`_flex-grid.scss:322-340`; the CSS grid
+    // `_css-grid.scss:160-167` keeps the gutter when condensed)
     const holdsRows = React.Children.toArray(props.children).some(function (child) {
       return child !== null && child !== undefined && child.type !== undefined && child.type.displayName === 'Row';
     });
+    const rowGap = props.withRowGap !== true ? 0 : narrow ? ctx.metric('Grid', 'gutter') / 2 : condensed && holdsRows ? 0 : ctx.metric('Grid', 'gutter');
+    const gutter = condensed ? ctx.metric('Grid', 'gutterCondensed') : narrow ? ctx.metric('Grid', 'gutterNarrow') : ctx.metric('Grid', 'gutter');
+    // A breakpoint runs from its own width to the next one's (`sm` below
+    // `md`, ..., `max` from `breakpoint.max`); an unknown window is `lg`
+    const starts = [0, ctx.metric('Grid', 'bpMd'), ctx.metric('Grid', 'bpLg'), ctx.metric('Grid', 'bpXlg'), ctx.metric('Grid', 'maxWidth')];
+    let breakpoint = 'lg';
+    if (Utils.isNumber(width) && width > 0) {
+      for (let i = 0; i < starts.length; i = i + 1) {
+        if (width >= starts[i]) {
+          breakpoint = BREAKPOINTS[i];
+        }
+      }
+    }
+    // The breakpoint's margin (the grid's `_config.scss` margins: none at sm)
+    const margin = ctx.token('grid.margin_' + breakpoint);
     // A condensed flexbox grid pads its columns' block ends by the condensed
     // gutter's half too (`_flex-grid.scss:317-319`)
     const gutterBlock = condensed === true && holdsRows === true ? gutter / 2 : 0;
@@ -45,8 +55,8 @@ export default function Grid (ctx) {
       // max-inline-size 99rem)
       maxWidth: fullWidth === true ? undefined : ctx.metric('Grid', 'maxWidth'),
       width: '100%',
-      paddingEnd: holdsRows === true ? ctx.metric('Grid', 'margin') + ctx.metric('Grid', 'gutter') / 2 : ctx.metric('Grid', 'margin'),
-      paddingStart: holdsRows === true ? ctx.metric('Grid', 'margin') + ctx.metric('Grid', 'gutter') / 2 : ctx.metric('Grid', 'margin'),
+      paddingEnd: holdsRows === true ? margin + ctx.metric('Grid', 'gutter') / 2 : margin,
+      paddingStart: holdsRows === true ? margin + ctx.metric('Grid', 'gutter') / 2 : margin,
       rowGap: rowGap === 0 ? undefined : rowGap
     };
     return React.createElement(GridContext.Provider, { value: context },

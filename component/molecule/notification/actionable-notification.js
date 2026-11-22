@@ -44,6 +44,7 @@ export default function ActionableNotification (ctx) {
     // Init the kind, the layout, the open state and the metrics
     const kind = Utils.inArray(['info', 'success', 'warning', 'error', 'info-square', 'warning-alt'], props.kind) ? props.kind : 'info';
     const inline = props.inline === true;
+    const narrow = inline && parts.useNarrow();
     const closed = React.useState(false);
     const lowContrast = props.lowContrast === true;
     const owner = 'ActionableNotification';
@@ -91,12 +92,13 @@ export default function ActionableNotification (ctx) {
       kind: kind,
       level: inline ? undefined : ctx.metric(owner, 'level'),
       lowContrast: lowContrast,
+      narrow: narrow,
       owner: owner,
       role: role === 'status' ? 'status' : role,
       testID: props.testID,
       fluid: inline, width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, 'toastWidth')
     }, [
-      parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
+      parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ iconTop: inline ? undefined : ctx.metric(owner, 'toastIconTop'), kind: kind, lowContrast: lowContrast, owner: owner }),
         parts.textBlock({ owner: owner, paddingBottom: inline ? undefined : ctx.metric(owner, 'toastTextPaddingBottom') }, [
           parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, stacked: !inline, subtitle: props.subtitle, title: props.title })
@@ -108,7 +110,7 @@ export default function ActionableNotification (ctx) {
       // no close shows. The toast's action is a full-width row under the
       // content
       inline ? action : null,
-      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner }),
+      props.hideCloseButton === true ? null : parts.close({ label: props.closeLabel, lowContrast: lowContrast, narrow: narrow, onPress: requestClose, owner: owner }),
       inline ? null : React.createElement(ctx.ReactNative.View, { key: 'actionSeat', style: { alignItems: 'stretch', flexBasis: 100 + PCT } }, action)
     ]);
 

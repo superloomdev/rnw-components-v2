@@ -14,7 +14,7 @@ export default function PaginationNav (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useControllableState } = ctx.behaviors;
+  const { useControllableState, useViewportSize } = ctx.behaviors;
 
   // Upstream PaginationNav.js:49-67 calculateCuts, verbatim
   function calculateCuts (page, totalItems, itemsDisplayedOnPage, splitPoint) {
@@ -42,10 +42,11 @@ export default function PaginationNav (ctx) {
     const pair = useControllableState({ defaultValue: Utils.isNumber(props.defaultPage) ? props.defaultPage : 0, onChange: props.onChange, value: props.page });
     const page = Math.min(Math.max(pair[0], 0), Math.max(totalItems - 1, 0));
     const setPage = pair[1];
-    // itemsShown honoured when >= 4 and the window is wider than sm;
-    // else the per-size fallback
-    const [navWidth, setNavWidth] = React.useState(undefined);
-    const isSm = Utils.isNumber(navWidth) && navWidth < ctx.metric('PaginationNav', 'breakpointSm');
+    // itemsShown honoured when >= 4 and the window is wider than sm; else
+    // the per-size fallback (`PaginationNav.tsx:378-379` `max-width: sm`,
+    // read from the window); an unknown window is not small
+    const windowWidth = useViewportSize().width;
+    const isSm = windowWidth > 0 && windowWidth <= ctx.metric('PaginationNav', 'breakpointSm');
     // Upstream PaginationNav.js:155-166 (md: 4 or 5, sm: clamped 4..7) and
     // the effect's floor of 4 (`:198-202`)
     const numberOfPages = props.size === 'md' ? (itemsShown === 4 ? 4 : 5) : props.size === 'sm' ? Math.min(Math.max(itemsShown, 4), 7) : 4;
@@ -152,11 +153,6 @@ export default function PaginationNav (ctx) {
     return React.createElement(View, {
       role: 'navigation',
       dataSet: { part: 'nav' },
-      onLayout: function (e) {
-        const w = e.nativeEvent.layout.width; if (w !== navWidth) {
-          setNavWidth(w);
-        }
-      },
       style: { alignItems: 'center', flexDirection: 'row' },
       testID: props.testID
     },

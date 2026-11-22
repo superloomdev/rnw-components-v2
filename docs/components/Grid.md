@@ -112,8 +112,6 @@ Grid is the layout grid that holds rows of columns sized per breakpoint.
 | `gutter` | `grid.gutter` |
 | `gutterCondensed` | `grid.gutter_condensed` |
 | `gutterNarrow` | `grid.gutter_narrow` |
-| `margin` | `grid.margin_lg` |
-| `bpSm` | `breakpoint.sm` |
 | `bpMd` | `breakpoint.md` |
 | `bpLg` | `breakpoint.lg` |
 | `bpXlg` | `breakpoint.xlg` |

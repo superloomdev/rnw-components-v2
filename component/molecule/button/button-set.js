@@ -121,12 +121,15 @@ export default function ButtonSet (ctx) {
         maxWidth: itemMax,
         position: 'relative'
       } : {
-        flexBasis: 0,
+        // Each button asks for the whole set and never shrinks
+        // (`button/_button.scss:478-482` inline-size 100 %, max 196;
+        // `_mixins.scss:51` flex-shrink 0), so a set narrower than its
+        // buttons overflows as upstream's does
         flexDirection: 'row',
-        flexGrow: 1,
-        flexShrink: 1,
+        flexShrink: 0,
         maxWidth: itemMax,
-        position: 'relative'
+        position: 'relative',
+        width: 100 + PCT
       }
         : column ? {
           alignSelf: 'stretch',
@@ -170,7 +173,9 @@ export default function ButtonSet (ctx) {
         ? { backgroundColor: separator, height: separatorWidth, left: 0, position: 'absolute', right: 0, top: -separatorWidth, zIndex: 1 }
         : { backgroundColor: separator, bottom: 0, position: 'absolute', start: -separatorWidth, top: 0, width: separatorWidth, zIndex: 1 };
 
-      return React.createElement(View, { key: index, style: seat },
+      // A seat keeps its item's identity through the fluid re-sort, so a
+      // reordered button is moved, not repainted from another kind
+      return React.createElement(View, { key: items.indexOf(item), style: seat },
         React.createElement(ctx.Registry.Button, Object.assign({}, item, {
           fill: true,
           // The set's own focus tracking rides beside an item's callbacks

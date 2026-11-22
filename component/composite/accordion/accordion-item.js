@@ -7,6 +7,10 @@
 
 import SPEC from './spec.accordion-item.js';
 
+// The content's end padding follows the window with the upstream's own
+// pixel steps (`accordion/_accordion.scss:202-213`): the
+// inline density below 480, `spacing_09` from 480, the end ratio from 640
+const CONTENT_END_STEPS = Object.freeze({ density: 480, spacing: 640 });
 
 /********************************************************************
 AccordionItem factory.
@@ -19,7 +23,7 @@ export default function AccordionItem (ctx) {
 
   const React = ctx.React;
   const { View, Text, Pressable } = ctx.ReactNative;
-  const { useDisclosure, useInteractionState } = ctx.behaviors;
+  const { useDisclosure, useInteractionState, useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -55,6 +59,10 @@ export default function AccordionItem (ctx) {
     };
 
     const headingPadding = ctx.metric('AccordionItem', 'headingPaddingInline');
+    const windowWidth = useViewportSize().width;
+    const contentEnd = windowWidth > 0 && windowWidth < CONTENT_END_STEPS.density ? headingPadding
+      : windowWidth > 0 && windowWidth < CONTENT_END_STEPS.spacing ? ctx.token('spacing.spacing_09')
+        : Math.min(ctx.metric('AccordionItem', 'contentPaddingEnd'), Math.floor(itemWidth * ctx.metric('AccordionItem', 'contentEndRatio')));
     const iconSize = ctx.metric('AccordionItem', 'iconSize');
     const titleGap = ctx.metric('AccordionItem', 'titleGap');
     const dividerWidth = ctx.metric('AccordionItem', 'dividerWidth');
@@ -170,7 +178,7 @@ export default function AccordionItem (ctx) {
       role: 'region',
       style: {
         marginStart: chevronFirst ? headingPadding + iconSize : 0,
-        paddingEnd: Math.min(ctx.metric('AccordionItem', 'contentPaddingEnd'), Math.floor(itemWidth * ctx.metric('AccordionItem', 'contentEndRatio'))),
+        paddingEnd: contentEnd,
         paddingStart: headingPadding
       }
     }, typeof props.children === 'string' ? React.createElement(Text, { style: [ctx.textPresentation(ctx.typeStyle('body_compact_01')), { color: ctx.color('text_primary') }] }, props.children) : props.children));

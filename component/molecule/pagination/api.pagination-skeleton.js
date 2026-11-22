@@ -8,7 +8,7 @@ export default Object.freeze({
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([
-    'size.size_medium', 'control.pagination_divider_width', 'control.pagination_padding_inline',
+    'size.size_medium', 'control.pagination_divider_width', 'control.pagination_collapse_width', 'control.pagination_padding_inline',
     'control.pagination_text_gap', 'control.pagination_skeleton_width_short',
     'control.pagination_skeleton_width_medium', 'control.pagination_skeleton_width_long',
     'color.pagination_container', 'color.pagination_divider'

@@ -1,7 +1,9 @@
 // Info: PaginationSkeleton composite. The Pagination bar's loading
 // placeholder: the container's own cells for the bar and its divider, and
 // four skeleton text bars in the text gap's rhythm (medium, short, long in
-// the left slot, medium on the right), as the references draw it.
+// the left slot, medium on the right), as the references draw it. Below
+// the collapse width the bar keeps its blocks empty: the bars are the
+// blocks' children the container query hides (`_pagination.scss:60-74`).
 //
 // Behavior: none - a placeholder takes no input.
 //
@@ -46,15 +48,26 @@ export default function PaginationSkeleton (ctx) {
       return React.createElement(View, { dataSet: { part: 'text' }, key: key, style: { marginEnd: gap } },
         React.createElement(SkeletonPlaceholder, { height: ctx.metric('PaginationSkeleton', 'barHeight'), width: ctx.metric('PaginationSkeleton', width) }));
     };
-    const left = React.createElement(View, { dataSet: { part: 'left' }, style: { flexDirection: 'row', paddingEnd: ctx.metric('PaginationSkeleton', 'paddingInline'), paddingStart: ctx.metric('PaginationSkeleton', 'paddingInline') } },
-      [bar('a', 'widthMedium'), bar('b', 'widthShort'), bar('c', 'widthLong')]);
-    const right = React.createElement(View, { dataSet: { part: 'right' }, style: { borderStartColor: ctx.color('pagination_divider'), borderStartWidth: divider, flexDirection: 'row' } }, bar('d', 'widthMedium'));
+    // The collapse measure: below the collapse width the blocks lose their
+    // children, the left block its start padding and the right its rule
+    // (`_pagination.scss:60-74,170-175,221-232`)
+    const [barWidth, setBarWidth] = React.useState(undefined);
+    const collapsed = typeof barWidth === 'number' && barWidth < ctx.metric('PaginationSkeleton', 'collapseWidth');
+    const left = React.createElement(View, { dataSet: { part: 'left' }, style: { flexDirection: 'row', paddingEnd: ctx.metric('PaginationSkeleton', 'paddingInline'), paddingStart: collapsed ? 0 : ctx.metric('PaginationSkeleton', 'paddingInline') } },
+      collapsed ? null : [bar('a', 'widthMedium'), bar('b', 'widthShort'), bar('c', 'widthLong')]);
+    const right = React.createElement(View, { dataSet: { part: 'right' }, style: { borderStartColor: ctx.color('pagination_divider'), borderStartWidth: collapsed ? 0 : divider, flexDirection: 'row' } }, collapsed ? null : bar('d', 'widthMedium'));
 
     // Render the bar: the container's background and its top divider, one
     // divider short of its container (`inline-size: calc(100% - 1px)`)
     return React.createElement(View, {
       'aria-hidden': true,
       dataSet: { part: 'root' },
+      onLayout: function (e) {
+        const w = e.nativeEvent.layout.width;
+        if (w !== barWidth) {
+          setBarWidth(w);
+        }
+      },
       style: {
         alignItems: 'center',
         alignSelf: 'stretch',

@@ -13,8 +13,9 @@ export default Object.freeze({
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([
-    'grid.columns_lg', 'grid.gutter', 'grid.gutter_condensed', 'grid.gutter_narrow', 'grid.margin_lg',
-    'breakpoint.sm', 'breakpoint.md', 'breakpoint.lg', 'breakpoint.xlg', 'breakpoint.max', 'font.family.sans'
+    'grid.columns_lg', 'grid.gutter', 'grid.gutter_condensed', 'grid.gutter_narrow',
+    'grid.margin_sm', 'grid.margin_md', 'grid.margin_lg', 'grid.margin_xlg', 'grid.margin_max',
+    'breakpoint.md', 'breakpoint.lg', 'breakpoint.xlg', 'breakpoint.max', 'font.family.sans'
   ]),
   colors: Object.freeze([])
 });

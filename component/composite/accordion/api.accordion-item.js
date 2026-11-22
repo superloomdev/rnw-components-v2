@@ -29,7 +29,7 @@ export default Object.freeze({
     'control.accordion_heading_padding_inline', 'control.accordion_focus_width',
     'control.accordion_icon_size', 'control.accordion_icon_top', 'control.accordion_title_gap',
     'control.accordion_content_padding_top', 'control.accordion_content_padding_bottom',
-    'control.accordion_content_padding_end', 'control.accordion_content_end_ratio',
+    'control.accordion_content_padding_end', 'control.accordion_content_end_ratio', 'spacing.spacing_09',
     'color.accordion_divider', 'color.accordion_divider_hover',
     'color.accordion_heading_label', 'color.accordion_heading_label_disabled',
     'color.accordion_heading_container_hover', 'color.accordion_focus',

@@ -124,7 +124,10 @@ export default function Pagination (ctx) {
       dataSet: { part: 'root' },
       testID: props.testID
     },
-    React.createElement(View, { dataSet: { part: 'left' }, style: { alignItems: 'center', flexDirection: 'row', alignSelf: 'stretch', flexShrink: 1, paddingEnd: ctx.metric('Pagination', 'paddingInline'), paddingStart: collapsed ? 0 : ctx.metric('Pagination', 'paddingInline') } },
+    // The blocks are `block-size: 100%` of a bar with no definite height
+    // (`_pagination.scss:182-187`), so each is its content's height: the
+    // selects' in the full bar, the count line's once collapsed
+    React.createElement(View, { dataSet: { part: 'left' }, style: { alignItems: 'center', flexDirection: 'row', alignSelf: collapsed ? 'center' : 'stretch', flexShrink: 1, paddingEnd: ctx.metric('Pagination', 'paddingInline'), paddingStart: collapsed ? 0 : ctx.metric('Pagination', 'paddingInline') } },
       collapsed ? null : React.createElement(Text, { dataSet: { part: 'text' }, style: [{ color: ctx.color('pagination_label'), marginEnd: divider }, type] }, label),
       collapsed ? null : sizeSelect,
       React.createElement(Text, { dataSet: { part: 'count' }, numberOfLines: 1, style: [{ color: ctx.color('pagination_count_label'), marginEnd: divider, marginStart: ctx.metric('Pagination', 'textGap') }, type] }, countText)),

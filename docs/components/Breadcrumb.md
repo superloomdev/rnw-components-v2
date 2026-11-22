@@ -182,6 +182,7 @@ BreadcrumbSkeleton draws the breadcrumb's loading form - `items` shimmer bars at
 |---|---|
 | `barHeight` | `control.breadcrumb_skeleton_height` |
 | `barWidth` | `control.breadcrumb_skeleton_width` |
+| `bpMd` | `breakpoint.md` |
 | `gap` | `control.breadcrumb_gap` |
 | `gapSmall` | `control.breadcrumb_gap_small` |
 

@@ -66,7 +66,9 @@ export default function TreeNode (ctx) {
           backgroundColor: live && selected ? ctx.color(hovered ? 'tree_node_container_selected_hover' : 'tree_node_container_selected') : hovered ? ctx.color('tree_node_container_hover') : 'transparent',
           flexDirection: 'row',
           flexGrow: 1,
+          flexShrink: 1,
           marginStart: -(stepIn + rowPad),
+          minWidth: 0,
           outlineColor: ring ? ctx.color('tree_focus') : undefined,
           outlineOffset: ring ? -ctx.metric('TreeNode', 'focusWidth') : undefined,
           outlineStyle: ring ? 'solid' : undefined,
@@ -76,9 +78,12 @@ export default function TreeNode (ctx) {
         }
       },
       toggle, icon,
+      // A label wider than its row is cut with an ellipsis on one line
+      // (`treeview/_treeview.scss:277-286` nowrap, text-overflow ellipsis)
       React.createElement(Text, {
         dataSet: { part: 'text' },
-        style: [{ color: disabled ? ctx.color('tree_node_label_disabled') : selected ? ctx.color('tree_node_label_selected') : hovered ? ctx.color('tree_node_label_hover') : ctx.color('tree_node_label'), paddingStart: ctx.metric('TreeNode', 'labelTextPaddingStart') }, ctx.typeStyle('tree_node_label')]
+        numberOfLines: 1,
+        style: [{ flexShrink: 1, minWidth: 0 }, { color: disabled ? ctx.color('tree_node_label_disabled') : selected ? ctx.color('tree_node_label_selected') : hovered ? ctx.color('tree_node_label_hover') : ctx.color('tree_node_label'), paddingStart: ctx.metric('TreeNode', 'labelTextPaddingStart') }, ctx.typeStyle('tree_node_label')]
       }, props.label));
     };
     return React.createElement(Pressable, {

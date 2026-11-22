@@ -5,7 +5,9 @@
 // and the focus trap come from the focus-trap behavior; outside press
 // closes only a passive tearsheet (no actions); `onClose` returning
 // `false` vetoes the close. The container insets read the tearsheet cells
-// of the layer space it covers (D23/D24: no breakpoint read). It enters
+// of the layer space it covers; below `breakpoint.md` it spans that space
+// at full height, read from the window as the reference does
+// (`Tearsheet/_tearsheet.scss:298-302,469-477`; plan 0162 E13). It enters
 // from `min(0.95 x layer height, tearsheet_enter_offset)` below over
 // `motion.duration_moderate_02` (reduced motion and the measurement mode
 // draw it at rest). Hosted open tearsheets form one stack: at most 3
@@ -31,7 +33,7 @@ export default function Tearsheet (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useReducedMotion, useViewportLayer } = ctx.behaviors;
+  const { useA11yId, useFocusTrap, useLayerSpace, useOverlay, useReducedMotion, useViewportLayer, useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -50,6 +52,7 @@ export default function Tearsheet (ctx) {
       actionPaddingBottom: ctx.metric('Tearsheet', 'actionPaddingBottom'),
       actionPaddingTop: ctx.metric('Tearsheet', 'actionPaddingTop'),
       borderWidth: ctx.metric('Tearsheet', 'borderWidth'),
+      bpMd: ctx.metric('Tearsheet', 'bpMd'),
       closeIconSize: ctx.metric('Tearsheet', 'closeIconSize'),
       closeSize: ctx.metric('Tearsheet', 'closeSize'),
       descriptionGap: ctx.metric('Tearsheet', 'descriptionGap'),
@@ -107,10 +110,15 @@ export default function Tearsheet (ctx) {
 
     // The container's box inside the layer space: the inline inset off
     // each side, the top inset off the top, anchored to the bottom
+    // Below md the wide container spans the space (`_tearsheet.scss:288-302`
+    // inline-size 100 % until `breakpoint(md)`) at full height (`:469-472`
+    // max-block-size 100 %); an unknown window is not narrow
     const space = useLayerSpace();
+    const viewportWidth = useViewportSize().width;
+    const narrow = viewportWidth > 0 && viewportWidth < metrics.bpMd;
     const measured = Utils.isNumber(space.width) && space.width > 0 && Utils.isNumber(space.height) && space.height > 0;
-    const insetTop = props.verticalPosition === 'lower' ? metrics.insetTopLower : metrics.insetTop;
-    const boxWidth = measured ? space.width - 2 * metrics.insetInline : undefined;
+    const insetTop = narrow ? 0 : props.verticalPosition === 'lower' ? metrics.insetTopLower : metrics.insetTop;
+    const boxWidth = measured ? space.width - 2 * (narrow ? 0 : metrics.insetInline) : undefined;
     const boxHeight = measured ? space.height - insetTop : undefined;
     const innerWidth = Utils.isNumber(boxWidth) ? boxWidth - 2 * metrics.borderWidth : undefined;
 
@@ -191,7 +199,7 @@ export default function Tearsheet (ctx) {
       headerChildren.push(React.createElement(Text, {
         dataSet: { part: 'description' },
         key: 'description',
-        style: [ctx.typeStyle('tearsheet_description'), { color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap, maxWidth: String(metrics.descriptionMaxRatio * 100) + '%' }]
+        style: [ctx.typeStyle('tearsheet_description'), { color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap, maxWidth: String((narrow ? 1 : metrics.descriptionMaxRatio) * 100) + '%' }]
       }, props.description));
     }
     if (props.navigation !== undefined && props.navigation !== null) {
@@ -224,7 +232,9 @@ export default function Tearsheet (ctx) {
         borderLeftWidth: influencerRight ? metrics.dividerWidth : 0,
         borderRightColor: influencerLeft ? ctx.color('tearsheet_divider') : undefined,
         borderRightWidth: influencerLeft ? metrics.dividerWidth : 0,
-        width: influencerWidth + metrics.dividerWidth
+        // Below md the influencer takes its content's width (`:473-475`
+        // flex-basis auto)
+        width: narrow ? undefined : influencerWidth + metrics.dividerWidth
       }
     }, nodeOf(props.influencer, 'influencer'));
 
@@ -323,7 +333,7 @@ export default function Tearsheet (ctx) {
         borderColor: ctx.color('dialog_border'),
         borderWidth: metrics.borderWidth,
         height: boxHeight === undefined ? undefined : Math.min(boxHeight + (level > 0 ? level * metrics.stackOffset : 0), boxHeight + 3 * metrics.stackOffset),
-        left: metrics.insetInline,
+        left: narrow ? 0 : metrics.insetInline,
         opacity: measured ? undefined : 0,
         outlineStyle: 'none',
         position: 'absolute',

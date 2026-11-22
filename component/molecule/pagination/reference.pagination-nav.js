@@ -21,7 +21,8 @@ export default Object.freeze({
   },
   parts: Object.freeze({
     nav: Object.freeze({ upstream: '.cds--pagination-nav', ours: '[data-part="nav"]', measure: 'box' }),
-    pages: Object.freeze({ upstream: '.cds--pagination-nav__page', ours: '[data-part="page"]', measure: 'box', all: true }),
+    // Upstream's overflow picker is a `__page` too (`PaginationNav.tsx:242,261`)
+    pages: Object.freeze({ upstream: '.cds--pagination-nav__page', ours: '[data-part="page"], [data-part="overflow"] [role="button"]', measure: 'box', all: true }),
     active: Object.freeze({ upstream: '.cds--pagination-nav__page--active', ours: '[data-part="page"][aria-current="page"]', measure: 'box' })
   })
 });
