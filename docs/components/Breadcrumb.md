@@ -147,6 +147,8 @@ BreadcrumbItem is one entry of a Breadcrumb's trail - a link, the current page o
 | `overflowIconOffset` | `control.breadcrumb_overflow_icon_offset` |
 | `overflowUnderlineWidth` | `control.breadcrumb_overflow_underline_width` |
 | `overflowWidth` | `control.breadcrumb_overflow_width` |
+| `stackedMinHeight` | `control.breadcrumb_stacked_item_min_height` |
+| `targetMin` | `control.target_min` |
 
 ### States (sample.js)
 

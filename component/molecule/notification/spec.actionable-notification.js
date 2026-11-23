@@ -4,6 +4,8 @@
 // the layout shares them.
 
 export default Object.freeze({
+  actionCloseClearance: 'control.notification_action_close_clearance',
+  bpMax: 'breakpoint.max',
   detailsInset: 'control.notification_details_inset',
   detailsInsetEnd: 'control.notification_details_inset_end',
   iconGap: 'control.notification_icon_gap',
@@ -26,5 +28,6 @@ export default Object.freeze({
   toastIconTop: 'control.notification_toast_icon_top',
   toastTextPaddingBottom: 'control.notification_toast_text_padding_bottom',
   toastWidth: 'control.notification_width',
+  toastWidthMax: 'control.notification_toast_width_max',
   width: 'control.notification_inline_width'
 });

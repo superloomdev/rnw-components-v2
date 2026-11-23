@@ -154,6 +154,18 @@ import PageHeaderSample, { FRAME as PageHeaderFrame } from './component/composit
 import TearsheetSample, { FRAME as TearsheetFrame } from './component/composite/tearsheet/sample.tearsheet.js';
 import TreeNodeSample from './component/composite/tree-view/sample.tree-node.js';
 import TreeViewSample from './component/composite/tree-view/sample.tree-view.js';
+import ContentSample, { FRAME as ContentFrame } from './component/composite/header/sample.content.js';
+import HeaderSample, { FRAME as HeaderFrame } from './component/composite/header/sample.header.js';
+import HeaderContainerSample, { FRAME as HeaderContainerFrame } from './component/composite/header/sample.header-container.js';
+import HeaderGlobalActionSample, { FRAME as HeaderGlobalActionFrame } from './component/composite/header/sample.header-global-action.js';
+import HeaderGlobalBarSample, { FRAME as HeaderGlobalBarFrame } from './component/composite/header/sample.header-global-bar.js';
+import HeaderMenuSample, { FRAME as HeaderMenuFrame } from './component/composite/header/sample.header-menu.js';
+import HeaderMenuButtonSample, { FRAME as HeaderMenuButtonFrame } from './component/composite/header/sample.header-menu-button.js';
+import HeaderMenuItemSample, { FRAME as HeaderMenuItemFrame } from './component/composite/header/sample.header-menu-item.js';
+import HeaderNameSample, { FRAME as HeaderNameFrame } from './component/composite/header/sample.header-name.js';
+import HeaderNavigationSample, { FRAME as HeaderNavigationFrame } from './component/composite/header/sample.header-navigation.js';
+import HeaderPanelSample, { FRAME as HeaderPanelFrame } from './component/composite/header/sample.header-panel.js';
+import HeaderSideNavItemsSample, { FRAME as HeaderSideNavItemsFrame } from './component/composite/header/sample.header-side-nav-items.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), widget: null, frame: null, sample: IconSample }),
@@ -308,5 +320,17 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: PageHeaderFrame, sample: PageHeaderSample }),
   Object.freeze({ name: 'Tearsheet', family: 'Tearsheet', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TearsheetFrame, sample: TearsheetSample }),
   Object.freeze({ name: 'TreeNode', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: TreeNodeSample }),
-  Object.freeze({ name: 'TreeView', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TreeViewSample })
+  Object.freeze({ name: 'TreeView', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TreeViewSample }),
+  Object.freeze({ name: 'Content', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: ContentFrame, sample: ContentSample }),
+  Object.freeze({ name: 'Header', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: HeaderFrame, sample: HeaderSample }),
+  Object.freeze({ name: 'HeaderContainer', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: HeaderContainerFrame, sample: HeaderContainerSample }),
+  Object.freeze({ name: 'HeaderGlobalAction', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderGlobalActionFrame, sample: HeaderGlobalActionSample }),
+  Object.freeze({ name: 'HeaderGlobalBar', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderGlobalBarFrame, sample: HeaderGlobalBarSample }),
+  Object.freeze({ name: 'HeaderMenu', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderMenuFrame, sample: HeaderMenuSample }),
+  Object.freeze({ name: 'HeaderMenuButton', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderMenuButtonFrame, sample: HeaderMenuButtonSample }),
+  Object.freeze({ name: 'HeaderMenuItem', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderMenuItemFrame, sample: HeaderMenuItemSample }),
+  Object.freeze({ name: 'HeaderName', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderNameFrame, sample: HeaderNameSample }),
+  Object.freeze({ name: 'HeaderNavigation', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderNavigationFrame, sample: HeaderNavigationSample }),
+  Object.freeze({ name: 'HeaderPanel', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderPanelFrame, sample: HeaderPanelSample }),
+  Object.freeze({ name: 'HeaderSideNavItems', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), widget: null, frame: HeaderSideNavItemsFrame, sample: HeaderSideNavItemsSample })
 ]);

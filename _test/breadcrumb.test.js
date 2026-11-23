@@ -15,7 +15,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/breadcrumb/sample.breadcrumb.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
@@ -207,6 +207,37 @@ describe('Breadcrumb: below md and the composition items', function () {
     assert.equal(back.style.alignItems, 'flex-start', 'the glyph at the top of its box');
     assert.equal(parts.items[1].style.opacity, '0');
     assert.equal(parts.items[1].getAttribute('aria-hidden'), 'true');
+  });
+
+});
+
+describe('Breadcrumb: the stacked row height of the form classes', function () {
+
+  async function stacked (built) {
+    const width = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: built.tokens['breakpoint.md'] - 1, writable: true });
+    try {
+      return await renderBreadcrumb(buildSystem('carbon', factories, { built: built }), { items: SAMPLE[0].props.items });
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+    }
+  }
+
+  test('base: a stacked item keeps its line and its link stays at the line', async function () {
+    const parts = await stacked(buildNative('carbon'));
+    assert.equal(buildNative('carbon').tokens['control.breadcrumb_stacked_item_min_height'], 0);
+    assert.equal(parts.items[0].style.minHeight, '', 'no row floor');
+  });
+
+  test('compact: every stacked item is a target-floor row, its content centered', async function () {
+    const compact = Lib.Themer.buildTheme(TEMPLATES.carbon, [], 'native', { variant: { form: 'compact' } });
+    const t = compact.tokens;
+    assert.equal(t['control.breadcrumb_stacked_item_min_height'], t['control.target_min']);
+    const parts = await stacked(compact);
+    for (const item of parts.items) {
+      assert.equal(item.style.minHeight, t['control.target_min'] + 'px');
+      assert.equal(item.style.alignItems, 'center');
+    }
   });
 
 });

@@ -4506,7 +4506,7 @@
         "version": "1.120.0",
         "export": "Content"
       },
-      "description": "Content is a component in the Header family.",
+      "description": "Content is the page's main landmark beside the UI shell: padding on every side and its text in the content label; the shell lays out in flow, so it needs no offset under the header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4524,7 +4524,7 @@
       "carbon_twin": "Content",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "Header",
@@ -4535,7 +4535,7 @@
         "version": "1.120.0",
         "export": "Header"
       },
-      "description": "Header is a component in the Header family.",
+      "description": "Header is the UI shell's bar: a banner landmark on the header container with its rule, drawing from its data the menu button, the name, the menu bar, the global actions and the panel, then its children.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4553,7 +4553,7 @@
       "carbon_twin": "Header",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderContainer",
@@ -4564,7 +4564,7 @@
         "version": "1.120.0",
         "export": "HeaderContainer"
       },
-      "description": "HeaderContainer is a component in the Header family.",
+      "description": "HeaderContainer holds the side navigation's open state for a header: the menu button toggles it, Escape collapses it, and it draws the header (or a given component) with that state.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4582,7 +4582,7 @@
       "carbon_twin": "HeaderContainer",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderGlobalAction",
@@ -4593,7 +4593,7 @@
         "version": "1.120.0",
         "export": "HeaderGlobalAction"
       },
-      "description": "HeaderGlobalAction is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderGlobalAction is one square action of the header's global bar with its glyph, its compact tooltip and its active state between two rules; it must be composed inside Header, in its global bar.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4613,7 +4613,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderGlobalBar",
@@ -4624,7 +4624,7 @@
         "version": "1.120.0",
         "export": "HeaderGlobalBar"
       },
-      "description": "HeaderGlobalBar is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderGlobalBar takes the room the header leaves and seats the global actions at its end; it must be composed inside Header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4644,7 +4644,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderMenu",
@@ -4655,7 +4655,7 @@
         "version": "1.120.0",
         "export": "HeaderMenu"
       },
-      "description": "HeaderMenu is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderMenu is a menu bar entry whose title opens a list of links under it, drawn current while it holds the current link; it must be composed inside Header, in its navigation.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4675,7 +4675,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderMenuButton",
@@ -4686,7 +4686,7 @@
         "version": "1.120.0",
         "export": "HeaderMenuButton"
       },
-      "description": "HeaderMenuButton is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderMenuButton is the side navigation's toggle at the header's start, the menu glyph or the close glyph while active, shown below lg unless it collapses; it must be composed inside Header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4706,7 +4706,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderMenuItem",
@@ -4717,7 +4717,7 @@
         "version": "1.120.0",
         "export": "HeaderMenuItem"
       },
-      "description": "HeaderMenuItem is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderMenuItem is one link of the header's menu bar, a menu row or a side navigation line, with the current page's indicator; it must be composed inside Header, in its navigation, a menu or its side navigation items.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4737,7 +4737,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderName",
@@ -4748,7 +4748,7 @@
         "version": "1.120.0",
         "export": "HeaderName"
       },
-      "description": "HeaderName is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderName is the product name as a link across the header, an optional lighter prefix before it, its padding following the window and a shown menu button; it must be composed inside Header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4768,7 +4768,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderNavigation",
@@ -4779,7 +4779,7 @@
         "version": "1.120.0",
         "export": "HeaderNavigation"
       },
-      "description": "HeaderNavigation is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderNavigation is the header's menu bar: a navigation landmark after its rule, holding links and menus, drawn from lg; it must be composed inside Header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4799,7 +4799,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderPanel",
@@ -4810,7 +4810,7 @@
         "version": "1.120.0",
         "export": "HeaderPanel"
       },
-      "description": "HeaderPanel is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderPanel is the panel a global action opens under the header at its end edge, as wide as its cell between two rules, hosted as an overlay layer; it must be composed inside Header.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4830,7 +4830,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "HeaderSideNavItems",
@@ -4841,7 +4841,7 @@
         "version": "1.120.0",
         "export": "HeaderSideNavItems"
       },
-      "description": "HeaderSideNavItems is a component in the Header family; it must be composed inside Header.",
+      "description": "HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside Header, in its side navigation, with no upstream visual reference of its own - upstream draws it below lg inside the side navigation only, which its own family builds and measures.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4853,15 +4853,16 @@
       ],
       "parent": "Header",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderSideNavItems",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNav",

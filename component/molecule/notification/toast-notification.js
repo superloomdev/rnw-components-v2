@@ -9,7 +9,9 @@
 // `_details_inset`, `_details_inset_end`). `lowContrast` draws the kind
 // fill, the kind outline and primary text instead of the inverse
 // container. The width is `control.notification_width` capped by the
-// host, under `shadow.notification`.
+// host (`control.notification_toast_width_max` from `breakpoint.max`, read
+// from the window: `_toast-notification.scss:28-46`), under
+// `shadow.notification`.
 
 import SPEC from './spec.toast-notification.js';
 import createNotificationParts from './notification-parts.js';
@@ -45,6 +47,10 @@ export default function ToastNotification (ctx) {
     const barIcon = ctx.enum('anatomy.status_marker') === 'bar_icon';
     const owner = 'ToastNotification';
     const [actionHover, setActionHover] = React.useState(false);
+    // From max the toast is wider (`_toast-notification.scss:41-43`); an
+    // unknown window is not
+    const viewport = ctx.behaviors.useViewportSize();
+    const widest = viewport.width > 0 && viewport.width >= ctx.metric(owner, 'bpMax');
 
     // The close button asks for a close
     const requestClose = function () {
@@ -93,7 +99,7 @@ export default function ToastNotification (ctx) {
       owner: owner,
       role: props.role === 'alert' ? 'alert' : 'status',
       testID: props.testID,
-      width: ctx.metric(owner, 'width')
+      width: ctx.metric(owner, widest ? 'widthMax' : 'width')
     }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         iconSeat,

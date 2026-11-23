@@ -1,0 +1,88 @@
+// Info: HeaderMenu member. Every sample state under every template: the
+// title in the menu bar link's seat with its `chevron_down` arrow at
+// `size.icon_01` in `color.header_menu_arrow`; a press opens the
+// `control.header_menu_width` list under it on `color.header_menu_container`
+// with `shadow.header_menu`, the title on the same fill and the arrow
+// turned over; Escape and a second press close it. A closed menu holding a
+// current link draws its title current.
+
+import { afterEach, describe, test } from 'node:test';
+import assert from 'node:assert/strict';
+import { act } from 'react';
+
+import SAMPLE from '../component/composite/header/sample.header-menu.js';
+import { buildNative } from './harness/system.js';
+import { cleanup, cssValue } from './harness/render.js';
+import { inBar, TEMPLATE_NAMES, atWindow, fire, registryFor, renderSample, sides } from './header-shared.js';
+
+afterEach(cleanup);
+
+const LG = sides('lg');
+
+async function press (element) {
+  await act(async function () {
+    element.click();
+  });
+}
+
+describe('HeaderMenu: every sample state under every template', function () {
+
+  for (const template of TEMPLATE_NAMES) {
+    for (const state of SAMPLE) {
+      test(template + ' / ' + state.label + ': the menu comes from the theme', async function () {
+        const t = buildNative(template).tokens;
+        await atWindow(LG.above, async function () {
+          const container = await renderSample(registryFor(template), 'HeaderMenu', state);
+          const title = container.querySelector(inBar('nav [aria-haspopup="menu"]'));
+          assert.equal(title !== null, true, 'the title');
+          assert.equal(title.getAttribute('aria-expanded'), 'false');
+          assert.equal(title.style.paddingLeft, t['control.header_menu_item_padding_inline'] + 'px');
+          assert.equal(title.style.backgroundColor, cssValue('backgroundColor', t['color.header_menu_item_container']));
+          const arrow = title.querySelector('svg');
+          assert.equal(arrow.getAttribute('fill'), t['color.header_menu_arrow']);
+          assert.equal(arrow.parentElement.style.marginLeft, t['control.header_menu_arrow_gap'] + 'px');
+          const holdsCurrent = state.props.items.some(function (item) {
+            return item.isActive === true;
+          });
+          assert.equal(title.querySelector(':scope > div[aria-hidden="true"]') !== null, holdsCurrent, 'a closed menu holding the current link draws its title current');
+
+          // Open: the list under the title, the title on the menu fill
+          await press(title);
+          assert.equal(title.getAttribute('aria-expanded'), 'true');
+          assert.equal(title.style.backgroundColor, cssValue('backgroundColor', t['color.header_menu_container']));
+          assert.equal(arrow.parentElement.style.transform.indexOf('180deg') !== -1, true, 'the arrow turned over');
+          assert.equal(title.querySelector(':scope > div[aria-hidden="true"]') === null, true, 'an open menu draws the row current instead');
+          const list = title.nextSibling;
+          assert.equal(list !== null, true, 'the list');
+          assert.equal(list.style.width, t['control.header_menu_width'] + 'px');
+          assert.equal(list.style.top, '100%');
+          assert.equal(list.style.position, 'absolute');
+          assert.equal(list.style.backgroundColor, cssValue('backgroundColor', t['color.header_menu_container']));
+          assert.equal(list.style.boxShadow.length > 0, true, 'the menu shadow');
+          const rows = list.querySelectorAll('a');
+          assert.equal(rows.length, state.props.items.length);
+          assert.equal(rows[0].style.height, t['control.header_menu_item_height'] + 'px');
+          assert.equal(list.querySelectorAll('[aria-current]').length, holdsCurrent ? 1 : 0);
+
+          // Escape closes it
+          await fire(document, new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+          assert.equal(title.getAttribute('aria-expanded'), 'false');
+          assert.equal(title.nextSibling === null, true, 'no list while closed');
+        });
+      });
+    }
+  }
+
+  test('a second press closes the menu; Space toggles it', async function () {
+    await atWindow(LG.above, async function () {
+      const container = await renderSample(registryFor('carbon'), 'HeaderMenu', SAMPLE[0]);
+      const title = container.querySelector('nav [aria-haspopup="menu"]');
+      await press(title);
+      await press(title);
+      assert.equal(title.getAttribute('aria-expanded'), 'false');
+      await fire(title, new KeyboardEvent('keydown', { bubbles: true, key: ' ' }));
+      assert.equal(title.getAttribute('aria-expanded'), 'true');
+    });
+  });
+
+});

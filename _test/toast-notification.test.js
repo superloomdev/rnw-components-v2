@@ -181,3 +181,25 @@ describe('ToastNotification: behavior through the DOM', function () {
   });
 
 });
+
+describe('ToastNotification: from max the toast widens', function () {
+
+  test('the width is the max cell from breakpoint.max, the base cell below it', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = buildSystem('carbon', factories);
+    const before = window.innerWidth;
+    try {
+      for (const width of [t['breakpoint.max'] - 1, t['breakpoint.max']]) {
+        Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+        const rendered = await render(React.createElement(Registry.ToastNotification, SAMPLE[0].props));
+        const band = rendered.querySelector('[role="status"], [role="alert"]');
+        const expected = width >= t['breakpoint.max'] ? t['control.notification_toast_width_max'] : t['control.notification_width'];
+        assert.equal(band.style.width, expected + 'px', 'window ' + width);
+        await cleanup();
+      }
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
+    }
+  });
+
+});

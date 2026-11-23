@@ -157,3 +157,15 @@ export { default as PaginationNav } from './component/molecule/pagination/pagina
 export { default as Grid } from './component/molecule/grid/grid.js';
 export { default as Row } from './component/molecule/grid/row.js';
 export { default as Column } from './component/molecule/grid/column.js';
+export { default as Content } from './component/composite/header/content.js';
+export { default as Header } from './component/composite/header/header.js';
+export { default as HeaderContainer } from './component/composite/header/header-container.js';
+export { default as HeaderGlobalAction } from './component/composite/header/header-global-action.js';
+export { default as HeaderGlobalBar } from './component/composite/header/header-global-bar.js';
+export { default as HeaderMenu } from './component/composite/header/header-menu.js';
+export { default as HeaderMenuButton } from './component/composite/header/header-menu-button.js';
+export { default as HeaderMenuItem } from './component/composite/header/header-menu-item.js';
+export { default as HeaderName } from './component/composite/header/header-name.js';
+export { default as HeaderNavigation } from './component/composite/header/header-navigation.js';
+export { default as HeaderPanel } from './component/composite/header/header-panel.js';
+export { default as HeaderSideNavItems } from './component/composite/header/header-side-nav-items.js';

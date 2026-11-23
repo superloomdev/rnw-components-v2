@@ -48,6 +48,10 @@ export default function ActionableNotification (ctx) {
     const closed = React.useState(false);
     const lowContrast = props.lowContrast === true;
     const owner = 'ActionableNotification';
+    // From max the toast is wider (`_toast-notification.scss:41-43`); an
+    // unknown window is not
+    const viewport = ctx.behaviors.useViewportSize();
+    const widest = viewport.width > 0 && viewport.width >= ctx.metric(owner, 'bpMax');
 
     // The close button calls onCloseButtonClick then onClose; a false
     // return vetoes, else the notification unmounts
@@ -84,7 +88,11 @@ export default function ActionableNotification (ctx) {
       key: 'action',
       label: props.actionButtonLabel,
       lowContrast: lowContrast,
-      marginEnd: props.hideCloseButton === true ? ctx.metric(owner, 'actionEndSpace') : undefined,
+      // Below md the close is out of flow over the band's top end
+      // (`_actionable-notification.scss:570-615`); the action clears it by
+      // `notification_action_close_clearance` (0 keeps upstream's drawing,
+      // the form classes give the close seat's width)
+      marginEnd: props.hideCloseButton === true ? ctx.metric(owner, 'actionEndSpace') : narrow ? ctx.metric(owner, 'actionCloseClearance') : undefined,
       onPress: props.onActionButtonClick,
       variant: inline ? 'inline' : 'toast'
     });
@@ -96,7 +104,7 @@ export default function ActionableNotification (ctx) {
       owner: owner,
       role: role === 'status' ? 'status' : role,
       testID: props.testID,
-      fluid: inline, width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, 'toastWidth')
+      fluid: inline, width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, widest ? 'toastWidthMax' : 'toastWidth')
     }, [
       parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ iconTop: inline ? undefined : ctx.metric(owner, 'toastIconTop'), kind: kind, lowContrast: lowContrast, owner: owner }),

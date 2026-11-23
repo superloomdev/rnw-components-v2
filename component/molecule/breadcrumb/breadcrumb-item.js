@@ -57,8 +57,13 @@ export default function BreadcrumbItem (ctx) {
     };
     const type = Utils.isString(props.typeLeaf) ? props.typeLeaf : small ? 'breadcrumb_small' : 'breadcrumb';
     const current = props.isCurrentPage === true;
-    // Stacked lines keep each target to its own line (no target floor overlap)
+    // Stacked lines keep each target to its own line: a row of
+    // `control.breadcrumb_stacked_item_min_height` (0 keeps the upstream
+    // line, the form classes the target floor); where the row holds the
+    // floor the target fills it, else it stays at its line
     const stacked = props.stacked === true;
+    const stackedMinHeight = ctx.metric('BreadcrumbItem', 'stackedMinHeight');
+    const lineTarget = stacked && stackedMinHeight < ctx.metric('BreadcrumbItem', 'targetMin');
 
     // The content: the overflow menu, the link or the link-styled text
     let content;
@@ -86,7 +91,7 @@ export default function BreadcrumbItem (ctx) {
         }),
         menuOffset: { left: -13, top: 10 },
         size: small ? 'sm' : 'md',
-        triggerBlockExpansion: stacked ? 'none' : undefined,
+        triggerBlockExpansion: lineTarget ? 'none' : undefined,
         triggerHeight: metrics.overflowHeight,
         triggerWidth: metrics.overflowWidth
       });
@@ -94,7 +99,7 @@ export default function BreadcrumbItem (ctx) {
       content = React.createElement(ctx.Registry.Tooltip, { align: 'right', label: props.label },
         React.createElement(ctx.Registry.Link, {
           accessibilityLabel: props.label,
-          blockExpansion: stacked ? 'none' : undefined,
+          blockExpansion: lineTarget ? 'none' : undefined,
           href: props.href,
           icon: props.icon,
           iconColorLeaf: props.iconColorLeaf,
@@ -105,7 +110,7 @@ export default function BreadcrumbItem (ctx) {
     } else if (Utils.isString(props.href)) {
       content = React.createElement(ctx.Registry.Link, {
         'aria-current': current ? 'page' : undefined,
-        blockExpansion: stacked ? 'none' : undefined,
+        blockExpansion: lineTarget ? 'none' : undefined,
         href: props.href,
         minWidth: small ? metrics.linkMinWidthSmall : undefined,
         onPress: props.onPress,
@@ -141,6 +146,7 @@ export default function BreadcrumbItem (ctx) {
         height: Utils.isNumber(props.boxHeight) ? props.boxHeight : undefined,
         marginEnd: props.last === true ? 0 : metrics.gap,
         marginTop: Utils.isNumber(props.offsetTop) ? props.offsetTop : undefined,
+        minHeight: stacked && stackedMinHeight > 0 ? stackedMinHeight : undefined,
         opacity: hidden ? 0 : undefined
       }
     }, content, separator);

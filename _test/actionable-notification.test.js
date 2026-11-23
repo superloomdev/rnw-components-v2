@@ -11,7 +11,7 @@ import { act } from 'react';
 
 import * as factories from 'rnw-components/all';
 import SAMPLE from '../component/molecule/notification/sample.actionable-notification.js';
-import { TEMPLATES, buildNative, buildSystem } from './harness/system.js';
+import { Lib, TEMPLATES, buildNative, buildSystem } from './harness/system.js';
 import { React, cleanup, cssValue, render } from './harness/render.js';
 
 const TEMPLATE_NAMES = Object.keys(TEMPLATES).concat('shapes');
@@ -217,6 +217,57 @@ describe('ActionableNotification: trap, Escape and the close chain', function ()
     const parts = await renderActionable(registryFor('carbon'), { actionButtonLabel: 'Retry', title: 'T' });
     await fire(parts.close(), new MouseEvent('click', { bubbles: true }));
     assert.equal(parts.rendered.querySelector('[role="alertdialog"]') === null, true);
+  });
+
+});
+
+describe('ActionableNotification: the inline action clears the close below md, the toast widens from max', function () {
+
+  async function atWidth (width, body) {
+    const before = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: width, writable: true });
+    try {
+      await body();
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
+    }
+  }
+
+  const short = SAMPLE.find(function (state) {
+    return state.label === 'inlineShort';
+  }).props;
+
+  test('base: below md the action keeps no end space beside the close', async function () {
+    const t = buildNative('carbon').tokens;
+    await atWidth(t['breakpoint.md'] - 1, async function () {
+      const parts = await renderActionable(registryFor('carbon'), short);
+      assert.equal(parts.close() !== null, true);
+      const seat = parts.action().parentElement.parentElement;
+      assert.equal(t['control.notification_action_close_clearance'], 0);
+      assert.equal(seat.style.marginRight, '0px', 'upstream draws the action under the close');
+    });
+  });
+
+  test('compact: below md the action clears the close seat', async function () {
+    const compact = Lib.Themer.buildTheme(TEMPLATES.carbon, [], 'native', { variant: { form: 'compact' } });
+    const t = compact.tokens;
+    await atWidth(t['breakpoint.md'] - 1, async function () {
+      const parts = await renderActionable(buildSystem('carbon', factories, { built: compact }), short);
+      const seat = parts.action().parentElement.parentElement;
+      assert.equal(t['control.notification_action_close_clearance'], t['control.icon_button_size']);
+      assert.equal(seat.style.marginRight, t['control.icon_button_size'] + 'px', 'the close seat\'s width');
+    });
+  });
+
+  test('from max the toast takes the wider cell', async function () {
+    const t = buildNative('carbon').tokens;
+    const toast = SAMPLE.find(function (state) {
+      return state.props.inline !== true;
+    }).props;
+    await atWidth(t['breakpoint.max'], async function () {
+      const parts = await renderActionable(registryFor('carbon'), toast);
+      assert.equal(parts.band.style.width, t['control.notification_toast_width_max'] + 'px');
+    });
   });
 
 });

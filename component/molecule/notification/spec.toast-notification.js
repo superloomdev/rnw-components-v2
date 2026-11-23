@@ -3,6 +3,7 @@
 // never the spacing scale (census line 107).
 
 export default Object.freeze({
+  bpMax: 'breakpoint.max',
   captionSpace: 'spacing.spacing_03',
   closeIconSize: 'size.icon_01',
   closeSize: 'control.icon_button_size',
@@ -20,5 +21,6 @@ export default Object.freeze({
   textPaddingBlock: 'control.notification_text_padding_block',
   textPaddingBottom: 'control.notification_toast_text_padding_bottom',
   titleGap: 'control.notification_title_gap',
-  width: 'control.notification_width'
+  width: 'control.notification_width',
+  widthMax: 'control.notification_toast_width_max'
 });

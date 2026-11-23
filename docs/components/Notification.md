@@ -139,6 +139,8 @@ ActionableNotification is a status notification carrying an action: the `inline`
 
 | Metric | Rule |
 |---|---|
+| `actionCloseClearance` | `control.notification_action_close_clearance` |
+| `bpMax` | `breakpoint.max` |
 | `detailsInset` | `control.notification_details_inset` |
 | `detailsInsetEnd` | `control.notification_details_inset_end` |
 | `iconGap` | `control.notification_icon_gap` |
@@ -161,6 +163,7 @@ ActionableNotification is a status notification carrying an action: the `inline`
 | `toastIconTop` | `control.notification_toast_icon_top` |
 | `toastTextPaddingBottom` | `control.notification_toast_text_padding_bottom` |
 | `toastWidth` | `control.notification_width` |
+| `toastWidthMax` | `control.notification_toast_width_max` |
 | `width` | `control.notification_inline_width` |
 
 ### States (sample.js)
@@ -369,6 +372,7 @@ ToastNotification is a status band: a marker and status icon, a title, a subtitl
 
 | Metric | Rule |
 |---|---|
+| `bpMax` | `breakpoint.max` |
 | `captionSpace` | `spacing.spacing_03` |
 | `closeIconSize` | `size.icon_01` |
 | `closeSize` | `control.icon_button_size` |
@@ -387,6 +391,7 @@ ToastNotification is a status band: a marker and status icon, a title, a subtitl
 | `textPaddingBottom` | `control.notification_toast_text_padding_bottom` |
 | `titleGap` | `control.notification_title_gap` |
 | `width` | `control.notification_width` |
+| `widthMax` | `control.notification_toast_width_max` |
 
 ### States (sample.js)
 

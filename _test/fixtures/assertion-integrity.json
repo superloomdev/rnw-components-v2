@@ -4554,6 +4554,216 @@
       "test": "fidelity.spec.js",
       "testName": "Breadcrumb / narrow / light: matches the reference in every state",
       "why": "a narrow set opened with the compact form variants on compares the adaptive layer with a reference that has none (the open overflow menu's rows are 48 against 40, 3.2 % over a 2 % budget) and must fail (decision 62)"
+    },
+    {
+      "id": "header-bar-height",
+      "file": "component/composite/header/header.js",
+      "find": "        height: ctx.metric('Header', 'height'),",
+      "replace": "        height: ctx.metric('Header', 'height') + 1,",
+      "runner": "node",
+      "test": "header.test.js",
+      "testName": "carbon / shell: the bar comes from the theme",
+      "why": "a bar taller than control.header_height must fail the bar height assertion"
+    },
+    {
+      "id": "header-toggle-name-start",
+      "file": "component/composite/header/header.js",
+      "find": "        afterToggle: toggleShown,",
+      "replace": "        afterToggle: false,",
+      "runner": "node",
+      "test": "header.test.js",
+      "testName": "the menu bar goes, the toggle shows and the name moves closer to it",
+      "why": "a name that ignores a shown toggle must fail the toggle start assertion"
+    },
+    {
+      "id": "header-name-end-narrow",
+      "file": "component/composite/header/header-name.js",
+      "find": "        paddingEnd: ctx.metric('HeaderName', narrow ? 'paddingEndSmall' : 'paddingEnd'),",
+      "replace": "        paddingEnd: ctx.metric('HeaderName', 'paddingEnd'),",
+      "runner": "node",
+      "test": "header-name.test.js",
+      "testName": "below md the end padding is the small cell",
+      "why": "a name that keeps its wide end padding below md must fail"
+    },
+    {
+      "id": "header-name-focus-border",
+      "file": "component/composite/header/header-name.js",
+      "find": "        borderColor: interaction.state.focused ? ctx.color('focus') : 'transparent',",
+      "replace": "        borderColor: 'transparent',",
+      "runner": "node",
+      "test": "header-name.test.js",
+      "testName": "carbon / default: the name comes from the theme",
+      "why": "a name with no focus border must fail the focus assertion"
+    },
+    {
+      "id": "header-navigation-below-lg",
+      "file": "component/composite/header/header-navigation.js",
+      "find": "    if (viewport.width > 0 && viewport.width < ctx.metric('HeaderNavigation', 'bpLg')) {",
+      "replace": "    if (false) {",
+      "runner": "node",
+      "test": "header-navigation.test.js",
+      "testName": "below lg the menu bar is not drawn",
+      "why": "a menu bar drawn below lg must fail"
+    },
+    {
+      "id": "header-navigation-rule",
+      "file": "component/composite/header/header-navigation.js",
+      "find": "        height: dividerHeight,",
+      "replace": "        height: dividerHeight + 2,",
+      "runner": "node",
+      "test": "header-navigation.test.js",
+      "testName": "carbon / default: the menu bar comes from the theme",
+      "why": "a rule of another height must fail the rule assertion"
+    },
+    {
+      "id": "header-menu-item-indicator",
+      "file": "component/composite/header/header-menu-item.js",
+      "find": "    const current = props.isActive === true && props['aria-current'] !== 'page';",
+      "replace": "    const current = false;",
+      "runner": "node",
+      "test": "header-menu-item.test.js",
+      "testName": "carbon / current: the link comes from the theme",
+      "why": "a current link without its indicator must fail"
+    },
+    {
+      "id": "header-menu-item-hover",
+      "file": "component/composite/header/header-menu-item.js",
+      "find": "      fill = ctx.color(ctx.stateLeaf('header_menu_item_container', phase));",
+      "replace": "      fill = ctx.color('header_menu_item_container');",
+      "runner": "node",
+      "test": "header-menu-item.test.js",
+      "testName": "carbon / default: the link comes from the theme",
+      "why": "a link with no hover or press fill must fail"
+    },
+    {
+      "id": "header-menu-open-list",
+      "file": "component/composite/header/header-menu.js",
+      "find": "        width: ctx.metric('HeaderMenu', 'menuWidth')",
+      "replace": "        width: ctx.metric('HeaderMenu', 'menuWidth') / 2",
+      "runner": "node",
+      "test": "header-menu.test.js",
+      "testName": "carbon / open: the menu comes from the theme",
+      "why": "an open list of another width must fail"
+    },
+    {
+      "id": "header-menu-title-current",
+      "file": "component/composite/header/header-menu.js",
+      "find": "    const current = props.isActive === true || (descendantCurrent && !open);",
+      "replace": "    const current = props.isActive === true;",
+      "runner": "node",
+      "test": "header-menu.test.js",
+      "testName": "carbon / current: the menu comes from the theme",
+      "why": "a closed menu holding the current link that draws no title bar must fail"
+    },
+    {
+      "id": "header-menu-button-below-lg",
+      "file": "component/composite/header/header-menu-button.js",
+      "find": "    return collapsible === true || (width > 0 && width < ctx.metric('HeaderMenuButton', 'bpLg'));",
+      "replace": "    return true;",
+      "runner": "node",
+      "test": "header-menu-button.test.js",
+      "testName": "from lg only the collapsible toggle is drawn",
+      "why": "a toggle that does not collapse drawn from lg must fail"
+    },
+    {
+      "id": "header-global-action-selected",
+      "file": "component/composite/header/header-global-action.js",
+      "find": "        : active ? 'header_action_icon_selected' : 'header_action_icon';",
+      "replace": "        : 'header_action_icon';",
+      "runner": "node",
+      "test": "header-global-action.test.js",
+      "testName": "carbon / active: the action comes from the theme",
+      "why": "an active action that keeps the rest ink must fail"
+    },
+    {
+      "id": "header-global-bar-grow",
+      "file": "component/composite/header/header-global-bar.js",
+      "find": "      style: { alignSelf: 'stretch', flexBasis: 0, flexDirection: 'row', flexGrow: 1, flexShrink: 1, justifyContent: 'flex-end' }",
+      "replace": "      style: { alignSelf: 'stretch', flexBasis: 0, flexDirection: 'row', flexGrow: 0, flexShrink: 1, justifyContent: 'flex-end' }",
+      "runner": "node",
+      "test": "header-global-bar.test.js",
+      "testName": "carbon / default: the bar seats its actions at its end",
+      "why": "a bar that does not take the remaining room must fail"
+    },
+    {
+      "id": "header-panel-width",
+      "file": "component/composite/header/header-panel.js",
+      "find": "        width: ctx.metric('HeaderPanel', 'width')",
+      "replace": "        width: ctx.metric('HeaderPanel', 'width') - 16",
+      "runner": "node",
+      "test": "header-panel.test.js",
+      "testName": "carbon / expanded: the panel comes from the theme",
+      "why": "a panel of another width must fail"
+    },
+    {
+      "id": "header-panel-escape",
+      "file": "component/composite/header/header-panel.js",
+      "find": "    useEscapeKey(requestClose, expanded);",
+      "replace": "    useEscapeKey(requestClose, false);",
+      "runner": "node",
+      "test": "header-panel.test.js",
+      "testName": "Escape asks the panel to collapse",
+      "why": "a panel deaf to Escape must fail"
+    },
+    {
+      "id": "header-side-nav-items-rule",
+      "file": "component/composite/header/header-side-nav-items.js",
+      "find": "      style: { backgroundColor: ctx.color('header_border'), bottom: -inset, end: inset, height: ctx.metric('HeaderSideNavItems', 'ruleWidth'), position: 'absolute', start: inset }",
+      "replace": "      style: { backgroundColor: ctx.color('header_border'), bottom: 0, end: inset, height: ctx.metric('HeaderSideNavItems', 'ruleWidth'), position: 'absolute', start: inset }",
+      "runner": "node",
+      "test": "header-side-nav-items.test.js",
+      "testName": "carbon / divider: the list comes from the theme below lg",
+      "why": "a rule at the list bottom instead of halfway into the space must fail"
+    },
+    {
+      "id": "header-container-escape",
+      "file": "component/composite/header/header-container.js",
+      "find": "    }, expanded);",
+      "replace": "    }, false);",
+      "runner": "node",
+      "test": "header-container.test.js",
+      "testName": "carbon / default: the header shows the side navigation state",
+      "why": "a container deaf to Escape must fail"
+    },
+    {
+      "id": "content-padding",
+      "file": "component/composite/header/content.js",
+      "find": "      style: { padding: ctx.metric('Content', 'padding') }",
+      "replace": "      style: { padding: 0 }",
+      "runner": "node",
+      "test": "content.test.js",
+      "testName": "carbon / default: the region comes from the theme",
+      "why": "a region without its padding must fail"
+    },
+    {
+      "id": "notification-action-close-clearance",
+      "file": "component/molecule/notification/actionable-notification.js",
+      "find": "narrow ? ctx.metric(owner, 'actionCloseClearance') : undefined,",
+      "replace": "narrow ? 0 : undefined,",
+      "runner": "node",
+      "test": "actionable-notification.test.js",
+      "testName": "compact: below md the action clears the close seat",
+      "why": "an inline action that does not clear the close in the compact form class must fail (decision 62)"
+    },
+    {
+      "id": "toast-width-max",
+      "file": "component/molecule/notification/toast-notification.js",
+      "find": "      width: ctx.metric(owner, widest ? 'widthMax' : 'width')",
+      "replace": "      width: ctx.metric(owner, 'width')",
+      "runner": "node",
+      "test": "toast-notification.test.js",
+      "testName": "the width is the max cell from breakpoint.max, the base cell below it",
+      "why": "a toast that keeps its base width from max must fail"
+    },
+    {
+      "id": "breadcrumb-stacked-min-height",
+      "file": "component/molecule/breadcrumb/breadcrumb-item.js",
+      "find": "        minHeight: stacked && stackedMinHeight > 0 ? stackedMinHeight : undefined,",
+      "replace": "        minHeight: undefined,",
+      "runner": "node",
+      "test": "breadcrumb.test.js",
+      "testName": "compact: every stacked item is a target-floor row, its content centered",
+      "why": "a stacked trail without the form class row height must fail (decision 62)"
     }
   ]
 }
