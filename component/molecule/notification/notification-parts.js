@@ -11,12 +11,13 @@
 // sheet names the cell a seat reads (toast's own `toast` suffixed cells).
 // Below `breakpoint.md` an inline band follows the reference's narrow
 // rules with its spacing steps: the band is its 288 floor wide, the
-// details keep `spacing_09` at their end and take their content's width,
-// so the action wraps under them, and the close sits over that end inset.
-// The content's width is the text block's: a native layout sizes a
-// zero-basis block as empty, so below md its basis is its content, the
-// details hold the glyph and the text on one line (`display: flex`, no wrap)
-// and they shrink without growing (see `details`)
+// details keep `spacing_09` at their end, take their content's width and
+// grow along their line, so the action stands beside a short text at the
+// band's end and wraps under a longer one, and the close sits over that
+// end inset. The content's width is the text block's: below md its basis
+// is its content and it does not grow, the details hold the glyph and the
+// text on one line (`display: flex`, no wrap), and they grow without
+// shrinking under a cap of the line's width (see `details`)
 // (`_inline-notification.scss:26-55,272-319,400-413`,
 // `_actionable-notification.scss:44-58,327-337,605-627`; plan 0162 E13).
 //
@@ -121,11 +122,14 @@ export default function createNotificationParts (ctx) {
 
   /********************************************************************
   The details part: the icon plus the text block, with the details
-  insets. Below md they shrink and do not grow: upstream's details grow
-  (`_actionable-notification.scss:324-328`), but a native layout never
-  breaks a wrapping row after an item that both grows and shrinks, so the
-  action would share their line; the text is wider than the line in
-  every drawn state, so the details fill it either way.
+  insets. They grow (`_actionable-notification.scss:324-328`). Below md
+  their basis is their content: a text that fits beside the action shares
+  its line and the action ends at the band's end, a longer text takes the
+  line and the action wraps under it. They never shrink: a native layout
+  gives the one item of a row that both grows and shrinks a zero basis,
+  so the row never breaks after it. The browser shrinks an item to its
+  line; here a cap of the line's width does that - the band's floor less
+  the marker and the details' two insets.
 
   @param {Object}   opts     - { owner, kind, lowContrast, iconTop, narrow }
   @param {Array}    children - The text block
@@ -134,16 +138,21 @@ export default function createNotificationParts (ctx) {
   *********************************************************************/
   function details (opts, children) {
 
+    // The line the details may fill below md
+    const line = opts.narrow === true
+      ? ctx.metric(opts.owner, 'minWidth') - ctx.metric(opts.owner, 'markerWidth') - ctx.metric(opts.owner, 'detailsInset') - ctx.token('spacing.spacing_09')
+      : undefined;
     return React.createElement(View, {
       key: 'details',
       style: {
         flexBasis: opts.narrow === true ? 'auto' : 0,
         flexDirection: 'row',
-        flexGrow: opts.narrow === true ? 0 : 1,
-        flexShrink: opts.narrow === true ? 1 : 0,
+        flexGrow: 1,
+        flexShrink: 0,
         flexWrap: opts.narrow === true ? 'nowrap' : 'wrap',
         marginStart: ctx.metric(opts.owner, 'detailsInset'),
         marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : ctx.metric(opts.owner, 'detailsInsetEnd'),
+        maxWidth: line,
         minWidth: 0
       }
     }, children);
@@ -181,9 +190,11 @@ export default function createNotificationParts (ctx) {
 
   /********************************************************************
   The text block: the padded column holding the title, subtitle and
-  caption rows. Below md its basis is its content, so the details measure
-  the text on every platform (`_actionable-notification.scss:324-328`
-  details `flex-grow: 1` at an auto basis), never the glyph alone.
+  caption rows. Below md its basis is its content and it does not grow,
+  as the upstream text wrapper is a content-sized item of the details
+  (`_actionable-notification.scss:351-355`): a native layout measures a
+  growing block at the whole line and a zero-basis block as empty, and
+  either hides the text's width from the details.
 
   @param {Object}   opts     - { owner, paddingTop, paddingBottom, narrow }
   @param {Array}    children - The rows
@@ -196,7 +207,7 @@ export default function createNotificationParts (ctx) {
       key: 'textBlock',
       style: {
         flexBasis: opts.narrow === true ? 'auto' : 0,
-        flexGrow: 1,
+        flexGrow: opts.narrow === true ? 0 : 1,
         flexShrink: 1,
         minWidth: 0,
         paddingTop: Utils.isNumber(opts.paddingTop) ? opts.paddingTop : ctx.metric(opts.owner, 'textPaddingBlock'),

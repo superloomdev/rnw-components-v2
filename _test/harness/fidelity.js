@@ -565,7 +565,11 @@ export async function runFidelity (page, component, set, scheme) {
       (state.includes(' @') && ringParts.includes(part) && RING_BORDER.includes(property)) ||
       (property === 'color' && o.ink !== undefined && u.ink !== undefined);
   };
-  const lines = findDisagreements(ours.states, upstream.states, reference.parts, ['paint', 'ink'], skip);
+  // FIDELITY_GEOMETRY set, every part is compared on its box as well, whatever
+  // its `compare` list leaves out: the census of the lists that name no
+  // geometry (`fixtures/reference-geometry-legacy.json`), never a gate run
+  const extra = process.env.FIDELITY_GEOMETRY !== undefined ? ['paint', 'ink', 'x', 'y', 'width', 'height'] : ['paint', 'ink'];
+  const lines = findDisagreements(ours.states, upstream.states, reference.parts, extra, skip);
   for (const failure of ours.failures.concat(upstream.failures)) {
     lines.push(failure);
   }

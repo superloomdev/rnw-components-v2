@@ -4,7 +4,11 @@
 // close: inline the ghost action, as a toast the tertiary-inverse action
 // under `shadow.notification` at the toast width. The parts compared are
 // the container, the details, the icon, the text, the action and the
-// close.
+// close. Below md a text that fits beside its action (`inlineShort`)
+// shares its line with it, and the upstream's close, out of flow at the
+// band's top end (`_actionable-notification.scss:570-615`), covers the
+// action: no pointer reaches it there, so the action is a target of the
+// other states and that state is compared at rest and under its close.
 
 // Upstream's ActionableNotification focuses its action button on every
 // mount (`Notification.js:449`: `hasFocus && role === "alertdialog"`
@@ -31,7 +35,14 @@ export default Object.freeze({
       upstream: '.cds--actionable-notification__close-button',
       ours: '[role="alertdialog"] [data-testid="notification-close"], [role="alert"] [data-testid="notification-close"], [role="status"] [data-testid="notification-close"]',
       interactions: Object.freeze(['hover', 'focus']),
-      states: Object.freeze(['inline', 'inlineLow', 'toast', 'toastLow'])
+      states: Object.freeze(['inline', 'inlineLow', 'toast', 'toastLow', 'inlineShort'])
+    }),
+    // The element a person interacts with: the action button
+    Object.freeze({
+      name: 'action',
+      upstream: '.cds--actionable-notification__action-button',
+      ours: '[role="button"]:has([dir="auto"])',
+      states: Object.freeze(['inline', 'inlineLow', 'toast', 'toastLow', 'noClose', 'toastNoClose'])
     })
   ]),
   mount: function (React, upstream, props) {
@@ -58,11 +69,11 @@ export default Object.freeze({
         title: props.title
       }));
   },
-  // The element a person interacts with: the action button
-  target: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])' }),
+  // The band's size and the action's place are compared: where the action
+  // stands (beside the text, under it, at which end) is the narrow rule
   parts: Object.freeze({
-    container: Object.freeze({ upstream: '.cds--actionable-notification', ours: '[role="alertdialog"], [role="alert"], [role="status"]', measure: 'box', compare: ['minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor', 'boxShadow'] }),
-    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])', measure: 'box', compare: ['height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] }),
-    close: Object.freeze({ upstream: '.cds--actionable-notification__close-button', ours: '[role="alertdialog"] [data-testid="notification-close"], [role="alert"] [data-testid="notification-close"], [role="status"] [data-testid="notification-close"]', measure: 'box', optional: true, compare: ['width', 'height'] })
+    container: Object.freeze({ upstream: '.cds--actionable-notification', ours: '[role="alertdialog"], [role="alert"], [role="status"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor', 'boxShadow'] }),
+    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button', ours: '[role="button"]:has([dir="auto"])', measure: 'box', compare: ['x', 'y', 'width', 'height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] }),
+    close: Object.freeze({ upstream: '.cds--actionable-notification__close-button', ours: '[role="alertdialog"] [data-testid="notification-close"], [role="alert"] [data-testid="notification-close"], [role="status"] [data-testid="notification-close"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] })
   })
 });

@@ -29,11 +29,13 @@ export default Object.freeze({
       name: 'action',
       upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button, [role="button"]',
       ours: '[role="button"]',
-      states: Object.freeze(['info', 'warning', 'infoLow', 'warningLow', 'errorMapped'])
+      states: Object.freeze(['info', 'warning', 'infoLow', 'warningLow', 'errorMapped', 'short'])
     })
   ]),
+  // The band's size and the action's place are compared: where the action
+  // stands (beside the text, under it, at which end) is the narrow rule
   parts: Object.freeze({
-    container: Object.freeze({ upstream: '.cds--callout, .cds--actionable-notification', ours: '[role="list"] > div, div', measure: 'box', compare: ['minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor'] }),
-    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button', ours: '[role="button"]', measure: 'box', optional: true, compare: ['height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] })
+    container: Object.freeze({ upstream: '.cds--callout, .cds--actionable-notification', ours: '[role="list"] > div, div', measure: 'box', compare: ['x', 'y', 'width', 'height', 'minHeight', 'backgroundColor', 'borderLeftWidth', 'borderLeftColor'] }),
+    action: Object.freeze({ upstream: '.cds--actionable-notification__action-button, .cds--callout__action-button', ours: '[role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'marginLeft', 'marginBottom', 'backgroundColor', 'color'] })
   })
 });

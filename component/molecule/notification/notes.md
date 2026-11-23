@@ -31,24 +31,52 @@ file and the row is measured against the primary alone.
   `notification_close_icon` (`icon_primary` under `lowContrast`) through
   its `iconColor` prop; the kind's hover and focus still come from the
   icon-button cells.
-- **Narrow side on a device.** Below md the inline details take their
-  content's width (`_actionable-notification.scss:324-328`,
-  `_inline-notification.scss:277-281`: `flex-grow: 1` at an auto basis), so
-  the action wraps under them. The browser sizes that basis from the text's
-  max-content; a native layout sized it from a zero-basis text block as
-  empty, so the details shared their line with the action and the text
-  wrapped in the rest (native run 45024868316: ActionableNotification inline
-  120 against the web's 106, Callout 156 against 106). Below md the text
-  block's basis is its content and the details do not wrap, as upstream's
-  `display: flex` details do not. That alone changed nothing on the
-  devices (native run 45079333162, the same heights): React Native's Yoga
-  never breaks a wrapping row after an item that both grows and shrinks
-  (proven on the engine compiled from `react-native` 0.88.1's
-  `ReactCommon/yoga`: an item at a 100 % basis with grow 1 and shrink 1
-  keeps the next item on its line; grow or shrink alone breaks it). Below
-  md the details therefore shrink and do not grow. Upstream's grow differs
-  only when the text is narrower than the line beside the action, which
-  no state draws (`notification-parts.js`).
+- **Narrow side: where the action stands.** Below md the upstream details
+  are `display: flex; flex-grow: 1` at an auto basis in a wrapping band
+  288 wide (`_actionable-notification.scss:33-45,324-328`,
+  `_inline-notification.scss:277-281`). The rule has two outcomes and a
+  sample state draws each: a text that does not fit beside the action
+  takes the line and the action wraps under it (`inline`, `noClose`;
+  Callout `info`), and a text that fits shares its line with the action,
+  which then ends at the band's end because the details grow
+  (`inlineShort`; Callout `short`). The references compare the band's
+  size and the action's `x`, `y` and `width`, so either outcome drawn
+  wrong is a failure.
+- **Narrow side on a device.** A native layout differs from the browser in
+  three ways, each read on the engine (`react-native` 0.88.1's
+  `ReactCommon/yoga`, and a model of the band): (1) the one item of a row
+  that both grows and shrinks gets a zero basis, so a wrapping row never
+  breaks after it (native run 45024868316: the action shared the text's
+  line, ActionableNotification inline 120 high against the web's 106,
+  Callout 156 against 106); (2) a block that grows inside the details is
+  measured at the whole line, so the details never report a short text's
+  width; (3) a zero-basis block is measured as empty. Below md the details
+  therefore grow and never shrink, capped at their line (the band's floor
+  less the marker and their two insets, which is where a browser's shrink
+  would stop them), and the text block is its content and does not grow,
+  as the upstream text wrapper is (`_actionable-notification.scss:351-355`).
+  The browser draws both outcomes from the same values. An earlier repair
+  stopped the details growing (`ef1230b`): it held for the wrapping
+  outcome and drew the other one wrong, the action short of the band's end
+  in a browser and wrapped under a short text on a device.
+- **Callout's end space.** The upstream Callout always carries the
+  no-close class (`Notification.js:664`), so its action keeps
+  `margin-inline-end: $spacing-03` (`_actionable-notification.scss:458-461`).
+  Measured once the reference compared the band's width and the action's
+  place: the band 420.97 here against 428.97 upstream from md, the `short`
+  action at x 221.95 against 213.95 below md. Callout hands the action
+  `control.notification_action_end_space`, as ActionableNotification does
+  without a close.
+- **Short text, action and close.** Below md the upstream close is out of
+  flow at the band's top end, 48 square
+  (`_actionable-notification.scss:570-615`), and the details keep 48 at
+  their end for it. When the action shares the text's line it stands in
+  that corner, under the close: the upstream page's close takes every
+  pointer event aimed at the action (the `inlineShort` narrow run). The
+  window rule is drawn as it is. In the compact and medium form classes
+  the action is a target the close crowds (structural gate at 375); the
+  form variant clears it with a cell queued for the next wave
+  (`CONTRACT-REQUESTS.md`), not with a change of the window rule.
 - **Status icons** are plain named glyphs (`error_filled`,
   `checkmark_filled`, `information_filled`, `warning_filled`) colored by
   the marker leaf - the glyph carries the meaning.

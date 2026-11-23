@@ -16,6 +16,7 @@ export default Object.freeze({
   titleGap: 'control.notification_title_gap',
   radius: 'control.notification_radius',
   closeSize: 'control.icon_button_size',
+  actionEndSpace: 'control.notification_action_end_space',
   actionHeight: 'control.notification_action_height',
   actionInset: 'control.notification_action_inset',
   width: 'control.notification_inline_width'

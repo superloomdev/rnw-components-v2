@@ -7,5 +7,8 @@ export default Object.freeze([
   Object.freeze({ label: 'toast', props: Object.freeze({ actionButtonLabel: 'Retry', caption: 'The caption text.', kind: 'error', subtitle: 'The notification body.', title: 'Notification title.' }) }),
   Object.freeze({ label: 'toastLow', props: Object.freeze({ actionButtonLabel: 'Retry', caption: 'The caption text.', kind: 'error', lowContrast: true, subtitle: 'The notification body.', title: 'Notification title.' }) }),
   Object.freeze({ label: 'noClose', props: Object.freeze({ actionButtonLabel: 'Retry', hideCloseButton: true, inline: true, kind: 'error', subtitle: 'The notification body.', title: 'Notification title.' }) }),
-  Object.freeze({ label: 'toastNoClose', props: Object.freeze({ actionButtonLabel: 'Retry', caption: 'The caption text.', hideCloseButton: true, kind: 'error', subtitle: 'The notification body.', title: 'Notification title.' }) })
+  Object.freeze({ label: 'toastNoClose', props: Object.freeze({ actionButtonLabel: 'Retry', caption: 'The caption text.', hideCloseButton: true, kind: 'error', subtitle: 'The notification body.', title: 'Notification title.' }) }),
+  // A text short enough to stand beside its action below md, where the
+  // other inline states wrap the action under theirs
+  Object.freeze({ label: 'inlineShort', props: Object.freeze({ actionButtonLabel: 'Undo', inline: true, kind: 'success', title: 'Saved.' }) })
 ]);

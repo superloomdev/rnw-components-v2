@@ -62,6 +62,7 @@ describe('Callout: every sample state under every template', function () {
           assert.equal(button.parentElement.style.minHeight, t['control.notification_action_height'] + 'px');
           const seat = button.parentElement.parentElement;
           assert.equal(seat.style.marginLeft, t['control.notification_action_inset'] + 'px');
+          assert.equal(seat.style.marginRight, t['control.notification_action_end_space'] + 'px', 'a band with no close keeps the end space after its action');
         }
       });
     }
@@ -92,7 +93,7 @@ describe('Callout: every sample state under every template', function () {
 describe('Callout: below md the details measure their text', function () {
 
   for (const template of TEMPLATE_NAMES) {
-    test(template + ': below md the details measure their text and leave the action its own line', async function () {
+    test(template + ': below md the details measure their text, grow along their line and never shrink', async function () {
       const t = buildNative(template).tokens;
       const Registry = buildSystem(template, factories);
       const props = SAMPLE[0].props;
@@ -100,26 +101,43 @@ describe('Callout: below md the details measure their text', function () {
       let narrowDetailsBasis = null;
       let narrowDetailsWrap = null;
       let narrowDetailsGrow = null;
+      let narrowDetailsShrink = null;
+      let narrowDetailsCap = null;
+      let narrowGrow = null;
       await inWindow(t['breakpoint.md'] - 1, async function () {
         const rendered = await render(React.createElement(Registry.Callout, props));
         const details = rendered.firstElementChild.children[0];
         narrowDetailsBasis = details.style.flexBasis;
         narrowDetailsWrap = details.style.flexWrap;
         narrowDetailsGrow = details.style.flexGrow;
+        narrowDetailsShrink = details.style.flexShrink;
+        narrowDetailsCap = details.style.maxWidth;
         narrowBasis = details.children[1].style.flexBasis;
+        narrowGrow = details.children[1].style.flexGrow;
         await cleanup();
       });
       let wideBasis = null;
+      let wideGrow = null;
+      let wideCap = null;
       await inWindow(t['breakpoint.md'], async function () {
         const rendered = await render(React.createElement(Registry.Callout, props));
-        wideBasis = rendered.firstElementChild.children[0].children[1].style.flexBasis;
+        const details = rendered.firstElementChild.children[0];
+        wideBasis = details.children[1].style.flexBasis;
+        wideGrow = details.children[1].style.flexGrow;
+        wideCap = details.style.maxWidth;
         await cleanup();
       });
+      const line = t['control.notification_width'] - t['control.notification_marker_width'] - t['control.notification_details_inset'] - t['spacing.spacing_09'];
       assert.equal(narrowDetailsBasis, 'auto', 'below md the details take their content width');
-      assert.equal(narrowDetailsGrow, '0', 'below md the details shrink without growing, so a native wrapping row breaks before the action');
+      assert.equal(narrowDetailsGrow, '1', 'below md the details grow, so an action that fits beside a short text ends at the band\'s end');
+      assert.equal(narrowDetailsShrink, '0', 'the details never shrink: a native row never breaks after its one item that both grows and shrinks');
+      assert.equal(narrowDetailsCap, line + 'px', 'below md the details are capped at their line: the band\'s floor less the marker and their two insets');
       assert.equal(narrowDetailsWrap, 'nowrap', 'below md the glyph and the text share one line, as the upstream details do not wrap');
       assert.equal(narrowBasis, 'auto', 'below md the text block is its content, so a native layout measures the text');
+      assert.equal(narrowGrow, '0', 'below md the text block does not grow: a native layout measures a growing block at the whole line');
       assert.equal(wideBasis === 'auto', false, 'from md the text block shares the row from a zero basis');
+      assert.equal(wideGrow, '1', 'from md the text block grows across the details');
+      assert.equal(wideCap, '', 'from md the details have no cap');
     });
   }
 
