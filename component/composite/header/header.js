@@ -2,8 +2,8 @@
 // `control.header_height` tall on `color.header_container` with a
 // `border.width_01` rule in `color.header_border` under it, stacked at
 // `stacking.header`. From its data it draws, in order, HeaderMenuButton
-// (`menuButton`), HeaderName (`name`; it starts closer after a shown
-// button), HeaderNavigation (`navigation`), HeaderGlobalBar (`actions`) and
+// (`menuButton`), HeaderName (`name`; it starts closer after a
+// collapsible button), HeaderNavigation (`navigation`), HeaderGlobalBar (`actions`) and
 // HeaderPanel (`panel`), then its children. The bar lays out in flow:
 // upstream fixes it to the window's top, a host places it above its
 // scrolling content.
@@ -23,7 +23,6 @@ export default function Header (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { View } = ctx.ReactNative;
-  const { useViewportSize } = ctx.behaviors;
 
 
   /********************************************************************
@@ -35,11 +34,12 @@ export default function Header (ctx) {
   *********************************************************************/
   function HeaderComponent (props) {
 
-    // A shown menu button moves the name closer (`_header.scss:197-200`):
-    // a collapsible one always, the other below lg, read from the window
-    const viewport = useViewportSize();
+    // A collapsible menu button moves the name closer at every width
+    // (`_header.scss:197-200`): the rule skips the toggle's `__hidden`
+    // class, which a toggle without `isCollapsible` carries at every width
+    // (`HeaderMenuButton.js:34`), so that one never moves it
     const menuButton = Utils.isObject(props.menuButton) ? props.menuButton : null;
-    const toggleShown = menuButton !== null && (menuButton.isCollapsible === true || (viewport.width > 0 && viewport.width < ctx.metric('Header', 'bpLg')));
+    const collapsible = menuButton !== null && menuButton.isCollapsible === true;
     const members = [];
     if (menuButton !== null) {
       members.push(React.createElement(ctx.Registry.HeaderMenuButton, {
@@ -52,7 +52,7 @@ export default function Header (ctx) {
     }
     if (Utils.isObject(props.name)) {
       members.push(React.createElement(ctx.Registry.HeaderName, {
-        afterToggle: toggleShown,
+        afterToggle: collapsible,
         href: props.name.href,
         key: 'name',
         onPress: props.name.onPress,

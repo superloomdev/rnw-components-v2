@@ -3,7 +3,7 @@
 // with its `border.width_01` rule in `color.header_border`, stacked at
 // `stacking.header`; the members it draws from its data. The menu bar is
 // drawn from `breakpoint.lg`; a menu button without `isCollapsible` below
-// it only, and the name after a shown button starts at
+// it only, and the name after a collapsible button starts at
 // `control.header_name_padding_start_toggle`.
 
 import { afterEach, describe, test } from 'node:test';
@@ -55,7 +55,7 @@ describe('Header: every sample state under every template', function () {
 
 describe('Header: below lg', function () {
 
-  test('the menu bar goes, the toggle shows and the name moves closer to it', async function () {
+  test('the menu bar goes, the toggle shows and the name keeps its start', async function () {
     const t = buildNative('carbon').tokens;
     const state = SAMPLE.find(function (entry) {
       return entry.label === 'menuButton';
@@ -67,6 +67,18 @@ describe('Header: below lg', function () {
       const toggle = bar.querySelector(':scope > button');
       assert.equal(toggle !== null, true, 'the toggle below lg');
       assert.equal(toggle.getAttribute('aria-label'), 'Open menu');
+      assert.equal(bar.querySelector(':scope > a').style.paddingLeft, t['control.header_name_padding_start'] + 'px');
+    });
+  });
+
+  test('the name after a collapsible toggle starts closer to it', async function () {
+    const t = buildNative('carbon').tokens;
+    const state = SAMPLE.find(function (entry) {
+      return entry.label === 'collapsible';
+    });
+    await atWindow(LG.below, async function () {
+      const container = await renderSample(registryFor('carbon'), 'Header', state);
+      const bar = container.querySelector(BAR);
       assert.equal(bar.querySelector(':scope > a').style.paddingLeft, t['control.header_name_padding_start_toggle'] + 'px');
     });
   });

@@ -4568,12 +4568,22 @@
     {
       "id": "header-toggle-name-start",
       "file": "component/composite/header/header.js",
-      "find": "        afterToggle: toggleShown,",
+      "find": "        afterToggle: collapsible,",
       "replace": "        afterToggle: false,",
       "runner": "node",
       "test": "header.test.js",
-      "testName": "the menu bar goes, the toggle shows and the name moves closer to it",
-      "why": "a name that ignores a shown toggle must fail the toggle start assertion"
+      "testName": "the name after a collapsible toggle starts closer to it",
+      "why": "a name that ignores a collapsible toggle must fail the toggle start assertion"
+    },
+    {
+      "id": "header-toggle-name-start-hidden",
+      "file": "component/composite/header/header.js",
+      "find": "        afterToggle: collapsible,",
+      "replace": "        afterToggle: menuButton !== null,",
+      "runner": "node",
+      "test": "header.test.js",
+      "testName": "the menu bar goes, the toggle shows and the name keeps its start",
+      "why": "a toggle without isCollapsible carries the __hidden class the start rule skips (_header.scss:197-200)"
     },
     {
       "id": "header-name-end-narrow",
@@ -4656,6 +4666,26 @@
       "why": "a closed menu holding the current link that draws no title bar must fail"
     },
     {
+      "id": "header-menu-open-hover",
+      "file": "component/composite/header/header-menu.js",
+      "find": "    const fill = open && phase === 'enabled' ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_menu_item_container', phase));",
+      "replace": "    const fill = open ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_menu_item_container', phase));",
+      "runner": "node",
+      "test": "header-menu.test.js",
+      "testName": "hover and press paint the title, its label and its arrow, open or closed",
+      "why": "an open title that keeps the menu fill under hover must fail: a.cds--header__menu-item:hover (0,2,1) beats the expanded title (0,2,0) (_header.scss:264-275,349-355)"
+    },
+    {
+      "id": "header-menu-arrow-hover",
+      "file": "component/composite/header/header-menu.js",
+      "find": "    const arrowLeaf = ctx.stateLeaf('header_menu_arrow', phase);",
+      "replace": "    const arrowLeaf = 'header_menu_arrow';",
+      "runner": "node",
+      "test": "header-menu.test.js",
+      "testName": "hover and press paint the title, its label and its arrow, open or closed",
+      "why": "an arrow that keeps its rest ink under hover and press must fail (_header.scss:282-291)"
+    },
+    {
       "id": "header-menu-button-below-lg",
       "file": "component/composite/header/header-menu-button.js",
       "find": "    return collapsible === true || (width > 0 && width < ctx.metric('HeaderMenuButton', 'bpLg'));",
@@ -4678,12 +4708,22 @@
     {
       "id": "header-global-bar-grow",
       "file": "component/composite/header/header-global-bar.js",
-      "find": "      style: { alignSelf: 'stretch', flexBasis: 0, flexDirection: 'row', flexGrow: 1, flexShrink: 1, justifyContent: 'flex-end' }",
-      "replace": "      style: { alignSelf: 'stretch', flexBasis: 0, flexDirection: 'row', flexGrow: 0, flexShrink: 1, justifyContent: 'flex-end' }",
+      "find": "      style: { alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 0, justifyContent: 'flex-end' }",
+      "replace": "      style: { alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 0, flexShrink: 0, justifyContent: 'flex-end' }",
       "runner": "node",
       "test": "header-global-bar.test.js",
       "testName": "carbon / default: the bar seats its actions at its end",
       "why": "a bar that does not take the remaining room must fail"
+    },
+    {
+      "id": "header-global-bar-floor",
+      "file": "component/composite/header/header-global-bar.js",
+      "find": "      style: { alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 0, justifyContent: 'flex-end' }",
+      "replace": "      style: { alignSelf: 'stretch', flexBasis: 'auto', flexDirection: 'row', flexGrow: 1, flexShrink: 1, justifyContent: 'flex-end' }",
+      "runner": "node",
+      "test": "header-global-bar.test.js",
+      "testName": "carbon / default: the bar seats its actions at its end",
+      "why": "a bar that shrinks below its actions must fail: upstream's min-content floor overflows them past the bar's end (_header.scss:433-438)"
     },
     {
       "id": "header-panel-width",

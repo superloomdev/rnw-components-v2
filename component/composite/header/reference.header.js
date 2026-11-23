@@ -47,7 +47,7 @@ export default Object.freeze({
     name: Object.freeze({ upstream: 'a.cds--header__name', ours: 'header > a, [role="banner"] > a', measure: 'box', optional: true }),
     nameType: Object.freeze({ upstream: 'a.cds--header__name > span:last-child', ours: 'header > a > [dir="auto"], [role="banner"] > a > [dir="auto"]', measure: 'type', optional: true }),
     nav: Object.freeze({ upstream: '.cds--header__nav', ours: 'nav, [role="navigation"]', measure: 'box', optional: true }),
-    navRule: Object.freeze({ upstream: '.cds--header__nav', pseudo: '::before', ours: 'nav > div:first-child, [role="navigation"] > div:first-child', measure: 'box', optional: true }),
+    navRule: Object.freeze({ upstream: '.cds--header__nav', pseudo: '::before', translate: true, ours: 'nav > div:first-child, [role="navigation"] > div:first-child', measure: 'box', optional: true }),
     links: Object.freeze({ upstream: 'a.cds--header__menu-item', all: true, ours: 'nav a, [role="navigation"] [role="link"]', measure: 'box', optional: true }),
     linkType: Object.freeze({ upstream: 'a.cds--header__menu-item > span', ours: 'nav a [dir="auto"], [role="navigation"] [role="link"] [dir="auto"]', measure: 'type', optional: true }),
     current: Object.freeze({ upstream: '.cds--header__menu-item--current', pseudo: '::after', ours: 'nav [aria-current] > div[aria-hidden="true"], [role="navigation"] [aria-current] > div[aria-hidden="true"]', measure: 'box', optional: true }),

@@ -22,7 +22,7 @@ export default Object.freeze({
   },
   parts: Object.freeze({
     nav: Object.freeze({ upstream: '.cds--header__nav', ours: 'nav, [role="navigation"]', measure: 'box' }),
-    rule: Object.freeze({ upstream: '.cds--header__nav', pseudo: '::before', ours: 'nav > div:first-child, [role="navigation"] > div:first-child', measure: 'box' }),
+    rule: Object.freeze({ upstream: '.cds--header__nav', pseudo: '::before', translate: true, ours: 'nav > div:first-child, [role="navigation"] > div:first-child', measure: 'box' }),
     links: Object.freeze({ upstream: '.cds--header__menu-bar > li > a', all: true, ours: 'nav > ul > li > a, nav > [role="list"] > [role="listitem"] > [role="link"]', measure: 'box' }),
     current: Object.freeze({ upstream: '.cds--header__menu-item--current', pseudo: '::after', ours: 'nav [aria-current] > div[aria-hidden="true"]', measure: 'box', optional: true })
   })

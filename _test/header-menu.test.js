@@ -4,7 +4,8 @@
 // `control.header_menu_width` list under it on `color.header_menu_container`
 // with `shadow.header_menu`, the title on the same fill and the arrow
 // turned over; Escape and a second press close it. A closed menu holding a
-// current link draws its title current.
+// current link draws its title current. Hover and press paint the title,
+// its label and its arrow, open or closed.
 
 import { afterEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -72,6 +73,35 @@ describe('HeaderMenu: every sample state under every template', function () {
       });
     }
   }
+
+  test('hover and press paint the title, its label and its arrow, open or closed', async function () {
+    const t = buildNative('carbon').tokens;
+    await atWindow(LG.above, async function () {
+      const container = await renderSample(registryFor('carbon'), 'HeaderMenu', SAMPLE[0]);
+      const title = container.querySelector('nav [aria-haspopup="menu"]');
+      const label = title.querySelector('[dir="auto"]');
+      const paint = function (fill, ink, arrow, why) {
+        assert.equal(title.style.backgroundColor, cssValue('backgroundColor', t[fill]), why + ' fill');
+        assert.equal(label.style.color, cssValue('color', t[ink]), why + ' label');
+        assert.equal(title.querySelector('svg').getAttribute('fill'), t[arrow], why + ' arrow');
+      };
+      await fire(title, new Event('mouseenter', { bubbles: false }));
+      paint('color.header_menu_item_container_hover', 'color.header_menu_item_label_hover', 'color.header_menu_arrow_hover', 'closed hover');
+      await fire(title, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      paint('color.header_menu_item_container_active', 'color.header_menu_item_label_active', 'color.header_menu_arrow_active', 'closed press');
+      await fire(title, new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+      await fire(title, new Event('mouseleave', { bubbles: false }));
+      if (title.getAttribute('aria-expanded') !== 'true') {
+        await press(title);
+      }
+      assert.equal(title.getAttribute('aria-expanded'), 'true');
+      paint('color.header_menu_container', 'color.header_menu_item_label', 'color.header_menu_arrow', 'open rest');
+      await fire(title, new Event('mouseenter', { bubbles: false }));
+      paint('color.header_menu_item_container_hover', 'color.header_menu_item_label_hover', 'color.header_menu_arrow_hover', 'open hover');
+      await fire(title, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+      paint('color.header_menu_item_container_active', 'color.header_menu_item_label_active', 'color.header_menu_arrow_active', 'open press');
+    });
+  });
 
   test('a second press closes the menu; Space toggles it', async function () {
     await atWindow(LG.above, async function () {

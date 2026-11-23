@@ -16,7 +16,8 @@ export default Object.freeze({
   tokens: Object.freeze([
     'type.header_menu_item', 'color.header_menu_item_label', 'color.header_menu_item_label_hover', 'color.header_menu_item_label_active',
     'color.header_menu_item_container', 'color.header_menu_item_container_hover', 'color.header_menu_item_container_active',
-    'color.header_menu_item_indicator', 'color.header_menu_container', 'color.header_menu_arrow', 'shadow.header_menu',
+    'color.header_menu_item_indicator', 'color.header_menu_container', 'color.header_menu_arrow',
+    'color.header_menu_arrow_hover', 'color.header_menu_arrow_active', 'shadow.header_menu',
     'color.focus', 'icon.chevron_down'
   ]),
   colors: Object.freeze([])

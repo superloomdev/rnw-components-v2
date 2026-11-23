@@ -426,8 +426,15 @@ async function collect (page, component, reference, side, masks) {
       });
     }
   }
+  // A state that draws none of the parts at rest in this window (a toggle
+  // a breakpoint hides) has no target to drive, unless the sample declares
+  // it hidden at rest (shown by its interaction); its rest read is still
+  // compared, so a part one side draws and the other does not fails there
   const enabled = component.sample.filter(function (entry) {
-    return !(entry.props && entry.props.disabled === true) && rest[entry.label] !== undefined;
+    const read = rest[entry.label];
+    return !(entry.props && entry.props.disabled === true) && read !== undefined && (entry.restHidden === true || Object.keys(read).some(function (name) {
+      return read[name] !== null && read[name].visible === true;
+    }));
   });
   // A reference may declare its own interaction list (an `open` pass clicks
   // the target and measures the opened popup)

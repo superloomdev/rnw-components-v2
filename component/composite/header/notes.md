@@ -13,7 +13,7 @@ navigation of a narrow window. `Content` is the page's `main` landmark.
 U5 (upstream quoted; probes `recipes/probe/Header*.cells.txt` and
 `Content.cells.txt`, at 1280 and `@375`). The bar's numbers are the
 probe's: the bar 48 with its 1 rule, the links 47 tall (the bar less its
-rule), the name 16 / 32 (16 / 16 below md, 8 at its start after a shown
+rule), the name 16 / 32 (16 / 16 below md, 8 at its start after a collapsible
 toggle), the actions 48 square with a 20 glyph, the menu 200 wide with 48
 rows, the panel 256 wide from the bar's bottom.
 
@@ -32,10 +32,14 @@ each is named.
   set, `HeaderMenuButton / collapsible`, `active` and `Header /
   collapsible` in both; not drawn: `HeaderMenuButton / default` and
   `Header / menuButton` in the primary window.
-- The name starts 8 in after a shown toggle, 16 otherwise (`:197-200`).
-  After: `Header / collapsible` (both sets), `Header / menuButton` (narrow
-  set); without: `Header / shell`, `Header / menuButton` (primary window),
-  every HeaderName state.
+- The name starts 8 in after a collapsible toggle, 16 otherwise
+  (`:197-200`): the rule skips a toggle with the `__hidden` class, which
+  a toggle without `isCollapsible` carries at every width
+  (`HeaderMenuButton.js:34`), so a shown one below lg does not move the
+  name (fidelity `Header / narrow` `menuButton`: name 133.25 wide
+  upstream). After: `Header / collapsible` (both sets); without:
+  `Header / shell`, `Header / menuButton` (both sets), every HeaderName
+  state.
 - The name's end padding is 32, 16 below `breakpoint.md` (`:163,173-175`):
   every HeaderName and Header state with a name, in each set.
 - A menu is closed or open; a closed menu holding the current link draws

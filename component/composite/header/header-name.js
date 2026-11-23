@@ -1,7 +1,7 @@
 // Info: HeaderName member. The product name as a link across the header's
 // height: `control.header_name_padding_start` before it
-// (`control.header_name_padding_start_toggle` after a shown menu button),
-// `control.header_name_padding_end` after it
+// (`control.header_name_padding_start_toggle` after a collapsible menu
+// button), `control.header_name_padding_end` after it
 // (`control.header_name_padding_end_sm` below `breakpoint.md`, read from
 // the window), a `control.header_name_focus_width` border drawn in
 // `color.focus` under focus, the name in `type.header_name` and

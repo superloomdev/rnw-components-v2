@@ -1,6 +1,6 @@
 // Info: HeaderGlobalBar member. Every sample state under every template: a
-// row that takes the room the header leaves (grow and shrink from a zero
-// basis, as upstream's `flex: 1 1 0%`) and seats its actions at its end,
+// row that takes the room the header leaves and never less than its
+// actions (upstream's `flex: 1 1 0%` with the min-content floor) and seats its actions at its end,
 // the last one's tooltip aligned to the end.
 
 import { afterEach, describe, test } from 'node:test';
@@ -20,8 +20,8 @@ describe('HeaderGlobalBar: every sample state under every template', function ()
         const container = await renderSample(registryFor(template), 'HeaderGlobalBar', state);
         const bar = container.querySelector(BAR).firstChild;
         assert.equal(bar.style.flexGrow, '1');
-        assert.equal(bar.style.flexShrink, '1');
-        assert.equal(bar.style.flexBasis, '0px');
+        assert.equal(bar.style.flexShrink, '0');
+        assert.equal(bar.style.flexBasis, 'auto');
         assert.equal(bar.style.justifyContent, 'flex-end');
         assert.equal(bar.style.alignSelf, 'stretch');
         const buttons = Array.from(bar.querySelectorAll('button'));

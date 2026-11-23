@@ -3,10 +3,11 @@
 // link's seat (`control.header_menu_item_padding_inline`, the focus border,
 // the `type.header_menu_item` label in `color.header_menu_item_label` over
 // `color.header_menu_item_container`, `_hover`, `_active`) with the
-// `chevron_down` arrow at `size.icon_01` in `color.header_menu_arrow`,
-// `control.header_menu_arrow_gap` after the label. A press, Enter or Space
-// opens it: the title takes `color.header_menu_container`, the arrow turns
-// over, and the `control.header_menu_width` list hangs from the title's
+// `chevron_down` arrow at `size.icon_01` in `color.header_menu_arrow`
+// (`_hover`, `_active`), `control.header_menu_arrow_gap` after the label.
+// A press, Enter or Space opens it: the title rests on
+// `color.header_menu_container` (hover and press keep their fills), the
+// arrow turns over, and the `control.header_menu_width` list hangs from the title's
 // bottom start on the same fill with `shadow.header_menu`, its rows
 // HeaderMenuItem `inMenu`. Escape closes it and returns focus to the
 // title; focus leaving the menu closes it. A closed menu holding a current
@@ -76,8 +77,15 @@ export default function HeaderMenu (ctx) {
     const current = props.isActive === true || (descendantCurrent && !open);
     const focusWidth = ctx.metric('HeaderMenu', 'focusWidth');
     const phase = state.pressed ? 'active' : state.hovered ? 'hover' : 'enabled';
-    const fill = open ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_menu_item_container', phase));
-    const labelLeaf = open ? 'header_menu_item_label' : state.pressed ? 'header_menu_item_label_active' : state.hovered ? 'header_menu_item_label_hover' : 'header_menu_item_label';
+
+    // An open title rests on the menu fill; hover and press win over it
+    // (`a.cds--header__menu-item:hover` and `:active`, (0,2,1), beat
+    // `.cds--header__menu-title[aria-expanded='true']`, (0,2,0),
+    // `_header.scss:264-275,349-355`), and so do their label and arrow inks
+    // (`:282-291`; the arrow is the link's own svg, `HeaderMenu.js:134`)
+    const fill = open && phase === 'enabled' ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_menu_item_container', phase));
+    const labelLeaf = ctx.stateLeaf('header_menu_item_label', phase);
+    const arrowLeaf = ctx.stateLeaf('header_menu_arrow', phase);
 
     // The title: the label, the arrow (turned over while open,
     // `_header.scss:357-360`) and the current bar under it
@@ -118,7 +126,7 @@ export default function HeaderMenu (ctx) {
     React.createElement(View, {
       key: 'arrow',
       style: { marginStart: ctx.metric('HeaderMenu', 'arrowGap'), transform: [{ rotate: (open ? 180 : 0) + 'deg' }] }
-    }, React.createElement(ctx.Registry.Icon, { color: 'header_menu_arrow', name: 'chevron_down', size: ctx.metric('HeaderMenu', 'arrowSize') })),
+    }, React.createElement(ctx.Registry.Icon, { color: arrowLeaf, name: 'chevron_down', size: ctx.metric('HeaderMenu', 'arrowSize') })),
     current ? React.createElement(View, {
       'aria-hidden': true,
       key: 'indicator',

@@ -281,17 +281,21 @@ export async function readParts (page, name, parts, side, origin, options) {
         const style = getComputedStyle(styleSource === null ? element : styleSource, pseudo);
         const rect = element.getBoundingClientRect();
         // A positioned pseudo-element (absolute or fixed) sits at its left/top
-        // offset plus its margin inside the host. An in-flow one (static, or
-        // relative - whose left/top then shifts it) sits inside the host's
-        // padding box plus its margin, so the host's border and padding move it
+        // offset plus its margin from its containing block: a positioned
+        // host's padding box (CSS 2 10.1), so that host's border moves it
+        // too. An in-flow one (static, or relative - whose left/top then
+        // shifts it) sits inside the host's padding box plus its margin, so
+        // the host's border and padding move it
         const positioned = pseudo !== null && (style.position === 'absolute' || style.position === 'fixed');
-        const hostStyle = pseudo !== null && !positioned ? getComputedStyle(element) : null;
+        const hostStyle = pseudo !== null ? getComputedStyle(element) : null;
+        const hostBorderX = positioned && style.position === 'absolute' && hostStyle.position !== 'static' ? parseFloat(hostStyle.borderLeftWidth) || 0 : 0;
+        const hostBorderY = positioned && style.position === 'absolute' && hostStyle.position !== 'static' ? parseFloat(hostStyle.borderTopWidth) || 0 : 0;
         let pseudoX = pseudo === null ? 0 : positioned
-          ? (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
+          ? hostBorderX + (parseFloat(style.left) || 0) + (parseFloat(style.marginLeft) || 0)
           : (parseFloat(hostStyle.borderLeftWidth) || 0) + (parseFloat(hostStyle.paddingLeft) || 0) +
             (parseFloat(style.marginLeft) || 0) + (style.position === 'relative' ? parseFloat(style.left) || 0 : 0);
         let pseudoY = pseudo === null ? 0 : positioned
-          ? (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
+          ? hostBorderY + (parseFloat(style.top) || 0) + (parseFloat(style.marginTop) || 0)
           : (parseFloat(hostStyle.borderTopWidth) || 0) + (parseFloat(hostStyle.paddingTop) || 0) +
             (parseFloat(style.marginTop) || 0) + (style.position === 'relative' ? parseFloat(style.top) || 0 : 0);
         if (pseudo !== null && part.translate === true && style.transform !== 'none') {
@@ -396,12 +400,13 @@ export async function readParts (page, name, parts, side, origin, options) {
         // transparent or visibility-hidden one draws nothing, and neither does a
         // rect with no width or no height (a collapsed input); a hairline a pixel
         // tall but a layout wide draws, and an edge strip draws only where its
-        // edge is painted. A part under a fully transparent ancestor paints
-        // nothing in either read
+        // edge is painted. A pseudo-element draws only while its host has a
+        // box: an undisplayed host or ancestor draws neither. A part under a
+        // fully transparent ancestor paints nothing in either read
         const opacity = opacityOf(styleSource === null ? element : styleSource, body) * (pseudo !== null ? parseFloat(style.opacity) : 1);
         const drawn = strip !== null
           ? parseFloat(style[strip + 'Width']) > 0 && style[strip + 'Color'] !== 'rgba(0, 0, 0, 0)'
-          : pseudo !== null || (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
+          : pseudo !== null ? element.getClientRects().length > 0 : (rect.width > 0 && rect.height > 0 && !(rect.width <= 1 && rect.height <= 1));
         measured.visible = style.display !== 'none' && style.visibility !== 'hidden' && opacity > 0 && drawn;
         if (input.extended) {
           measured.paintCenter = part.paintCenter === true;

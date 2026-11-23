@@ -12,7 +12,7 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the link.' }
   }),
   composition: Object.freeze({
-    afterToggle: { type: 'boolean', required: false, description: 'Composition prop: a shown menu button precedes the name, which then starts closer to it (the header sets it).' }
+    afterToggle: { type: 'boolean', required: false, description: 'Composition prop: a collapsible menu button precedes the name, which then starts closer to it (the header sets it).' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
