@@ -2858,12 +2858,32 @@
     {
       "id": "ios-line-height-half-pixel",
       "file": "component/context.js",
-      "find": "        lineHeight = lineHeight - 0.5 / pixelRatio.get();",
+      "find": "        lineHeight = lineHeight - 2 * IOS_MEASURE_EPSILON;",
       "replace": "        lineHeight = lineHeight;",
       "runner": "node",
       "test": "system.test.js",
-      "testName": "ios emits half a physical pixel below the grid; android emits the grid value",
-      "why": "without the half-pixel term, ios emits the grid value and iOS's upward rounding re-adds a physical pixel on every line"
+      "testName": "ios emits twice the measure epsilon below the grid; android emits the grid value",
+      "why": "without the term below the grid, ios emits the grid value and React Native's epsilon before its ceil re-adds a physical pixel to every text"
+    },
+    {
+      "id": "ios-line-height-per-line",
+      "file": "component/context.js",
+      "find": "        lineHeight = lineHeight - 2 * IOS_MEASURE_EPSILON;",
+      "replace": "        lineHeight = lineHeight - 0.5 / 3;",
+      "runner": "node",
+      "test": "system.test.js",
+      "testName": "ios lays n lines out on n grid lines under React Native text rounding",
+      "why": "half a pixel below the grid keeps one line on it and takes a sixth of a point from every further line of a wrapped text"
+    },
+    {
+      "id": "android-hyphen-break",
+      "file": "component/context.js",
+      "find": "        return children.replace(HYPHEN_IN_WORD, '$1-\\u200B');",
+      "replace": "        return children;",
+      "runner": "node",
+      "test": "adaptive.test.js",
+      "testName": "android text offers a break after a hyphen inside a word; ios text is unchanged",
+      "why": "Android breaks no line after a hyphen inside a word; without the zero-width space a hyphenated word breaks mid-letters where CSS breaks after the hyphen"
     },
     {
       "id": "tab-manual-activation",

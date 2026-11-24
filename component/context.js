@@ -128,6 +128,8 @@ export default function createContext (Lib, config, built, breakpoint, platform,
 
   // The web text feature that keeps common ligatures under tracking
   const LIGATURES = '\'liga\' 1';
+  const IOS_MEASURE_EPSILON = 0.001;
+  const HYPHEN_IN_WORD = /(\p{L})-(?=\p{L})/gu;
 
 
   /********************************************************************
@@ -176,11 +178,13 @@ export default function createContext (Lib, config, built, breakpoint, platform,
         throw new TypeError('Lib.ReactNative.PixelRatio.roundToNearestPixel returned a non-finite lineHeight for "' + name + '"');
       }
       if (platform.os === 'ios') {
-        if (!Utils.isFunction(pixelRatio.get)) {
-          throw new TypeError('ctx.typeStyle on ios requires Lib.ReactNative.PixelRatio.get');
-        }
-        // iOS lays a grid-aligned line height out one physical pixel taller; half a pixel below the grid rounds back onto it
-        lineHeight = lineHeight - 0.5 / pixelRatio.get();
+        // React Native on iOS adds 0.001 to a text's measured height before
+        // it ceils it to the pixel grid (`TextMeasurementRounding.h:36-39`),
+        // so a line height on the grid lays out one physical pixel taller;
+        // twice that below the grid keeps n lines on n grid lines, where
+        // half a pixel below took a sixth of a point from every line after
+        // the first (StructuredList `wraps` 2.33 short over 11 lines, U7d)
+        lineHeight = lineHeight - 2 * IOS_MEASURE_EPSILON;
       }
     }
 
@@ -976,8 +980,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   break, and the EditText's own vertical padding lifts a `small` field
   above its frame's minimum; the padding and centre alignment are
   removed here for every input the library mounts, and a multiline
-  input keeps the top alignment CSS gives a textarea. Web and iOS
-  know none of the three, so they see no prop change. On native an
+  input keeps the top alignment CSS gives a textarea. Android's line
+  breaker also breaks no line after a hyphen inside a word, where CSS
+  does (UAX 14 LB21; "customer-facing" drew "customer-fa / cing", U7d):
+  a text's own strings take a zero-width space after such a hyphen,
+  which offers the break and draws nothing. Web and iOS know none of
+  the four, so they see no prop change. On native an
   EditText keeps the theme's vertical padding on any side the style
   leaves unset, so `baseStyle` zeroes both sides before the caller's
   style. A caller's own `allowFontScaling`, `textBreakStrategy` or
@@ -994,6 +1002,12 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     if (Utils.isNullOrUndefined(TextComponent)) {
       return TextComponent;
     }
+    const breakAfterHyphens = function (children) {
+      if (Utils.isString(children)) {
+        return children.replace(HYPHEN_IN_WORD, '$1-\u200B');
+      }
+      return Array.isArray(children) ? children.map(breakAfterHyphens) : children;
+    };
 
     function HostTextDefaults (props) {
       if (platform.os !== 'android') {
@@ -1003,9 +1017,11 @@ export default function createContext (Lib, config, built, breakpoint, platform,
       const androidStyle = TextComponent === Lib.ReactNative.TextInput && !(props && props.multiline === true)
         ? { includeFontPadding: false, textAlignVertical: 'center' }
         : { includeFontPadding: false };
+      const text = TextComponent === Lib.ReactNative.Text && props ? { children: breakAfterHyphens(props.children) } : {};
       return Lib.React.createElement(TextComponent, Object.assign(
         { allowFontScaling: false, textBreakStrategy: 'simple' },
         props,
+        text,
         { style: [baseStyle, androidStyle, props && props.style] }));
     }
 

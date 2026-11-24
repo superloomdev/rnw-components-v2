@@ -146,6 +146,32 @@ describe('adaptive: text scale', function () {
     await cleanup();
   });
 
+  test('android text offers a break after a hyphen inside a word; ios text is unchanged', async function () {
+    const seen = { android: [], ios: [] };
+    const nativeLib = function (os) {
+      return Object.assign({}, Lib, {
+        ReactNative: Object.assign({}, Lib.ReactNative, {
+          Platform: { OS: os },
+          Text: function SpyText (props) {
+            seen[os].push(props.children);
+            return React.createElement(Lib.ReactNative.View);
+          }
+        })
+      });
+    };
+    const android = buildSystem('default', { Probe: Probe }, { lib: nativeLib('android') }).Probe.ctx;
+    await render(React.createElement(android.ReactNative.Text, null, 'Runs customer-facing services'));
+    await render(React.createElement(android.ReactNative.Text, null, 'At 22-00, -5 and well- spaced'));
+    await render(React.createElement(android.ReactNative.Text, null, ['self-serve', 7]));
+    assert.equal(seen.android[0], 'Runs customer-\u200Bfacing services');
+    assert.equal(seen.android[1], 'At 22-00, -5 and well- spaced');
+    assert.deepEqual(seen.android[2], ['self-\u200Bserve', 7]);
+    const ios = buildSystem('default', { Probe: Probe }, { lib: nativeLib('ios') }).Probe.ctx;
+    await render(React.createElement(ios.ReactNative.Text, null, 'Runs customer-facing services'));
+    assert.equal(seen.ios[0], 'Runs customer-facing services');
+    await cleanup();
+  });
+
   test('the native input zeroes Android vertical padding before the caller style', async function () {
     const seen = { text: [], input: [] };
     function SpyText (props) {

@@ -68,3 +68,18 @@ rendered without its list draws its own parts at their content widths and select
 `both`: the layout is the same on every host. The hidden copy measures max-content in a row that scrolls, the one
 container a native layout measures without its width (a row that does not scroll gives its children at most its
 own width, which here is none).
+
+The first device walk (native 45438462597, U7d) measured two text rules of the hosts, both read from the run's
+screenshots and a text model built from the font's advances, which gives the web's height of every state at the 262
+room and each device's from its rule:
+
+- Android breaks no line after a hyphen inside a word: "Runs customer-facing services" drew "customer-fa / cing
+  services", 20 short in every selection state. The context's Android text wrapper offers the break with a zero-width
+  space after such a hyphen (`withHostTextDefaults`), for every text the library draws.
+- iOS adds 0.001 to a text's height before it ceils it to the pixel grid, so the half-pixel cut under the line height
+  held one line and took a sixth of a point from each further one (`wraps` 2.33 short over 11 lines). `typeStyle` now
+  sets the line height 0.002 below the grid.
+
+At the 262 room `wraps` and `wrapsAll` hold the line "to the standby" 0.1 px over its column on the web; a host whose
+glyph run is a tenth of a pixel narrower draws one line fewer (Android, 20 short). That is the hosts' glyph metrics,
+not this layout, and it stays open until the hosts' runs are read against it.
