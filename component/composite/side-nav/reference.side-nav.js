@@ -38,7 +38,7 @@ export default Object.freeze({
       options.expanded = props.expanded;
     }
     // The page beside the navigation, as the sample's host row draws it,
-    // in the carbon template's `layer_01` (the page's own zone defines no
+    // in the primary template's `layer_01` (the page's own zone defines no
     // layer variable in the light scheme)
     return React.createElement(React.Fragment, null,
       React.createElement('div', { key: 'page', style: { background: upstream.tokens['color.layer_01'], inset: 0, position: 'absolute' } }),
