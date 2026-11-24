@@ -60,7 +60,11 @@ each is named.
 - HeaderSideNavItems is drawn below `breakpoint.lg` only
   (`ui-shell/side-nav/_side-nav.scss:466-476`), with or without its rule
   (`:478-486`): `HeaderSideNavItems / default`, `divider` draw both below
-  lg; from lg they draw nothing.
+  lg, inside the expanded side navigation they mount in; from lg the list
+  draws nothing and the navigation draws alone (fidelity primary and
+  narrow sets). Inside the side navigation its links are at least
+  `control.header_side_nav_item_min_height` tall (32, `:339-358`; the
+  form classes give the target floor, plan E14).
 - The action's below-md minimum width (`_header.scss:58-60`,
   `$spacing-09`) is the action's own 48: no outcome moves.
 
@@ -86,11 +90,10 @@ each is named.
   **HeaderMenu**, **HeaderMenuItem**, **HeaderGlobalBar**,
   **HeaderGlobalAction**, **HeaderPanel** (`requires_parent`): must be
   composed inside Header; their samples mount in it (`wrappers`).
-- **HeaderSideNavItems** (`requires_parent`, `no_reference`): must be
-  composed inside Header, in its side navigation. Upstream draws it below
-  lg only and inside the side navigation, whose family builds the
-  reference that measures it; until then it has no upstream visual
-  reference of its own.
+- **HeaderSideNavItems** (`requires_parent`): must be composed inside a
+  SideNav, the side navigation of a header; its samples mount in an
+  expanded one (`wrappers`), where upstream draws it and where its
+  reference measures it.
 
 ### Platform
 
@@ -412,6 +415,7 @@ HeaderMenuItem is one link of the header's menu bar, a menu row or a side naviga
 | `indicatorWidth` | `control.header_menu_item_indicator_width` |
 | `menuItemHeight` | `control.header_menu_item_height` |
 | `paddingInline` | `control.header_menu_item_padding_inline` |
+| `stackedMinHeight` | `control.header_side_nav_item_min_height` |
 
 ### States (sample.js)
 
@@ -556,16 +560,16 @@ HeaderPanel is the panel a global action opens under the header at its end edge,
 
 ## HeaderSideNavItems
 
-HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside Header, in its side navigation, with no upstream visual reference of its own - upstream draws it below lg inside the side navigation only, which its own family builds and measures.
+HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, where upstream draws it below lg only.
 
 | | |
 |---|---|
 | Tier | `composite` |
 | Platform | `both` |
-| Reference | `none` (`@carbon/react`) |
+| Reference | `render-web` (`@carbon/react`) |
 | Enums | none |
 | Behaviors | `compound-context`, `keyboard` |
-| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+| Flags | `requires_parent` - renders only inside its parent |
 
 ### Props
 
@@ -592,6 +596,6 @@ HeaderSideNavItems lists the header's links again for the side navigation of a w
 | default | `{"items":[{"label":"Catalog","href":"#catalog"},{"label":"Docs","href":"#docs","isActive":true},{"label":"Support","href":"#support"}]}` |
 | divider | `{"hasDivider":true,"items":[{"label":"Catalog","href":"#catalog"},{"label":"Docs","href":"#docs","isActive":true},{"label":"Support","href":"#support"}]}` |
 
-`default` mounts inside View wrapper (sample composition, not a prop).
+`default` mounts inside SideNav wrapper (sample composition, not a prop).
 
-`divider` mounts inside View wrapper (sample composition, not a prop).
+`divider` mounts inside SideNav wrapper (sample composition, not a prop).

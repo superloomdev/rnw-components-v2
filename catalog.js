@@ -166,6 +166,18 @@ import HeaderNameSample, { FRAME as HeaderNameFrame } from './component/composit
 import HeaderNavigationSample, { FRAME as HeaderNavigationFrame } from './component/composite/header/sample.header-navigation.js';
 import HeaderPanelSample, { FRAME as HeaderPanelFrame } from './component/composite/header/sample.header-panel.js';
 import HeaderSideNavItemsSample, { FRAME as HeaderSideNavItemsFrame } from './component/composite/header/sample.header-side-nav-items.js';
+import SideNavSample, { FRAME as SideNavFrame } from './component/composite/side-nav/sample.side-nav.js';
+import SideNavDetailsSample, { FRAME as SideNavDetailsFrame } from './component/composite/side-nav/sample.side-nav-details.js';
+import SideNavDividerSample, { FRAME as SideNavDividerFrame } from './component/composite/side-nav/sample.side-nav-divider.js';
+import SideNavFooterSample, { FRAME as SideNavFooterFrame } from './component/composite/side-nav/sample.side-nav-footer.js';
+import SideNavHeaderSample, { FRAME as SideNavHeaderFrame } from './component/composite/side-nav/sample.side-nav-header.js';
+import SideNavIconSample, { FRAME as SideNavIconFrame } from './component/composite/side-nav/sample.side-nav-icon.js';
+import SideNavItemSample, { FRAME as SideNavItemFrame } from './component/composite/side-nav/sample.side-nav-item.js';
+import SideNavItemsSample, { FRAME as SideNavItemsFrame } from './component/composite/side-nav/sample.side-nav-items.js';
+import SideNavLinkSample, { FRAME as SideNavLinkFrame } from './component/composite/side-nav/sample.side-nav-link.js';
+import SideNavLinkTextSample, { FRAME as SideNavLinkTextFrame } from './component/composite/side-nav/sample.side-nav-link-text.js';
+import SideNavMenuSample, { FRAME as SideNavMenuFrame } from './component/composite/side-nav/sample.side-nav-menu.js';
+import SideNavMenuItemSample, { FRAME as SideNavMenuItemFrame } from './component/composite/side-nav/sample.side-nav-menu-item.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), widget: null, frame: null, sample: IconSample }),
@@ -332,5 +344,17 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'HeaderName', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderNameFrame, sample: HeaderNameSample }),
   Object.freeze({ name: 'HeaderNavigation', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderNavigationFrame, sample: HeaderNavigationSample }),
   Object.freeze({ name: 'HeaderPanel', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderPanelFrame, sample: HeaderPanelSample }),
-  Object.freeze({ name: 'HeaderSideNavItems', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), widget: null, frame: HeaderSideNavItemsFrame, sample: HeaderSideNavItemsSample })
+  Object.freeze({ name: 'HeaderSideNavItems', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: HeaderSideNavItemsFrame, sample: HeaderSideNavItemsSample }),
+  Object.freeze({ name: 'SideNav', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: SideNavFrame, sample: SideNavSample }),
+  Object.freeze({ name: 'SideNavDetails', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), widget: null, frame: SideNavDetailsFrame, sample: SideNavDetailsSample }),
+  Object.freeze({ name: 'SideNavDivider', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavDividerFrame, sample: SideNavDividerSample }),
+  Object.freeze({ name: 'SideNavFooter', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), widget: null, frame: SideNavFooterFrame, sample: SideNavFooterSample }),
+  Object.freeze({ name: 'SideNavHeader', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['no_reference', 'requires_parent']), widget: null, frame: SideNavHeaderFrame, sample: SideNavHeaderSample }),
+  Object.freeze({ name: 'SideNavIcon', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavIconFrame, sample: SideNavIconSample }),
+  Object.freeze({ name: 'SideNavItem', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavItemFrame, sample: SideNavItemSample }),
+  Object.freeze({ name: 'SideNavItems', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavItemsFrame, sample: SideNavItemsSample }),
+  Object.freeze({ name: 'SideNavLink', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavLinkFrame, sample: SideNavLinkSample }),
+  Object.freeze({ name: 'SideNavLinkText', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavLinkTextFrame, sample: SideNavLinkTextSample }),
+  Object.freeze({ name: 'SideNavMenu', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavMenuFrame, sample: SideNavMenuSample }),
+  Object.freeze({ name: 'SideNavMenuItem', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavMenuItemFrame, sample: SideNavMenuItemSample })
 ]);

@@ -90,6 +90,20 @@ describe('HeaderMenuItem: in a menu and in the side navigation', function () {
     assert.equal(plain.style.backgroundColor, cssValue('backgroundColor', t['color.header_submenu_item_container_active']));
   });
 
+  test('a side navigation line keeps the row floor, the menu title type and the side navigation hover fill', async function () {
+    const t = buildNative('carbon').tokens;
+    const Registry = registryFor('carbon');
+    const link = (await render(React.createElement(Registry.HeaderMenuItem, { href: '#c', stacked: true }, 'Catalog'))).querySelector('a');
+    assert.equal(link.style.minHeight, t['control.header_side_nav_item_min_height'] + 'px');
+    assert.equal(link.style.height, '');
+    const label = link.querySelector('[dir="auto"]');
+    assert.equal(label.style.fontWeight, String(t['type.side_nav_menu_title'].fontWeight));
+    await fire(link, new Event('mouseenter', { bubbles: false }));
+    assert.equal(link.style.backgroundColor, cssValue('backgroundColor', t['color.side_nav_link_container_hover']));
+    await fire(link, new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+    assert.equal(link.style.backgroundColor, cssValue('backgroundColor', t['color.side_nav_link_container_hover']), 'pressed keeps the hover fill');
+  });
+
   test('aria-current page names the page without the bar', async function () {
     const Registry = registryFor('carbon');
     const container = await render(React.createElement(Registry.HeaderMenuItem, { 'aria-current': 'page', href: '#a', isActive: true }, 'Docs'));

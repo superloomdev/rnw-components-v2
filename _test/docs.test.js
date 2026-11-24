@@ -73,7 +73,7 @@ describe('docs: generated pages', function () {
       'MenuItemSelectable:160', 'OverflowMenu:320', 'OverflowMenuItem:160', 'SkipToContent:320', 'ComposedModal:640', 'ModalHeader:640', 'ModalFooter:640',
       'Breadcrumb:fit+hang{"bottom":4}', 'BreadcrumbSkeleton:320', 'Accordion:320', 'AccordionItem:320', 'AccordionSkeleton:320',
       'UnorderedList:400+hang{"start":32}', 'OrderedList:400+hang{"start":32}', 'ListItem:400+hang{"start":32}', 'ContainedList:320', 'EmptyState:400', 'Column:1280', 'Grid:1280', 'Row:1280', 'Pagination:800', 'DatePicker:320', 'DatePickerSkeleton:320', 'Filename:320', 'FileUploader:320', 'FileUploaderDropContainer:320', 'FileUploaderItem:320', 'FileUploaderSkeleton:320', 'PageHeader:1280', 'Tearsheet:1280',
-      'Content:400', 'Header:800', 'HeaderContainer:800', 'HeaderGlobalAction:800', 'HeaderGlobalBar:800', 'HeaderMenu:800', 'HeaderMenuButton:800', 'HeaderMenuItem:800', 'HeaderName:800', 'HeaderNavigation:800', 'HeaderPanel:800', 'HeaderSideNavItems:320']);
+      'Content:400', 'Header:800', 'HeaderContainer:800', 'HeaderGlobalAction:800', 'HeaderGlobalBar:800', 'HeaderMenu:800', 'HeaderMenuButton:800', 'HeaderMenuItem:800', 'HeaderName:800', 'HeaderNavigation:800', 'HeaderPanel:800', 'HeaderSideNavItems:320', 'SideNav:320', 'SideNavDetails:320', 'SideNavDivider:320', 'SideNavFooter:320', 'SideNavHeader:320', 'SideNavIcon:320', 'SideNavItem:320', 'SideNavItems:320', 'SideNavLink:320', 'SideNavLinkText:320', 'SideNavMenu:320', 'SideNavMenuItem:320']);
   });
 
   test('every flag that demands an explanation is explained in notes.md', async function () {

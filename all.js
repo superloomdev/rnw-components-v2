@@ -169,3 +169,15 @@ export { default as HeaderName } from './component/composite/header/header-name.
 export { default as HeaderNavigation } from './component/composite/header/header-navigation.js';
 export { default as HeaderPanel } from './component/composite/header/header-panel.js';
 export { default as HeaderSideNavItems } from './component/composite/header/header-side-nav-items.js';
+export { default as SideNav } from './component/composite/side-nav/side-nav.js';
+export { default as SideNavItems } from './component/composite/side-nav/side-nav-items.js';
+export { default as SideNavItem } from './component/composite/side-nav/side-nav-item.js';
+export { default as SideNavLink } from './component/composite/side-nav/side-nav-link.js';
+export { default as SideNavLinkText } from './component/composite/side-nav/side-nav-link-text.js';
+export { default as SideNavIcon } from './component/composite/side-nav/side-nav-icon.js';
+export { default as SideNavMenu } from './component/composite/side-nav/side-nav-menu.js';
+export { default as SideNavMenuItem } from './component/composite/side-nav/side-nav-menu-item.js';
+export { default as SideNavDivider } from './component/composite/side-nav/side-nav-divider.js';
+export { default as SideNavHeader } from './component/composite/side-nav/side-nav-header.js';
+export { default as SideNavDetails } from './component/composite/side-nav/side-nav-details.js';
+export { default as SideNavFooter } from './component/composite/side-nav/side-nav-footer.js';

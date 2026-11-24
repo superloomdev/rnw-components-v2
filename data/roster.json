@@ -4841,7 +4841,7 @@
         "version": "1.120.0",
         "export": "HeaderSideNavItems"
       },
-      "description": "HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside Header, in its side navigation, with no upstream visual reference of its own - upstream draws it below lg inside the side navigation only, which its own family builds and measures.",
+      "description": "HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, where upstream draws it below lg only.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4853,13 +4853,12 @@
       ],
       "parent": "Header",
       "reference": {
-        "kind": "none",
+        "kind": "render-web",
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderSideNavItems",
       "diff_budget": 2,
       "flags": [
-        "no_reference",
         "requires_parent"
       ],
       "status": "built"
@@ -4873,7 +4872,7 @@
         "version": "1.120.0",
         "export": "SideNav"
       },
-      "description": "SideNav is a component in the Navigation family.",
+      "description": "SideNav is the UI shell's side navigation, in flow beside the page: full width from lg or while open, a rail's width, or not drawn, with an overlay over the window when open below lg.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4891,7 +4890,7 @@
       "carbon_twin": "SideNav",
       "diff_budget": 2,
       "flags": [],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavDetails",
@@ -4902,7 +4901,7 @@
         "version": "1.120.0",
         "export": "SideNavDetails"
       },
-      "description": "SideNavDetails is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavDetails is a block of details in the side navigation with a heading and text, with no upstream visual reference because the pinned stylesheet has no rule for it; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4914,15 +4913,16 @@
       ],
       "parent": "SideNav",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavDetails",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavDivider",
@@ -4933,7 +4933,7 @@
         "version": "1.120.0",
         "export": "SideNavDivider"
       },
-      "description": "SideNavDivider is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavDivider is a rule between the side navigation's members, inset from both sides; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4953,7 +4953,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavFooter",
@@ -4964,7 +4964,7 @@
         "version": "1.120.0",
         "export": "SideNavFooter"
       },
-      "description": "SideNavFooter is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavFooter is the side navigation's footer toggle with its glyph and assistive label, with no upstream visual reference because the pinned stylesheet has no rule for it; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4976,15 +4976,16 @@
       ],
       "parent": "SideNav",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavFooter",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavHeader",
@@ -4995,7 +4996,7 @@
         "version": "1.120.0",
         "export": "SideNavHeader"
       },
-      "description": "SideNavHeader is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavHeader is a header row at the side navigation's top with its icon and text, with no upstream visual reference because the pinned stylesheet has no rule for it; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5007,15 +5008,16 @@
       ],
       "parent": "SideNav",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "SideNavHeader",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavIcon",
@@ -5026,7 +5028,7 @@
         "version": "1.120.0",
         "export": "SideNavIcon"
       },
-      "description": "SideNavIcon is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavIcon is a side navigation icon box with its gap, as wide as its glyph in a row and across its container elsewhere; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5046,7 +5048,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavItem",
@@ -5057,7 +5059,7 @@
         "version": "1.120.0",
         "export": "SideNavItem"
       },
-      "description": "SideNavItem is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavItem is one item of the side navigation's list, clipping what it holds and making the links in it large; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5077,7 +5079,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavItems",
@@ -5088,7 +5090,7 @@
         "version": "1.120.0",
         "export": "SideNavItems"
       },
-      "description": "SideNavItems is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavItems is the side navigation's list, under the navigation's top space, drawing its links, menus and dividers; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5108,7 +5110,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavLink",
@@ -5119,7 +5121,7 @@
         "version": "1.120.0",
         "export": "SideNavLink"
       },
-      "description": "SideNavLink is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavLink is one link of the side navigation, with an optional icon, its current fill and bar, hover fill and focus ring; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5139,7 +5141,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavLinkText",
@@ -5150,7 +5152,7 @@
         "version": "1.120.0",
         "export": "SideNavLinkText"
       },
-      "description": "SideNavLinkText is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavLinkText is a side navigation link's text, one truncated line in the link's or the menu link's type; it must be composed inside SideNav, in a link.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5170,7 +5172,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavMenu",
@@ -5181,7 +5183,7 @@
         "version": "1.120.0",
         "export": "SideNavMenu"
       },
-      "description": "SideNavMenu is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavMenu is a menu of links in the side navigation, a button with its title and chevron that opens its links, active while closed holding the current link; it must be composed inside SideNav.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5201,7 +5203,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "SideNavMenuItem",
@@ -5212,7 +5214,7 @@
         "version": "1.120.0",
         "export": "SideNavMenuItem"
       },
-      "description": "SideNavMenuItem is a component in the Navigation family; it must be composed inside SideNav.",
+      "description": "SideNavMenuItem is one link of an open side navigation menu, at the menu's start, keeping its current fill under the pointer; it must be composed inside SideNav, in a SideNavMenu.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -5232,7 +5234,7 @@
       "flags": [
         "requires_parent"
       ],
-      "status": "pending"
+      "status": "built"
     },
     {
       "name": "StructuredListBody",

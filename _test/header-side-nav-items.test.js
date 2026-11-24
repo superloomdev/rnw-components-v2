@@ -1,5 +1,6 @@
 // Info: HeaderSideNavItems member. Every sample state under every template:
-// below `breakpoint.lg` a list of the header's links as lines, with
+// inside an expanded SideNav, below `breakpoint.lg` a list of the header's
+// links as lines at least `control.header_side_nav_item_min_height` tall, with
 // `control.header_side_nav_items_space` under it and, with `hasDivider`, a
 // `border.width_01` rule in `color.header_border` halfway into it,
 // `control.header_side_nav_divider_inset` in from each side; from lg
@@ -30,7 +31,8 @@ describe('HeaderSideNavItems: every sample state under every template', function
           assert.equal(list.style.marginBottom, t['control.header_side_nav_items_space'] + 'px');
           const links = list.querySelectorAll('a');
           assert.equal(links.length, state.props.items.length);
-          assert.equal(links[0].style.height, '', 'a line as tall as its text');
+          assert.equal(links[0].style.height, '', 'a line as tall as its text, from its floor');
+          assert.equal(links[0].style.minHeight, t['control.header_side_nav_item_min_height'] + 'px', 'the side navigation row floor');
           assert.equal(list.querySelectorAll('[aria-current]').length, 1, 'the current link');
           const rule = list.querySelector(':scope > div[aria-hidden="true"]');
           assert.equal(rule !== null, state.props.hasDivider === true, 'the rule with hasDivider');

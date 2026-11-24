@@ -10,8 +10,11 @@
 // In an open HeaderMenu (`inMenu`) the row is
 // `control.header_menu_item_height` tall on the menu's fills and its
 // current row draws the bar at its start; in HeaderSideNavItems
-// (`stacked`) the line is as tall as its text. It must be composed inside
-// Header, in HeaderNavigation, HeaderMenu or HeaderSideNavItems.
+// (`stacked`) the line is at least `control.header_side_nav_item_min_height`
+// tall in `type.side_nav_menu_title`, and under the pointer or pressed it
+// takes the side navigation's hover fill (`_side-nav.scss:157-173,339-358`).
+// It must be composed inside Header, in HeaderNavigation, HeaderMenu or
+// HeaderSideNavItems.
 
 import SPEC from './spec.header-menu-item.js';
 
@@ -58,6 +61,8 @@ export default function HeaderMenuItem (ctx) {
       fill = ctx.color(phase === 'hover' ? 'header_submenu_item_container_selected_hover' : 'header_submenu_item_container_selected');
     } else if (inMenu) {
       fill = phase === 'enabled' ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_submenu_item_container', phase));
+    } else if (stacked) {
+      fill = ctx.color(phase === 'enabled' ? 'header_menu_item_container' : 'side_nav_link_container_hover');
     } else {
       fill = ctx.color(ctx.stateLeaf('header_menu_item_container', phase));
     }
@@ -91,6 +96,7 @@ export default function HeaderMenuItem (ctx) {
         flexDirection: 'row',
         flexGrow: 1,
         height: inMenu ? ctx.metric('HeaderMenuItem', 'menuItemHeight') : undefined,
+        minHeight: stacked ? ctx.metric('HeaderMenuItem', 'stackedMinHeight') : undefined,
         outlineStyle: 'none',
         paddingHorizontal: ctx.metric('HeaderMenuItem', 'paddingInline'),
         position: 'relative'
@@ -100,7 +106,7 @@ export default function HeaderMenuItem (ctx) {
       dir: 'auto',
       key: 'label',
       numberOfLines: 1,
-      style: [ctx.typeStyle('header_menu_item'), {
+      style: [ctx.typeStyle(stacked ? 'side_nav_menu_title' : 'header_menu_item'), {
         color: ctx.color(state.pressed ? 'header_menu_item_label_active' : state.hovered ? 'header_menu_item_label_hover' : 'header_menu_item_label')
       }]
     }, props.children),

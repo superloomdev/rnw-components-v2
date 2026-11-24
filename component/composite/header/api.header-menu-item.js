@@ -14,7 +14,7 @@ export default Object.freeze({
   }),
   composition: Object.freeze({
     inMenu: { type: 'boolean', required: false, description: 'Composition prop: a row of an open HeaderMenu (its height, fills and side indicator).' },
-    stacked: { type: 'boolean', required: false, description: 'Composition prop: a line of HeaderSideNavItems, as tall as its text.' },
+    stacked: { type: 'boolean', required: false, description: 'Composition prop: a line of HeaderSideNavItems, at least the side navigation row\'s height, in its type and hover fill.' },
     onBlur: { type: 'function', required: false, description: 'Composition prop: the menu\'s blur handler, so leaving the menu closes it.' },
     itemRef: { type: 'object', required: false, description: 'Composition prop: a ref to the link (the menu checks where focus went).' }
   }),
@@ -25,7 +25,8 @@ export default Object.freeze({
     'color.header_menu_item_container', 'color.header_menu_item_container_hover', 'color.header_menu_item_container_active',
     'color.header_menu_item_indicator', 'color.header_menu_container',
     'color.header_submenu_item_container_hover', 'color.header_submenu_item_container_active',
-    'color.header_submenu_item_container_selected', 'color.header_submenu_item_container_selected_hover', 'color.focus'
+    'color.header_submenu_item_container_selected', 'color.header_submenu_item_container_selected_hover', 'color.focus',
+    'type.side_nav_menu_title', 'color.side_nav_link_container_hover'
   ]),
   colors: Object.freeze([])
 });

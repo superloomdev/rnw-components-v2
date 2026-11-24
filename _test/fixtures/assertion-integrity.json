@@ -4804,6 +4804,66 @@
       "test": "breadcrumb.test.js",
       "testName": "compact: every stacked item is a target-floor row, its content centered",
       "why": "a stacked trail without the form class row height must fail (decision 62)"
+    },
+    {
+      "id": "side-nav-narrow-width",
+      "file": "component/composite/side-nav/side-nav.js",
+      "find": "rail ? ctx.metric('SideNav', 'railWidth') : wide ? full : 0",
+      "replace": "rail ? ctx.metric('SideNav', 'railWidth') : full",
+      "runner": "node",
+      "test": "side-nav.test.js",
+      "testName": "carbon / default / below lg: the drawn width and the overlay",
+      "why": "a persistent closed navigation is 0 wide below lg (_side-nav.scss:52-54)"
+    },
+    {
+      "id": "side-nav-overlay-fixed",
+      "file": "component/composite/side-nav/side-nav.js",
+      "find": "open && !fixed && !wide",
+      "replace": "open && !wide",
+      "runner": "node",
+      "test": "side-nav.test.js",
+      "testName": "carbon / fixedExpanded / below lg: the drawn width and the overlay",
+      "why": "a fixed navigation draws no overlay (SideNav.tsx renders it only without isFixedNav)"
+    },
+    {
+      "id": "side-nav-menu-active-closed",
+      "file": "component/composite/side-nav/side-nav-menu.js",
+      "find": "(!expanded && holdsCurrent(",
+      "replace": "(holdsCurrent(",
+      "runner": "node",
+      "test": "side-nav-menu.test.js",
+      "testName": "carbon / openIcon: the menu comes from the theme",
+      "why": "an open menu holding the current link is not active (SideNavMenu.tsx hasActiveDescendant && !isExpanded)"
+    },
+    {
+      "id": "side-nav-menu-current-keeps-fill",
+      "file": "component/composite/side-nav/side-nav-link-parts.js",
+      "find": "if (hovered && !(inMenu && current))",
+      "replace": "if (hovered)",
+      "runner": "node",
+      "test": "side-nav-menu-item.test.js",
+      "testName": "carbon / current: the menu link comes from the theme",
+      "why": "a current link in a menu keeps its fill under the pointer (_side-nav.scss:163-166)"
+    },
+    {
+      "id": "side-nav-large-item",
+      "file": "component/composite/side-nav/side-nav-item.js",
+      "find": "parent.large === true || props.large === true",
+      "replace": "props.large === true",
+      "runner": "node",
+      "test": "side-nav-link.test.js",
+      "testName": "carbon / inLargeItem: the link comes from the theme",
+      "why": "a link inside a large item is the large height, a descendant rule (_side-nav.scss:360-362)"
+    },
+    {
+      "id": "header-side-nav-item-floor",
+      "file": "component/composite/header/header-menu-item.js",
+      "find": "minHeight: stacked ? ctx.metric('HeaderMenuItem', 'stackedMinHeight') : undefined,",
+      "replace": "minHeight: undefined,",
+      "runner": "node",
+      "test": "header-side-nav-items.test.js",
+      "testName": "carbon / default: the list comes from the theme below lg",
+      "why": "a header link in the side navigation is at least 32 tall (_side-nav.scss:339-358), the form classes' floor through the cell"
     }
   ]
 }
