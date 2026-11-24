@@ -37,9 +37,11 @@ export default Object.freeze({
     if (typeof props.expanded === 'boolean') {
       options.expanded = props.expanded;
     }
-    // The page beside the navigation, as the sample's host row draws it
+    // The page beside the navigation, as the sample's host row draws it,
+    // in the carbon template's `layer_01` (the page's own zone defines no
+    // layer variable in the light scheme)
     return React.createElement(React.Fragment, null,
-      React.createElement('div', { key: 'page', style: { background: 'var(--cds-layer-01)', inset: 0, position: 'absolute' } }),
+      React.createElement('div', { key: 'page', style: { background: upstream.tokens['color.layer_01'], inset: 0, position: 'absolute' } }),
       React.createElement(upstream.SideNav, Object.assign({ key: 'nav' }, options),
         React.createElement(upstream.SideNavItems, null, (props.items || []).map(function (item, index) {
           return entry(React, upstream, item, index);

@@ -6,9 +6,10 @@
 // a fixed navigation is moved out by its own width, one not persistent is
 // not drawn, and a persistent one is `control.side_nav_width` from
 // `breakpoint.lg`, read from the window, and not drawn below it; narrower
-// than full, the text of its links and menus is not drawn past its edge. Open below lg and not fixed it lays
-// `color.side_nav_overlay` over the window from its own top
-// (`:77-101`); pressing it calls `onOverlayClick`. A rail opens while the
+// than full, the text of its links and menus is not drawn past its edge.
+// Open below lg and not fixed it lays `color.side_nav_overlay` over the
+// layer space from its own top (`:77-101`); pressing it calls
+// `onOverlayClick`. A rail opens while the
 // pointer is over it; Escape closes. It draws its `items` in one
 // SideNavItems, then its children.
 
