@@ -178,6 +178,13 @@ import SideNavLinkSample, { FRAME as SideNavLinkFrame } from './component/compos
 import SideNavLinkTextSample, { FRAME as SideNavLinkTextFrame } from './component/composite/side-nav/sample.side-nav-link-text.js';
 import SideNavMenuSample, { FRAME as SideNavMenuFrame } from './component/composite/side-nav/sample.side-nav-menu.js';
 import SideNavMenuItemSample, { FRAME as SideNavMenuItemFrame } from './component/composite/side-nav/sample.side-nav-menu-item.js';
+import StructuredListBodySample, { FRAME as StructuredListBodyFrame } from './component/composite/structured-list/sample.structured-list-body.js';
+import StructuredListCellSample, { FRAME as StructuredListCellFrame } from './component/composite/structured-list/sample.structured-list-cell.js';
+import StructuredListHeadSample, { FRAME as StructuredListHeadFrame } from './component/composite/structured-list/sample.structured-list-head.js';
+import StructuredListInputSample, { FRAME as StructuredListInputFrame } from './component/composite/structured-list/sample.structured-list-input.js';
+import StructuredListRowSample, { FRAME as StructuredListRowFrame } from './component/composite/structured-list/sample.structured-list-row.js';
+import StructuredListSkeletonSample, { FRAME as StructuredListSkeletonFrame } from './component/composite/structured-list/sample.structured-list-skeleton.js';
+import StructuredListWrapperSample, { FRAME as StructuredListWrapperFrame } from './component/composite/structured-list/sample.structured-list-wrapper.js';
 
 export const catalog = Object.freeze([
   Object.freeze({ name: 'Icon', family: 'Icon', tier: 'atom', platform: 'both', flags: Object.freeze(['no_reference', 'superloom_decision']), widget: null, frame: null, sample: IconSample }),
@@ -356,5 +363,12 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'SideNavLink', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavLinkFrame, sample: SideNavLinkSample }),
   Object.freeze({ name: 'SideNavLinkText', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavLinkTextFrame, sample: SideNavLinkTextSample }),
   Object.freeze({ name: 'SideNavMenu', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavMenuFrame, sample: SideNavMenuSample }),
-  Object.freeze({ name: 'SideNavMenuItem', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavMenuItemFrame, sample: SideNavMenuItemSample })
+  Object.freeze({ name: 'SideNavMenuItem', family: 'Navigation', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: SideNavMenuItemFrame, sample: SideNavMenuItemSample }),
+  Object.freeze({ name: 'StructuredListBody', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: StructuredListBodyFrame, sample: StructuredListBodySample }),
+  Object.freeze({ name: 'StructuredListCell', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: StructuredListCellFrame, sample: StructuredListCellSample }),
+  Object.freeze({ name: 'StructuredListHead', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: StructuredListHeadFrame, sample: StructuredListHeadSample }),
+  Object.freeze({ name: 'StructuredListInput', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: StructuredListInputFrame, sample: StructuredListInputSample }),
+  Object.freeze({ name: 'StructuredListRow', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent']), widget: null, frame: StructuredListRowFrame, sample: StructuredListRowSample }),
+  Object.freeze({ name: 'StructuredListSkeleton', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: StructuredListSkeletonFrame, sample: StructuredListSkeletonSample }),
+  Object.freeze({ name: 'StructuredListWrapper', family: 'StructuredList', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: StructuredListWrapperFrame, sample: StructuredListWrapperSample })
 ]);

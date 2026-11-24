@@ -27,6 +27,90 @@
         "small @pressed",
         "overflowSmall @pressed"
       ]
+    },
+    {
+      "check": "measure",
+      "component": "StructuredListWrapper",
+      "part": "headCells",
+      "property": "width",
+      "states": [
+        "wrapsAll",
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "StructuredListWrapper",
+      "part": "cells",
+      "property": "width",
+      "states": [
+        "wrapsAll",
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "StructuredListWrapper",
+      "part": "labels",
+      "property": "width",
+      "states": [
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "StructuredListWrapper",
+      "part": "labels",
+      "property": "height",
+      "states": [
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "StructuredListWrapper",
+      "part": "headCells",
+      "property": "width",
+      "states": [
+        "wrapsAll",
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "StructuredListWrapper",
+      "part": "cells",
+      "property": "width",
+      "states": [
+        "wrapsAll",
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "StructuredListWrapper",
+      "part": "labels",
+      "property": "width",
+      "states": [
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "StructuredListWrapper",
+      "part": "labels",
+      "property": "height",
+      "states": [
+        "twoColumns"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
     }
   ]
 }

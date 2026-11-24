@@ -181,3 +181,10 @@ export { default as SideNavDivider } from './component/composite/side-nav/side-n
 export { default as SideNavHeader } from './component/composite/side-nav/side-nav-header.js';
 export { default as SideNavDetails } from './component/composite/side-nav/side-nav-details.js';
 export { default as SideNavFooter } from './component/composite/side-nav/side-nav-footer.js';
+export { default as StructuredListWrapper } from './component/composite/structured-list/structured-list-wrapper.js';
+export { default as StructuredListHead } from './component/composite/structured-list/structured-list-head.js';
+export { default as StructuredListBody } from './component/composite/structured-list/structured-list-body.js';
+export { default as StructuredListRow } from './component/composite/structured-list/structured-list-row.js';
+export { default as StructuredListCell } from './component/composite/structured-list/structured-list-cell.js';
+export { default as StructuredListInput } from './component/composite/structured-list/structured-list-input.js';
+export { default as StructuredListSkeleton } from './component/composite/structured-list/structured-list-skeleton.js';

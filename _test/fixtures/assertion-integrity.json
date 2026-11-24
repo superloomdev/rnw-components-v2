@@ -4864,6 +4864,156 @@
       "test": "header-side-nav-items.test.js",
       "testName": "carbon / default: the list comes from the theme below lg",
       "why": "a header link in the side navigation is at least 32 tall (_side-nav.scss:339-358), the form classes' floor through the cell"
+    },
+    {
+      "id": "structured-list-rule-above-row",
+      "file": "component/composite/structured-list/structured-list-row.js",
+      "find": "borderTopWidth: head ? 0 : ctx.metric('StructuredListRow', 'ruleWidth'),",
+      "replace": "borderTopWidth: 0,",
+      "runner": "node",
+      "test": "structured-list-row.test.js",
+      "testName": "carbon / default: the row comes from the theme",
+      "why": "a body row draws its rule above it (_structured-list.scss:71-76)"
+    },
+    {
+      "id": "structured-list-closing-rule-selected",
+      "file": "component/composite/structured-list/structured-list-body.js",
+      "find": "        rule = 'structured_list_row_container_selected';",
+      "replace": "        rule = 'structured_list_row_container_hover';",
+      "runner": "node",
+      "test": "structured-list-body.test.js",
+      "testName": "carbon / selectedLast: the body comes from the theme",
+      "why": "the last row selected colors the closing rule its selected fill (_structured-list.scss:79-82,114-118); carbon draws the plain rule in the same gray, so the plant is the hover fill"
+    },
+    {
+      "id": "structured-list-flush-ignored-under-selection",
+      "file": "component/composite/structured-list/structured-list-wrapper.js",
+      "find": "flush: props.isFlush === true && !selection,",
+      "replace": "flush: props.isFlush === true,",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "carbon / selectionFlush: the table comes from the theme",
+      "why": "flush acts only without selection (StructuredList.js Wrapper isFlush && !selection)"
+    },
+    {
+      "id": "structured-list-first-cell-start",
+      "file": "component/composite/structured-list/structured-list-cell.js",
+      "find": "let start = place.first === true ? metric('paddingStart') : inline;",
+      "replace": "let start = inline;",
+      "runner": "node",
+      "test": "structured-list-cell.test.js",
+      "testName": "carbon / default: the cell comes from the theme",
+      "why": "the first column starts 1rem in (_structured-list.scss:47-55)"
+    },
+    {
+      "id": "structured-list-condensed-padding",
+      "file": "component/composite/structured-list/structured-list-cell.js",
+      "find": "const top = condensed ? metric('paddingCondensed')",
+      "replace": "const top = false ? metric('paddingCondensed')",
+      "runner": "node",
+      "test": "structured-list-cell.test.js",
+      "testName": "carbon / condensed: the cell comes from the theme",
+      "why": "condensed pads every side 8 (_mixins.scss:25-27)"
+    },
+    {
+      "id": "structured-list-head-floor",
+      "file": "component/composite/structured-list/structured-list-cell.js",
+      "find": "minHeight: head ? metric('headHeight') - metric('ruleWidth') / 2 : undefined,",
+      "replace": "minHeight: undefined,",
+      "runner": "node",
+      "test": "structured-list-head.test.js",
+      "testName": "carbon / default: the head comes from the theme",
+      "why": "a head cell is at least 2.5rem tall less the half rule the collapsed border gives it (_structured-list.scss:157-169; probe condensed head 40, rows at 40)"
+    },
+    {
+      "id": "structured-list-check-ring-never",
+      "file": "component/composite/structured-list/structured-list-row.js",
+      "find": "const ring = selectable && table.marker === 'radio' && focused",
+      "replace": "const ring = selectable && focused",
+      "runner": "node",
+      "test": "structured-list-row.test.js",
+      "testName": "carbon / selection: the row comes from the theme",
+      "why": "a check row never draws the ring: upstream Row onFocus reads the row's own selection"
+    },
+    {
+      "id": "structured-list-hover-skips-selected",
+      "file": "component/composite/structured-list/structured-list-row.js",
+      "find": "    if (selectable && own) {\n      fill",
+      "replace": "    if (selectable && own && !hovered) {\n      fill",
+      "runner": "node",
+      "test": "structured-list-row.test.js",
+      "testName": "carbon / selected: the row comes from the theme",
+      "why": "hover leaves a selected row as it is (_structured-list.scss:95-101 :not(--selected))"
+    },
+    {
+      "id": "structured-list-checkmark-drawn-checked",
+      "file": "component/composite/structured-list/structured-list-cell.js",
+      "find": "opacity: row.checked ? 1 : 0",
+      "replace": "opacity: 1",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "carbon / selection: the table comes from the theme",
+      "why": "the checkmark is drawn on the checked row only (_structured-list.scss:194-209)"
+    },
+    {
+      "id": "structured-list-surplus-by-max",
+      "file": "component/composite/structured-list/structured-list-layout.js",
+      "find": "value + (width - sum(maxes)) * value / share",
+      "replace": "value + (width - sum(maxes)) / maxes.length",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "room to spare: every column takes its max and the rest by its max, as the probe default",
+      "why": "the room left goes by each column's max (probe default 1.2779 x)"
+    },
+    {
+      "id": "structured-list-wrap-by-difference",
+      "file": "component/composite/structured-list/structured-list-layout.js",
+      "find": "(maxes[index] - mins[index]) / spread",
+      "replace": "maxes[index] / spread",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "less room: the columns grow from min toward max by the difference",
+      "why": "between min and max the columns grow by max - min (probe wraps, wrapsAll)"
+    },
+    {
+      "id": "structured-list-hyphen-break",
+      "file": "component/composite/structured-list/structured-list-layout.js",
+      "find": "if (at === -1 || at === rest.length - 1) {",
+      "replace": "if (at === -1 || at === rest.length - 1 || at > -1) {",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "the runs a text breaks into: spaces, and after a hyphen",
+      "why": "a text breaks after a hyphen, so the min-content run ends there"
+    },
+    {
+      "id": "structured-list-arrow-step",
+      "file": "component/composite/structured-list/structured-list-input.js",
+      "find": "const delta = STEPS[event.key];",
+      "replace": "const delta = undefined;",
+      "runner": "node",
+      "test": "structured-list-wrapper.test.js",
+      "testName": "a press selects a row; an arrow key selects the next and moves focus there",
+      "why": "the arrow keys move the selection as a radio group does"
+    },
+    {
+      "id": "structured-list-input-space",
+      "file": "component/composite/structured-list/structured-list-input.js",
+      "find": "      keys.onKeyDown(event);\n",
+      "replace": "      void keys;\n",
+      "runner": "node",
+      "test": "structured-list-input.test.js",
+      "testName": "carbon / default: the radio follows its row",
+      "why": "Space selects the radio's row"
+    },
+    {
+      "id": "structured-list-skeleton-rows",
+      "file": "component/composite/structured-list/structured-list-skeleton.js",
+      "find": "Math.floor(props.rowCount) : 5;",
+      "replace": "Math.floor(props.rowCount) : 4;",
+      "runner": "node",
+      "test": "structured-list-skeleton.test.js",
+      "testName": "carbon / default: the skeleton comes from the theme",
+      "why": "five rows when rowCount is omitted (StructuredList.Skeleton rowCount = 5)"
     }
   ]
 }
