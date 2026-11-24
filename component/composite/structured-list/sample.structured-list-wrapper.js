@@ -15,13 +15,16 @@ export const ROWS = Object.freeze([
   Object.freeze({ id: 'row-1', cells: Object.freeze([Object.freeze({ text: 'Data warehouse', noWrap: true }), 'Maintenance', 'Scheduled maintenance begins Friday at 22:00 UTC.']) })
 ]);
 export const LONG = 'Scheduled maintenance begins Friday at 22:00 UTC; traffic moves to the standby region in Dallas until every health check of the warehouse passes again.';
+// The wrapping states' text: at the device walks' rooms (262, 344) every line ends more than 4 short of its
+// column and the next word passes it by more than 4, read from the font's advances (`notes.md`)
+export const WRAPPED = 'Maintenance work begins Thursday at 22:00 UTC; traffic moves over to the secondary region in London until every health check of the warehouse passes again.';
 export const ROWS_LONG = Object.freeze([
   ROWS[0],
-  Object.freeze({ id: 'row-1', cells: Object.freeze([Object.freeze({ text: 'Data warehouse', noWrap: true }), 'Maintenance', LONG]) })
+  Object.freeze({ id: 'row-1', cells: Object.freeze([Object.freeze({ text: 'Data warehouse', noWrap: true }), 'Maintenance', WRAPPED]) })
 ]);
 export const ROWS_LONG_WRAP = Object.freeze([
   Object.freeze({ id: 'row-0', cells: Object.freeze(['API gateway', 'Online', 'Routes and secures application traffic across environments.']) }),
-  Object.freeze({ id: 'row-1', cells: Object.freeze(['Data warehouse', 'Maintenance', LONG]) })
+  Object.freeze({ id: 'row-1', cells: Object.freeze(['Data warehouse', 'Maintenance', WRAPPED]) })
 ]);
 export const SELECTION_COLUMNS = Object.freeze(['Environment', 'Region', 'Purpose']);
 export const SELECTION_ROWS = Object.freeze([

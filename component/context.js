@@ -13,6 +13,7 @@
 // so a component factory receives one argument and imports nothing.
 
 import createBehaviors from '../behaviors/index.js';
+import { BREAK_AFTER_DASH } from './line-breaks.js';
 
 
 /********************************************************************
@@ -129,7 +130,6 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   // The web text feature that keeps common ligatures under tracking
   const LIGATURES = '\'liga\' 1';
   const IOS_MEASURE_EPSILON = 0.001;
-  const HYPHEN_IN_WORD = /(\p{L})-(?=\p{L})/gu;
 
 
   /********************************************************************
@@ -981,9 +981,10 @@ export default function createContext (Lib, config, built, breakpoint, platform,
   above its frame's minimum; the padding and centre alignment are
   removed here for every input the library mounts, and a multiline
   input keeps the top alignment CSS gives a textarea. Android's line
-  breaker also breaks no line after a hyphen inside a word, where CSS
-  does (UAX 14 LB21; "customer-facing" drew "customer-fa / cing", U7d):
-  a text's own strings take a zero-width space after such a hyphen,
+  breaker also breaks no line after a hyphen or an en dash, where CSS
+  does (Minikin `WordBreaker.cpp` `isValidBreak`; "customer-facing" drew
+  "customer-fa / cing", U7d): a text's own strings take a zero-width
+  space after each dash the browser breaks after (`line-breaks.js`),
   which offers the break and draws nothing. Web and iOS know none of
   the four, so they see no prop change. On native an
   EditText keeps the theme's vertical padding on any side the style
@@ -1004,7 +1005,7 @@ export default function createContext (Lib, config, built, breakpoint, platform,
     }
     const breakAfterHyphens = function (children) {
       if (Utils.isString(children)) {
-        return children.replace(HYPHEN_IN_WORD, '$1-\u200B');
+        return children.replace(BREAK_AFTER_DASH, '$&\u200B');
       }
       return Array.isArray(children) ? children.map(breakAfterHyphens) : children;
     };

@@ -2878,12 +2878,12 @@
     {
       "id": "android-hyphen-break",
       "file": "component/context.js",
-      "find": "        return children.replace(HYPHEN_IN_WORD, '$1-\\u200B');",
+      "find": "        return children.replace(BREAK_AFTER_DASH, '$&\\u200B');",
       "replace": "        return children;",
       "runner": "node",
       "test": "adaptive.test.js",
       "testName": "android text offers a break after a hyphen inside a word; ios text is unchanged",
-      "why": "Android breaks no line after a hyphen inside a word; without the zero-width space a hyphenated word breaks mid-letters where CSS breaks after the hyphen"
+      "why": "Android breaks no line after a hyphen or an en dash; without the zero-width space a hyphenated word breaks mid-letters where CSS breaks after the dash"
     },
     {
       "id": "tab-manual-activation",
@@ -4998,12 +4998,12 @@
     {
       "id": "structured-list-hyphen-break",
       "file": "component/composite/structured-list/structured-list-layout.js",
-      "find": "if (at === -1 || at === rest.length - 1) {",
-      "replace": "if (at === -1 || at === rest.length - 1 || at > -1) {",
+      "find": "  const runs = String(text).replace(BREAK_AFTER_DASH, '$&\\n').split(/\\s+/);",
+      "replace": "  const runs = String(text).split(/\\s+/);",
       "runner": "node",
       "test": "structured-list-wrapper.test.js",
-      "testName": "the runs a text breaks into: spaces, and after a hyphen",
-      "why": "a text breaks after a hyphen, so the min-content run ends there"
+      "testName": "the runs a text breaks into: spaces, and after a dash where the browser breaks",
+      "why": "a text breaks after a dash where the browser does, so the min-content run ends there"
     },
     {
       "id": "structured-list-arrow-step",

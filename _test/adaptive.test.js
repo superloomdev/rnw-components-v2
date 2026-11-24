@@ -164,8 +164,23 @@ describe('adaptive: text scale', function () {
     await render(React.createElement(android.ReactNative.Text, null, 'At 22-00, -5 and well- spaced'));
     await render(React.createElement(android.ReactNative.Text, null, ['self-serve', 7]));
     assert.equal(seen.android[0], 'Runs customer-\u200Bfacing services');
-    assert.equal(seen.android[1], 'At 22-00, -5 and well- spaced');
+    assert.equal(seen.android[1], 'At 22-\u200B00, -5 and well- spaced');
     assert.deepEqual(seen.android[2], ['self-\u200Bserve', 7]);
+    // Chromium's breaks after a dash, measured in one-pixel boxes: each case as the browser breaks it
+    const cases = [
+      ['24-hour', '24-\u200Bhour'], ['COVID-19', 'COVID-\u200B19'], ['2020-2024', '2020-\u200B2024'],
+      ['B-52', 'B-\u200B52'], ['3-D', '3-\u200BD'], ['e-mail', 'e-\u200Bmail'], ['a-\u00E9t\u00E9', 'a-\u200B\u00E9t\u00E9'],
+      ['a -b', 'a -\u200Bb'], ['-b', '-\u200Bb'], ['a -5', 'a -5'], ['-5', '-5'], ['a-.b', 'a-.b'],
+      ['x--y', 'x-\u200B-\u200By'], ['x-(y)', 'x-\u200B(y)'], ['x\u2010y', 'x\u2010\u200By'], ['x\u2011y', 'x\u2011y'],
+      ['pre\u2013post', 'pre\u2013\u200Bpost'], ['2020\u20132024', '2020\u2013\u200B2024'], ['A\u20135', 'A\u2013\u200B5'],
+      ['a \u20135', 'a \u2013\u200B5'], ['a \u2013b', 'a \u2013b'], ['\u2013b', '\u2013b']
+    ];
+    for (const [text] of cases) {
+      await render(React.createElement(android.ReactNative.Text, null, text));
+    }
+    assert.deepEqual(seen.android.slice(3), cases.map(function (pair) {
+      return pair[1];
+    }));
     const ios = buildSystem('default', { Probe: Probe }, { lib: nativeLib('ios') }).Probe.ctx;
     await render(React.createElement(ios.ReactNative.Text, null, 'Runs customer-facing services'));
     assert.equal(seen.ios[0], 'Runs customer-facing services');

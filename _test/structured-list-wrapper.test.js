@@ -151,9 +151,11 @@ describe('StructuredListWrapper: the table layout', function () {
     assert.equal(widths[1], 32);
   });
 
-  test('the runs a text breaks into: spaces, and after a hyphen', function () {
+  test('the runs a text breaks into: spaces, and after a dash where the browser breaks', function () {
     assert.equal(breakRuns(Lib.Utils, 'Runs customer-facing services').join('|'), 'Runs|customer-|facing|services');
     assert.equal(breakRuns(Lib.Utils, '22:00 UTC.').join('|'), '22:00|UTC.');
+    assert.equal(breakRuns(Lib.Utils, 'COVID-19 at 2020-2024, a -5 and -b').join('|'), 'COVID-|19|at|2020-|2024,|a|-5|and|-|b');
+    assert.equal(breakRuns(Lib.Utils, 'pre\u2013post, a \u20135 and a \u2013b').join('|'), 'pre\u2013|post,|a|\u2013|5|and|a|\u2013b');
   });
 
 });

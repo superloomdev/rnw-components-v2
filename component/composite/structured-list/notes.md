@@ -80,6 +80,9 @@ room and each device's from its rule:
   held one line and took a sixth of a point from each further one (`wraps` 2.33 short over 11 lines). `typeStyle` now
   sets the line height 0.002 below the grid.
 
-At the 262 room `wraps` and `wrapsAll` hold the line "to the standby" 0.1 px over its column on the web; a host whose
-glyph run is a tenth of a pixel narrower draws one line fewer (Android, 20 short). That is the hosts' glyph metrics,
-not this layout, and it stays open until the hosts' runs are read against it.
+At the 262 room `wraps` and `wrapsAll` held the line "to the standby" 0.1 px over its column on the web, and a host
+whose glyph run was a tenth of a pixel narrower drew one line fewer (Android, 20 short): a line that near its room
+measures the hosts' glyph runs, not this layout. Both states now draw their own text (`WRAPPED`), chosen so that at the
+walks' rooms (262 and 344) every line ends more than 4 short of its column and the next word passes it by more than 4,
+by the text model on the font's advances, fractional and whole-pixel alike. `twoColumns` keeps the longer text: its
+columns wait for the cell's max width, and its lines are read again after that wave.
