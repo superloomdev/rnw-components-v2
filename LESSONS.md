@@ -173,3 +173,6 @@ American spelling, no em dashes (the tracked-content gates grep the whole repo).
 - A table cell's `max-inline-size` caps the max-content width it hands its column, not the column: read it from the column shares (`127.922 x 800 / (127.922 + 576) = 145.375`), not from the drawn width (U7).
 - A story's fixed radio `name` joins every reference cell on the page into one radio group and unchecks the earlier ones: a reference keeps each input's default name (U7).
 - A reference body taller than the measurement grid's 160 pitch declares `height` and `stage: true`, or the next cell's head covers it and a hover fails as an intercepted pointer (U7).
+- A wrapped text's device height is read from a text model before any fix: the font's own advances, the column rule and each host's breaking rule gave every web height of StructuredList at the 262 room and named both device rules (U7d).
+- Android breaks no line after a hyphen inside a word where CSS does: the Android text wrapper offers the break with a zero-width space (`customer-fa / cing`, 20 short, U7d).
+- React Native on iOS adds 0.001 before it ceils a text's height to the grid: a line height cut half a pixel below the grid holds one line and loses a sixth of a point on every further one; 0.002 below holds n lines (U7d).
