@@ -36,11 +36,13 @@ export default function SideNavItem (ctx) {
     const parent = React.useContext(NavigationContext);
     const large = parent.large === true || props.large === true;
     const context = React.useMemo(function () {
-      return Object.freeze(Object.assign({}, parent, { large: large }));
+      return Object.freeze(Object.assign({}, parent, { inItem: true, large: large }));
     }, [parent, large]);
 
+    // An item inside an item is not a list item of its own: upstream nests
+    // an `li` in an `li` (`SideNavLink.tsx` inside a SideNavItem)
     return React.createElement(NavigationContext.Provider, { value: context },
-      React.createElement(View, { role: 'listitem', style: { overflow: 'hidden' } },
+      React.createElement(View, { role: parent.inItem === true ? undefined : 'listitem', style: { overflow: 'hidden' } },
         Utils.isString(props.children)
           ? React.createElement(Text, { dir: 'auto', style: [ctx.typeStyle('body_compact_01'), { color: ctx.color('side_nav_link_label') }] }, props.children)
           : props.children));

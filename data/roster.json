@@ -4841,7 +4841,7 @@
         "version": "1.120.0",
         "export": "HeaderSideNavItems"
       },
-      "description": "HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, where upstream draws it below lg only.",
+      "description": "HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, with no upstream visual reference of its own because upstream draws it below lg only, where the primary gates do not read.",
       "platform": {
         "support": "both",
         "fallback": "none"
@@ -4853,12 +4853,13 @@
       ],
       "parent": "Header",
       "reference": {
-        "kind": "render-web",
+        "kind": "none",
         "package": "@carbon/react"
       },
       "carbon_twin": "HeaderSideNavItems",
       "diff_budget": 2,
       "flags": [
+        "no_reference",
         "requires_parent"
       ],
       "status": "built"

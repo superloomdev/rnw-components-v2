@@ -20,10 +20,10 @@ const LG = sides('lg');
 
 // The drawn width per state and side, in the cascade's order
 function expected (t, props, wide) {
-  if (props.expanded === true) {
+  if (props.expanded === true || props.isFixedNav === true) {
     return t['control.side_nav_width'];
   }
-  if (props.isFixedNav === true || props.isPersistent === false) {
+  if (props.isPersistent === false) {
     return 0;
   }
   if (props.isRail === true) {
@@ -45,8 +45,11 @@ describe('SideNav: every sample state under every template', function () {
             assert.equal(nav !== null, true, 'the navigation landmark');
             const width = expected(t, state.props, side === 'above');
             assert.equal(nav.style.width, width + 'px');
-            const panel = nav.querySelector(':scope > div:last-child');
-            assert.equal(panel.style.backgroundColor, cssValue('backgroundColor', t['color.side_nav_container']));
+            assert.equal(nav.style.backgroundColor, cssValue('backgroundColor', t['color.side_nav_container']));
+            const movedOut = state.props.isFixedNav === true && state.props.expanded !== true;
+            assert.equal(nav.style.marginLeft, movedOut ? (-t['control.side_nav_width']) + 'px' : '0px', 'a closed fixed navigation moved out by its width');
+            const text = nav.querySelector('a [dir="auto"]');
+            assert.equal(text.style.opacity, width < t['control.side_nav_width'] ? '0' : '1', 'no link text past a narrower edge');
             const overlay = nav.querySelector('[data-part="overlay"]');
             const hasOverlay = state.props.expanded === true && state.props.isFixedNav !== true && side === 'below';
             assert.equal(overlay !== null, hasOverlay, 'the overlay open below lg, not fixed');

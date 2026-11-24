@@ -96,7 +96,7 @@ export default function SideNavMenu (ctx) {
       ink = 'side_nav_link_label_hover';
     }
     const context = React.useMemo(function () {
-      return Object.freeze(Object.assign({}, parent, { hasIcon: hasIcon, inMenu: true, large: large }));
+      return Object.freeze(Object.assign({}, parent, { hasIcon: hasIcon, inItem: false, inMenu: true, large: large }));
     }, [parent, hasIcon, large]);
 
     const links = Utils.isArray(props.items) ? props.items.map(function (item, index) {
@@ -126,7 +126,7 @@ export default function SideNavMenu (ctx) {
       dir: 'auto',
       key: 'title',
       numberOfLines: 1,
-      style: [ctx.typeStyle('side_nav_menu_title'), { color: ctx.color(ink), flexShrink: 1 }]
+      style: [ctx.typeStyle('side_nav_menu_title'), { color: ctx.color(ink), flexShrink: 1, opacity: parent.collapsed === true ? 0 : 1 }]
     }, props.title),
     React.createElement(View, {
       'aria-hidden': true,

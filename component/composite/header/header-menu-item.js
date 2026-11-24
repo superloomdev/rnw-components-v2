@@ -11,8 +11,9 @@
 // `control.header_menu_item_height` tall on the menu's fills and its
 // current row draws the bar at its start; in HeaderSideNavItems
 // (`stacked`) the line is at least `control.header_side_nav_item_min_height`
-// tall in `type.side_nav_menu_title`, and under the pointer or pressed it
-// takes the side navigation's hover fill (`_side-nav.scss:157-173,339-358`).
+// tall in `type.side_nav_menu_title` with no border: no fill at rest, the
+// side navigation's hover fill under the pointer or pressed, the focus ring
+// as an outline inside its box (`_side-nav.scss:157-173,339-358,377-380`).
 // It must be composed inside Header, in HeaderNavigation, HeaderMenu or
 // HeaderSideNavItems.
 
@@ -62,7 +63,7 @@ export default function HeaderMenuItem (ctx) {
     } else if (inMenu) {
       fill = phase === 'enabled' ? ctx.color('header_menu_container') : ctx.color(ctx.stateLeaf('header_submenu_item_container', phase));
     } else if (stacked) {
-      fill = ctx.color(phase === 'enabled' ? 'header_menu_item_container' : 'side_nav_link_container_hover');
+      fill = phase === 'enabled' ? 'transparent' : ctx.color('side_nav_link_container_hover');
     } else {
       fill = ctx.color(ctx.stateLeaf('header_menu_item_container', phase));
     }
@@ -91,13 +92,16 @@ export default function HeaderMenuItem (ctx) {
       style: {
         alignItems: 'center',
         backgroundColor: fill,
-        borderColor: state.focused ? ctx.color('focus') : 'transparent',
-        borderWidth: focusWidth,
+        borderColor: state.focused && !stacked ? ctx.color('focus') : 'transparent',
+        borderWidth: stacked ? 0 : focusWidth,
         flexDirection: 'row',
         flexGrow: 1,
         height: inMenu ? ctx.metric('HeaderMenuItem', 'menuItemHeight') : undefined,
         minHeight: stacked ? ctx.metric('HeaderMenuItem', 'stackedMinHeight') : undefined,
-        outlineStyle: 'none',
+        outlineColor: stacked && state.focused ? ctx.color('focus') : undefined,
+        outlineOffset: stacked && state.focused ? -focusWidth : undefined,
+        outlineStyle: stacked && state.focused ? 'solid' : 'none',
+        outlineWidth: stacked && state.focused ? focusWidth : undefined,
         paddingHorizontal: ctx.metric('HeaderMenuItem', 'paddingInline'),
         position: 'relative'
       }

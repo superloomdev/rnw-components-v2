@@ -57,8 +57,8 @@ each is named.
   (`ui-shell/side-nav/_side-nav.scss:466-476`), with or without its rule
   (`:478-486`): `HeaderSideNavItems / default`, `divider` draw both below
   lg, inside the expanded side navigation they mount in; from lg the list
-  draws nothing and the navigation draws alone (fidelity primary and
-  narrow sets). Inside the side navigation its links are at least
+  draws nothing and the navigation draws alone (the probes at 1280 and
+  375). Inside the side navigation its links are at least
   `control.header_side_nav_item_min_height` tall (32, `:339-358`; the
   form classes give the target floor, plan E14).
 - The action's below-md minimum width (`_header.scss:58-60`,
@@ -86,10 +86,15 @@ each is named.
   **HeaderMenu**, **HeaderMenuItem**, **HeaderGlobalBar**,
   **HeaderGlobalAction**, **HeaderPanel** (`requires_parent`): must be
   composed inside Header; their samples mount in it (`wrappers`).
-- **HeaderSideNavItems** (`requires_parent`): must be composed inside a
-  SideNav, the side navigation of a header; its samples mount in an
-  expanded one (`wrappers`), where upstream draws it and where its
-  reference measures it.
+- **HeaderSideNavItems** (`requires_parent`, `no_reference`): must be
+  composed inside a SideNav, the side navigation of a header; its samples
+  mount in an expanded one (`wrappers`), so each cell draws at every
+  width. Upstream draws it below lg only, and the measure and perceptual
+  gates read the wide window, where upstream draws nothing: it has no
+  upstream visual reference of its own. Its numbers are the probe's
+  (`HeaderSideNavItems@375.cells.txt`); U6's focused run compared them in
+  the narrow set before the reference was withdrawn, with no geometry line
+  left.
 
 ## Platform
 

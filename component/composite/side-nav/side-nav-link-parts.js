@@ -50,7 +50,7 @@ export default function sideNavLinkElement (ctx, interaction, options) {
   if (inMenu) {
     paddingStart = ctx.metric(name, navigation.hasIcon === true ? 'menuPaddingStartIcon' : 'menuPaddingStart');
   }
-  const link = React.createElement(LinkContext.Provider, { value: { current: current, hovered: hovered, inMenu: inMenu } },
+  const link = React.createElement(LinkContext.Provider, { value: { collapsed: navigation.collapsed === true, current: current, hovered: hovered, inMenu: inMenu } },
     React.createElement(Pressable, Object.assign({}, interaction.rootProps, {
       'aria-current': current ? 'page' : undefined,
       accessibilityRole: 'link',

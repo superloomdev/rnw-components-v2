@@ -4,7 +4,8 @@
 // current link's text keeps the heavier set, `:325-334`) in
 // `color.side_nav_link_label`, `color.side_nav_link_label_hover` under the
 // pointer and `color.side_nav_link_label_selected` when current
-// (`:174-183,388-392`). It must be composed inside a SideNavLink or a
+// (`:174-183,388-392`). In a navigation narrower than full (a closed rail,
+// a 0-wide one) it is not drawn: upstream's run lies past the edge, clipped. It must be composed inside a SideNavLink or a
 // SideNavMenuItem.
 
 import SPEC from './spec.side-nav-link-text.js';
@@ -44,7 +45,7 @@ export default function SideNavLinkText (ctx) {
     return React.createElement(Text, {
       dir: 'auto',
       numberOfLines: 1,
-      style: [ctx.typeStyle(link.inMenu === true && link.current !== true ? 'side_nav_menu_link' : 'side_nav_link'), { color: ctx.color(color), flexShrink: 1 }]
+      style: [ctx.typeStyle(link.inMenu === true && link.current !== true ? 'side_nav_menu_link' : 'side_nav_link'), { color: ctx.color(color), flexShrink: 1, opacity: link.collapsed === true ? 0 : 1 }]
     }, props.children);
 
   }

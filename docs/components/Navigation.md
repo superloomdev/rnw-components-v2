@@ -75,9 +75,15 @@ each is named.
   the bar out in flow. Its references stage the body and start upstream's
   navigation at the body's top.
 - **The overlay starts at the navigation's top.** Upstream's starts 48
-  under the window's top, under its fixed header (`:82`); ours covers the
-  window from the navigation down, so the reference compares its fill and
-  its inline geometry.
+  under the window's top, under its fixed header (`:82`), and covers the
+  window; ours covers the space a layer covers from the navigation down
+  (the overlay host's when one is mounted, else the window), so the
+  narrow set compares it by its pixels.
+- **A closed fixed navigation is moved out by its own width** and takes no
+  room, as upstream's transform moves it (`:114-117`): its host clips it.
+- **A navigation narrower than full draws no link or menu text**: a closed
+  rail draws its icons, a 0-wide one nothing; upstream lays the text out
+  past the edge and clips it.
 - **The navigation and the menus take data, the members are also
   components.** As the header's navigation, `SideNav` and `SideNavItems`
   draw links, menus and dividers from `items`, and `SideNavMenu` its links

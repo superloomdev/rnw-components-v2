@@ -10,6 +10,14 @@ export default Object.freeze({
   mount: function (React, upstream, props) {
     return React.createElement(upstream.SideNavMenuItem, { href: props.href, isActive: props.isActive === true }, props.children);
   },
+  // Between reads the harness's Escape closes upstream's menu: each state
+  // opens it again from its button
+  reopen: Object.freeze({
+    states: Object.freeze(['default', 'current']),
+    upstream: 'button.cds--side-nav__submenu',
+    ours: 'nav button[aria-expanded]',
+    when: Object.freeze({ upstream: '.cds--side-nav__menu a.cds--side-nav__link', ours: 'nav button[aria-expanded] + * a' })
+  }),
   target: Object.freeze({ upstream: '.cds--side-nav__menu a.cds--side-nav__link', ours: 'nav button[aria-expanded] + * a, nav button[aria-expanded] + * [role="link"]' }),
   parts: Object.freeze({
     link: Object.freeze({ upstream: '.cds--side-nav__menu a.cds--side-nav__link', ours: 'nav button[aria-expanded] + * a, nav button[aria-expanded] + * [role="link"]', measure: 'box' }),
