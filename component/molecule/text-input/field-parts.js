@@ -124,31 +124,33 @@ export default function createFieldParts (ctx) {
     // clip and never under the face's own fills
     const ring = ctx.focusRing('button', state, edgeWidth, { gap: false });
 
-    // The paint box fills the face's padding box, inside its border, and
-    // clips the state layers to the face's own corners
-    const innerRadius = Math.max(0, g.radius - edgeWidth);
+    // The paint box fills the face's border box, under its edges, as a
+    // background does (`background-clip: border-box`;
+    // `search/_search.scss`, `number-input/_number-input.scss:176-205`),
+    // and clips the state layers to the face's own corners
+    const edgeOf = function (side) {
+      const declared = props.edgeStyle === undefined || props.edgeStyle === null ? undefined : props.edgeStyle['border' + side + 'Width'];
+      return Utils.isNumber(declared) ? declared : edgeWidth;
+    };
+    const edges = { bottom: -edgeOf('Bottom'), left: -edgeOf('Left'), right: -edgeOf('Right'), top: -edgeOf('Top') };
     const paint = React.createElement(View, {
       testID: props.testID === undefined ? undefined : props.testID + '-paint',
       style: [
-        {
+        Object.assign({
           alignItems: 'center',
-          borderRadius: innerRadius,
-          bottom: 0,
+          borderRadius: g.radius,
           justifyContent: 'center',
-          left: 0,
           overflow: 'hidden',
-          position: 'absolute',
-          right: 0,
-          top: 0
-        },
+          position: 'absolute'
+        }, edges),
         press.container
       ]
     },
     press.hoverLayer === undefined ? null : React.createElement(View, {
-      style: [{ borderRadius: innerRadius, bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, press.hoverLayer]
+      style: [{ borderRadius: g.radius, bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, press.hoverLayer]
     }),
     React.createElement(View, {
-      style: [{ borderRadius: innerRadius, bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, press.layer]
+      style: [{ borderRadius: g.radius, bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }, press.layer]
     }),
     React.createElement(ctx.Registry.Icon, {
       name: props.icon,
@@ -187,7 +189,13 @@ export default function createFieldParts (ctx) {
         },
         props.edgeStyle
       ]
-    }, paint);
+    }, paint,
+    // The painted edges draw again over the paint, where a border draws
+    // over its own background
+    props.edgeStyle === undefined || props.edgeStyle === null ? null : React.createElement(View, {
+      pointerEvents: 'none',
+      style: [Object.assign({ borderColor: 'transparent', borderRadius: g.radius, borderWidth: edgeWidth, position: 'absolute' }, edges), props.edgeStyle]
+    }));
 
     // The ring paints as a sibling over every face fill and rule; mounted
     // under every theme and state so the tree's shape never moves with it

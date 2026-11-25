@@ -24,7 +24,15 @@ above it on hover, focus or touch.
 - Where an `OverlayHost` is mounted the popover renders through it; else it
   renders in place, `fixed` on the web and `absolute` natively, positioned
   by `useAnchoredPosition` from the anchor's measured rect and flipped at
-  the viewport edge.
+  the viewport edge. An aligned bubble (`-start`, `-end`) does not meet
+  the anchor's edge: its edge stands twice the offset past the anchor's
+  middle, the content's inset of half the anchor less the offset plus its
+  translation by the offset (`popover/_popover.scss:491-500`), and the
+  caret stays on the anchor's middle. Measured on PasswordInput's toggle
+  (40 wide, compact offset 8): the bubble's end 320 here against 316
+  upstream while it met the anchor's end. A 48 anchor at offset 12 draws
+  both rules alike. Outcomes and their states: centered (`bottom`, `open`),
+  start (`topStart`), end (`topEnd`).
 - The compact kind draws the `tooltip_compact` member cells: the tooltip an
   icon button shows.
 

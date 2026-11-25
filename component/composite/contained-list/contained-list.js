@@ -1,7 +1,7 @@
 // Info: ContainedList composite. A labelled `list` (`aria-labelledby` the
 // header) inside a container: a header in the kind's cells (`on-page`
 // `size.size_large`, `disclosed` `control.contained_list_header_height_disclosed`),
-// an optional search under the header that filters the items by label
+// an optional search over the header that filters the items by label
 // itself, and items through `ctx.Registry.ContainedListItem`. The list
 // draws no outer margin - adjacent on-page lists' `control.contained_list_gap`
 // is the host's.
@@ -53,11 +53,12 @@ export default function ContainedList (ctx) {
 
     // Build the header in the kind's cells
     const labelId = (props.testID || 'contained-list') + '-label';
-    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), minHeight: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingStart: metrics.paddingInline } },
+    const header = React.createElement(View, { dataSet: { part: 'header' }, style: { backgroundColor: ctx.color(disclosed ? 'contained_list_header_container_disclosed' : 'contained_list_header_container'), borderBottomColor: disclosed ? ctx.color('contained_list_header_label_disclosed') : ctx.color('contained_list_divider'), borderBottomWidth: disclosed ? 0 : ctx.token('border.width_01'), minHeight: disclosed ? metrics.headerHeightDisclosed : metrics.headerHeight, justifyContent: 'center', paddingEnd: metrics.paddingInline, paddingStart: metrics.paddingInline } },
       React.createElement(Text, { dataSet: { part: 'label' }, nativeID: labelId, style: [ctx.typeStyle(disclosed ? 'contained_list_header_disclosed' : 'contained_list_header'), { color: ctx.color(disclosed ? 'contained_list_header_label_disclosed' : 'contained_list_header_label') }] }, props.label));
 
-    // Build the search row under the header
-    const search = isSearch === true ? React.createElement(View, { dataSet: { part: 'search' } },
+    // Build the search over the header: upstream's action layer stands at
+    // the list's top, in front of the header (`_contained-list.scss:258-266`)
+    const search = isSearch === true ? React.createElement(View, { dataSet: { part: 'search' }, style: { end: 0, position: 'absolute', start: 0, top: 0, zIndex: 1 } },
       props.action === 'search'
         ? React.createElement(ctx.Registry.Search, { borderLeaf: 'contained_list_search_border', fillLeaf: 'contained_list_search_container', label: 'Search', onChangeText: onQuery })
         : React.cloneElement(props.action, { onChangeText: onQuery })) : null;

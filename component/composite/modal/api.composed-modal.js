@@ -30,7 +30,7 @@ export default Object.freeze({
     'control.dialog_height_ratio', 'control.dialog_height_ratio_xs', 'control.dialog_height_ratio_sm', 'control.dialog_height_ratio_lg',
     'breakpoint.md',
     'control.dialog_enter_offset', 'control.dialog_text_gutter_ratio', 'control.dialog_padding_inline', 'control.dialog_padding_top',
-    'control.dialog_header_gap', 'control.dialog_header_space', 'control.dialog_body_padding_top', 'control.dialog_body_padding_bottom',
+    'control.dialog_header_gap', 'control.dialog_header_space', 'control.dialog_body_padding_top', 'control.dialog_body_padding_bottom', 'border.width_02',
     'control.dialog_scroll_fade_height', 'control.dialog_scroll_fade_min_height', 'control.dialog_scroll_fade_start', 'control.dialog_scroll_end_space',
     'control.dialog_actions_height', 'control.dialog_actions_gap', 'control.dialog_actions_padding', 'control.dialog_action_ratio',
     'control.dialog_action_ratio_three', 'control.dialog_action_padding_top', 'control.dialog_action_padding_bottom',

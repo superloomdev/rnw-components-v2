@@ -18,6 +18,6 @@ export default Object.freeze({
     'color.dialog_body', 'color.dialog_container',
     'control.dialog_body_padding_top', 'control.dialog_body_padding_bottom', 'control.dialog_padding_inline',
     'control.dialog_scroll_fade_height', 'control.dialog_scroll_fade_min_height', 'control.dialog_scroll_fade_start', 'control.dialog_scroll_end_space',
-    'type.dialog_body', 'font.family.sans'
+    'border.width_02', 'type.dialog_body', 'font.family.sans'
   ])
 });

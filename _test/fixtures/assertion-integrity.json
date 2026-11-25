@@ -1408,8 +1408,8 @@
     {
       "id": "tooltip-caret-color",
       "file": "component/molecule/tooltip/tooltip.js",
-      "find": "caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'),",
-      "replace": "caret({ anchor: anchored.anchor, color: ctx.color('interactive'),",
+      "find": "caret({ color: ctx.color('tooltip_container'),",
+      "replace": "caret({ color: ctx.color('interactive'),",
       "runner": "pw",
       "test": "fidelity.spec.js",
       "testName": "Tooltip / primary / dark: matches the reference in every state",
@@ -3958,8 +3958,8 @@
     {
       "id": "contained-list-tag-floor-off",
       "file": "component/composite/contained-list/contained-list-item.js",
-      "find": "React.createElement(ctx.Registry.Tag, { height: ctx.token('size.size_small'), kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })",
-      "replace": "React.createElement(ctx.Registry.Tag, { kind: 'default', label: 'Tag', size: props.size === 'sm' ? 'sm' : 'md' })",
+      "find": "React.createElement(ctx.Registry.Tag, { height: ctx.token('size.size_small'), kind: 'default', size: props.size === 'sm' ? 'sm' : 'md' }, 'Tag')",
+      "replace": "React.createElement(ctx.Registry.Tag, { kind: 'default', size: props.size === 'sm' ? 'sm' : 'md' }, 'Tag')",
       "runner": "node",
       "test": "contained-list.test.js",
       "testName": "an item tag keeps the layout small floor in every list size",
@@ -3968,8 +3968,8 @@
     {
       "id": "modal-body-overflow-off",
       "file": "component/composite/modal/modal-body.js",
-      "find": "      React.createElement(ScrollView, Object.assign({}, named, {\n        dataSet: { part: 'modalBody' },\n        // Upstream's padded `.cds--modal-content` IS the scroll\n        // container: the padding sits inside the scrollport so the end\n        // space scrolls with the text (`_modal.scss:118-130`)\n        style: {\n          flexGrow: 1,\n          overflow: 'auto',",
-      "replace": "      React.createElement(View, Object.assign({}, named, {\n        dataSet: { part: 'modalBody' },\n        // Upstream's padded `.cds--modal-content` IS the scroll\n        // container: the padding sits inside the scrollport so the end\n        // space scrolls with the text (`_modal.scss:118-130`)\n        style: {\n          flexGrow: 1,\n          overflow: 'visible',",
+      "find": "      React.createElement(ScrollView, Object.assign({}, named, {\n        dataSet: { part: 'modalBody' },\n        // Upstream's padded `.cds--modal-content` IS the scroll\n        // container: the padding sits inside the scrollport so the end\n        // space scrolls with the text (`_modal.scss:118-130`); a scrolling\n        // body keeps a transparent end edge outside its scrollport\n        // (`_modal.scss:270-272`)\n        style: {\n          borderBottomColor: 'transparent',\n          borderBottomWidth: metrics.scrollEdge,\n          flexGrow: 1,\n          overflow: 'auto',",
+      "replace": "      React.createElement(View, Object.assign({}, named, {\n        dataSet: { part: 'modalBody' },\n        // Upstream's padded `.cds--modal-content` IS the scroll\n        // container: the padding sits inside the scrollport so the end\n        // space scrolls with the text (`_modal.scss:118-130`); a scrolling\n        // body keeps a transparent end edge outside its scrollport\n        // (`_modal.scss:270-272`)\n        style: {\n          borderBottomColor: 'transparent',\n          borderBottomWidth: metrics.scrollEdge,\n          flexGrow: 1,\n          overflow: 'visible',",
       "runner": "pw",
       "test": "structural.spec.js",
       "testName": "no text overflows the box that paints behind it",
@@ -5074,6 +5074,66 @@
       "test": "structured-list-skeleton.test.js",
       "testName": "carbon / default: the skeleton comes from the theme",
       "why": "five rows when rowCount is omitted (StructuredList.Skeleton rowCount = 5)"
+    },
+    {
+      "id": "toast-subtitle-end",
+      "file": "component/molecule/notification/toast-notification.js",
+      "find": "paddingBottom: ctx.metric(owner, 'subtitleEnd')",
+      "replace": "paddingBottom: 0",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "ToastNotification / primary / light: matches the reference in every state",
+      "why": "the subtitle keeps its own end space; the band's height is compared"
+    },
+    {
+      "id": "toggletip-offset-whole",
+      "file": "component/molecule/popover/popover.js",
+      "find": "const offset = Utils.isNumber(props.offset) ? props.offset : ",
+      "replace": "const offset = Utils.isNumber(props.offset) ? props.offset + (caret === true ? caretHeight / 2 : 0) : ",
+      "runner": "node",
+      "test": "toggletip.test.js",
+      "testName": "the bubble rides the toggletip offset cell, not the popover offset",
+      "why": "a host's offset replaces the whole offset, the caret's half included"
+    },
+    {
+      "id": "tooltip-aligned-reach",
+      "file": "component/molecule/tooltip/tooltip.js",
+      "find": "      alignmentReach: reach,\n",
+      "replace": "",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "PasswordInput / primary / light: matches the reference in every state",
+      "why": "an aligned bubble's edge stands twice the offset past the anchor's middle, not at the anchor's edge"
+    },
+    {
+      "id": "field-action-paint-border-box",
+      "file": "component/molecule/text-input/field-parts.js",
+      "find": "        }, edges),\n        press.container",
+      "replace": "        }, { bottom: 0, left: 0, right: 0, top: 0 }),\n        press.container",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Search / primary / light: matches the reference in every state",
+      "why": "the action's paint fills the face's border box, under its edges"
+    },
+    {
+      "id": "reference-hang-width",
+      "file": "_test/harness/reference-entry.js",
+      "find": "(declared.width + hangStart) + 'px'",
+      "replace": "declared.width + 'px'",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "OrderedList / primary / light: matches the reference in every state",
+      "why": "a hang pads outside the declared width on the border-box upstream body"
+    },
+    {
+      "id": "toggle-mark-aspect",
+      "file": "component/molecule/switch/toggle.web.js",
+      "find": "        height: markHeight,\n",
+      "replace": "",
+      "runner": "node",
+      "test": "toggle.test.js",
+      "testName": "track, handle, mark and texts come from the theme",
+      "why": "the small toggle's mark keeps its glyph's 6 x 5 aspect"
     }
   ]
 }

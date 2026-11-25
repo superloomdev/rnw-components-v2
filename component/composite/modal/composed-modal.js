@@ -130,9 +130,10 @@ export default function ComposedModal (ctx) {
     // `auto 1fr auto` grid shrinks its `overflow-y: auto` header row
     // (`_modal.scss:85-89`, `:160-165`): the dialog height minus the
     // borders, the action row, the body padding and its own margin;
-    // `max-block-size: 50vh` never binds
+    // `max-block-size: 50vh` never binds. A body held at its padding
+    // scrolls, so its scroll edge is part of its minimum (`:270-272`)
     const headerMaxHeight = Utils.isNumber(dialogHeight)
-      ? dialogHeight - 2 * metrics.borderWidth - (passive ? 0 : ctx.token('control.dialog_actions_height')) - ctx.token('control.dialog_body_padding_top') - ctx.token('control.dialog_body_padding_bottom') - ctx.token('control.dialog_header_space')
+      ? dialogHeight - 2 * metrics.borderWidth - (passive ? 0 : ctx.token('control.dialog_actions_height')) - ctx.token('control.dialog_body_padding_top') - ctx.token('control.dialog_body_padding_bottom') - ctx.token('border.width_02') - ctx.token('control.dialog_header_space')
       : undefined;
 
     // Render the container through the members

@@ -88,9 +88,10 @@ describe('Toggletip: the information bubble', function () {
     const parts = await renderToggletip('carbon', { defaultOpen: true });
     const bubble = parts.container.querySelector('div[style*="max-width"]');
     assert.ok(bubble, 'the open bubble mounts');
-    // The layer top is the toggletip offset plus half the caret height below
-    // the anchor origin - the planted row drops it to the popover offset
-    assert.equal(parseFloat(bubble.style.top), t['control.toggletip_offset'] + t['control.popover_caret_height'] / 2);
+    // The layer top is the toggletip offset below the anchor origin, the
+    // caret included (`toggletip/_toggletip.scss:58-64`) - the planted row
+    // drops it to the popover offset
+    assert.equal(parseFloat(bubble.style.top), t['control.toggletip_offset']);
     await cleanup();
   });
 

@@ -37,7 +37,7 @@ export default function createPositioningBehaviors (deps) {
 
   }
 
-  function getAnchoredPosition (rect, placement = 'bottom', offset = 8, viewport = { width: 0, height: 0 }, flip = true, alignmentAxisOffset = 0) {
+  function getAnchoredPosition (rect, placement = 'bottom', offset = 8, viewport = { width: 0, height: 0 }, flip = true, alignmentAxisOffset = 0, alignmentReach = null) {
 
     const parsed = parsePlacement(placement);
     let base = parsed.base;
@@ -72,19 +72,22 @@ export default function createPositioningBehaviors (deps) {
       left = rect.left - offset;
     }
 
+    // An aligned edge meets the anchor's edge, or, with a reach, stands
+    // that far past the anchor's middle
+    const reach = typeof alignmentReach === 'number';
     if (base === 'top' || base === 'bottom') {
       if (alignment === 'start') {
-        left = rect.left;
+        left = reach ? rect.left + rect.width / 2 - alignmentReach : rect.left;
       } else if (alignment === 'end') {
-        left = rect.right;
+        left = reach ? rect.left + rect.width / 2 + alignmentReach : rect.right;
       } else {
         left = rect.left + rect.width / 2;
       }
     } else {
       if (alignment === 'start') {
-        top = rect.top;
+        top = reach ? rect.top + rect.height / 2 - alignmentReach : rect.top;
       } else if (alignment === 'end') {
-        top = rect.bottom;
+        top = reach ? rect.top + rect.height / 2 + alignmentReach : rect.bottom;
       } else {
         top = rect.top + rect.height / 2;
       }
@@ -233,6 +236,7 @@ export default function createPositioningBehaviors (deps) {
     const offset = options.offset === undefined ? 8 : options.offset;
     const flip = options.flip !== false;
     const alignmentAxisOffset = options.alignmentAxisOffset === undefined ? 0 : options.alignmentAxisOffset;
+    const alignmentReach = typeof options.alignmentReach === 'number' ? options.alignmentReach : null;
     const [state, setState] = React.useState({
       position: null,
       actualPlacement: placement,
@@ -284,7 +288,7 @@ export default function createPositioningBehaviors (deps) {
           width: measured.width,
           height: measured.height
         };
-        const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset);
+        const computed = getAnchoredPosition(rect, placement, offset, viewport, flip, alignmentAxisOffset, alignmentReach);
         // Inside a host the answer a caller composes with is the host's own
         // space: the window rect shifts back by the host's origin, as the
         // native branch's measured rect does
@@ -341,7 +345,7 @@ export default function createPositioningBehaviors (deps) {
               ? { width: current.size.width, height: current.size.height }
               : currentViewport();
           }
-          const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset);
+          const computed = getAnchoredPosition(rect, placement, offset, measuredViewport, flip, alignmentAxisOffset, alignmentReach);
           const next = {
             position: computed.position,
             actualPlacement: computed.actualPlacement,
@@ -358,7 +362,7 @@ export default function createPositioningBehaviors (deps) {
         });
       }
 
-    }, [options.anchor, options.source, placement, offset, flip, alignmentAxisOffset]);
+    }, [options.anchor, options.source, placement, offset, flip, alignmentAxisOffset, alignmentReach]);
 
     // A new track cycle gets a fresh measure budget
     React.useEffect(function () {

@@ -63,6 +63,6 @@ export default Object.freeze({
     togglePaint: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle', ours: '[data-testid="password-toggle-paint"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     toggleIcon: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle svg', ours: '[data-testid="password-toggle-face"] svg', measure: 'box' }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' }),
-    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
+    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
   })
 });

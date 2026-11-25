@@ -46,6 +46,7 @@ export default function ModalBody (ctx) {
       paddingBottom: ctx.metric('ModalBody', 'paddingBottom'),
       paddingInline: ctx.metric('ModalBody', 'paddingInline'),
       paddingTop: ctx.metric('ModalBody', 'paddingTop'),
+      scrollEdge: ctx.metric('ModalBody', 'scrollEdge'),
       scrollEndSpace: ctx.metric('ModalBody', 'scrollEndSpace')
     };
     const fadeShown = ctx.enum('anatomy.dialog_scroll_fade') === 'shown';
@@ -115,8 +116,12 @@ export default function ModalBody (ctx) {
         dataSet: { part: 'modalBody' },
         // Upstream's padded `.cds--modal-content` IS the scroll
         // container: the padding sits inside the scrollport so the end
-        // space scrolls with the text (`_modal.scss:118-130`)
+        // space scrolls with the text (`_modal.scss:118-130`); a scrolling
+        // body keeps a transparent end edge outside its scrollport
+        // (`_modal.scss:270-272`)
         style: {
+          borderBottomColor: 'transparent',
+          borderBottomWidth: metrics.scrollEdge,
           flexGrow: 1,
           overflow: 'auto',
           paddingBottom: metrics.paddingBottom,

@@ -17,7 +17,7 @@ export default Object.freeze({
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the anchor wrapper.' }
   }),
   composition: Object.freeze({
-    offset: { type: 'number', required: false, description: 'Composition prop: the offset cell a composing host (the toggletip) substitutes for `popover_offset`.' }
+    offset: { type: 'number', required: false, description: 'Composition prop: the offset cell a composing host (the toggletip) substitutes for `popover_offset`; it replaces the whole offset, the caret half included.' }
   }),
   kinds: Object.freeze([]),
   variants: Object.freeze([]),

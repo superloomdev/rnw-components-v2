@@ -11,7 +11,7 @@
 `no_reference`: the reference draws this member only inside an open parent, so it is measured through that parent's samples.
 
 - `open` is caller-owned, as upstream's; the component asks the caller to close through `onRequestClose` on Escape and outside press.
-- The caret lifts the surface half its height off the anchor (`offset + caretHeight / 2`), the reference's own `calc`.
+- The caret lifts the surface half its height off the anchor (`offset + caretHeight / 2`), the reference's own `calc`. A host's `offset` replaces the whole sum: the toggletip's 13 is its bubble's distance from the anchor, caret included (`toggletip/_toggletip.scss:58-64`; measured 32 here against 29 while the half caret was added to it).
 - The inverse (`highContrast`) surface reads the `tooltip_*` cells and draws neither shadow nor border, as the reference's high-contrast popover does.
 
 ### Platform

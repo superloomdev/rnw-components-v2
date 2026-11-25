@@ -42,8 +42,10 @@ export default function Popover (ctx) {
     // The caret lifts the surface half its height off the anchor, the way
     // the reference's calc does
     // A composing host (the toggletip) may seat its own offset cell in place
-    // of the popover's
-    const offset = (Utils.isNumber(props.offset) ? props.offset : ctx.metric('Popover', 'offset')) + (caret === true ? caretHeight / 2 : 0);
+    // of the popover's: it replaces the whole offset, caret included, as
+    // the toggletip's custom property replaces the caret's
+    // (`toggletip/_toggletip.scss:58-64`, `popover/_popover.scss:343`)
+    const offset = Utils.isNumber(props.offset) ? props.offset : ctx.metric('Popover', 'offset') + (caret === true ? caretHeight / 2 : 0);
 
     // The anchor is measured for the surface's placement, re-measured while
     // open so the fixed surface follows it on scroll and resize

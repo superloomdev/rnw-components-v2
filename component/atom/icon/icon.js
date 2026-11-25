@@ -54,10 +54,10 @@ export default function Icon (ctx) {
       });
     });
 
-    // Render the root
+    // Render the root: square unless the caller names the glyph's height
     return React.createElement(Svg, {
       width: size,
-      height: size,
+      height: Utils.isNumber(props.height) ? props.height : size,
       viewBox: glyph.viewBox,
       fill: fill,
       accessibilityRole: 'image',

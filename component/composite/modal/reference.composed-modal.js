@@ -58,12 +58,12 @@ export default Object.freeze({
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.cds--modal', ours: '[data-testid="composed-modal-scrim"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     container: Object.freeze({ upstream: '.cds--modal-container', ours: '[role="dialog"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor', 'borderRadius', 'boxShadow'] }),
-    header: Object.freeze({ upstream: '.cds--modal-header', ours: '[role="dialog"] > div:first-child', measure: 'box', compare: ['paddingTop', 'paddingLeft'] }),
+    header: Object.freeze({ upstream: '.cds--modal-header', ours: '[role="dialog"] > div:first-child', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingTop', 'paddingLeft'] }),
     label: Object.freeze({ upstream: '.cds--modal-header__label', ours: '[role="dialog"] > div:first-child [dir="auto"]:first-child', measure: 'text', optional: true }),
     heading: Object.freeze({ upstream: '.cds--modal-header__heading', ours: '[role="dialog"] > div:first-child [dir="auto"]:last-child', measure: 'text' }),
     close: Object.freeze({ upstream: '.cds--modal-close svg', ours: '[role="dialog"] svg', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
-    content: Object.freeze({ upstream: '.cds--modal-content', ours: '[data-part="modalBody"]', measure: 'box', compare: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] }),
+    content: Object.freeze({ upstream: '.cds--modal-content', ours: '[data-part="modalBody"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] }),
     footer: Object.freeze({ upstream: '.cds--modal-footer', ours: '[data-part="modalFooter"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
-    action: Object.freeze({ upstream: '.cds--modal-footer .cds--btn', ours: '[data-part="modalFooter"] [role="button"]', measure: 'box', optional: true, compare: ['width', 'height', 'backgroundColor', 'paddingTop', 'paddingBottom'] })
+    action: Object.freeze({ upstream: '.cds--modal-footer .cds--btn', ours: '[data-part="modalFooter"] [role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'paddingTop', 'paddingBottom'] })
   })
 });

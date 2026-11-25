@@ -112,6 +112,11 @@ export default function ToggleWeb (ctx) {
     // checked, the way the first reference draws it
     const markSize = ctx.metric('Toggle', 'handleSizeSmall') - ctx.metric('Toggle', 'markInset') * 2;
     const markX = trackWidth - trackHeight + (trackHeight - markSize) / 2 - inset;
+    // A glyph whose view box is not square keeps its aspect at the mark's
+    // width and sits on the zone's bottom line, as upstream's 6 x 5 mark
+    // does at top 6, end 5 (`toggle/_toggle.scss:134-141`)
+    const markBox = String(ctx.icon('switch_checked_indicator', markSize).viewBox || '').split(/[\s,]+/).map(Number);
+    const markHeight = markBox.length === 4 && markBox[2] > 0 ? markSize * markBox[3] / markBox[2] : markSize;
 
     // The on/off text renders only where the theme shows it
     const stateText = ctx.enum('anatomy.switch_state_text') === 'shown';
@@ -188,10 +193,11 @@ export default function ToggleWeb (ctx) {
         color: state.disabled ? 'switch_mark_disabled' : 'switch_mark',
         name: 'switch_checked_indicator',
         size: markSize,
+        height: markHeight,
         style: {
           left: markX,
           position: 'absolute',
-          top: (trackHeight - markSize) / 2 - inset,
+          top: (trackHeight - markSize) / 2 - inset + markSize - markHeight,
           opacity: selected ? 1 : 0
         }
       }) : null),

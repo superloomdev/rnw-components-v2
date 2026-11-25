@@ -52,7 +52,7 @@ export default Object.freeze({
     value: Object.freeze({ upstream: '.cds--search--expanded .cds--search-input', ours: 'input', measure: 'type', optional: true }),
     leadingIcon: Object.freeze({ upstream: '.cds--search--expanded .cds--search-magnifier-icon', ours: '[data-testid="search-leading-icon"] svg', measure: 'box', optional: true }),
     clearFace: Object.freeze({ upstream: '.cds--search--expanded .cds--search-close', ours: '[data-testid="search-clear-face"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius'] }),
-    clearPaint: Object.freeze({ upstream: '.cds--search--expanded .cds--search-close', ours: '[data-testid="search-clear-paint"]', measure: 'box', optional: true, compare: ['backgroundColor'] }),
+    clearPaint: Object.freeze({ upstream: '.cds--search--expanded .cds--search-close', ours: '[data-testid="search-clear-paint"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     clearIcon: Object.freeze({ upstream: '.cds--search--expanded .cds--search-close svg', ours: '[data-testid="search-clear-face"] svg', measure: 'box', optional: true })
   })
 });

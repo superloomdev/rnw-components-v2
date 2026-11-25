@@ -2,28 +2,12 @@
   "note": "Box parts whose `compare` list left out x, y, width or height when the gate `reference-geometry.test.js` was written (plan 0162 E17). The list only shrinks: a repair that names a part's geometry removes its line and lowers the ceiling in the test. No part is ever added.",
   "parts": [
     "breadcrumb/overflowIcon",
-    "composed-modal/action",
-    "composed-modal/content",
-    "composed-modal/header",
-    "contained-list/actionButton",
-    "contained-list/contents",
-    "contained-list/icons",
-    "contained-list/items",
-    "contained-list/label",
-    "contained-list/root",
-    "contained-list/rulers",
-    "contained-list/search",
-    "contained-list/searchInput",
-    "contained-list/tags",
-    "expandable-search/clearPaint",
     "inline-notification/textWrapper",
     "overflow-menu/connector",
-    "password-input/bubble",
     "tearsheet/buttonSet",
     "tearsheet/buttons",
     "tearsheet/description",
     "tearsheet/influencer",
-    "tearsheet/main",
-    "toggletip/bubble"
+    "tearsheet/main"
   ]
 }

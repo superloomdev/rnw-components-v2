@@ -41,7 +41,7 @@ export default function Tooltip (ctx) {
   anchor is on, centered on the popover's cross axis unless an alignment
   holds it to the edge nearest the anchor's middle.
 
-  @param {Object} options - { placement, width, height, color, anchor }
+  @param {Object} options - { placement, width, height, color, reach }
 
   @return {Object} - React element
   *********************************************************************/
@@ -55,10 +55,10 @@ export default function Tooltip (ctx) {
     const boxHeight = horizontal ? options.height : options.width;
     const side = options.width / Math.SQRT2;
     const drawn = options.width > 0 && options.height > 0;
-    // An aligned popover holds its edge to the anchor's, so the caret sits
-    // the anchor's half-extent in from that edge; a centered one centers
-    const extent = options.anchor ? (horizontal ? options.anchor.width : options.anchor.height) : 0;
-    const lead = Math.max(0, extent / 2 - (horizontal ? boxWidth : boxHeight) / 2);
+    // An aligned popover's edge stands its reach past the anchor's middle,
+    // so the caret sits the reach in from that edge, on the anchor's
+    // middle; a centered one centers
+    const lead = Math.max(0, options.reach - (horizontal ? boxWidth : boxHeight) / 2);
     const inner = { backgroundColor: options.color, height: side, position: 'absolute', transform: [{ rotate: '45deg' }], width: side };
     if (horizontal) {
       inner.left = (boxWidth - side) / 2;
@@ -122,6 +122,10 @@ export default function Tooltip (ctx) {
     const caretWidth = ctx.metric('Tooltip', compact ? 'caretWidthCompact' : 'caretWidth');
     const caretHeight = ctx.metric('Tooltip', compact ? 'caretHeightCompact' : 'caretHeight');
     const offset = ctx.metric('Tooltip', compact ? 'offsetCompact' : 'offset');
+    // An aligned bubble's edge stands twice the offset past the anchor's
+    // middle: the content's inset is half the anchor less the offset, and
+    // it is translated by the offset again (`popover/_popover.scss:491-500`)
+    const reach = offset * 2;
     const delayOpen = Utils.isNumber(props.enterDelayMs) ? props.enterDelayMs : ctx.metric('Tooltip', 'delayOpen');
     const delayClose = Utils.isNumber(props.leaveDelayMs) ? props.leaveDelayMs : ctx.metric('Tooltip', compact ? 'delayCloseCompact' : 'delayClose');
     const tooltipId = useA11yId('sl-tooltip');
@@ -133,6 +137,7 @@ export default function Tooltip (ctx) {
       anchor: anchorRef,
       placement: Utils.isString(props.align) ? props.align : 'top',
       offset: offset,
+      alignmentReach: reach,
       track: shown === true
     });
 
@@ -203,7 +208,7 @@ export default function Tooltip (ctx) {
         color: ctx.color('tooltip_label')
       }]
     }, props.label),
-    caret({ anchor: anchored.anchor, color: ctx.color('tooltip_container'), height: caretHeight, placement: placement, width: caretWidth })));
+    caret({ color: ctx.color('tooltip_container'), height: caretHeight, placement: placement, reach: reach, width: caretWidth })));
 
     // The popover renders through an overlay host where one is mounted
     const overlay = useOverlay({

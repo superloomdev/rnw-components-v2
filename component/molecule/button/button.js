@@ -21,7 +21,7 @@ export default function Button (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { useButton } = ctx.behaviors;
+  const { useAnchoredPosition, useButton } = ctx.behaviors;
 
   // Kinds that sit inline with text: they reserve no trailing icon slot,
   // set the icon after the label and take the ghost paddings
@@ -139,7 +139,11 @@ export default function Button (ctx) {
     // minimum, `modal/_modal.scss:331-334`)
     const reportMinContent = props.onMinContentWidth;
     const wraps = Utils.isFunction(reportMinContent);
-    const [widestRun, setWidestRun] = React.useState(null);
+    // The layout event's width arrives rounded on the web, so the widest
+    // run is read from its fractional box, as Select's sizer is
+    const runsRef = React.useRef(null);
+    const runs = useAnchoredPosition({ anchor: runsRef, flip: false, offset: 0, placement: 'bottom-start' });
+    const widestRun = runs.anchor === null ? null : runs.anchor.width;
     React.useEffect(function () {
       if (wraps && widestRun !== null) {
         reportMinContent(widestRun + paddingStart + paddingEnd + 2 * borderWidth);
@@ -151,12 +155,8 @@ export default function Button (ctx) {
       style: { height: 0, opacity: 0, overflow: 'hidden', position: 'absolute', start: 0, top: 0, width: 0 }
     }, React.createElement(View, { style: { flexDirection: 'row', overflow: 'scroll' } },
       React.createElement(View, {
-        onLayout: function (event) {
-          const width = event.nativeEvent.layout.width;
-          setWidestRun(function (previous) {
-            return previous === width ? previous : width;
-          });
-        },
+        onLayout: runs.measure,
+        ref: runsRef,
         style: { alignItems: 'flex-start', flexShrink: 0 }
       }, breakRuns(Utils, props.children).map(function (run, index) {
         return React.createElement(Text, { key: index, style: labelStyle }, run);

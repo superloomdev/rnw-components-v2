@@ -11,7 +11,7 @@ export default Object.freeze({
     action: { type: 'node', required: false, description: 'An end action over the row (`tag`, `button`, or a node).' },
     size: { type: 'string', required: false, description: 'Composition prop: the row\'s minimum height class from the list.' },
     inset: { type: 'boolean', required: false, description: 'Composition prop: the list insets the ruler.' },
-    last: { type: 'boolean', required: false, description: 'Composition prop: the last row draws no ruler.' },
+    last: { type: 'boolean', required: false, description: 'Composition prop: the last row draws no ruler; a row named not last (`false`) lets the next row start on its ruler.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' }
   }),
   kinds: Object.freeze([]),

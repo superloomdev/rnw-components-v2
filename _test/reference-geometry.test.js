@@ -19,11 +19,12 @@ const GEOMETRY = Object.freeze(['x', 'y', 'width', 'height']);
 const LEGACY = JSON.parse(readFileSync(join(HERE, 'fixtures', 'reference-geometry-legacy.json'), 'utf8'));
 
 // The ceiling of the legacy list: lower it with every repair, never raise it
-const LEGACY_CEILING = 24;
+const LEGACY_CEILING = 8;
 
 
 /********************************************************************
-Every reference file under the component folder.
+Every reference file under the component folder, a family's own
+`reference.js` included.
 
 @param {String} folder - Folder to walk
 
@@ -36,7 +37,7 @@ function referenceFiles (folder) {
     const path = join(folder, name);
     if (statSync(path).isDirectory()) {
       found.push(...referenceFiles(path));
-    } else if (/^reference\..*\.js$/.test(name)) {
+    } else if (/^reference(\..+)?\.js$/.test(name)) {
       found.push(path);
     }
   }
@@ -59,7 +60,11 @@ async function partsWithoutGeometry () {
     if (reference === undefined || reference === null || reference.parts === undefined) {
       continue;
     }
-    const row = file.split('/').pop().replace(/^reference\./, '').replace(/\.js$/, '');
+    // A family's own `reference.js` is named by its folder
+    const segments = file.split('/');
+    const row = segments[segments.length - 1] === 'reference.js'
+      ? segments[segments.length - 2]
+      : segments[segments.length - 1].replace(/^reference\./, '').replace(/\.js$/, '');
     for (const name of Object.keys(reference.parts)) {
       const part = reference.parts[name];
       if (part.measure !== 'box' || !Array.isArray(part.compare)) {

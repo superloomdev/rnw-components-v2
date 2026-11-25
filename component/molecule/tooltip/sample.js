@@ -7,5 +7,10 @@ export default Object.freeze([
   Object.freeze({ label: 'default', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text' }) }),
   Object.freeze({ label: 'open', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text', defaultOpen: true }) }),
   Object.freeze({ label: 'compact', props: Object.freeze({ children: 'Anchor', label: 'Saved', compact: true, defaultOpen: true }) }),
-  Object.freeze({ label: 'bottom', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text', align: 'bottom', defaultOpen: true }) })
+  Object.freeze({ label: 'bottom', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text', align: 'bottom', defaultOpen: true }) }),
+  // An aligned bubble's edge stands past the anchor's middle, either side;
+  // they open upward, as the last cells of a grid sit past the window's
+  // bottom, where a bottom bubble flips
+  Object.freeze({ label: 'topStart', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text', align: 'top-start', defaultOpen: true }) }),
+  Object.freeze({ label: 'topEnd', props: Object.freeze({ children: 'Anchor', label: 'Tooltip text', align: 'top-end', defaultOpen: true }) })
 ]);

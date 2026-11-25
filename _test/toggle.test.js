@@ -162,9 +162,14 @@ describe('Toggle: every sample state under every template', function () {
         const markSize = t['size.icon_01'] - t['spacing.spacing_02'] - t['spacing.spacing_01'] - t['spacing.spacing_01'] * 2;
         assert.equal(parts.mark === null, !small);
         if (small) {
+          // The glyph keeps its view box's aspect at the mark's width and
+          // sits on the zone's bottom line
+          const box = String(t['icon.switch_checked_indicator'].viewBox).split(/[\s,]+/).map(Number);
+          const markHeight = markSize * box[3] / box[2];
           assert.equal(parts.mark.getAttribute('width'), String(markSize));
-          assert.equal(parts.mark.getAttribute('height'), String(markSize));
+          assert.equal(parts.mark.getAttribute('height'), String(markHeight));
           assert.equal(parts.mark.style.left, (trackWidth - trackHeight + (trackHeight - markSize) / 2 - inset) + 'px');
+          assert.equal(parts.mark.style.top, ((trackHeight - markSize) / 2 - inset + markSize - markHeight) + 'px');
           assert.equal(parts.mark.style.opacity, selected ? '1' : '0');
         }
 

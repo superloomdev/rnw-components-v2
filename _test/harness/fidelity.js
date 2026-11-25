@@ -697,7 +697,8 @@ export async function runFidelity (page, component, set, scheme) {
     // FIDELITY_DIFF_DUMP set, dump the compared pair, their full-resolution
     // diff and the frame the part boxes map through for scripts/diff-probe.js
     if (process.env.FIDELITY_DIFF_DUMP !== undefined) {
-      const dir = join(process.env.FIDELITY_DIFF_DUMP, component.name, scheme, key.replace(/[^\w .@-]+/g, '_'));
+      // A set other than the primary dumps beside it, never over its states
+      const dir = join(process.env.FIDELITY_DIFF_DUMP, component.name, set === 'primary' ? scheme : set + '-' + scheme, key.replace(/[^\w .@-]+/g, '_'));
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, 'ours.png'), a);
       writeFileSync(join(dir, 'upstream.png'), b);

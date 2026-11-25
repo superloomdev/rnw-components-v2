@@ -239,6 +239,7 @@ ModalBody is the content region of a ComposedModal - the prose body, scrollable 
 | `paddingBottom` | `control.dialog_body_padding_bottom` |
 | `paddingInline` | `control.dialog_padding_inline` |
 | `paddingTop` | `control.dialog_body_padding_top` |
+| `scrollEdge` | `border.width_02` |
 | `scrollEndSpace` | `control.dialog_scroll_end_space` |
 
 ### States (sample.js)

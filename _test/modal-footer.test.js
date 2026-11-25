@@ -113,9 +113,13 @@ describe('ModalFooter: the member draws its cells', function () {
       assert.deepEqual(Array.from(runs.children).map(function (run) {
         return run.textContent;
       }), ['Keep', 'both']);
-      // The widest run as the layout pass reports it, then the floor
-      Object.defineProperty(runs, 'offsetWidth', { configurable: true, value: 32.5 });
+      // The layout pass reports the runs' rounded width; the floor reads
+      // their fractional box
+      Object.defineProperty(runs, 'offsetWidth', { configurable: true, value: 33 });
       Object.defineProperty(runs, 'offsetHeight', { configurable: true, value: 36 });
+      runs.getBoundingClientRect = function () {
+        return { bottom: 36, height: 36, left: 0, right: 32.5, top: 0, width: 32.5, x: 0, y: 0 };
+      };
       await act(async function () {
         layoutCallback([{ target: runs }]);
         await new Promise(function (resolve) {

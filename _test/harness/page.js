@@ -992,8 +992,8 @@ export async function readCells (page) {
 /********************************************************************
 Read every rendered text run in each cell and the painted box behind it.
 The box is the nearest ancestor inside the cell body whose computed
-background is not transparent or that draws a border or an inset
-box-shadow outline; a run with no painted ancestor reports no box.
+background is not transparent or that draws a visible border or an
+inset box-shadow outline; a run with no painted ancestor reports no box.
 
 @param {Object} page - Playwright page
 
@@ -1021,12 +1021,16 @@ export async function readTextBoxes (page) {
         return false;
       };
       // A node paints a box behind its text when its background is not
-      // transparent or it draws a border or an inset box-shadow outline
+      // transparent or it draws a border or an inset box-shadow outline; a
+      // transparent border draws nothing (a scroll edge, a seat's room)
+      const drawsSide = function (style, side) {
+        return style['border' + side + 'Width'] !== '0px' && style['border' + side + 'Color'] !== 'rgba(0, 0, 0, 0)' &&
+          style['border' + side + 'Style'] !== 'none';
+      };
       const paintsBox = function (node) {
         const style = getComputedStyle(node);
         return style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.backgroundImage !== 'none' ||
-          style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' ||
-          style.borderBottomWidth !== '0px' || style.borderLeftWidth !== '0px' ||
+          drawsSide(style, 'Top') || drawsSide(style, 'Right') || drawsSide(style, 'Bottom') || drawsSide(style, 'Left') ||
           (style.boxShadow !== 'none' && style.boxShadow.indexOf('inset') !== -1);
       };
       const texts = [];

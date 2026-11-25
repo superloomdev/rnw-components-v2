@@ -76,3 +76,9 @@ each handle fill is left to the pixel comparison.
 ## Decisions (roster flag `superloom_decision`)
 
 The toggle's loading shape: the handle's own circle (`control.switch_handle_size`, full radius) and a short bar (`control.toggle_skeleton_bar_width` x `_height`) `spacing.spacing_03` after it, both `SkeletonPlaceholder`, in a row centered to its content - the upstream skeleton draws exactly this pair, not the track's pill. The second system has no skeleton - the roster's `superloom_decision` - so the pair's values are the switch's own cells.
+- **The small toggle's mark keeps its glyph's aspect.** The checked
+  indicator's view box is 6 x 5; the mark drew it in a 6 square, centred,
+  half a pixel above upstream's 6 x 5 box at top 6, end 5
+  (`toggle/_toggle.scss:134-141`). The mark now draws at the glyph's
+  height (Icon's `height`) on the square's bottom line. A square glyph
+  draws as before.
