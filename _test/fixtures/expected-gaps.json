@@ -99,6 +99,86 @@
         "twoColumns"
       ],
       "request": "CONTRACT-REQUESTS.md U7: control.structured_list_cell_max_width (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "TagSet",
+      "part": "dialog",
+      "property": "y",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "TagSet",
+      "part": "dialog",
+      "property": "height",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "TagSet",
+      "part": "dialogBody",
+      "property": "y",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "measure",
+      "component": "TagSet",
+      "part": "dialogBody",
+      "property": "height",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "TagSet",
+      "part": "dialog",
+      "property": "y",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "TagSet",
+      "part": "dialog",
+      "property": "height",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "TagSet",
+      "part": "dialogBody",
+      "property": "y",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
+    },
+    {
+      "check": "fidelity",
+      "component": "TagSet",
+      "part": "dialogBody",
+      "property": "height",
+      "states": [
+        "allTags"
+      ],
+      "request": "CONTRACT-REQUESTS.md U7r: control.tag_set_dialog_height_ratio, control.tag_set_dialog_max_height (U9 wave, contract v12)"
     }
   ]
 }

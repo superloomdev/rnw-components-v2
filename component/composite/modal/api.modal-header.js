@@ -8,7 +8,8 @@ export default Object.freeze({
     label: { type: 'string', required: false, description: 'The eyebrow text above the heading, shown where `anatomy.dialog_label` says so.' },
     title: { type: 'string', required: true, description: 'The heading text; names the dialog unless the parent gives an `accessibilityLabel`.' },
     iconDescription: { type: 'string', required: false, description: 'Accessible name of the close button. Default `Close`.' },
-    buttonOnClick: { type: 'function', required: false, description: 'Called by the close button; defaults to the parent\'s close request.' }
+    buttonOnClick: { type: 'function', required: false, description: 'Called by the close button; defaults to the parent\'s close request.' },
+    children: { type: 'node', required: false, description: 'Content under the heading, inside the header (the all-tags dialog\'s search field).' }
   }),
   composition: Object.freeze({
     maxHeight: { type: 'number', description: 'Composition prop: the most the header may take inside a height-bounded dialog; past it the header scrolls, as upstream\'s `overflow-y: auto` header row.' }

@@ -1279,6 +1279,7 @@ export async function readTextContrast (page, disabledCells) {
       // component draws no marker)
       const disabled = body.querySelector('[aria-disabled="true"], [disabled]') !== null ||
         input.disabled.indexOf(cell.getAttribute('data-component') + ' / ' + cell.getAttribute('data-state')) !== -1;
+      const modal = body.querySelector('[aria-modal="true"]');
       const runs = [];
       for (const node of body.querySelectorAll('*')) {
         if (undrawn(node, body)) {
@@ -1336,7 +1337,9 @@ export async function readTextContrast (page, disabledCells) {
           fontSize: parseFloat(style.fontSize),
           fontWeight: parseInt(style.fontWeight, 10),
           ratio: Math.round((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05) * 100) / 100,
-          disabled: disabled
+          // Text behind an open modal dialog of its own cell is inert, as
+          // disabled text is (the page under a scrim takes no input)
+          disabled: disabled || (modal !== null && !modal.contains(run.node))
         });
       }
     }

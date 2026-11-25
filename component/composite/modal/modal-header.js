@@ -67,7 +67,10 @@ export default function ModalHeader (ctx) {
       React.createElement(Text, {
         nativeID: props.headingId,
         style: [ctx.typeStyle('dialog_heading'), { color: ctx.color('dialog_heading'), paddingEnd: gutter }]
-      }, props.title)),
+      }, props.title),
+      // Content under the heading, as upstream's ModalHeader children (the
+      // all-tags dialog's search field)
+      Utils.isNullOrUndefined(props.children) ? null : props.children),
       React.createElement(View, {
         style: {
           display: closeShown ? 'flex' : 'none',

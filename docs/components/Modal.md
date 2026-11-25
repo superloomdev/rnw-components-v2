@@ -119,7 +119,7 @@ ComposedModal is the framed dialog on its own scrim layer composing ModalHeader,
 | `returnFocusRef` | `object` | no | Ref of the launcher; focused when the dialog closes. |
 | `accessibilityLabel` | `string` | no | Accessible name; the heading names the dialog when this is not given. |
 | `testID` | `string` | no | Test identifier forwarded to the dialog container. |
-| `header` | `object` | no | ModalHeader props: { label, title, iconDescription, buttonOnClick }. |
+| `header` | `object` | no | ModalHeader props: { label, title, iconDescription, buttonOnClick, children }; `children` is drawn under the heading. |
 | `children` | `node` | no | The body content. |
 | `body` | `object` | no | ModalBody props: { hasScrollingContent, hasForm, accessibilityLabel }. |
 | `footer` | `object` | no | ModalFooter props: { primaryButtonText, primaryButtonDisabled, onRequestSubmit, secondaryButtonText, secondaryButtons, onRequestClose, danger, loadingStatus, loadingDescription }. Absent draws a passive dialog. |
@@ -312,6 +312,7 @@ ModalHeader is the header band of a ComposedModal - the eyebrow label, the headi
 | `title` | `string` | yes | The heading text; names the dialog unless the parent gives an `accessibilityLabel`. |
 | `iconDescription` | `string` | no | Accessible name of the close button. Default `Close`. |
 | `buttonOnClick` | `function` | no | Called by the close button; defaults to the parent's close request. |
+| `children` | `node` | no | Content under the heading, inside the header (the all-tags dialog's search field). |
 
 ### Metrics
 

@@ -2916,6 +2916,16 @@
       "why": "a narrow-only list drawn in the wide window must show in the wide perceptual comparison"
     },
     {
+      "id": "structural-behind-modal",
+      "file": "_test/harness/page.js",
+      "find": "          disabled: disabled || (modal !== null && !modal.contains(run.node))",
+      "replace": "          disabled: disabled",
+      "runner": "pw",
+      "test": "structural.spec.js",
+      "testName": "every drawn text run meets the contrast minimum against its backdrop",
+      "why": "text behind its cell's open modal dialog is inert; without the exemption the TagSet row under the all-tags dialog's scrim fails the ratio"
+    },
+    {
       "id": "tab-manual-activation",
       "file": "behaviors/state.js",
       "find": "    const manual = options.activation === 'manual';",

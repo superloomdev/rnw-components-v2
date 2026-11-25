@@ -176,7 +176,7 @@ export default function ComposedModal (ctx) {
       maxHeight: headerMaxHeight,
       textGutter: textGutter.header,
       title: header.title
-    }),
+    }, header.children),
     React.createElement(ctx.Registry.ModalBody, {
       accessibilityLabel: body.accessibilityLabel,
       bodyId: bodyId,

@@ -14,7 +14,7 @@ export default Object.freeze({
     returnFocusRef: { type: 'object', required: false, description: 'Ref of the launcher; focused when the dialog closes.' },
     accessibilityLabel: { type: 'string', required: false, description: 'Accessible name; the heading names the dialog when this is not given.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the dialog container.' },
-    header: { type: 'object', required: false, description: 'ModalHeader props: { label, title, iconDescription, buttonOnClick }.' },
+    header: { type: 'object', required: false, description: 'ModalHeader props: { label, title, iconDescription, buttonOnClick, children }; `children` is drawn under the heading.' },
     children: { type: 'node', required: false, description: 'The body content.' },
     body: { type: 'object', required: false, description: 'ModalBody props: { hasScrollingContent, hasForm, accessibilityLabel }.' },
     footer: { type: 'object', required: false, description: 'ModalFooter props: { primaryButtonText, primaryButtonDisabled, onRequestSubmit, secondaryButtonText, secondaryButtons, onRequestClose, danger, loadingStatus, loadingDescription }. Absent draws a passive dialog.' }

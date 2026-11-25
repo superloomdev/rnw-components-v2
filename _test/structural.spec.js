@@ -311,7 +311,7 @@ for (const template of TEMPLATE_NAMES) {
           return { token: entry.token, key: key, seen: false };
         });
         for (const run of runs) {
-          // Disabled text is inactive and exempt
+          // Disabled text, and text behind its cell's open modal dialog, is inactive and exempt
           if (run.disabled) {
             continue;
           }

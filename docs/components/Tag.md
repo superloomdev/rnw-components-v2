@@ -44,6 +44,16 @@ Samples cap the visible count so the accessibility tree is the same under every 
 - **A sized placeholder.** `SkeletonPlaceholder` at `control.tag_skeleton_width` wide, the tag's `control.tag_height` tall (`control.tag_height_small` at `sm`), in the tag's `control.tag_radius` corner - the primary's `.cds--tag.cds--skeleton` draws exactly that (60px wide, the skeleton fill, the pill radius).
 - **No second reference.** No skeleton primitive exists in the second system; the row's values are a Superloom decision, as the roster flag records.
 
+### TagSet's all-tags dialog (plan 0162 U7r)
+
+Upstream's dialog is the package's own `TagSetModal` (`TagSet/TagSetModal.tsx`): a `ComposedModal` of size `sm`
+whose header holds the title and the search field and whose body scrolls the tags (`hasScrollingContent`); from md
+its container is 90 % of the layer, at most 450 (`_tag-set.scss:89-94`). Outcomes (E17): the container at 90 % or
+at its 450 cap; the body fitting its room or scrolling. `allTags` (`defaultAllTagsOpen`, 40 tags, a 560 stage) draws
+the cap and the scroll; the 90 % outcome needs a stage under 500, which a row's one frame cannot also give the cap.
+The first reading (U7r): ours is the passive `Modal` of size `md` with the search in the body, 192 x 470 against
+134.39 x 450, its body at y 84.8 against 172 and 429.4 tall against 332.
+
 ### Platform
 
 Both. The container, icon, label, close control, pressables and the skeleton render on iOS, Android and web; tooltips behave as the Tooltip component's own notes describe.

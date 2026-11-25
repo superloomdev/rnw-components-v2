@@ -182,19 +182,27 @@ export default function TagSet (ctx) {
       open: overflowOpen === true
     },
     overflowTag),
-    modalOpen === true ? React.createElement(ctx.Registry.Modal, {
+    // The all-tags dialog, upstream's TagSetModal (`TagSet/TagSetModal.tsx`):
+    // a passive small dialog, the search under the heading, the tags in a
+    // scrolling form body
+    modalOpen === true ? React.createElement(ctx.Registry.ComposedModal, {
+      body: { hasForm: true, hasScrollingContent: true },
+      header: {
+        children: React.createElement(View, { style: { marginTop: ctx.token('spacing.spacing_05') } },
+          React.createElement(ctx.Registry.Search, {
+            label: Utils.isString(props.allTagsModalSearchLabel) ? props.allTagsModalSearchLabel : 'Search all tags',
+            onChangeText: setQuery,
+            size: 'lg'
+          })),
+        title: Utils.isString(props.allTagsModalTitle) ? props.allTagsModalTitle : 'All tags'
+      },
       onClose: function () {
         setModalOpen(false);
       },
       open: true,
-      passive: true,
-      title: Utils.isString(props.allTagsModalTitle) ? props.allTagsModalTitle : 'All tags'
+      size: 'sm'
     },
-    React.createElement(ctx.Registry.Search, {
-      label: Utils.isString(props.allTagsModalSearchLabel) ? props.allTagsModalSearchLabel : 'Search all tags',
-      onChangeText: setQuery
-    }),
-    React.createElement(View, { style: { flexDirection: 'row', flexWrap: 'wrap', marginTop: ctx.token('spacing.spacing_05') } },
+    React.createElement(View, { style: { flexDirection: 'row', flexWrap: 'wrap' } },
       filtered.map(function (tag, i) {
         return oneTag(tag, i, gap);
       }))) : null);
