@@ -232,13 +232,16 @@ export default function OverflowMenu (ctx) {
         width: 0
       }
     }) : null,
+    // The connector below a downward panel is the connector cell; above
+    // the trigger an upward panel's is `$spacing-03` deep
+    // (`overflow-menu/_overflow-menu.scss:151-164`)
     React.createElement(View, {
       'aria-hidden': 'true',
       style: {
         backgroundColor: ctx.enum('anatomy.overflow_menu_connector') === 'shown' && props.connector !== false ? ctx.color('overflow_menu_trigger_open') : 'transparent',
         opacity: ctx.enum('anatomy.overflow_menu_connector') === 'shown' && props.connector !== false ? 1 : 0,
-        bottom: direction === 'top' ? -ctx.metric('OverflowMenu', 'connectorSize') : undefined,
-        height: ctx.metric('OverflowMenu', 'connectorSize'),
+        bottom: direction === 'top' ? -ctx.metric('OverflowMenu', 'connectorSizeTop') : undefined,
+        height: ctx.metric('OverflowMenu', direction === 'top' ? 'connectorSizeTop' : 'connectorSize'),
         left: flipped === true ? undefined : 0,
         position: 'absolute',
         right: flipped === true ? 0 : undefined,

@@ -84,7 +84,10 @@ export default function BreadcrumbItem (ctx) {
         iconColor: 'breadcrumb_overflow_icon',
         iconDescription: 'More pages',
         iconHoverLeaf: 'breadcrumb_overflow_icon_hover',
-        iconOffset: metrics.overflowIconOffset,
+        // The small trigger is 2 shorter and its glyph 1 less down
+        // (`_breadcrumb.scss:220-229`): the glyph's bottom stands as far
+        // below the trigger's in both sizes
+        iconOffset: metrics.overflowIconOffset - (small ? (ctx.metric('BreadcrumbItem', 'overflowHeight') - metrics.overflowHeight) / 2 : 0),
         iconSize: ctx.metric('BreadcrumbItem', 'iconSize'),
         items: props.overflow.map(function (entry) {
           return { href: entry.href, label: entry.label, onPress: entry.onPress };

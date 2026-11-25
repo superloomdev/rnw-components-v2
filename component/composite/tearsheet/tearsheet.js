@@ -206,11 +206,13 @@ export default function Tearsheet (ctx) {
         type: 'tearsheet_heading'
       }, props.title)));
     }
+    // The description is its text's width up to its cap, as upstream's
+    // `inline-flex` box is (`Tearsheet/_tearsheet.scss:385-394`)
     if (Utils.isString(props.description)) {
       headerChildren.push(React.createElement(Text, {
         dataSet: { part: 'description' },
         key: 'description',
-        style: [ctx.typeStyle('tearsheet_description'), { color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap, maxWidth: String((narrow ? 1 : metrics.descriptionMaxRatio) * 100) + '%' }]
+        style: [ctx.typeStyle('tearsheet_description'), { alignSelf: 'flex-start', color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap, maxWidth: String((narrow ? 1 : metrics.descriptionMaxRatio) * 100) + '%' }]
       }, props.description));
     }
     if (props.navigation !== undefined && props.navigation !== null) {

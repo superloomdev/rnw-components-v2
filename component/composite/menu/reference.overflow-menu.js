@@ -48,7 +48,7 @@ export default Object.freeze({
     icon: Object.freeze({ upstream: '.cds--overflow-menu__icon', ours: '[data-testid="icon-button-face"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'] }),
     tooltip: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true }),
     panel: Object.freeze({ upstream: '.cds--overflow-menu-options', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'boxShadow'], optional: true }),
-    connector: Object.freeze({ upstream: '.cds--overflow-menu-options', pseudo: '::after', ours: '[role="menu"] > div:first-child', measure: 'box', compare: ['cssWidth', 'cssHeight', 'cssTop', 'cssLeft', 'backgroundColor'], optional: true }),
+    connector: Object.freeze({ upstream: '.cds--overflow-menu-options', pseudo: '::after', ours: '[role="menu"] > div:first-child', measure: 'box', compare: ['x', 'y', 'width', 'height', 'cssWidth', 'cssHeight', 'cssTop', 'cssLeft', 'backgroundColor'], optional: true }),
     option: Object.freeze({ upstream: '.cds--overflow-menu-options__option', all: true, ours: '[role="presentation"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor'], optional: true }),
     optionButton: Object.freeze({ upstream: '.cds--overflow-menu-options__btn', all: true, ours: '[role="menuitem"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingLeft', 'paddingRight', 'color', 'maxWidth', 'boxShadow'], optional: true }),
     optionText: Object.freeze({ upstream: '.cds--overflow-menu-options__option-content', all: true, ours: '[role="menuitem"] [dir="auto"]', measure: 'text', optional: true })

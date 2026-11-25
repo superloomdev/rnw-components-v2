@@ -5134,6 +5134,66 @@
       "test": "toggle.test.js",
       "testName": "track, handle, mark and texts come from the theme",
       "why": "the small toggle's mark keeps its glyph's 6 x 5 aspect"
+    },
+    {
+      "id": "breadcrumb-glyph-translate",
+      "file": "component/molecule/button/icon-button.js",
+      "find": "? [{ translateY: props.iconOffset }] : []",
+      "replace": "? [] : []",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Breadcrumb / primary / light: matches the reference in every state",
+      "why": "the overflow glyph moves by a translation, its whole offset"
+    },
+    {
+      "id": "overflow-menu-connector-top",
+      "file": "component/composite/menu/overflow-menu.js",
+      "find": "direction === 'top' ? 'connectorSizeTop' : 'connectorSize'",
+      "replace": "'connectorSize'",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "OverflowMenu / primary / light: matches the reference in every state",
+      "why": "an upward panel's connector is spacing-03 deep"
+    },
+    {
+      "id": "tearsheet-description-wrap",
+      "file": "component/composite/tearsheet/tearsheet.js",
+      "find": "{ alignSelf: 'flex-start', color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap",
+      "replace": "{ color: ctx.color('dialog_heading'), marginTop: metrics.descriptionGap",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "Tearsheet / primary / light: matches the reference in every state",
+      "why": "the description is its text's width up to its cap"
+    },
+    {
+      "id": "contained-list-row-middle",
+      "file": "component/composite/contained-list/contained-list-item.js",
+      "find": "paddingStart: metrics.paddingInline, paddingTop: paddingBlock }",
+      "replace": "paddingStart: metrics.paddingInline, paddingTop: 0 }",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "ContainedList / primary / light: matches the reference in every state",
+      "why": "the label sits in the row's middle"
+    },
+    {
+      "id": "modal-header-scroll-edge",
+      "file": "component/composite/modal/composed-modal.js",
+      "find": " - ctx.token('border.width_02') - ctx.token('control.dialog_header_space')",
+      "replace": " - ctx.token('control.dialog_header_space')",
+      "runner": "node",
+      "test": "composed-modal.test.js",
+      "testName": "the xs header is capped at the grid's share of the dialog height",
+      "why": "a body held at its padding keeps its scroll edge"
+    },
+    {
+      "id": "button-floor-fractional",
+      "file": "component/molecule/button/button.js",
+      "find": "const widestRun = runs.anchor === null ? null : runs.anchor.width;",
+      "replace": "const widestRun = runs.anchor === null ? null : Math.round(runs.anchor.width);",
+      "runner": "node",
+      "test": "modal-footer.test.js",
+      "testName": "a stretched action is never narrower than its min-content width",
+      "why": "the floor reads the runs' fractional box"
     }
   ]
 }

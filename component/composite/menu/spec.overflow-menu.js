@@ -7,6 +7,7 @@
 export default Object.freeze({
   width: 'control.overflow_menu_width',
   connectorSize: 'control.overflow_menu_connector_size',
+  connectorSizeTop: 'spacing.spacing_03',
   iconSize: 'size.icon_01',
   level: 'stacking.dropdown',
   optionHeight: 'control.option_height',

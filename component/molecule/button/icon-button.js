@@ -149,8 +149,9 @@ export default function IconButton (ctx) {
     // turns without a transition there, as the press fills' do
     React.createElement(View, {
       style: {
-        marginTop: Utils.isNumber(props.iconOffset) ? props.iconOffset : 0,
-        transform: [{ rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg' }],
+        // The offset moves the centred glyph by its whole amount, as a
+        // translation does (`breadcrumb/_breadcrumb.scss:171-175`)
+        transform: (Utils.isNumber(props.iconOffset) && props.iconOffset !== 0 ? [{ translateY: props.iconOffset }] : []).concat([{ rotate: (Utils.isNumber(props.iconRotation) ? props.iconRotation : 0) + 'deg' }]),
         transitionDuration: ctx.token('motion.duration_fast_02') + 'ms',
         transitionProperty: 'transform',
         transitionTimingFunction: 'cubic-bezier(' + ctx.token('motion.easing_standard_productive').join(', ') + ')'

@@ -41,3 +41,11 @@ through `onMinContentWidth`. Below md the influencer takes its content's width (
 the wide one, whose `flex-basis: 321px` follows that rule in the source (`:479-481`) and still applies: in a 320
 body it fills the row, and main, never narrower than its action row's min-content width, is pushed past the
 container, which clips it (`influencerWide` in the narrow set draws no action row).
+
+- **Geometry against upstream (U7g).** The description is upstream's
+  `inline-flex` box (`Tearsheet/_tearsheet.scss:385-394`): its text's width
+  up to the 60 % cap, 309.72 in the wide states where ours filled the cap
+  at 651.59; it shrink-wraps now and still wraps at the cap. Upstream's
+  main is the content's grid row and the button container the next row
+  (`:491-498,552-555`), so its main is 81 shorter than ours, which holds
+  both: the main compares its x, y and width, and the body its height.

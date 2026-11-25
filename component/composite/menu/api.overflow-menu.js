@@ -40,7 +40,7 @@ export default Object.freeze({
   kinds: Object.freeze([]),
   variants: Object.freeze([]),
   tokens: Object.freeze([
-    'control.overflow_menu_width', 'control.overflow_menu_connector_size', 'control.overflow_menu_option_max_width',
+    'control.overflow_menu_width', 'control.overflow_menu_connector_size', 'spacing.spacing_03', 'control.overflow_menu_option_max_width',
     'control.option_height', 'size.size_large', 'control.list_item_padding_inline', 'control.menu_divider_width',
     'control.menu_item_danger_focus_inset_width',
     'color.overflow_menu_icon', 'color.overflow_menu_trigger_hover', 'color.overflow_menu_trigger_open',

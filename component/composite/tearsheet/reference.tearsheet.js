@@ -62,13 +62,16 @@ export default Object.freeze({
     header: Object.freeze({ upstream: '.c4p--tearsheet__header', ours: '[data-part="header"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'minHeight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'backgroundColor', 'borderBottomWidth', 'borderBottomColor'] }),
     label: Object.freeze({ upstream: '.c4p--tearsheet__header .cds--modal-header__label', ours: '[data-part="label"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'marginBottom', 'color', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
     heading: Object.freeze({ upstream: '.c4p--tearsheet__heading', ours: '[data-part="heading"] [dir="auto"]', measure: 'text' }),
-    description: Object.freeze({ upstream: '.c4p--tearsheet__header-description', ours: '[data-part="description"]', measure: 'box', optional: true, compare: ['marginTop', 'maxWidth', 'color', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    description: Object.freeze({ upstream: '.c4p--tearsheet__header-description', ours: '[data-part="description"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'marginTop', 'maxWidth', 'color', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
     navigation: Object.freeze({ upstream: '.c4p--tearsheet__header-navigation', ours: '[data-part="navigation"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'marginTop'] }),
     close: Object.freeze({ upstream: '.c4p--tearsheet .cds--modal-close', ours: '[data-part="close"] [role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
     closeIcon: Object.freeze({ upstream: '.c4p--tearsheet .cds--modal-close__icon', ours: '[data-part="close"] svg', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
     body: Object.freeze({ upstream: '.c4p--tearsheet__body', ours: '[data-part="tearsheetBody"]', measure: 'box' }),
     influencer: Object.freeze({ upstream: '.c4p--tearsheet__influencer', ours: '[data-part="influencer"]', measure: 'box', optional: true, compare: ['width', 'backgroundColor', 'borderRightWidth', 'borderRightColor', 'borderLeftWidth', 'borderLeftColor'] }),
-    main: Object.freeze({ upstream: '.c4p--tearsheet__main', ours: '[data-part="main"]', measure: 'box', optional: true, compare: ['backgroundColor'] }),
+    // Upstream's main is the content's grid row, the button container the
+    // next row (`_tearsheet.scss:491-498,552-555`); ours holds both, so its
+    // height is the body's, which `body` compares
+    main: Object.freeze({ upstream: '.c4p--tearsheet__main', ours: '[data-part="main"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'backgroundColor'], except: ['height'] }),
     content: Object.freeze({ upstream: '.c4p--tearsheet__content', ours: '[data-part="content"]', measure: 'box', optional: true }),
     buttonContainer: Object.freeze({ upstream: '.c4p--tearsheet__button-container', ours: '[data-part="buttonContainer"]', measure: 'box', optional: true }),
     buttonSet: Object.freeze({ upstream: '.c4p--tearsheet__buttons', ours: '[data-part="buttonSet"]', measure: 'box', optional: true, compare: ['backgroundColor', 'borderTopWidth', 'borderTopColor'] }),

@@ -59,3 +59,9 @@ an item is chosen).
 no danger kind, no selected marks and leading icons in `start` slots.
 
 Measured residual: the trigger glyph sits half a point higher than the reference's, which offsets the glyph by one sixteenth of a rem and back.
+
+- **The upward connector.** Upstream's connector is 3 deep below a
+  downward panel and `$spacing-03` (8) deep above the trigger under an
+  upward one (`overflow-menu/_overflow-menu.scss:151-164`); ours drew the
+  3 for both, measured once the reference compared the connector's box
+  (`openTop` 3 against 8). Both directions have states (`open`, `openTop`).

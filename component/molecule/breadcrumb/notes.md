@@ -41,3 +41,12 @@ the page header's back link), an item that keeps its room unseen
 A composing parent may hand the list and every item its own type set and
 item gap (`typeLeaf`, `gap`); the page header's breadcrumb row does, with
 label-01 and its 4 gap.
+
+The overflow glyph moves by a translation (`_breadcrumb.scss:171-175`,
+`translateY(4px)`; `translateY(3px)` on the small trigger, `:220-229`).
+IconButton drew `iconOffset` as a top margin inside a centred column,
+which moved the glyph by half: y 3 against 5 (2 against 3 small). It is
+a translation now, and the small trigger takes the offset less half the
+two triggers' difference, so the glyph's bottom stands 3 below the
+trigger's in both sizes. Both sizes have states (`overflow`,
+`overflowSmall`).

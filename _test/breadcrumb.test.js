@@ -83,7 +83,10 @@ describe('Breadcrumb: every sample state under every template', function () {
             const svg = face.querySelector('svg');
             assert.equal(svg.getAttribute('fill'), t['color.breadcrumb_overflow_icon'], 'the overflow ink');
             const iconWrap = svg.parentElement;
-            assert.equal(iconWrap.style.marginTop, t['control.breadcrumb_overflow_icon_offset'] + 'px', 'the icon offset');
+            // The glyph moves by a translation; the small trigger's is less
+            // half the two triggers' difference
+            const offset = t['control.breadcrumb_overflow_icon_offset'] - (small ? (t['control.breadcrumb_overflow_height'] - t['control.breadcrumb_overflow_height_small']) / 2 : 0);
+            assert.equal(iconWrap.style.transform, offset === 0 ? 'rotate(0deg)' : 'translateY(' + offset + 'px) rotate(0deg)', 'the icon offset');
             await fire(trigger, new Event('pointerover', { bubbles: true }));
             const under = li.querySelector('[data-part="focusUnderline"]');
             if (under !== null) {
