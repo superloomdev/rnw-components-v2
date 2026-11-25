@@ -1,7 +1,8 @@
 // Info: ModalFooter member. The dialog's actions row: under
 // `anatomy.dialog_actions` `stretched` the buttons run edge to edge at the
 // actions height, each `control.dialog_action_ratio` of the width (`_three`
-// for the three-button layout, the row pushed to the end), padded
+// for the three-button layout, the row pushed to the end; the label wraps
+// inside it, never narrower than the button's min-content width), padded
 // `control.dialog_action_padding_top` / `_bottom`, the label at the top;
 // `trailing` keeps the anchor's right-aligned gap row. Secondaries are
 // `secondary` kind, the primary `primary` (`danger` under `danger`), and a
@@ -50,6 +51,8 @@ export default function ModalFooter (ctx) {
       separatorWidth: ctx.token('border.width_01')
     };
     const focusedIndex = React.useState(null);
+    // Each stretched button's min-content width, as it reports it
+    const [floors, setFloors] = React.useState({});
     const stretched = ctx.enum('anatomy.dialog_actions') === 'stretched';
     const actions = Utils.isArray(props.actions) ? props.actions : [];
     const secondaries = [];
@@ -87,7 +90,8 @@ export default function ModalFooter (ctx) {
           backgroundColor: ctx.color('dialog_container'),
           flexDirection: 'row',
           flexShrink: 0,
-          height: metrics.height > 0 ? metrics.height : undefined,
+          // The actions height, grown only by a label too tall for it
+          minHeight: metrics.height > 0 ? metrics.height : undefined,
           justifyContent: 'flex-end'
         }
       }, buttons.map(function (button, index) {
@@ -100,11 +104,13 @@ export default function ModalFooter (ctx) {
             ? ctx.color('button_set_separator_disabled')
             : ctx.color('button_set_separator');
         const separatorStyle = { backgroundColor: separator, bottom: 0, position: 'absolute', start: -metrics.separatorWidth, top: 0, width: metrics.separatorWidth, zIndex: 1 };
+        // Upstream's `flex: 0 1 50%` (`25%` for three, `modal/_modal.scss:320-334`)
+        // with a min-content minimum: the ratio is the width, the label wraps
+        // inside it, and the button's min-content width is the floor
+        const floor = floors[index];
         return React.createElement(View, {
           key: index,
-          // A button is never narrower than its label: the ratio is a
-          // floor, as upstream's flex basis under a min-content minimum
-          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT, position: 'relative' }
+          style: { flexBasis: (ratio * 100) + PCT, flexGrow: 0, flexShrink: 0, minWidth: Utils.isNumber(floor) ? floor : undefined, position: 'relative' }
         },
         React.createElement(ctx.Registry.Button, {
           buttonRef: index === 0 ? props.secondaryRef : undefined,
@@ -119,6 +125,11 @@ export default function ModalFooter (ctx) {
           },
           onFocus: function () {
             focusedIndex[1](index);
+          },
+          onMinContentWidth: function (width) {
+            setFloors(function (previous) {
+              return previous[index] === width ? previous : Object.assign({}, previous, { [index]: width });
+            });
           },
           onPress: button.onPress,
           paddingBottom: metrics.paddingBottom,

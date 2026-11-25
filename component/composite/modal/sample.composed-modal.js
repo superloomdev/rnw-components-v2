@@ -83,6 +83,19 @@ export default Object.freeze([
     })
   }),
   Object.freeze({
+    label: 'threeWraps',
+    props: Object.freeze({
+      children: 'The dialog body.',
+      footer: Object.freeze({
+        primaryButtonText: 'Save',
+        secondaryButtons: Object.freeze([Object.freeze({ buttonText: 'Discard changes' }), Object.freeze({ buttonText: 'Cancel' })])
+      }),
+      header: HEADER,
+      open: true,
+      preventCloseOnClickOutside: true
+    })
+  }),
+  Object.freeze({
     label: 'passive',
     props: Object.freeze({
       children: 'Read the details, then press outside or Escape to dismiss.',

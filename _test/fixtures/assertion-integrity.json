@@ -3578,8 +3578,8 @@
     {
       "id": "modal-footer-three-ratio",
       "file": "component/composite/modal/modal-footer.js",
-      "find": "          style: { flexShrink: 0, minWidth: (ratio * 100) + PCT, position: 'relative' }",
-      "replace": "          style: { flexShrink: 0, minWidth: '100%', position: 'relative' }",
+      "find": "          style: { flexBasis: (ratio * 100) + PCT, flexGrow: 0, flexShrink: 0, minWidth: Utils.isNumber(floor) ? floor : undefined, position: 'relative' }",
+      "replace": "          style: { flexBasis: '100%', flexGrow: 0, flexShrink: 0, minWidth: Utils.isNumber(floor) ? floor : undefined, position: 'relative' }",
       "runner": "node",
       "test": "modal-footer.test.js",
       "testName": "carbon: the three-button layout takes the three ratio, pushed to the end",
@@ -3778,12 +3778,12 @@
     {
       "id": "modal-footer-floor-off",
       "file": "component/composite/modal/modal-footer.js",
-      "find": "minWidth: (ratio * 100) + PCT",
-      "replace": "flexBasis: (ratio * 100) + PCT",
+      "find": "minWidth: Utils.isNumber(floor) ? floor : undefined",
+      "replace": "minWidth: undefined",
       "runner": "node",
       "test": "modal-footer.test.js",
-      "testName": "two actions split the action ratio at the actions height",
-      "why": "a footer button allowed to shrink under the ratio floor must fail the width assertion"
+      "testName": "carbon: a stretched action is never narrower than its min-content width",
+      "why": "a footer button without its min-content floor draws narrower than upstream's flex item, whose minimum is its min-content width"
     },
     {
       "id": "notification-stacked-off",
@@ -4997,7 +4997,7 @@
     },
     {
       "id": "structured-list-hyphen-break",
-      "file": "component/composite/structured-list/structured-list-layout.js",
+      "file": "component/line-breaks.js",
       "find": "  const runs = String(text).replace(BREAK_AFTER_DASH, '$&\\n').split(/\\s+/);",
       "replace": "  const runs = String(text).split(/\\s+/);",
       "runner": "node",

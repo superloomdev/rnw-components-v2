@@ -22,6 +22,7 @@ export default Object.freeze({
     iconRotation: { type: 'number', required: false, description: 'Composition prop: degrees the trailing icon turns by, transitioning on the web (the menu button\'s chevron while open). Default 0.' },
     minWidth: { type: 'number', required: false, description: 'Composition prop: overrides the computed minimum width (the combo button\'s action).' },
     maxWidth: { type: 'number', required: false, description: 'Composition prop: caps the computed width (the combo button\'s action).' },
+    onMinContentWidth: { type: 'function', required: false, description: 'Composition prop: lets the label wrap and reports the button\'s min-content width, its paddings, border and widest unbreakable run (the dialog\'s stretched actions).' },
     paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' },
     paddingTop: { type: 'number', required: false, description: 'Composition prop: overrides the top padding (the dialog actions row reads it from its cells).' },
     paddingBottom: { type: 'number', required: false, description: 'Composition prop: overrides the bottom padding (the dialog actions row reads it from its cells).' },

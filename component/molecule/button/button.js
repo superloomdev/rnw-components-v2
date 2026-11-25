@@ -6,6 +6,7 @@
 // elevation); the size picks a height metric.
 
 import SPEC from './spec.js';
+import { breakRuns } from '../../line-breaks.js';
 
 
 /********************************************************************
@@ -130,6 +131,36 @@ export default function Button (ctx) {
       : inline ? ctx.metric('Button', 'ghostPaddingEnd')
         : hasIcon ? Math.max(ctx.metric('Button', 'paddingEnd'), slot) : ctx.metric('Button', 'paddingEnd');
     const minWidth = Utils.isNumber(props.minWidth) ? props.minWidth : ctx.metric('Button', 'minWidth');
+
+    // A composing parent that reads the button's min-content width lets the
+    // label wrap: a hidden copy of the label's unbreakable runs measures the
+    // widest, and the paddings and the border make the button's (the
+    // dialog's stretched actions: upstream's flex basis over a min-content
+    // minimum, `modal/_modal.scss:331-334`)
+    const reportMinContent = props.onMinContentWidth;
+    const wraps = Utils.isFunction(reportMinContent);
+    const [widestRun, setWidestRun] = React.useState(null);
+    React.useEffect(function () {
+      if (wraps && widestRun !== null) {
+        reportMinContent(widestRun + paddingStart + paddingEnd + 2 * borderWidth);
+      }
+    }, [wraps, reportMinContent, widestRun, paddingStart, paddingEnd, borderWidth]);
+    const sizer = wraps && Utils.isString(props.children) ? React.createElement(View, {
+      'aria-hidden': true,
+      pointerEvents: 'none',
+      style: { height: 0, opacity: 0, overflow: 'hidden', position: 'absolute', start: 0, top: 0, width: 0 }
+    }, React.createElement(View, { style: { flexDirection: 'row', overflow: 'scroll' } },
+      React.createElement(View, {
+        onLayout: function (event) {
+          const width = event.nativeEvent.layout.width;
+          setWidestRun(function (previous) {
+            return previous === width ? previous : width;
+          });
+        },
+        style: { alignItems: 'flex-start', flexShrink: 0 }
+      }, breakRuns(Utils, props.children).map(function (run, index) {
+        return React.createElement(Text, { key: index, style: labelStyle }, run);
+      })))) : null;
     const iconPlace = inline
       // An inline kind's icon centers itself on the row the way upstream's
       // static ghost icon does (align-self: center), not by a computed top
@@ -213,10 +244,13 @@ export default function Button (ctx) {
       style: [{ borderRadius: radius, bottom: -borderWidth, left: -borderWidth, position: 'absolute', right: -borderWidth, top: -borderWidth }, press.layer]
     }),
     React.createElement(Text, {
-      numberOfLines: 1,
-      style: [labelStyle, { color: ctx.color(contentLeaf) }]
+      numberOfLines: wraps ? undefined : 1,
+      // A wrapping label may run into the bottom padding, as upstream's
+      // fixed-height action draws it, but never past the button's box
+      style: [labelStyle, { color: ctx.color(contentLeaf), flexShrink: wraps ? 1 : undefined, marginBottom: wraps ? -(Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop) : undefined }]
     }, props.children),
-    icon);
+    icon,
+    sizer);
 
   }
 

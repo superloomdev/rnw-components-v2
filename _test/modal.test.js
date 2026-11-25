@@ -137,7 +137,8 @@ describe('Modal: every sample state under every template', function () {
         }
         assert.equal(row !== null, true);
         const stretched = t['anatomy.dialog_actions'] === 'stretched';
-        assert.equal(row.style.height, t['control.dialog_actions_height'] > 0 ? t['control.dialog_actions_height'] + 'px' : '');
+        // Stretched, the actions height is a floor a scaled wrapped label may grow
+        assert.equal(stretched ? row.style.minHeight : row.style.height, t['control.dialog_actions_height'] > 0 ? t['control.dialog_actions_height'] + 'px' : '');
         if (stretched) {
           assert.equal(row.style.justifyContent, 'flex-end');
         } else {

@@ -20,29 +20,7 @@
 // at a space and after a dash where the browser breaks (`line-breaks.js`);
 // a `noWrap` cell's min is its max.
 
-import { BREAK_AFTER_DASH } from '../../line-breaks.js';
-
-
-/********************************************************************
-The words a text can break into: split at white space and after each
-dash the browser breaks after, the dash kept on the part before it.
-
-@param {Object} Utils - The shared utilities
-@param {String} text  - The cell's text
-
-@return {Array} - The unbreakable runs
-*********************************************************************/
-export function breakRuns (Utils, text) {
-
-  // Mark each dash break with a line feed, then split at white space
-  const runs = String(text).replace(BREAK_AFTER_DASH, '$&\n').split(/\s+/);
-
-  // The runs, empty ones dropped
-  return runs.filter(function (run) {
-    return !Utils.isEmptyString(run);
-  });
-
-}
+export { breakRuns } from '../../line-breaks.js';
 
 
 /********************************************************************

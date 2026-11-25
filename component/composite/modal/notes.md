@@ -27,6 +27,22 @@ theme.
   falls to `dialog_header_gap` when a row follows - the second
   reference's content-then-actions geometry. Trailing actions default to
   `ghost`. An action's `kind` overrides.
+- **A stretched action's width** is upstream's `flex: 0 1 50%`, `25%` for
+  three (`modal/_modal.scss:320-334`) over a flex item's min-content
+  minimum: the ratio is the width and the label wraps inside it, but never
+  below the button's min-content width (its paddings, border and widest
+  unbreakable run, which the Button reports through `onMinContentWidth`).
+  Three outcomes (plan 0162 E17), each drawn: the label fits the ratio
+  (`three` at 640); the label is wider than the ratio and its widest word
+  fits, so it wraps at the ratio (`threeWraps` at 640, "Discard changes"
+  at 160); the widest word is wider than the ratio, so the button is its
+  min-content width (both in the narrow set: a quarter of a row of at most
+  375 is under 94, "Keep both" 112.67 wide, `Keep` over `both`). Before this the button was its
+  label's one-line width (narrow `three` 145.59 against 112.67). A wrapped
+  label may run into the bottom padding, as upstream's fixed 64 draws it,
+  but not past the button's box: the label's bottom margin gives the
+  padding back, and the row is the actions height at least, grown only by
+  a label taller than that (two lines of a scaled text).
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
 - **Header in flow.** The header sits in flow, its bottom margin

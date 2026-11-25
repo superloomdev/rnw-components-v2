@@ -36,6 +36,20 @@ block ends by half the condensed gutter (the grid package's
 condensed row of one text line is 19 tall, not 18 (fidelity `condensed`
 columns height 18 vs 19).
 
+### The narrow set (plan 0162 U7r)
+
+At the sm breakpoint every column spans one of four tracks and keeps a
+gutter half on each side (`grid/scss/_css-grid.scss:90`, `:129`:
+`margin-inline: var(--cds-grid-gutter-start) var(--cds-grid-gutter-end)`,
+1rem each), so a 320 body gives a column 80 - 32 = 48. The sample's text
+was `Column`, 49.4 wide: the browser lets a word wider than its box
+overflow it (18 tall), React Native breaks it by letter on every host
+(react-native-web's Text keeps `wordWrap: 'break-word'`, `Text/index.js:146`;
+Android and iOS have no overflowing word), 36 tall. The library draws that
+host rule on the web too, so the web and the devices agree (platform
+exception 30). The sample draws the grid's tracks, not that rule: its text
+is `Col`, 20.8 wide, clear of every column a gate draws.
+
 ### Platform
 
 `platform.support` is `both`.
@@ -121,13 +135,13 @@ Grid is the layout grid that holds rows of columns sized per breakpoint.
 
 | State | Props |
 |---|---|
-| default | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}]}` |
-| condensed | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}],"condensed":true}` |
-| narrow | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}],"narrow":true}` |
-| fullWidth | `{"columns":[{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4},{"children":"Column","lg":4}],"fullWidth":true}` |
-| offset | `{"columns":[{"children":"Column","lg":{"offset":4,"span":4}},{"children":"Column","lg":8}]}` |
-| wrap | `{"columns":[{"children":"Column","lg":8},{"children":"Column","lg":8},{"children":"Column","lg":16}]}` |
-| rowGap | `{"columns":[{"children":"Column","lg":8},{"children":"Column","lg":8},{"children":"Column","lg":8},{"children":"Column","lg":8}],"withRowGap":true}` |
+| default | `{"columns":[{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4}]}` |
+| condensed | `{"columns":[{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4}],"condensed":true}` |
+| narrow | `{"columns":[{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4}],"narrow":true}` |
+| fullWidth | `{"columns":[{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4},{"children":"Col","lg":4}],"fullWidth":true}` |
+| offset | `{"columns":[{"children":"Col","lg":{"offset":4,"span":4}},{"children":"Col","lg":8}]}` |
+| wrap | `{"columns":[{"children":"Col","lg":8},{"children":"Col","lg":8},{"children":"Col","lg":16}]}` |
+| rowGap | `{"columns":[{"children":"Col","lg":8},{"children":"Col","lg":8},{"children":"Col","lg":8},{"children":"Col","lg":8}],"withRowGap":true}` |
 
 ## Row
 

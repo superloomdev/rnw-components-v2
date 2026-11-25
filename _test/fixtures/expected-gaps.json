@@ -7,18 +7,6 @@
   ],
   "gaps": [
     {
-      "check": "measure",
-      "component": "ComposedModal",
-      "part": "action",
-      "property": "width"
-    },
-    {
-      "check": "fidelity",
-      "component": "ComposedModal",
-      "part": "action",
-      "property": "width"
-    },
-    {
       "check": "fidelity",
       "component": "Breadcrumb",
       "part": "links",

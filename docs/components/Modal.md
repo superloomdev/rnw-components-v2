@@ -31,6 +31,22 @@ theme.
   falls to `dialog_header_gap` when a row follows - the second
   reference's content-then-actions geometry. Trailing actions default to
   `ghost`. An action's `kind` overrides.
+- **A stretched action's width** is upstream's `flex: 0 1 50%`, `25%` for
+  three (`modal/_modal.scss:320-334`) over a flex item's min-content
+  minimum: the ratio is the width and the label wraps inside it, but never
+  below the button's min-content width (its paddings, border and widest
+  unbreakable run, which the Button reports through `onMinContentWidth`).
+  Three outcomes (plan 0162 E17), each drawn: the label fits the ratio
+  (`three` at 640); the label is wider than the ratio and its widest word
+  fits, so it wraps at the ratio (`threeWraps` at 640, "Discard changes"
+  at 160); the widest word is wider than the ratio, so the button is its
+  min-content width (both in the narrow set: a quarter of a row of at most
+  375 is under 94, "Keep both" 112.67 wide, `Keep` over `both`). Before this the button was its
+  label's one-line width (narrow `three` 145.59 against 112.67). A wrapped
+  label may run into the bottom padding, as upstream's fixed 64 draws it,
+  but not past the button's box: the label's bottom margin gives the
+  padding back, and the row is the actions height at least, grown only by
+  a label taller than that (two lines of a scaled text).
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
 - **Header in flow.** The header sits in flow, its bottom margin
@@ -134,6 +150,7 @@ ComposedModal is the framed dialog on its own scrim layer composing ModalHeader,
 | lg | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true,"size":"lg"}` |
 | danger | `{"children":"The dialog body.","danger":true,"footer":{"primaryButtonText":"Delete","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
 | three | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtons":[{"buttonText":"Keep both"},{"buttonText":"Cancel"}]},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
+| threeWraps | `{"children":"The dialog body.","footer":{"primaryButtonText":"Save","secondaryButtons":[{"buttonText":"Discard changes"},{"buttonText":"Cancel"}]},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
 | passive | `{"children":"Read the details, then press outside or Escape to dismiss.","header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
 | scrolling | `{"body":{"hasScrollingContent":true},"children":"Line 1 of the long body text, long enough to overflow the dialog and scroll. Line 2 of the long body text, long enough to overflow the dialog and scroll. Line 3 of the long body text, long enough to overflow the dialog and scroll. Line 4 of the long body text, long enough to overflow the dialog and scroll. Line 5 of the long body text, long enough to overflow the dialog and scroll. Line 6 of the long body text, long enough to overflow the dialog and scroll. Line 7 of the long body text, long enough to overflow the dialog and scroll. Line 8 of the long body text, long enough to overflow the dialog and scroll. Line 9 of the long body text, long enough to overflow the dialog and scroll. Line 10 of the long body text, long enough to overflow the dialog and scroll. Line 11 of the long body text, long enough to overflow the dialog and scroll. Line 12 of the long body text, long enough to overflow the dialog and scroll.","footer":{"primaryButtonText":"Save","secondaryButtonText":"Cancel"},"header":{"label":"Account","title":"Confirm the change"},"open":true,"preventCloseOnClickOutside":true}` |
 
