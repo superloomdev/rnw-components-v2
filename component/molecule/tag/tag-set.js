@@ -67,7 +67,7 @@ export default function TagSet (ctx) {
     const [, setMeasureTick] = React.useState(0);
     const [overflowSeat, setOverflowSeat] = React.useState(-1);
     const [overflowOpen, setOverflowOpen] = React.useState(false);
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalOpen, setModalOpen] = React.useState(props.defaultAllTagsOpen === true);
     const [query, setQuery] = React.useState('');
 
     // The most tags that fit beside the overflow seat, capped by maxVisible;

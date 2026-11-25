@@ -269,6 +269,7 @@ TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag
 | `showAllTagsLabel` | `string` | no | The link that opens the all-tags dialog past ten hidden tags. Default `View all tags`. |
 | `allTagsModalTitle` | `string` | no | The dialog's title. Default `All tags`. |
 | `allTagsModalSearchLabel` | `string` | no | The dialog search field's label. Default `Search all tags`. |
+| `defaultAllTagsOpen` | `boolean` | no | Opens the all-tags dialog at mount, as a press of `showAllTagsLabel` does. |
 | `testID` | `string` | no | Test identifier forwarded to the root. |
 
 ### Metrics
@@ -287,6 +288,7 @@ TagSet shows as many tags as fit on one row and gathers the rest behind a +n tag
 | multiline | `{"multiline":true,"tags":[{"label":"One"},{"label":"Two"},{"label":"Three"},{"label":"Four"},{"label":"Five"},{"label":"Six"}]}` |
 | many | `{"maxVisible":2,"tags":[{"label":"Tag 1"},{"label":"Tag 2"},{"label":"Tag 3"},{"label":"Tag 4"},{"label":"Tag 5"},{"label":"Tag 6"},{"label":"Tag 7"},{"label":"Tag 8"},{"label":"Tag 9"},{"label":"Tag 10"},{"label":"Tag 11"},{"label":"Tag 12"},{"label":"Tag 13"},{"label":"Tag 14"}]}` |
 | dismissible | `{"maxVisible":2,"tags":[{"label":"One"},{"label":"Two"}]}` |
+| allTags | `{"defaultAllTagsOpen":true,"maxVisible":2,"tags":[{"label":"Tag 1"},{"label":"Tag 2"},{"label":"Tag 3"},{"label":"Tag 4"},{"label":"Tag 5"},{"label":"Tag 6"},{"label":"Tag 7"},{"label":"Tag 8"},{"label":"Tag 9"},{"label":"Tag 10"},{"label":"Tag 11"},{"label":"Tag 12"},{"label":"Tag 13"},{"label":"Tag 14"},{"label":"Tag 15"},{"label":"Tag 16"},{"label":"Tag 17"},{"label":"Tag 18"},{"label":"Tag 19"},{"label":"Tag 20"},{"label":"Tag 21"},{"label":"Tag 22"},{"label":"Tag 23"},{"label":"Tag 24"},{"label":"Tag 25"},{"label":"Tag 26"},{"label":"Tag 27"},{"label":"Tag 28"},{"label":"Tag 29"},{"label":"Tag 30"},{"label":"Tag 31"},{"label":"Tag 32"},{"label":"Tag 33"},{"label":"Tag 34"},{"label":"Tag 35"},{"label":"Tag 36"},{"label":"Tag 37"},{"label":"Tag 38"},{"label":"Tag 39"},{"label":"Tag 40"}]}` |
 
 ## TagSkeleton
 

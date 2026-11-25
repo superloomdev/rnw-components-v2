@@ -16,6 +16,8 @@ import { createRoot } from 'react-dom/client';
 import * as WebUpstream from '@carbon/react';
 import * as IbmProducts from '@carbon/ibm-products';
 import { TagSet as IbmTagSet } from '@carbon/ibm-products';
+// The all-tags dialog is internal to the package; its sample state mounts it open
+import { TagSetModal as IbmTagSetModal } from '@carbon/ibm-products/es/components/TagSet/TagSetModal.js';
 import * as UpstreamIcons from '@carbon/icons-react';
 import { Text as NativeText } from '@carbon/react-native/lib/module/components/Text/index.js';
 import { getColor } from '@carbon/react-native/lib/module/styles/colors.js';
@@ -74,7 +76,7 @@ function fixtureTextStyle (name) {
 }
 
 const UPSTREAM = {
-  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, Tearsheet: IbmProducts.Tearsheet, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet }),
+  'render-web': Object.assign({}, WebUpstream, { ibm: IbmProducts, Card: IbmProducts.ProductiveCard, EmptyState: IbmProducts.EmptyState, PageHeader: IbmProducts.PageHeader, Tearsheet: IbmProducts.Tearsheet, icon: icon, fixtureTextStyle: fixtureTextStyle, TagSet: IbmTagSet, TagSetModal: IbmTagSetModal }),
   'parse-rn': { Text: NativeText, getColor: getColor }
 };
 

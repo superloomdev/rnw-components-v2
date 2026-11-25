@@ -12,6 +12,7 @@ export default Object.freeze({
     showAllTagsLabel: { type: 'string', required: false, description: 'The link that opens the all-tags dialog past ten hidden tags. Default `View all tags`.' },
     allTagsModalTitle: { type: 'string', required: false, description: 'The dialog\'s title. Default `All tags`.' },
     allTagsModalSearchLabel: { type: 'string', required: false, description: 'The dialog search field\'s label. Default `Search all tags`.' },
+    defaultAllTagsOpen: { type: 'boolean', required: false, description: 'Opens the all-tags dialog at mount, as a press of `showAllTagsLabel` does.' },
     testID: { type: 'string', required: false, description: 'Test identifier forwarded to the root.' }
   }),
   composition: Object.freeze({}),
