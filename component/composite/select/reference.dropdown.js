@@ -51,13 +51,13 @@ export default Object.freeze({
     frame: Object.freeze({ upstream: '.cds--dropdown', ours: 'div:has(> [role="combobox"])', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'backgroundColor', 'borderBottomColor'] }),
     // The ring moves with the state: the field carries it on focus, the
     // host on invalid; `outlineOf` reads whichever draws it
-    ring: Object.freeze({ upstream: '.cds--list-box__field', outlineOf: ['.cds--dropdown', '.cds--list-box__field'], ours: 'div:has(> [role="combobox"])', measure: 'box', compare: ['outline'], optional: true }),
+    ring: Object.freeze({ upstream: '.cds--list-box__field', outlineOf: ['.cds--dropdown', '.cds--list-box__field'], ours: 'div:has(> [role="combobox"])', measure: 'box', compare: ['x', 'y', 'width', 'height', 'outline'], optional: true }),
     icon: Object.freeze({ upstream: '.cds--list-box__invalid-icon', ours: '[role="combobox"] > div:nth-child(2):not(:last-child) svg', measure: 'box' }),
     caret: Object.freeze({ upstream: '.cds--list-box__menu-icon', ours: '[role="combobox"] > div:last-child', measure: 'box' }),
     value: Object.freeze({ upstream: '.cds--list-box__label', ours: '[role="combobox"] > div:first-child > [dir="auto"]', measure: 'text' }),
-    list: Object.freeze({ upstream: '.cds--list-box__menu', ours: '[role="listbox"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'borderTopLeftRadius', 'backgroundColor'] }),
+    list: Object.freeze({ upstream: '.cds--list-box__menu', ours: '[role="listbox"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor'] }),
     item: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2)', ours: '[role="option"]:nth-child(2)', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
-    option: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2) .cds--list-box__menu-item__option', ours: '[role="option"]:nth-child(2) > div:first-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'borderTopWidth', 'borderTopColor', 'borderBottomColor'] }),
+    option: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2) .cds--list-box__menu-item__option', ours: '[role="option"]:nth-child(2) > div:first-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderTopColor', 'borderBottomColor'] }),
     mark: Object.freeze({ upstream: '.cds--list-box__menu-item--active .cds--list-box__menu-item__selected-icon', ours: '[role="option"][aria-selected="true"] > div:last-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
   })

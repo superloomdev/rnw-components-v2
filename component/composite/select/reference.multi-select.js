@@ -72,10 +72,12 @@ export function createMultiSelectReference (filterable) {
         upstream: '.cds--list-box', ours: selector('frame'), measure: 'box',
         compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius', 'backgroundColor', 'borderBottomColor']
       }),
+      // The ring is its outline; its box is the frame's, which `frame`
+      // compares, and upstream's is the field inside the frame
       ring: Object.freeze({
         upstream: '.cds--list-box__field',
         outlineOf: ['.cds--list-box', '.cds--list-box__field--wrapper', '.cds--list-box__field'],
-        ours: selector('frame'), measure: 'box', compare: ['outline'], optional: true
+        ours: selector('frame'), measure: 'box', compare: ['outline'], except: ['x', 'y', 'width', 'height'], optional: true
       }),
       value: Object.freeze({
         upstream: filterable ? 'input.cds--text-input' : '.cds--list-box__label',
@@ -88,7 +90,7 @@ export function createMultiSelectReference (filterable) {
       countClose: Object.freeze({ upstream: '.cds--tag--filter .cds--tag__close-icon', ours: selector('count') + ' [data-testid="tag-close-face"]', measure: 'box', optional: true }),
       list: Object.freeze({
         upstream: '.cds--list-box__menu', ours: selector('list'), measure: 'box', optional: true,
-        compare: ['x', 'y', 'width', 'borderTopLeftRadius', 'backgroundColor']
+        compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor']
       }),
       item: Object.freeze({
         upstream: '.cds--list-box__menu-item:nth-child(2)', ours: '[role="option"]:nth-child(2)', measure: 'box', optional: true,
@@ -97,7 +99,7 @@ export function createMultiSelectReference (filterable) {
       option: Object.freeze({
         upstream: '.cds--list-box__menu-item:nth-child(2) .cds--list-box__menu-item__option',
         ours: '[role="option"]:nth-child(2) > [data-part="option-content"]', measure: 'box', optional: true,
-        compare: ['x', 'y', 'width', 'borderTopWidth', 'borderTopColor', 'borderBottomColor']
+        compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderTopColor', 'borderBottomColor']
       }),
       box: Object.freeze({
         upstream: '.cds--list-box__menu-item:nth-child(2) .cds--checkbox-label', pseudo: '::before',

@@ -170,9 +170,13 @@ function Cell (props) {
   // narrow set draws a body at its width where the reference declares none
   const declared = reference.body || {};
   const body = reference.body || bodyWidth !== null ? (function () {
+    // Upstream's reset makes the body border-box and its parts inherit
+    // that, so a hang's padding is added to the declared width: the
+    // component keeps the room it has on our content-box body
+    const hangStart = declared.hang && typeof declared.hang.start === 'number' ? declared.hang.start : 0;
     const style = {
       display: 'block',
-      width: bodyWidth !== null ? bodyWidth + 'px' : typeof declared.width === 'number' ? declared.width + 'px' : 'fit-content'
+      width: bodyWidth !== null ? bodyWidth + 'px' : typeof declared.width === 'number' ? (declared.width + hangStart) + 'px' : 'fit-content'
     };
     if (typeof declared.height === 'number') {
       style.height = declared.height + 'px';

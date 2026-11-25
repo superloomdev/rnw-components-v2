@@ -25,6 +25,6 @@ export default Object.freeze({
     // transparent hit layer
     root: Object.freeze({ upstream: '.cds--btn--icon-only', ours: '[data-testid="icon-button-face"]', measure: 'box' }),
     icon: Object.freeze({ upstream: '.cds--btn--icon-only svg', ours: '[data-testid="icon-button-face"] svg', measure: 'box' }),
-    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
+    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
   })
 });

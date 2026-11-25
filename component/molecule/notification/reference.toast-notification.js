@@ -32,10 +32,10 @@ export default Object.freeze({
   target: Object.freeze({ upstream: '.cds--toast-notification__close-button', ours: '[role="status"] [role="button"], [role="alert"] [role="button"]' }),
   parts: Object.freeze({
     band: Object.freeze({ upstream: '.cds--toast-notification', ours: '[role="status"], [role="alert"]', measure: 'box', compare: ['width', 'backgroundColor', 'borderRadius'] }),
-    icon: Object.freeze({ upstream: '.cds--toast-notification__icon', ours: '[role="status"] > div:first-child svg, [role="alert"] > div:first-child svg', measure: 'box', compare: ['width', 'height', 'fill'], optional: true }),
+    icon: Object.freeze({ upstream: '.cds--toast-notification__icon', ours: '[role="status"] > div:first-child svg, [role="alert"] > div:first-child svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true }),
     title: Object.freeze({ upstream: '.cds--toast-notification__title', ours: '[role="status"] [dir="auto"], [role="alert"] [dir="auto"]', measure: 'text' }),
     subtitle: Object.freeze({ upstream: '.cds--toast-notification__subtitle', ours: '[role="status"] [dir="auto"]:nth-of-type(2), [role="alert"] [dir="auto"]:nth-of-type(2)', measure: 'text', optional: true }),
     marker: Object.freeze({ upstream: '.cds--toast-notification', ours: '[role="status"], [role="alert"]', measure: 'box', compare: ['borderLeftWidth', 'borderLeftColor'], optional: true }),
-    close: Object.freeze({ upstream: '.cds--toast-notification__close-button svg', ours: '[role="status"] [data-testid="icon-button-face"] svg, [role="alert"] [data-testid="icon-button-face"] svg', measure: 'box', compare: ['fill'], optional: true })
+    close: Object.freeze({ upstream: '.cds--toast-notification__close-button svg', ours: '[role="status"] [data-testid="icon-button-face"] svg, [role="alert"] [data-testid="icon-button-face"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'], optional: true })
   })
 });

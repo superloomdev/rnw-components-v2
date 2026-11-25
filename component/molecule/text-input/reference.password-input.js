@@ -60,7 +60,7 @@ export default Object.freeze({
     value: Object.freeze({ upstream: '.cds--password-input', ours: 'input', measure: 'type' }),
     invalidIcon: Object.freeze({ upstream: '.cds--text-input__invalid-icon path', ours: 'div:has(> input) > div > svg path', measure: 'box' }),
     toggleFace: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle', ours: '[data-testid="password-toggle-face"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius'] }),
-    togglePaint: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle', ours: '[data-testid="password-toggle-paint"]', measure: 'box', compare: ['backgroundColor'] }),
+    togglePaint: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle', ours: '[data-testid="password-toggle-paint"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     toggleIcon: Object.freeze({ upstream: '.cds--text-input--password__visibility__toggle svg', ours: '[data-testid="password-toggle-face"] svg', measure: 'box' }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' }),
     bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })

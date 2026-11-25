@@ -47,7 +47,7 @@ export default Object.freeze({
     trigger: Object.freeze({ upstream: '.cds--menu-button__trigger', ours: '[role="button"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     label: Object.freeze({ upstream: '.cds--menu-button__trigger', ours: '[role="button"] [dir="auto"]', measure: 'text' }),
     chevron: Object.freeze({ upstream: '.cds--menu-button__trigger svg', ours: '[role="button"] svg', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fill'] }),
-    menu: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'paddingTop', 'backgroundColor'], optional: true }),
-    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['height'], optional: true })
+    menu: Object.freeze({ upstream: '.cds--menu', ours: '[role="menu"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingTop', 'backgroundColor'], optional: true }),
+    item: Object.freeze({ upstream: '.cds--menu-item', ours: '[role="menuitem"], [role="menuitemcheckbox"]', measure: 'box', compare: ['x', 'y', 'width', 'height'], optional: true })
   })
 });

@@ -18,10 +18,10 @@ export default Object.freeze({
   }
   ,
   parts: Object.freeze({
-    list: Object.freeze({ upstream: '.cds--list--unordered:not(.cds--list--nested)', ours: '[data-part="list"]', measure: 'box', compare: ['marginLeft', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
-    items: Object.freeze({ upstream: '.cds--list__item', all: true, ours: '[data-part="item"]', measure: 'box', compare: ['paddingLeft', 'color'] }),
-    markers: Object.freeze({ upstream: '.cds--list__item', pseudo: '::before', all: true, ours: '[data-part="marker"]', measure: 'box', optional: true, compare: ['cssLeft', 'color', 'fontSize'] }),
-    nested: Object.freeze({ upstream: '.cds--list--nested', ours: '[data-part="nestedList"]', measure: 'box', optional: true, compare: ['marginLeft'] }),
-    nestedMarkers: Object.freeze({ upstream: '.cds--list--nested .cds--list__item', pseudo: '::before', all: true, ours: '[data-part="nestedList"] [data-part="marker"]', measure: 'box', optional: true, compare: ['cssLeft'] })
+    list: Object.freeze({ upstream: '.cds--list--unordered:not(.cds--list--nested)', ours: '[data-part="list"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'marginLeft', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    items: Object.freeze({ upstream: '.cds--list__item', all: true, ours: '[data-part="item"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingLeft', 'color'] }),
+    markers: Object.freeze({ upstream: '.cds--list__item', pseudo: '::before', all: true, ours: '[data-part="marker"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'cssLeft', 'color', 'fontSize'] }),
+    nested: Object.freeze({ upstream: '.cds--list--nested', ours: '[data-part="nestedList"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'marginLeft'] }),
+    nestedMarkers: Object.freeze({ upstream: '.cds--list--nested .cds--list__item', pseudo: '::before', all: true, ours: '[data-part="nestedList"] [data-part="marker"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'cssLeft'] })
   })
 });

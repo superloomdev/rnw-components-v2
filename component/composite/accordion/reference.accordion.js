@@ -30,7 +30,7 @@ export default Object.freeze({
   parts: Object.freeze({
     root: Object.freeze({ upstream: '.cds--accordion', ours: '[role="list"]', measure: 'box' }),
     item: Object.freeze({ upstream: '.cds--accordion__item:nth-child(1)', ours: '[role="listitem"]:nth-child(1)', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderTopColor'] }),
-    lastItem: Object.freeze({ upstream: '.cds--accordion__item:last-child', ours: '[role="listitem"]:last-child', measure: 'box', compare: ['borderBottomWidth', 'borderBottomColor'] }),
+    lastItem: Object.freeze({ upstream: '.cds--accordion__item:last-child', ours: '[role="listitem"]:last-child', measure: 'box', compare: ['x', 'y', 'width', 'height', 'borderBottomWidth', 'borderBottomColor'] }),
     heading: Object.freeze({ upstream: '.cds--accordion__item:nth-child(1) .cds--accordion__heading', ours: '[role="listitem"]:nth-child(1) div:has(> [role="button"]) > div', measure: 'box' }),
     arrow: Object.freeze({ upstream: '.cds--accordion__item:nth-child(1) .cds--accordion__arrow path', ours: '[role="listitem"]:nth-child(1) svg path', measure: 'box' }),
     title: Object.freeze({ upstream: '.cds--accordion__item:nth-child(1) .cds--accordion__title', ours: '[role="listitem"]:nth-child(1) div:has(> [role="button"]) > div [dir="auto"]', measure: 'text' }),

@@ -46,15 +46,20 @@ export default Object.freeze({
     ours: '[role="listitem"] [role="button"]'
   }),
   parts: Object.freeze({
-    list: Object.freeze({ upstream: '.cds--breadcrumb', ours: '[role="navigation"]', measure: 'box', compare: ['fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
-    items: Object.freeze({ upstream: '.cds--breadcrumb-item', all: true, ours: '[role="listitem"]', measure: 'box', compare: ['marginRight'] }),
-    separators: Object.freeze({ upstream: '.cds--breadcrumb-item', pseudo: '::after', all: true, ours: '[role="listitem"] > [dir="auto"]:last-child', measure: 'box', optional: true, compare: ['cssWidth', 'color', 'marginLeft'] }),
-    links: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--link', all: true, ours: '[role="link"], [role="listitem"] [dir="auto"]', measure: 'box', compare: ['color', 'minWidth', 'fontSize'], optional: true }),
-    current: Object.freeze({ upstream: '.cds--breadcrumb-item--current .cds--link, [aria-current="page"]', ours: '[aria-current="page"]', measure: 'box', optional: true, compare: ['color'] }),
-    overflow: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--overflow-menu', ours: '[role="listitem"] [data-testid="icon-button-face"]', measure: 'box', optional: true, compare: ['width', 'height', 'backgroundColor'] }),
+    list: Object.freeze({ upstream: '.cds--breadcrumb', ours: '[role="navigation"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight'] }),
+    items: Object.freeze({ upstream: '.cds--breadcrumb-item', all: true, ours: '[role="listitem"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'marginRight'] }),
+    // An in-flow pseudo-element is read at its host's padding box plus its
+    // margin, not after the link text it follows: the separator's x is the
+    // item's width, which `items` compares
+    separators: Object.freeze({ upstream: '.cds--breadcrumb-item', pseudo: '::after', all: true, ours: '[role="listitem"] > [dir="auto"]:last-child', measure: 'box', optional: true, compare: ['y', 'width', 'height', 'cssWidth', 'color', 'marginLeft'], except: ['x'] }),
+    // Ours is the link's pressable, held at the form class's 24 target
+    // floor and centred on the line; upstream's is the 18 inline link
+    links: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--link', all: true, ours: '[role="link"], [role="listitem"] [dir="auto"]', measure: 'box', compare: ['x', 'width', 'color', 'minWidth', 'fontSize'], except: ['y', 'height'], optional: true }),
+    current: Object.freeze({ upstream: '.cds--breadcrumb-item--current .cds--link, [aria-current="page"]', ours: '[aria-current="page"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'color'] }),
+    overflow: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--overflow-menu', ours: '[role="listitem"] [data-testid="icon-button-face"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     overflowIcon: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--overflow-menu__icon', ours: '[role="listitem"] [data-testid="icon-button-face"] svg', measure: 'box', optional: true, compare: ['width', 'height', 'fill', 'cssTop'] }),
-    overflowUnderline: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--overflow-menu', pseudo: '::after', ours: '[data-part="focusUnderline"]', measure: 'box', optional: true, compare: ['cssWidth', 'cssHeight', 'backgroundColor'] }),
-    menu: Object.freeze({ upstream: '.cds--breadcrumb-menu-options', ours: '[role="menu"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'backgroundColor', 'boxShadow'] }),
-    caret: Object.freeze({ upstream: '.cds--breadcrumb-menu-options', pseudo: '::after', ours: '[role="menu"] > div:first-child', measure: 'box', optional: true, compare: ['cssWidth', 'borderBottomWidth', 'borderBottomColor'] })
+    overflowUnderline: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--overflow-menu', pseudo: '::after', ours: '[data-part="focusUnderline"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'cssWidth', 'cssHeight', 'backgroundColor'] }),
+    menu: Object.freeze({ upstream: '.cds--breadcrumb-menu-options', ours: '[role="menu"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'boxShadow'] }),
+    caret: Object.freeze({ upstream: '.cds--breadcrumb-menu-options', pseudo: '::after', ours: '[role="menu"] > div:first-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'cssWidth', 'borderBottomWidth', 'borderBottomColor'] })
   })
 });

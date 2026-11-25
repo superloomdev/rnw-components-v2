@@ -19,7 +19,7 @@ export default Object.freeze({
   },
   target: Object.freeze({ upstream: null, ours: null }),
   parts: Object.freeze({
-    items: Object.freeze({ upstream: '.cds--breadcrumb-item', all: true, ours: '[data-part="item"]', measure: 'box', compare: ['marginRight'] }),
-    bars: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--skeleton .cds--link, .cds--breadcrumb-item .cds--link', all: true, ours: '[data-part="item"] > div:first-child', measure: 'box', compare: ['width', 'height', 'backgroundColor'], optional: true })
+    items: Object.freeze({ upstream: '.cds--breadcrumb-item', all: true, ours: '[data-part="item"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'marginRight'] }),
+    bars: Object.freeze({ upstream: '.cds--breadcrumb-item .cds--skeleton .cds--link, .cds--breadcrumb-item .cds--link', all: true, ours: '[data-part="item"] > div:first-child', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'], optional: true })
   })
 });

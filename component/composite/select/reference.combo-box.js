@@ -39,9 +39,9 @@ export default Object.freeze({
     clear: Object.freeze({ upstream: '.cds--list-box__selection', ours: '[role="button"][aria-label*="Clear"]', measure: 'box', optional: true }),
     icon: Object.freeze({ upstream: '.cds--list-box__invalid-icon', ours: 'div:has(> input[role="combobox"]) > div:nth-child(2)', measure: 'box', optional: true }),
     caret: Object.freeze({ upstream: '.cds--list-box__menu-icon', ours: 'div:has(> input[role="combobox"]) > div:last-child', measure: 'box' }),
-    list: Object.freeze({ upstream: '.cds--list-box__menu', ours: '[role="listbox"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'borderTopLeftRadius', 'backgroundColor'] }),
+    list: Object.freeze({ upstream: '.cds--list-box__menu', ours: '[role="listbox"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopLeftRadius', 'backgroundColor'] }),
     item: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2)', ours: '[role="option"]:nth-child(2)', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
-    option: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2) .cds--list-box__menu-item__option', ours: '[role="option"]:nth-child(2) > div:first-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'borderTopWidth', 'borderTopColor', 'borderBottomColor'] }),
+    option: Object.freeze({ upstream: '.cds--list-box__menu-item:nth-child(2) .cds--list-box__menu-item__option', ours: '[role="option"]:nth-child(2) > div:first-child', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderTopColor', 'borderBottomColor'] }),
     message: Object.freeze({ upstream: '.cds--form__helper-text, .cds--form-requirement', ours: ':scope > div > [dir="auto"]:last-child', measure: 'text' })
   }),
   omit: Object.freeze({

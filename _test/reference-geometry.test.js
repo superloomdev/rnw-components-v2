@@ -19,7 +19,7 @@ const GEOMETRY = Object.freeze(['x', 'y', 'width', 'height']);
 const LEGACY = JSON.parse(readFileSync(join(HERE, 'fixtures', 'reference-geometry-legacy.json'), 'utf8'));
 
 // The ceiling of the legacy list: lower it with every repair, never raise it
-const LEGACY_CEILING = 89;
+const LEGACY_CEILING = 26;
 
 
 /********************************************************************

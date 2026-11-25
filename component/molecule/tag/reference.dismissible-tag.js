@@ -24,6 +24,6 @@ export default Object.freeze({
     label: Object.freeze({ upstream: '.cds--tag__label', ours: ':scope > div > div > [dir="auto"]', measure: 'text' }),
     close: Object.freeze({ upstream: '.cds--tag__close-icon', ours: '[data-testid="tag-close-face"]', measure: 'box' }),
     icon: Object.freeze({ upstream: '.cds--tag__close-icon svg', ours: '[data-testid="tag-close-face"] svg', measure: 'box' }),
-    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
+    bubble: Object.freeze({ upstream: '.cds--popover-content', ours: '[role="tooltip"] > div', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'] })
   })
 });

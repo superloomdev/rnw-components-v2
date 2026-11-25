@@ -46,7 +46,7 @@ export default Object.freeze({
   ]),
   parts: Object.freeze({
     triggerFace: Object.freeze({ upstream: '.cds--search:not(.cds--search--expanded) .cds--search-magnifier', ours: '[data-testid="search-expand-face"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderTopLeftRadius'] }),
-    triggerPaint: Object.freeze({ upstream: '.cds--search:not(.cds--search--expanded) .cds--search-magnifier', ours: '[data-testid="search-expand-paint"]', measure: 'box', optional: true, compare: ['backgroundColor'] }),
+    triggerPaint: Object.freeze({ upstream: '.cds--search:not(.cds--search--expanded) .cds--search-magnifier', ours: '[data-testid="search-expand-paint"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     triggerIcon: Object.freeze({ upstream: '.cds--search:not(.cds--search--expanded) .cds--search-magnifier-icon', ours: '[data-testid="search-expand-face"] svg', measure: 'box', optional: true }),
     frame: Object.freeze({ upstream: '.cds--search--expanded .cds--search-input', ours: 'div:has(> input)', measure: 'box', optional: true }),
     value: Object.freeze({ upstream: '.cds--search--expanded .cds--search-input', ours: 'input', measure: 'type', optional: true }),
