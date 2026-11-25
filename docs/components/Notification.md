@@ -101,6 +101,15 @@ file and the row is measured against the primary alone.
   button names itself through `closeLabel`.
 - **NotificationActionButton** (requires_parent): must be composed inside ActionableNotification; measured through ActionableNotification's samples.
 - **NotificationActionButton** (no_reference): no standalone upstream mount; measured through the notification's samples.
+- **The toast's end space.** Upstream's subtitle keeps `margin-block: 0
+  $spacing-05` and the details `margin-block-end: $spacing-05`
+  (`_toast-notification.scss:238,295`); the details are a flex item, so
+  the two do not collapse: 32 below a subtitle with no caption, 16 above
+  a caption and 16 below it. Measured once the reference compared the
+  band's height: 75 here against 84 (`low-contrast`, no caption) and 119
+  against 128 (`default`, a caption) with the one 23 end space. The toast
+  now draws the subtitle's end and the details' end as two `spacing_05`
+  spaces; both outcomes have a state.
 
 ## ActionableNotification
 
@@ -376,6 +385,7 @@ ToastNotification is a status band: a marker and status icon, a title, a subtitl
 | `captionSpace` | `spacing.spacing_03` |
 | `closeIconSize` | `size.icon_01` |
 | `closeSize` | `control.icon_button_size` |
+| `detailsEnd` | `spacing.spacing_05` |
 | `detailsInset` | `control.notification_details_inset` |
 | `detailsInsetEnd` | `control.notification_details_inset_end` |
 | `iconGap` | `control.notification_icon_gap` |
@@ -386,9 +396,9 @@ ToastNotification is a status band: a marker and status icon, a title, a subtitl
 | `minHeight` | `control.notification_min_height` |
 | `outlineWidth` | `control.notification_outline_width` |
 | `radius` | `control.notification_radius` |
+| `subtitleEnd` | `spacing.spacing_05` |
 | `textPaddingTop` | `spacing.spacing_05` |
 | `textPaddingBlock` | `control.notification_text_padding_block` |
-| `textPaddingBottom` | `control.notification_toast_text_padding_bottom` |
 | `titleGap` | `control.notification_title_gap` |
 | `width` | `control.notification_width` |
 | `widthMax` | `control.notification_toast_width_max` |

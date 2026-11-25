@@ -97,3 +97,12 @@ file and the row is measured against the primary alone.
   button names itself through `closeLabel`.
 - **NotificationActionButton** (requires_parent): must be composed inside ActionableNotification; measured through ActionableNotification's samples.
 - **NotificationActionButton** (no_reference): no standalone upstream mount; measured through the notification's samples.
+- **The toast's end space.** Upstream's subtitle keeps `margin-block: 0
+  $spacing-05` and the details `margin-block-end: $spacing-05`
+  (`_toast-notification.scss:238,295`); the details are a flex item, so
+  the two do not collapse: 32 below a subtitle with no caption, 16 above
+  a caption and 16 below it. Measured once the reference compared the
+  band's height: 75 here against 84 (`low-contrast`, no caption) and 119
+  against 128 (`default`, a caption) with the one 23 end space. The toast
+  now draws the subtitle's end and the details' end as two `spacing_05`
+  spaces; both outcomes have a state.

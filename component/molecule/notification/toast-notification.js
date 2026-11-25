@@ -5,7 +5,7 @@
 // caption and link-styled action), and the close `IconButton` - all
 // through the shared notification parts at the toast insets
 // (`control.notification_toast_icon_top`, `_icon_gap`,
-// `_text_padding_block`, `_toast_text_padding_bottom`, `_title_gap`,
+// `_text_padding_block`, `_title_gap`,
 // `_details_inset`, `_details_inset_end`). `lowContrast` draws the kind
 // fill, the kind outline and primary text instead of the inverse
 // container. The width is `control.notification_width` capped by the
@@ -70,8 +70,12 @@ export default function ToastNotification (ctx) {
       style: { display: barIcon ? 'flex' : 'none' }
     },
     parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }));
+    // The subtitle keeps its own block-end space above the caption and the
+    // details' end (`_toast-notification.scss:238,295`): the two do not
+    // collapse, the details being a flex item
+    const text = parts.text({ lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title });
     const rows = [
-      parts.text({ lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title }),
+      Utils.isString(props.subtitle) ? React.cloneElement(text, { style: [text.props.style, { paddingBottom: ctx.metric(owner, 'subtitleEnd') }] }) : text,
       Utils.isObject(props.action) ? React.createElement(Pressable, {
         key: 'action',
         onPress: typeof props.action.onPress === 'function' ? props.action.onPress : undefined,
@@ -103,7 +107,7 @@ export default function ToastNotification (ctx) {
     }, [
       parts.details({ kind: kind, lowContrast: lowContrast, owner: owner }, [
         iconSeat,
-        parts.textBlock({ owner: owner, paddingBottom: ctx.metric(owner, 'textPaddingBottom'), paddingTop: ctx.metric(owner, 'textPaddingTop') }, rows)
+        parts.textBlock({ owner: owner, paddingBottom: ctx.metric(owner, 'detailsEnd'), paddingTop: ctx.metric(owner, 'textPaddingTop') }, rows)
       ]),
       parts.close({ label: props.closeLabel, lowContrast: lowContrast, onPress: requestClose, owner: owner })
     ]);

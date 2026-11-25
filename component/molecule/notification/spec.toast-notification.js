@@ -7,6 +7,7 @@ export default Object.freeze({
   captionSpace: 'spacing.spacing_03',
   closeIconSize: 'size.icon_01',
   closeSize: 'control.icon_button_size',
+  detailsEnd: 'spacing.spacing_05',
   detailsInset: 'control.notification_details_inset',
   detailsInsetEnd: 'control.notification_details_inset_end',
   iconGap: 'control.notification_icon_gap',
@@ -17,9 +18,9 @@ export default Object.freeze({
   minHeight: 'control.notification_min_height',
   outlineWidth: 'control.notification_outline_width',
   radius: 'control.notification_radius',
+  subtitleEnd: 'spacing.spacing_05',
   textPaddingTop: 'spacing.spacing_05',
   textPaddingBlock: 'control.notification_text_padding_block',
-  textPaddingBottom: 'control.notification_toast_text_padding_bottom',
   titleGap: 'control.notification_title_gap',
   width: 'control.notification_width',
   widthMax: 'control.notification_toast_width_max'

@@ -26,9 +26,9 @@ export default Object.freeze({
     'color.text_primary', 'color.icon_primary', 'font.family.sans',
     'control.notification_width', 'control.notification_radius', 'control.notification_min_height', 'control.notification_marker_width',
     'control.notification_outline_width', 'control.notification_icon_size', 'control.notification_icon_top', 'control.notification_toast_icon_top',
-    'control.notification_icon_gap', 'control.notification_text_padding_block', 'control.notification_toast_text_padding_bottom', 'control.notification_title_gap',
+    'control.notification_icon_gap', 'control.notification_text_padding_block', 'control.notification_title_gap',
     'control.notification_details_inset', 'control.notification_details_inset_end', 'control.icon_button_size',
-    'spacing.spacing_03',
+    'spacing.spacing_03', 'spacing.spacing_05',
     'type.notification_title', 'type.notification_body',
     'icon.error_filled', 'icon.checkmark_filled', 'icon.information_filled', 'icon.warning_filled', 'icon.close'
   ].concat(KINDS.flatMap(function (kind) {

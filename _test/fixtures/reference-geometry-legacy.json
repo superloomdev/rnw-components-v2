@@ -24,8 +24,6 @@
     "tearsheet/description",
     "tearsheet/influencer",
     "tearsheet/main",
-    "toast-notification/band",
-    "toast-notification/marker",
     "toggletip/bubble"
   ]
 }
