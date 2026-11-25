@@ -135,6 +135,17 @@ export default function Tearsheet (ctx) {
       ? innerWidth - (influencerLeft ? influencerWidth + metrics.dividerWidth : 0)
       : undefined;
     const seatWidth = Utils.isNumber(rowWidth) ? Math.min(rowWidth * 0.25, metrics.actionMaxWidth) : metrics.actionMaxWidth;
+    // Each action button's min-content width, as it reports it
+    const [floors, setFloors] = React.useState({});
+    // Main's floor: the row's, once every action button has measured
+    const measuredAll = !Utils.isEmptyArray(actions) && actions.every(function (action, i) {
+      return Utils.isNumber(floors[i]);
+    });
+    const rowFloor = measuredAll
+      ? actions.reduce(function (sum, action, i) {
+        return sum + floors[i];
+      }, 0)
+      : undefined;
 
     // The enter motion: from the enter offset below to rest; reduced
     // motion and the measurement mode draw it at rest
@@ -233,8 +244,9 @@ export default function Tearsheet (ctx) {
         borderRightColor: influencerLeft ? ctx.color('tearsheet_divider') : undefined,
         borderRightWidth: influencerLeft ? metrics.dividerWidth : 0,
         // Below md the influencer takes its content's width (`:473-475`
-        // flex-basis auto)
-        width: narrow ? undefined : influencerWidth + metrics.dividerWidth
+        // flex-basis auto), but the wide one, whose `flex-basis: 321px`
+        // comes after that rule (`:479-481`), keeps its width
+        width: narrow && props.influencerWidth !== 'wide' ? undefined : influencerWidth + metrics.dividerWidth
       }
     }, nodeOf(props.influencer, 'influencer'));
 
@@ -242,19 +254,28 @@ export default function Tearsheet (ctx) {
     // rule under main only; buttons right-aligned, a ghost grows left.
     // Each seat is the action height cell tall and the filling button
     // stretches to it, as upstream sizes the action button itself
+    // A seat is never narrower than its button's min-content width, as
+    // upstream's flex item under its min-content minimum
+    // (`ActionSet/_action-set.scss:94-113`): the label wraps above it
     const buttons = actions.map(function (action, i) {
       const ghost = (action && action.kind) === 'ghost';
+      const floor = Utils.isNumber(floors[i]) ? floors[i] : undefined;
       return React.createElement(View, {
         key: 'action-' + i,
         style: ghost
-          ? { flexBasis: '50%', flexGrow: 1, flexShrink: 1, minHeight: metrics.actionHeight }
-          : { flexBasis: seatWidth, flexGrow: 0, flexShrink: 1, maxWidth: metrics.actionMaxWidth, minHeight: metrics.actionHeight }
+          ? { flexBasis: '50%', flexGrow: 1, flexShrink: 1, minHeight: metrics.actionHeight, minWidth: floor }
+          : { flexBasis: seatWidth, flexGrow: 0, flexShrink: 1, maxWidth: metrics.actionMaxWidth, minHeight: metrics.actionHeight, minWidth: floor }
       },
       React.createElement(ctx.Registry.Button, {
         buttonRef: i === 0 ? firstActionRef : undefined,
         disabled: action && action.disabled === true,
         fill: true,
         kind: (action && action.kind) || 'primary',
+        onMinContentWidth: function (width) {
+          setFloors(function (previous) {
+            return previous[i] === width ? previous : Object.assign({}, previous, { [i]: width });
+          });
+        },
         onPress: function () {
           if (action && typeof action.onPress === 'function') {
             action.onPress();
@@ -298,7 +319,10 @@ export default function Tearsheet (ctx) {
     // right-positioned influencer inside it
     const main = React.createElement(View, {
       dataSet: { part: 'main' },
-      style: { backgroundColor: ctx.color('tearsheet_main_container'), flex: 1 }
+      // Main is never narrower than its action row's min-content width, as
+      // upstream's flex item: beside the wide influencer below md it is
+      // pushed past the container, which clips it
+      style: { backgroundColor: ctx.color('tearsheet_main_container'), flex: 1, minWidth: rowFloor }
     },
     React.createElement(View, {
       style: { flex: 1, flexDirection: 'row' }
@@ -313,7 +337,7 @@ export default function Tearsheet (ctx) {
     // The body row under the header: a left influencer beside main
     const body = React.createElement(View, {
       dataSet: { part: 'tearsheetBody' },
-      style: { flex: 1, flexDirection: 'row' }
+      style: { flex: 1, flexDirection: 'row', overflow: 'hidden' }
     }, influencerLeft ? influencer : null, main);
 
     // The container: insets off the layer space, bottom-anchored, the

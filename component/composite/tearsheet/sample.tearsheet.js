@@ -15,6 +15,11 @@ const THREE = Object.freeze([
   Object.freeze({ label: 'Cancel', kind: 'secondary', onPress: function () {} }),
   Object.freeze({ label: 'Create', kind: 'primary', onPress: function () {} })
 ]);
+// A primary label wider than its seat: it wraps inside the 232 cap
+const LONG = Object.freeze([
+  TWO[0],
+  Object.freeze({ label: 'Create workspace immediately', kind: 'primary', onPress: function () {} })
+]);
 const BASE = Object.freeze({ actions: TWO, children: 'Main content', description: 'Description used to describe the flow if need be.', label: 'Optional label', open: true, title: 'Title of the tearsheet' });
 
 export default Object.freeze([
@@ -26,5 +31,6 @@ export default Object.freeze([
   Object.freeze({ label: 'influencerRight', props: Object.assign({}, BASE, { influencer: 'Influencer', influencerPosition: 'right' }) }),
   Object.freeze({ label: 'navigation', props: Object.assign({}, BASE, { navigation: 'Navigation' }) }),
   Object.freeze({ label: 'threeActions', props: Object.assign({}, BASE, { actions: THREE }) }),
-  Object.freeze({ label: 'lower', props: Object.assign({}, BASE, { verticalPosition: 'lower' }) })
+  Object.freeze({ label: 'lower', props: Object.assign({}, BASE, { verticalPosition: 'lower' }) }),
+  Object.freeze({ label: 'longAction', props: Object.assign({}, BASE, { actions: LONG }) })
 ]);

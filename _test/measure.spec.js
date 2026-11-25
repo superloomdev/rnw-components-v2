@@ -20,7 +20,7 @@ import React from 'react';
 
 import { discoverComponents } from '../scripts/lib/components.js';
 import { findDisagreements } from './harness/compare.js';
-import { targetInteractions } from './harness/fidelity.js';
+import { drawnOutsideNarrow, targetInteractions } from './harness/fidelity.js';
 import { enterInteraction, leaveInteraction, openReference, openShowcase, readParts, reopenPanel } from './harness/page.js';
 import { explainDisagreements } from './harness/expected-gaps.js';
 
@@ -236,6 +236,16 @@ test.describe('measure: primary reference', function () {
       });
       expect(component.reference, name + ' has a reference in the roster but no reference.js').not.toBeNull();
       const parts = component.reference.parts;
+      // A reference drawn in its narrow window only (`narrowOnly`): this wide
+      // window drives no interaction, neither side may draw those parts, and
+      // the rest are compared
+      const narrowOnly = Array.isArray(component.reference.narrowOnly) ? component.reference.narrowOnly : [];
+      const wide = narrowOnly.length === 0 ? component.reference : Object.assign({}, component.reference, { interactions: [] });
+      const compared = Object.fromEntries(Object.keys(parts).filter(function (part) {
+        return narrowOnly.indexOf(part) === -1;
+      }).map(function (part) {
+        return [part, parts[part]];
+      }));
 
       // Upstream first: the states it can draw are the states compared
       const isoLabels = component.reference.isolate === true
@@ -253,7 +263,7 @@ test.describe('measure: primary reference', function () {
         // A state-page reference: the rereads and the drawn scan run on this
         // state's page before its reads merge in (D61)
         await rereadReopened(page, component, component.reference, 'upstream', false, read);
-        const pageDrawn = await drawnParts(page, component, component.reference, 'upstream', false, read);
+        const pageDrawn = await drawnParts(page, component, wide, 'upstream', false, read);
         for (const part of pageDrawn.drawn) {
           upstreamDrawn.drawn.add(part);
         }
@@ -274,13 +284,14 @@ test.describe('measure: primary reference', function () {
       await rereadReopened(page, component, component.reference, 'ours', false, ours);
 
       // Every named part is drawn upstream in some state, so no selector compares nothing
-      const undrawn = Object.keys(parts).filter(function (part) {
+      const undrawn = Object.keys(compared).filter(function (part) {
         return !upstreamDrawn.drawn.has(part);
       });
       expect(undrawn, name + ': parts the upstream never draws (a selector matches nothing)').toEqual([]);
+      expect(drawnOutsideNarrow(component.reference, ours, 'ours').concat(drawnOutsideNarrow(component.reference, upstream, 'upstream')), name + ': parts drawn outside the narrow window').toEqual([]);
 
       test.info().annotations.push({ type: 'measure', description: name + ': ' + Object.keys(upstream).length + ' states measured; unmeasured ' + JSON.stringify(reference.unmeasured) });
-      const lines = findDisagreements(ours, upstream, parts);
+      const lines = findDisagreements(ours, upstream, compared);
       // A disagreement an expected gap explains is set aside; a gap that no
       // longer reproduces is stale and fails (FIDELITY RULES 5)
       const gate = explainDisagreements(lines, GAPS, name, 'measure');

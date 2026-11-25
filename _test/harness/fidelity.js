@@ -512,6 +512,36 @@ async function collect (page, component, reference, side, masks) {
 
 
 /********************************************************************
+The parts a reference draws in its narrow window only (`narrowOnly`)
+that one side drew in the wide window, one line each.
+
+@param {Object} reference - The reference
+@param {Object} states    - { state: { part: measured } } of one side
+@param {String} side      - 'ours' or 'upstream'
+
+@return {Array} - Lines, empty when neither draws one
+*********************************************************************/
+export function drawnOutsideNarrow (reference, states, side) {
+
+  // The parts the wide window must not draw
+  const names = Array.isArray(reference.narrowOnly) ? reference.narrowOnly : [];
+
+  // Every drawn one, by state
+  const lines = [];
+  for (const label of Object.keys(states)) {
+    for (const name of names) {
+      const part = states[label] ? states[label][name] : null;
+      if (part && part.visible === true) {
+        lines.push(label + ' / ' + name + ': drawn on ' + side + ' in the wide window');
+      }
+    }
+  }
+  return lines;
+
+}
+
+
+/********************************************************************
 Run one row against one reference under one scheme.
 
 @param {Object} page      - Playwright page

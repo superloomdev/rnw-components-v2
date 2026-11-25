@@ -61,8 +61,8 @@ each is named.
   (`ui-shell/side-nav/_side-nav.scss:466-476`), with or without its rule
   (`:478-486`): `HeaderSideNavItems / default`, `divider` draw both below
   lg, inside the expanded side navigation they mount in; from lg the list
-  draws nothing and the navigation draws alone (the probes at 1280 and
-  375). Inside the side navigation its links are at least
+  draws nothing and the navigation draws alone (fidelity primary and
+  narrow sets). Inside the side navigation its links are at least
   `control.header_side_nav_item_min_height` tall (32, `:339-358`; the
   form classes give the target floor, plan E14).
 - The action's below-md minimum width (`_header.scss:58-60`,
@@ -90,15 +90,13 @@ each is named.
   **HeaderMenu**, **HeaderMenuItem**, **HeaderGlobalBar**,
   **HeaderGlobalAction**, **HeaderPanel** (`requires_parent`): must be
   composed inside Header; their samples mount in it (`wrappers`).
-- **HeaderSideNavItems** (`requires_parent`, `no_reference`): must be
-  composed inside a SideNav, the side navigation of a header; its samples
-  mount in an expanded one (`wrappers`), so each cell draws at every
-  width. Upstream draws it below lg only, and the measure and perceptual
-  gates read the wide window, where upstream draws nothing: it has no
-  upstream visual reference of its own. Its numbers are the probe's
-  (`HeaderSideNavItems@375.cells.txt`); U6's focused run compared them in
-  the narrow set before the reference was withdrawn, with no geometry line
-  left.
+- **HeaderSideNavItems** (`requires_parent`): must be composed inside a
+  SideNav, the side navigation of a header; its samples mount in an
+  expanded one (`wrappers`), staged at the body's top as the reference
+  stages upstream's fixed one. Upstream draws the list below lg only, so
+  its reference is compared in its narrow window; in the wide window both
+  sides draw the navigation without it (plan 0162 E17 (9): U6 had
+  withdrawn the reference, U7r restored it from `073650a`).
 
 ### Platform
 
@@ -565,16 +563,16 @@ HeaderPanel is the panel a global action opens under the header at its end edge,
 
 ## HeaderSideNavItems
 
-HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, with no upstream visual reference of its own because upstream draws it below lg only, where the primary gates do not read.
+HeaderSideNavItems lists the header's links again for the side navigation of a window below lg, with the space under it and an optional rule; it must be composed inside a SideNav, where upstream draws it below lg only.
 
 | | |
 |---|---|
 | Tier | `composite` |
 | Platform | `both` |
-| Reference | `none` (`@carbon/react`) |
+| Reference | `render-web` (`@carbon/react`) |
 | Enums | none |
 | Behaviors | `compound-context`, `keyboard` |
-| Flags | `no_reference` - no upstream visual reference; gates are structural, accessibility and cross-template; `requires_parent` - renders only inside its parent |
+| Flags | `requires_parent` - renders only inside its parent |
 
 ### Props
 

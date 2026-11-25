@@ -17,9 +17,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverComponents } from '../scripts/lib/components.js';
-import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readSampleBox, refocusPanel, reopenPanel, settleLayout } from './harness/page.js';
+import { enterInteraction, leaveInteraction, openReference, openShowcase, pauseCellAnimations, readParts, readSampleBox, refocusPanel, reopenPanel, settleLayout } from './harness/page.js';
 import { cropRect, perceptualRatio, ratio, sampleWindow } from './harness/perceptual.js';
-import { restHiddenStates } from './harness/fidelity.js';
+import { drawnOutsideNarrow, restHiddenStates } from './harness/fidelity.js';
 import { PNG } from 'pngjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -201,16 +201,27 @@ test.describe('perceptual', function () {
         : [null];
       const reference = { cells: 0, errors: [], unmeasured: [] };
       const upstream = {};
+      // A reference drawn in its narrow window only (`narrowOnly`): neither
+      // side may draw those parts in this wide window
+      const narrowOnly = componentReference !== undefined && Array.isArray(componentReference.narrowOnly);
+      const upstreamParts = {};
       for (const isoLabel of isoLabels) {
         const ref = await openReference(page, row.name, undefined, undefined, isoLabel);
         reference.cells += ref.cells;
         reference.errors.push.apply(reference.errors, ref.errors);
         reference.unmeasured.push.apply(reference.unmeasured, ref.unmeasured || []);
         Object.assign(upstream, await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'upstream'));
+        if (narrowOnly) {
+          Object.assign(upstreamParts, await readParts(page, row.name, componentReference.parts, 'upstream'));
+        }
       }
       expect(reference.cells, row.name + ': the reference page drew no state').toBeGreaterThanOrEqual(1);
       await openShowcase(page, REFERENCE_TEMPLATE, row.name, { measure: true, hosted: false });
       const ours = await shootBodies(page, row.name, pauseAnimations(row.name), componentReference, 'ours');
+      if (narrowOnly) {
+        const oursParts = await readParts(page, row.name, componentReference.parts, 'ours');
+        expect(drawnOutsideNarrow(componentReference, oursParts, 'ours').concat(drawnOutsideNarrow(componentReference, upstreamParts, 'upstream')), row.name + ': parts drawn outside the narrow window').toEqual([]);
+      }
       const ratios = [];
       const over = [];
       const crops = [];

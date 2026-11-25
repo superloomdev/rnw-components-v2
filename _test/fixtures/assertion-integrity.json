@@ -2886,6 +2886,36 @@
       "why": "Android breaks no line after a hyphen or an en dash; without the zero-width space a hyphenated word breaks mid-letters where CSS breaks after the dash"
     },
     {
+      "id": "narrow-only-fidelity",
+      "file": "component/composite/header/header-side-nav-items.js",
+      "find": "    if (!(viewport.width > 0 && viewport.width < ctx.metric('HeaderSideNavItems', 'bpLg'))) {",
+      "replace": "    if (viewport.width < 0) {",
+      "runner": "pw",
+      "test": "fidelity.spec.js",
+      "testName": "HeaderSideNavItems / primary / light: matches the reference in every state",
+      "why": "a list upstream draws below lg only, drawn by ours in the wide window, must fail the primary set"
+    },
+    {
+      "id": "narrow-only-measure",
+      "file": "component/composite/header/header-side-nav-items.js",
+      "find": "    if (!(viewport.width > 0 && viewport.width < ctx.metric('HeaderSideNavItems', 'bpLg'))) {",
+      "replace": "    if (viewport.width < 0) {",
+      "runner": "pw",
+      "test": "measure.spec.js",
+      "testName": "HeaderSideNavItems: parts match the rendered upstream",
+      "why": "the measure gate reads the wide window, where neither side may draw a narrow-only part"
+    },
+    {
+      "id": "narrow-only-perceptual",
+      "file": "component/composite/header/header-side-nav-items.js",
+      "find": "    if (!(viewport.width > 0 && viewport.width < ctx.metric('HeaderSideNavItems', 'bpLg'))) {",
+      "replace": "    if (viewport.width < 0) {",
+      "runner": "pw",
+      "test": "perceptual.spec.js",
+      "testName": "HeaderSideNavItems: mismatch within diff_budget 2%",
+      "why": "a narrow-only list drawn in the wide window must show in the wide perceptual comparison"
+    },
+    {
       "id": "tab-manual-activation",
       "file": "behaviors/state.js",
       "find": "    const manual = options.activation === 'manual';",
@@ -4168,8 +4198,8 @@
     {
       "id": "tearsheet-influencer-width",
       "file": "component/composite/tearsheet/tearsheet.js",
-      "find": "width: narrow ? undefined : influencerWidth + metrics.dividerWidth",
-      "replace": "width: narrow ? undefined : influencerWidth",
+      "find": "width: narrow && props.influencerWidth !== 'wide' ? undefined : influencerWidth + metrics.dividerWidth",
+      "replace": "width: narrow && props.influencerWidth !== 'wide' ? undefined : influencerWidth",
       "runner": "node",
       "test": "tearsheet.test.js",
       "testName": "the left influencer box is the cell plus the end rule",

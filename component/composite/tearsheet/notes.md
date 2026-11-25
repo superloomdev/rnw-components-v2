@@ -28,3 +28,16 @@ and Button draw the parts.
 - Stacking: the host's open layers named `Tearsheet` form the stack, at
   most 3; a level below the top scales `(w - 32 * d) / w` and grows its
   max height `tearsheet_stack_offset` per level. Unhosted: no stack.
+
+## Action seats and the narrow window (plan 0162 U7r)
+
+An action seat is upstream's ActionSet flex item (`ActionSet/_action-set.scss:94-113`: a quarter capped at 232,
+a ghost growing) over its min-content minimum. Three outcomes (E17), each drawn: the label fits the seat
+(`default`); the label is wider than the seat and its widest word fits, so it wraps inside it (`longAction`,
+"Create workspace immediately" in the 232 cap; three words, so the narrow floor's three lines stay inside the 80
+button); the widest word is wider than the seat, so the seat is the button's
+min-content width (the narrow set: a quarter of 320 is 80, "Cancel" is 123.5 wide). The Button reports that width
+through `onMinContentWidth`. Below md the influencer takes its content's width (`_tearsheet.scss:473-475`), except
+the wide one, whose `flex-basis: 321px` follows that rule in the source (`:479-481`) and still applies: in a 320
+body it fills the row, and main, never narrower than its action row's min-content width, is pushed past the
+container, which clips it (`influencerWide` in the narrow set draws no action row).

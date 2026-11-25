@@ -7,7 +7,9 @@
 // and shadow pixels at the anchor part), and stay within the row's
 // diff_budget perceptually. A reference with `narrow` ({ window, width })
 // runs the `narrow` set too: both pages in that window, each body at that
-// width, for a rule read from the window. The narrow set opens the showcase
+// width, for a rule read from the window; one with `narrowOnly` is drawn
+// in that window only, and its primary set asserts that neither side draws
+// those parts. The narrow set opens the showcase
 // with the form variants off (`adaptive=fixed`, decision 62): it compares the
 // window rule alone; the form class's target floor and pitch are the
 // structural gate's. No expected gap is set aside: a difference is a
@@ -18,7 +20,7 @@
 import { expect, test } from '@playwright/test';
 
 import { discoverComponents, getRoster } from '../scripts/lib/components.js';
-import { SCHEMES, runFidelity } from './harness/fidelity.js';
+import { SCHEMES, drawnOutsideNarrow, runFidelity } from './harness/fidelity.js';
 import { explainDisagreements, explainBudgetLines } from './harness/expected-gaps.js';
 import { readFileSync } from 'node:fs';
 
@@ -52,7 +54,17 @@ test.describe('fidelity', function () {
             test.skip();
             return;
           }
-          const run = await runFidelity(page, component, set, scheme);
+          // A reference drawn in its narrow window only (`narrowOnly`): the
+          // wide window drives no interaction, asserts that neither side draws
+          // those parts and compares the rest
+          const narrowOnly = Array.isArray(component.reference.narrowOnly) && set === 'primary' ? component.reference.narrowOnly : null;
+          const run = await runFidelity(page, narrowOnly === null ? component : Object.assign({}, component, { reference: Object.assign({}, component.reference, { interactions: [] }) }), set, scheme);
+          if (narrowOnly !== null) {
+            expect(drawnOutsideNarrow(component.reference, run.ours, 'ours').concat(drawnOutsideNarrow(component.reference, run.upstream, 'upstream')), component.name + ': parts drawn outside the narrow window').toEqual([]);
+            run.lines = run.lines.filter(function (line) {
+              return narrowOnly.indexOf(line.split(' / ')[1]) === -1;
+            });
+          }
           if (run.errors.length > 0 || run.lines.length > 0 ||
               Object.values(run.perceptual).some(value => value > BUDGET[component.name])) {
             await test.info().attach('fidelity-parts', {
