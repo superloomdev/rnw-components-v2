@@ -2,7 +2,8 @@
 // row: container, label box, text, toggle and icon.
 export default Object.freeze({
   kind: 'render-web',
-  body: Object.freeze({ width: 320 }),
+  // Staged past the tree's 218 so the cell spans the rows it needs (`sample.tree-view.js`)
+  body: Object.freeze({ width: 320, height: 224, stage: true }),
   // A label wider than its row is cut with an ellipsis and gains a
   // tooltip (`TreeView/TreeNode.tsx:195-232,313`): the narrow set draws a
   // 160 body, which cuts the labels

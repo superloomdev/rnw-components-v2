@@ -1,6 +1,11 @@
 // Info: TreeView sample states for the showcase, the browser gates and
 // the docs. Mirrors `recipes/probe/TreeView.mount.js` through `nodes`.
 
+// The tree is 218 tall, past the measurement grid's 160 row pitch: the
+// staged body spans the rows it needs, so the next cell's head never draws
+// into its crop (the narrow perceptual set read it)
+export const FRAME = Object.freeze({ width: 320, height: 224, stage: true });
+
 const NODES = [
   { id: 'one', label: 'Node one' },
   { children: [{ id: 'two-one', label: 'Node two one' }, { id: 'two-two', label: 'Node two two' }], expanded: true, id: 'two', label: 'Node two' },

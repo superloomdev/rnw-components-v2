@@ -153,7 +153,7 @@ import FileUploaderSkeletonSample, { FRAME as FileUploaderSkeletonFrame } from '
 import PageHeaderSample, { FRAME as PageHeaderFrame } from './component/composite/page-header/sample.page-header.js';
 import TearsheetSample, { FRAME as TearsheetFrame } from './component/composite/tearsheet/sample.tearsheet.js';
 import TreeNodeSample from './component/composite/tree-view/sample.tree-node.js';
-import TreeViewSample from './component/composite/tree-view/sample.tree-view.js';
+import TreeViewSample, { FRAME as TreeViewFrame } from './component/composite/tree-view/sample.tree-view.js';
 import ContentSample, { FRAME as ContentFrame } from './component/composite/header/sample.content.js';
 import HeaderSample, { FRAME as HeaderFrame } from './component/composite/header/sample.header.js';
 import HeaderContainerSample, { FRAME as HeaderContainerFrame } from './component/composite/header/sample.header-container.js';
@@ -339,7 +339,7 @@ export const catalog = Object.freeze([
   Object.freeze({ name: 'PageHeader', family: 'PageHeader', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: PageHeaderFrame, sample: PageHeaderSample }),
   Object.freeze({ name: 'Tearsheet', family: 'Tearsheet', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TearsheetFrame, sample: TearsheetSample }),
   Object.freeze({ name: 'TreeNode', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze(['requires_parent', 'no_reference']), widget: null, frame: null, sample: TreeNodeSample }),
-  Object.freeze({ name: 'TreeView', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: null, sample: TreeViewSample }),
+  Object.freeze({ name: 'TreeView', family: 'TreeView', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: TreeViewFrame, sample: TreeViewSample }),
   Object.freeze({ name: 'Content', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: ContentFrame, sample: ContentSample }),
   Object.freeze({ name: 'Header', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: HeaderFrame, sample: HeaderSample }),
   Object.freeze({ name: 'HeaderContainer', family: 'Header', tier: 'composite', platform: 'both', flags: Object.freeze([]), widget: null, frame: HeaderContainerFrame, sample: HeaderContainerSample }),
