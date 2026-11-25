@@ -21,8 +21,11 @@ export default Object.freeze({
   },
   parts: Object.freeze({
     nav: Object.freeze({ upstream: '.cds--pagination-nav', ours: '[data-part="nav"]', measure: 'box' }),
-    // Upstream's overflow picker is a `__page` too (`PaginationNav.tsx:242,261`)
-    pages: Object.freeze({ upstream: '.cds--pagination-nav__page', ours: '[data-part="page"], [data-part="overflow"] [role="button"]', measure: 'box', all: true }),
+    // Upstream's overflow picker is a `__page` too (`PaginationNav.tsx:242,261`);
+    // the harness tries comma alternatives in order, so ours joins its two
+    // kinds in one `:is()` and the first in document order is read, as
+    // upstream's (narrow `middle` opens on the front picker, not on page 5)
+    pages: Object.freeze({ upstream: '.cds--pagination-nav__page', ours: ':is([data-part="page"], [data-part="overflow"] [role="button"])', measure: 'box', all: true }),
     active: Object.freeze({ upstream: '.cds--pagination-nav__page--active', ours: '[data-part="page"][aria-current="page"]', measure: 'box' })
   })
 });

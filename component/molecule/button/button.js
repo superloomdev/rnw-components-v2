@@ -196,7 +196,9 @@ export default function Button (ctx) {
           borderColor: ctx.color(borderLeaf),
           borderRadius: radius,
           borderWidth: borderWidth,
-          flexBasis: 0,
+          // A wrapping label's height is the button's base, so a label too
+          // tall for its seat grows the seat rather than overflowing it
+          flexBasis: wraps ? 'auto' : 0,
           flexDirection: 'row',
           flexGrow: 1,
           // The theme places the label: the start padding under `top`,
