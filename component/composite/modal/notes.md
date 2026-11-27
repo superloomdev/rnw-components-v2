@@ -43,6 +43,12 @@ theme.
   but not past the button's box: the label's bottom margin gives the
   padding back, and the row is the actions height at least, grown only by
   a label taller than that (two lines of a scaled text).
+- **The header label and the body text keep upstream's fractional line
+  boxes.** Their type sets are drawn through `textPresentation`, the
+  unitless ratio, as upstream's `label-01` (12 x 1.33333) lays out
+  15.984375 and `body-01` (14 x 1.42857) 19.984375 a line; the px lengths
+  drawn before set the heading and the body 1/64 lower and each body line
+  20 (narrow `scrolling` 2.06-2.47 %, U8).
 - **Header padding end** reserves the close button's square where shown
   (`icon_button_size`), else the inline cell.
 - **Header in flow.** The header sits in flow, its bottom margin

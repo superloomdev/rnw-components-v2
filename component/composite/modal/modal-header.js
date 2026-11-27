@@ -62,7 +62,9 @@ export default function ModalHeader (ctx) {
       },
       Utils.isString(props.label) ? React.createElement(Text, {
         nativeID: props.labelId,
-        style: [ctx.typeStyle('label01'), { color: ctx.color('text_secondary'), display: labelShown ? undefined : 'none', marginBottom: metrics.headerGap }]
+        // The ratio keeps upstream's fractional line box (12 x 1.33333 lays
+        // out 15.984375; a 16 px length drew every line under it a pixel low)
+        style: [ctx.textPresentation(ctx.typeStyle('label01')), { color: ctx.color('text_secondary'), display: labelShown ? undefined : 'none', marginBottom: metrics.headerGap }]
       }, props.label) : null,
       React.createElement(Text, {
         nativeID: props.headingId,

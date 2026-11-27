@@ -73,7 +73,8 @@ export default function ModalBody (ctx) {
       // `fill`
     },
     Utils.isString(props.children) ? React.createElement(Text, {
-      style: [ctx.typeStyle('dialog_body'), { color: ctx.color('dialog_body'), paddingEnd: gutter }]
+      // The ratio keeps upstream's fractional line box (body-01 14 x 1.42857)
+      style: [ctx.textPresentation(ctx.typeStyle('dialog_body')), { color: ctx.color('dialog_body'), paddingEnd: gutter }]
     }, props.children) : props.children,
     scrolling ? React.createElement(View, { style: { height: metrics.scrollEndSpace } }) : null);
 
