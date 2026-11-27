@@ -93,7 +93,7 @@ describe('Callout: every sample state under every template', function () {
 describe('Callout: below md the details measure their text', function () {
 
   for (const template of TEMPLATE_NAMES) {
-    test(template + ': below md the details measure their text, grow along their line and never shrink', async function () {
+    test(template + ': below md the details measure their text, grow along their line and never shrink; the text block is its content in every band', async function () {
       const t = buildNative(template).tokens;
       const Registry = buildSystem(template, factories);
       const props = SAMPLE[0].props;
@@ -119,12 +119,14 @@ describe('Callout: below md the details measure their text', function () {
       let wideBasis = null;
       let wideGrow = null;
       let wideCap = null;
+      let wideDetailsWrap = null;
       await inWindow(t['breakpoint.md'], async function () {
         const rendered = await render(React.createElement(Registry.Callout, props));
         const details = rendered.firstElementChild.children[0];
         wideBasis = details.children[1].style.flexBasis;
         wideGrow = details.children[1].style.flexGrow;
         wideCap = details.style.maxWidth;
+        wideDetailsWrap = details.style.flexWrap;
         await cleanup();
       });
       const line = t['control.notification_width'] - t['control.notification_marker_width'] - t['control.notification_details_inset'] - t['spacing.spacing_09'];
@@ -135,8 +137,9 @@ describe('Callout: below md the details measure their text', function () {
       assert.equal(narrowDetailsWrap, 'nowrap', 'below md the glyph and the text share one line, as the upstream details do not wrap');
       assert.equal(narrowBasis, 'auto', 'below md the text block is its content, so a native layout measures the text');
       assert.equal(narrowGrow, '0', 'below md the text block does not grow: a native layout measures a growing block at the whole line');
-      assert.equal(wideBasis === 'auto', false, 'from md the text block shares the row from a zero basis');
-      assert.equal(wideGrow, '1', 'from md the text block grows across the details');
+      assert.equal(wideBasis, 'auto', 'from md the text block is its content, as upstream\'s text wrapper (`_inline-notification.scss:293-297`)');
+      assert.equal(wideGrow, '0', 'from md the text block does not grow');
+      assert.equal(wideDetailsWrap, 'nowrap', 'from md the details do not wrap: a long text shrinks beside the glyph, never under it');
       assert.equal(wideCap, '', 'from md the details have no cap');
     });
   }

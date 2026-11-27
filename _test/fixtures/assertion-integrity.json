@@ -3682,7 +3682,7 @@
       "replace": "        flexGrow: 1,\n        flexShrink: 1,",
       "runner": "node",
       "test": "callout.test.js",
-      "testName": "default: below md the details measure their text, grow along their line and never shrink",
+      "testName": "default: below md the details measure their text, grow along their line and never shrink; the text block is its content in every band",
       "why": "details that grow and shrink below md keep the action on their line in a native wrapping row"
     },
     {
@@ -3692,18 +3692,28 @@
       "replace": "        maxWidth: undefined,",
       "runner": "node",
       "test": "callout.test.js",
-      "testName": "default: below md the details measure their text, grow along their line and never shrink",
+      "testName": "default: below md the details measure their text, grow along their line and never shrink; the text block is its content in every band",
       "why": "details that never shrink and have no cap overflow the band in a browser when their text is wider than the line"
     },
     {
       "id": "notification-text-grow-narrow",
       "file": "component/molecule/notification/notification-parts.js",
-      "find": "        flexGrow: opts.narrow === true ? 0 : 1,",
+      "find": "        flexGrow: opts.narrow === true || opts.contentSized === true ? 0 : 1,",
       "replace": "        flexGrow: 1,",
       "runner": "node",
       "test": "callout.test.js",
-      "testName": "default: below md the details measure their text, grow along their line and never shrink",
+      "testName": "default: below md the details measure their text, grow along their line and never shrink; the text block is its content in every band",
       "why": "a text block that grows below md makes a native layout measure the details at the whole line, so a short text never shares it with the action"
+    },
+    {
+      "id": "notification-details-wrap-wide",
+      "file": "component/molecule/notification/notification-parts.js",
+      "find": "        flexWrap: opts.narrow === true || opts.contentSized === true ? 'nowrap' : 'wrap',",
+      "replace": "        flexWrap: opts.narrow === true ? 'nowrap' : 'wrap',",
+      "runner": "node",
+      "test": "callout.test.js",
+      "testName": "default: below md the details measure their text, grow along their line and never shrink; the text block is its content in every band",
+      "why": "wrapping details from md drop a long content-sized text under the glyph"
     },
     {
       "id": "notification-details-no-grow-narrow",
@@ -3718,11 +3728,11 @@
     {
       "id": "notification-text-basis-zero-narrow",
       "file": "component/molecule/notification/notification-parts.js",
-      "find": "      key: 'textBlock',\n      style: {\n        flexBasis: opts.narrow === true ? 'auto' : 0,",
+      "find": "      key: 'textBlock',\n      style: {\n        flexBasis: opts.narrow === true || opts.contentSized === true ? 'auto' : 0,",
       "replace": "      key: 'textBlock',\n      style: {\n        flexBasis: 0,",
       "runner": "node",
       "test": "callout.test.js",
-      "testName": "default: below md the details measure their text, grow along their line and never shrink",
+      "testName": "default: below md the details measure their text, grow along their line and never shrink; the text block is its content in every band",
       "why": "a zero-basis text block below md lets a native layout size the details from the glyph alone and seat the action beside them"
     },
     {

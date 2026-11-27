@@ -129,9 +129,12 @@ export default function createNotificationParts (ctx) {
   gives the one item of a row that both grows and shrinks a zero basis,
   so the row never breaks after it. The browser shrinks an item to its
   line; here a cap of the line's width does that - the band's floor less
-  the marker and the details' two insets.
+  the marker and the details' two insets. A content-sized text block
+  (`contentSized`) keeps the icon's row from wrapping in every band, as
+  upstream's flex details (`_inline-notification.scss:277-280`), so a long
+  text shrinks beside the icon rather than dropping under it.
 
-  @param {Object}   opts     - { owner, kind, lowContrast, iconTop, narrow }
+  @param {Object}   opts     - { owner, kind, lowContrast, iconTop, narrow, contentSized }
   @param {Array}    children - The text block
 
   @return {Object} - React element
@@ -149,7 +152,7 @@ export default function createNotificationParts (ctx) {
         flexDirection: 'row',
         flexGrow: 1,
         flexShrink: 0,
-        flexWrap: opts.narrow === true ? 'nowrap' : 'wrap',
+        flexWrap: opts.narrow === true || opts.contentSized === true ? 'nowrap' : 'wrap',
         marginStart: ctx.metric(opts.owner, 'detailsInset'),
         marginEnd: opts.narrow === true ? ctx.token('spacing.spacing_09') : ctx.metric(opts.owner, 'detailsInsetEnd'),
         maxWidth: line,
@@ -194,9 +197,13 @@ export default function createNotificationParts (ctx) {
   as the upstream text wrapper is a content-sized item of the details
   (`_actionable-notification.scss:351-355`): a native layout measures a
   growing block at the whole line and a zero-basis block as empty, and
-  either hides the text's width from the details.
+  either hides the text's width from the details. From md a content-sized
+  block (`contentSized`: the inline, actionable and callout bands) keeps
+  that basis too, as upstream's text wrapper does not grow
+  (`_inline-notification.scss:293-297`); the toast's grows, its details
+  being a block (`_toast-notification.scss:237-240`).
 
-  @param {Object}   opts     - { owner, paddingTop, paddingBottom, narrow }
+  @param {Object}   opts     - { owner, paddingTop, paddingBottom, narrow, contentSized }
   @param {Array}    children - The rows
 
   @return {Object} - React element
@@ -206,8 +213,8 @@ export default function createNotificationParts (ctx) {
     return React.createElement(View, {
       key: 'textBlock',
       style: {
-        flexBasis: opts.narrow === true ? 'auto' : 0,
-        flexGrow: opts.narrow === true ? 0 : 1,
+        flexBasis: opts.narrow === true || opts.contentSized === true ? 'auto' : 0,
+        flexGrow: opts.narrow === true || opts.contentSized === true ? 0 : 1,
         flexShrink: 1,
         minWidth: 0,
         paddingTop: Utils.isNumber(opts.paddingTop) ? opts.paddingTop : ctx.metric(opts.owner, 'textPaddingBlock'),

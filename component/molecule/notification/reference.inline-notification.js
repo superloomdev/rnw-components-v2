@@ -41,7 +41,7 @@ export default Object.freeze({
     // Ours is the icon's column, stretched to the text beside it; its x, y
     // and width are the glyph's, upstream's box is the 20 glyph alone
     icon: Object.freeze({ upstream: '.cds--inline-notification__icon', ours: '[role="status"] > div:first-child > div:first-child, [role="alert"] > div:first-child > div:first-child, [role="log"] > div:first-child > div:first-child', measure: 'box', compare: ['x', 'y', 'width', 'marginTop', 'marginRight', 'fill'], except: ['height'] }),
-    textWrapper: Object.freeze({ upstream: '.cds--inline-notification__text-wrapper', ours: '[role="status"] > div:first-child > div:last-child, [role="alert"] > div:first-child > div:last-child, [role="log"] > div:first-child > div:last-child', measure: 'box', compare: ['paddingTop'] }),
+    textWrapper: Object.freeze({ upstream: '.cds--inline-notification__text-wrapper', ours: '[role="status"] > div:first-child > div:last-child, [role="alert"] > div:first-child > div:last-child, [role="log"] > div:first-child > div:last-child', measure: 'box', compare: ['x', 'y', 'width', 'height', 'paddingTop'] }),
     title: Object.freeze({ upstream: '.cds--inline-notification__title', ours: '[dir="auto"]:first-child', measure: 'text' }),
     subtitle: Object.freeze({ upstream: '.cds--inline-notification__subtitle', ours: '[dir="auto"]:last-child', measure: 'text', optional: true }),
     close: Object.freeze({ upstream: '.cds--inline-notification__close-button', ours: '[role="status"] > div:last-child [role="button"], [role="alert"] > div:last-child [role="button"], [role="log"] > div:last-child [role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),

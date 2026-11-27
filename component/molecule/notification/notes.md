@@ -59,6 +59,16 @@ file and the row is measured against the primary alone.
   stopped the details growing (`ef1230b`): it held for the wrapping
   outcome and drew the other one wrong, the action short of the band's end
   in a browser and wrapped under a short text on a device.
+- **The text block is its content from md too** (inline, actionable and
+  callout bands): upstream's text wrapper does not grow
+  (`_inline-notification.scss:293-297`), so `noClose` drew ours 302.89 wide
+  against 254.89. Its basis is its content, it does not grow, and the
+  details no longer wrap, so a long text shrinks beside the icon. The band
+  model (`wip/0162-yoga/notification-wide.mjs`) drew the same band heights
+  as before for a short and a long text, with and without the close seat
+  and an action, and a wrapping details row dropped the long text under the
+  icon, which is why the wrap goes. The toast keeps the grown block: its
+  upstream details are a block (`_toast-notification.scss:237-240`).
 - **Callout's end space.** The upstream Callout always carries the
   no-close class (`Notification.js:664`), so its action keeps
   `margin-inline-end: $spacing-03` (`_actionable-notification.scss:458-461`).

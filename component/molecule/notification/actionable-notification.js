@@ -106,9 +106,9 @@ export default function ActionableNotification (ctx) {
       testID: props.testID,
       fluid: inline, width: inline ? ctx.metric(owner, 'width') : ctx.metric(owner, widest ? 'toastWidthMax' : 'toastWidth')
     }, [
-      parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
+      parts.details({ contentSized: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ iconTop: inline ? undefined : ctx.metric(owner, 'toastIconTop'), kind: kind, lowContrast: lowContrast, owner: owner }),
-        parts.textBlock({ narrow: narrow, owner: owner, paddingBottom: inline ? undefined : ctx.metric(owner, 'toastTextPaddingBottom') }, [
+        parts.textBlock({ contentSized: true, narrow: narrow, owner: owner, paddingBottom: inline ? undefined : ctx.metric(owner, 'toastTextPaddingBottom') }, [
           parts.text({ caption: props.caption, lowContrast: lowContrast, owner: owner, stacked: !inline, subtitle: props.subtitle, title: props.title })
         ])
       ]),

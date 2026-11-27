@@ -140,7 +140,7 @@ describe('ActionableNotification: every sample state under every template', func
 describe('ActionableNotification: below md the inline details measure their text', function () {
 
   for (const template of TEMPLATE_NAMES) {
-    test(template + ': the inline text block takes its content as basis below md; the toast keeps its own', async function () {
+    test(template + ': the text block takes its content as basis below md, inline and toast alike', async function () {
       const t = buildNative(template).tokens;
       const width = t['breakpoint.md'] - 1;
       const before = window.innerWidth;
@@ -155,7 +155,7 @@ describe('ActionableNotification: below md the inline details measure their text
         const toastBasis = toastParts.band.children[0].children[1].style.flexBasis;
         await cleanup();
         assert.equal(inlineBasis, 'auto', 'below md the inline text block is its content, so a native layout measures the text');
-        assert.equal(toastBasis === 'auto', false, 'the toast has no narrow rule');
+        assert.equal(toastBasis, 'auto', 'the toast form\'s text wrapper does not grow either (`_actionable-notification.scss:351-355`)');
       } finally {
         Object.defineProperty(window, 'innerWidth', { configurable: true, value: before, writable: true });
       }

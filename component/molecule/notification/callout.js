@@ -44,9 +44,9 @@ export default function Callout (ctx) {
     // never a close, so the action keeps the end space a band without a
     // close gives it (`_actionable-notification.scss:458-461`)
     return parts.frame({ fluid: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner, testID: props.testID, width: ctx.metric(owner, 'width') }, [
-      parts.details({ kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
+      parts.details({ contentSized: true, kind: kind, lowContrast: lowContrast, narrow: narrow, owner: owner }, [
         parts.icon({ kind: kind, lowContrast: lowContrast, owner: owner }),
-        parts.textBlock({ narrow: narrow, owner: owner }, [
+        parts.textBlock({ contentSized: true, narrow: narrow, owner: owner }, [
           React.createElement(ctx.ReactNative.View, { key: 'title', nativeID: titleId },
             parts.text({ lowContrast: lowContrast, owner: owner, subtitle: props.subtitle, title: props.title }))
         ])
