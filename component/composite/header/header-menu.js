@@ -29,7 +29,7 @@ export default function HeaderMenu (ctx) {
   const React = ctx.React;
   const Utils = ctx.Utils;
   const { Pressable, Text, View } = ctx.ReactNative;
-  const { focusNode, nodeContains, useEscapeKey, useInteractionState } = ctx.behaviors;
+  const { focusNode, nodeContains, useAnchoredPosition, useEscapeKey, useInteractionState, useOverlay } = ctx.behaviors;
 
 
   /********************************************************************
@@ -45,15 +45,26 @@ export default function HeaderMenu (ctx) {
     const [open, setOpen] = React.useState(false);
     const rootRef = React.useRef(null);
     const titleRef = React.useRef(null);
+    const listRef = React.useRef(null);
     const items = Utils.isArray(props.items) ? props.items : [];
 
-    // Focus that leaves the menu closes it (`HeaderMenu.tsx` `handleOnBlur`)
+    // Focus that leaves the menu closes it (`HeaderMenu.tsx` `handleOnBlur`);
+    // a hosted list is the menu's too, though it mounts in the host
     const onBlur = function (event) {
       const next = event === undefined || event === null || event.nativeEvent === undefined ? undefined : event.nativeEvent.relatedTarget;
-      if (next === null || next === undefined || !nodeContains(rootRef.current, next)) {
+      if (next === null || next === undefined || !(nodeContains(rootRef.current, next) || nodeContains(listRef.current, next))) {
         setOpen(false);
       }
     };
+
+    // The hosted list is placed from the menu's bottom start, re-measured
+    // while open so it follows the bar
+    const anchored = useAnchoredPosition({ anchor: rootRef, flip: false, offset: 0, placement: 'bottom-start', track: open });
+    React.useEffect(function () {
+      if (open) {
+        anchored.measure();
+      }
+    }, [open, anchored.measure]);
     const interaction = useInteractionState({
       onBlur: onBlur,
       onPress: function () {
@@ -133,20 +144,24 @@ export default function HeaderMenu (ctx) {
       style: { backgroundColor: ctx.color('header_menu_item_indicator'), bottom: -focusWidth, end: -focusWidth, height: ctx.metric('HeaderMenu', 'indicatorWidth'), position: 'absolute', start: -focusWidth }
     }) : null);
 
-    // The open list hangs from the title's bottom start (`_header.scss:369-381`)
-    const list = open ? React.createElement(View, {
-      'aria-label': Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : props.menuLinkName,
-      key: 'menu',
-      role: 'list',
-      style: Object.assign({
-        backgroundColor: ctx.color('header_menu_container'),
-        flexDirection: 'column',
-        position: 'absolute',
-        start: 0,
-        top: '100%',
-        width: ctx.metric('HeaderMenu', 'menuWidth')
-      }, ctx.token('shadow.header_menu'))
-    }, items.map(function (item, index) {
+    // The open list hangs from the title's bottom start (`_header.scss:369-381`).
+    // Where an overlay host is mounted it renders there, placed from the
+    // menu: in place it hangs outside the bar's bounds, where a native
+    // press never reaches it
+    const listOf = function (hosted) {
+      return React.createElement(View, {
+        'aria-label': Utils.isString(props.accessibilityLabel) ? props.accessibilityLabel : props.menuLinkName,
+        key: 'menu',
+        ref: listRef,
+        role: 'list',
+        style: [Object.assign({
+          backgroundColor: ctx.color('header_menu_container'),
+          flexDirection: 'column',
+          width: ctx.metric('HeaderMenu', 'menuWidth')
+        }, ctx.token('shadow.header_menu')), hosted ? anchored.layerStyle : { position: 'absolute', start: 0, top: '100%' }]
+      }, menuItems);
+    };
+    const menuItems = items.map(function (item, index) {
       return React.createElement(ctx.Registry.HeaderMenuItem, {
         href: item.href,
         inMenu: true,
@@ -155,13 +170,23 @@ export default function HeaderMenu (ctx) {
         onBlur: onBlur,
         onPress: item.onPress
       }, item.label);
-    })) : null;
+    });
+    const overlay = useOverlay({
+      isOpen: open,
+      name: 'HeaderMenu',
+      onClose: function () {
+        setOpen(false);
+      },
+      render: function () {
+        return listOf(true);
+      }
+    });
 
     return React.createElement(View, {
       ref: rootRef,
       role: 'listitem',
       style: { flexDirection: 'row', position: 'relative', zIndex: open ? 1 : undefined }
-    }, title, list);
+    }, title, open && !overlay.hosted ? listOf(false) : null);
 
   }
 

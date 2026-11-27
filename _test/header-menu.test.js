@@ -13,7 +13,8 @@ import { act } from 'react';
 
 import SAMPLE from '../component/composite/header/sample.header-menu.js';
 import { buildNative } from './harness/system.js';
-import { cleanup, cssValue } from './harness/render.js';
+import { React, cleanup, cssValue, render } from './harness/render.js';
+import { createSampleElement } from './harness/sample.js';
 import { inBar, TEMPLATE_NAMES, atWindow, fire, registryFor, renderSample, sides } from './header-shared.js';
 
 afterEach(cleanup);
@@ -112,6 +113,36 @@ describe('HeaderMenu: every sample state under every template', function () {
       assert.equal(title.getAttribute('aria-expanded'), 'false');
       await fire(title, new KeyboardEvent('keydown', { bubbles: true, key: ' ' }));
       assert.equal(title.getAttribute('aria-expanded'), 'true');
+    });
+  });
+
+});
+
+
+describe('HeaderMenu: the open list renders through a mounted overlay host', function () {
+
+  test('hosted, the list mounts outside the bar, where a native press reaches it, and focus moving into it keeps it open', async function () {
+    await atWindow(LG.above, async function () {
+      const Registry = registryFor('carbon');
+      const container = await render(React.createElement(Registry.OverlayHost, { testID: 'header-host' }, createSampleElement(React, Registry, 'HeaderMenu', SAMPLE[0])));
+      const title = container.querySelector('nav [aria-haspopup="menu"]');
+      const menu = title.closest('[role="listitem"]');
+      await press(title);
+      assert.equal(title.getAttribute('aria-expanded'), 'true');
+      const list = container.querySelector('[role="list"][aria-label]');
+      assert.equal(list !== null, true, 'the open list mounts');
+      assert.equal(menu.contains(list), false, 'the hosted list mounts in the host, not inside the menu');
+      assert.equal(container.querySelector('nav').contains(list), false, 'the hosted list is outside the bar\'s bounds');
+      const item = list.querySelector('a, [role="link"]');
+      const leaving = function (next) {
+        const event = new Event('focusout', { bubbles: true });
+        Object.defineProperty(event, 'relatedTarget', { value: next });
+        return event;
+      };
+      await fire(title, leaving(item));
+      assert.equal(title.getAttribute('aria-expanded'), 'true', 'focus moving into the hosted list keeps the menu open');
+      await fire(title, leaving(null));
+      assert.equal(title.getAttribute('aria-expanded'), 'false', 'focus leaving the menu closes it');
     });
   });
 

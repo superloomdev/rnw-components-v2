@@ -52,8 +52,11 @@ button); the widest word is wider than the seat, so the seat is the button's
 min-content width (the narrow set: a quarter of 320 is 80, "Cancel" is 123.5 wide). The Button reports that width
 through `onMinContentWidth`. Below md the influencer takes its content's width (`_tearsheet.scss:473-475`), except
 the wide one, whose `flex-basis: 321px` follows that rule in the source (`:479-481`) and still applies: in a 320
-body it fills the row, and main, never narrower than its action row's min-content width, is pushed past the
-container, which clips it (`influencerWide` in the narrow set draws no action row).
+body it fills the row and main collapses to 0 past it, as upstream's (`min-inline-size: 0`, `:483-497`); the action
+set keeps its buttons' min-content width and the button container clips it (`:552-567`), so it adds nothing to the
+body's scroll width, and the open focus on the clipped first action scrolls the body by the 3 left (321 in 318), as
+upstream's does on the web (`influencerWide` in the narrow set draws no action row; U8, which also named the
+geometry of the influencer, the set and the buttons).
 
 - **Geometry against upstream (U7g).** The description is upstream's
   `inline-flex` box (`Tearsheet/_tearsheet.scss:385-394`): its text's width

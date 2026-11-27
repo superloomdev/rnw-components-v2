@@ -98,16 +98,6 @@ export default function Tearsheet (ctx) {
       }
     };
 
-    // Escape, the tab wrap and the focus memory live in the trap
-    // behavior; the open focus lands on the close button when drawn,
-    // else the first action button (upstream's claimFocus order)
-    const trap = useFocusTrap({
-      finalFocusRef: props.returnFocusRef,
-      initialFocusRef: hasClose ? closeRef : firstActionRef,
-      isOpen: open,
-      onClose: requestClose
-    });
-
     // The container's box inside the layer space: the inline inset off
     // each side, the top inset off the top, anchored to the bottom
     // Below md the wide container spans the space (`_tearsheet.scss:288-302`
@@ -117,6 +107,19 @@ export default function Tearsheet (ctx) {
     const viewportWidth = useViewportSize().width;
     const narrow = viewportWidth > 0 && viewportWidth < metrics.bpMd;
     const measured = Utils.isNumber(space.width) && space.width > 0 && Utils.isNumber(space.height) && space.height > 0;
+
+    // Escape, the tab wrap and the focus memory live in the trap
+    // behavior; the open focus lands on the close button when drawn,
+    // else the first action button (upstream's claimFocus order), once
+    // the box has its width: a focus on a clipped action scrolls the body
+    // as upstream's does, which a box not yet sized cannot
+    const trap = useFocusTrap({
+      active: measured,
+      finalFocusRef: props.returnFocusRef,
+      initialFocusRef: hasClose ? closeRef : firstActionRef,
+      isOpen: open,
+      onClose: requestClose
+    });
     const insetTop = narrow ? 0 : props.verticalPosition === 'lower' ? metrics.insetTopLower : metrics.insetTop;
     const boxWidth = measured ? space.width - 2 * (narrow ? 0 : metrics.insetInline) : undefined;
     const boxHeight = measured ? space.height - insetTop : undefined;
@@ -137,7 +140,7 @@ export default function Tearsheet (ctx) {
     const seatWidth = Utils.isNumber(rowWidth) ? Math.min(rowWidth * 0.25, metrics.actionMaxWidth) : metrics.actionMaxWidth;
     // Each action button's min-content width, as it reports it
     const [floors, setFloors] = React.useState({});
-    // Main's floor: the row's, once every action button has measured
+    // The action set's floor: the row's, once every action button has measured
     const measuredAll = !Utils.isEmptyArray(actions) && actions.every(function (action, i) {
       return Utils.isNumber(floors[i]);
     });
@@ -291,8 +294,13 @@ export default function Tearsheet (ctx) {
         size: '2xl'
       }, action && action.label));
     });
+    // The set is never narrower than its buttons' min-content widths, and
+    // the container clips it, as upstream's inline-flex set inside its
+    // `overflow-x: auto` container (`_tearsheet.scss:552-567`): a set wider
+    // than main adds nothing to the body's scroll width
     const actionRow = Utils.isEmptyArray(actions) ? null : React.createElement(View, {
-      dataSet: { part: 'buttonContainer' }
+      dataSet: { part: 'buttonContainer' },
+      style: { overflow: 'hidden' }
     },
     React.createElement(View, {
       dataSet: { part: 'buttonSet' },
@@ -301,7 +309,8 @@ export default function Tearsheet (ctx) {
         borderTopColor: ctx.color('tearsheet_divider'),
         borderTopWidth: metrics.dividerWidth,
         flexDirection: 'row',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        minWidth: rowFloor
       }
     }, buttons));
 
@@ -324,17 +333,21 @@ export default function Tearsheet (ctx) {
     // right-positioned influencer inside it
     const main = React.createElement(View, {
       dataSet: { part: 'main' },
-      // Main is never narrower than its action row's min-content width, as
-      // upstream's flex item: beside the wide influencer below md it is
-      // pushed past the container, which clips it
-      style: { backgroundColor: ctx.color('tearsheet_main_container'), flex: 1, minWidth: rowFloor }
+      // Main collapses as upstream's (`min-inline-size: 0`,
+      // `_tearsheet.scss:483-497`): beside the wide influencer below md it
+      // is 0 wide past the influencer, and the open focus on its clipped
+      // first action scrolls the body by the room left, as upstream's does
+      style: { backgroundColor: ctx.color('tearsheet_main_container'), flex: 1, minWidth: 0 }
     },
     React.createElement(View, {
       style: { flex: 1, flexDirection: 'row' }
     },
+    // The content clips what overflows it, as upstream's (`overflow: auto`,
+    // `_tearsheet.scss:510-514`): a collapsed main's text adds nothing to
+    // the body's scroll width
     React.createElement(View, {
       dataSet: { part: 'content' },
-      style: { flex: 1 }
+      style: { flex: 1, overflow: 'hidden' }
     }, nodeOf(props.children, 'children')),
     influencerRight ? influencer : null),
     actionRow);

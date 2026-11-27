@@ -77,7 +77,9 @@ each is named.
   `name`, `navigation`, `actions` and `panel`; each member is its own
   component for a host that composes them by hand.
 - **The open menu hangs from its title in the bar's own stacking**
-  (`_header.scss:369-381`), stacked at `stacking.header`.
+  (`_header.scss:369-381`), stacked at `stacking.header`. Where an overlay
+  host is mounted the list renders there, placed from the menu's bottom
+  start, and focus moving into it keeps the menu open (U8).
 - **The current link's label stays `color.header_menu_item_label`.** The
   current class upstream (0,1,0) loses to `a.cds--header__menu-item`
   (0,1,1), so the current link keeps the secondary text and the bar alone
@@ -98,5 +100,7 @@ each is named.
 
 `both` for every row. The panel is a layer: it mounts through an overlay
 host where one is mounted and covers the viewport otherwise, as the
-dialog does. The open header menu hangs under the bar outside the bar's
-box; a native host keeps the bar above the content it scrolls.
+dialog does. The open header menu's list hangs under the bar, outside
+the bar's box, where a native press never reaches a child: under an
+overlay host it is a layer of the host, so the press reaches it; without
+one it stays in place (and the overlay warns once on a native platform).

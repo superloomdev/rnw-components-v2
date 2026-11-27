@@ -1,8 +1,4 @@
 {
   "note": "Box parts whose `compare` list left out x, y, width or height when the gate `reference-geometry.test.js` was written (plan 0162 E17). The list only shrinks: a repair that names a part's geometry removes its line and lowers the ceiling in the test. No part is ever added.",
-  "parts": [
-    "tearsheet/buttonSet",
-    "tearsheet/buttons",
-    "tearsheet/influencer"
-  ]
+  "parts": []
 }

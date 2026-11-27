@@ -77,14 +77,14 @@ export default Object.freeze({
     close: Object.freeze({ upstream: '.c4p--tearsheet .cds--modal-close', ours: '[data-part="close"] [role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
     closeIcon: Object.freeze({ upstream: '.c4p--tearsheet .cds--modal-close__icon', ours: '[data-part="close"] svg', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height'] }),
     body: Object.freeze({ upstream: '.c4p--tearsheet__body', ours: '[data-part="tearsheetBody"]', measure: 'box' }),
-    influencer: Object.freeze({ upstream: '.c4p--tearsheet__influencer', ours: '[data-part="influencer"]', measure: 'box', optional: true, compare: ['width', 'backgroundColor', 'borderRightWidth', 'borderRightColor', 'borderLeftWidth', 'borderLeftColor'] }),
+    influencer: Object.freeze({ upstream: '.c4p--tearsheet__influencer', ours: '[data-part="influencer"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderRightWidth', 'borderRightColor', 'borderLeftWidth', 'borderLeftColor'] }),
     // Upstream's main is the content's grid row, the button container the
     // next row (`_tearsheet.scss:491-498,552-555`); ours holds both, so its
     // height is the body's, which `body` compares
     main: Object.freeze({ upstream: '.c4p--tearsheet__main', ours: '[data-part="main"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'backgroundColor'], except: ['height'] }),
     content: Object.freeze({ upstream: '.c4p--tearsheet__content', ours: '[data-part="content"]', measure: 'box', optional: true }),
     buttonContainer: Object.freeze({ upstream: '.c4p--tearsheet__button-container', ours: '[data-part="buttonContainer"]', measure: 'box', optional: true }),
-    buttonSet: Object.freeze({ upstream: '.c4p--tearsheet__buttons', ours: '[data-part="buttonSet"]', measure: 'box', optional: true, compare: ['backgroundColor', 'borderTopWidth', 'borderTopColor'] }),
-    buttons: Object.freeze({ upstream: '.c4p--tearsheet__buttons .cds--btn', all: true, ours: '[data-part="buttonSet"] [role="button"]', measure: 'box', optional: true, compare: ['width', 'height', 'paddingTop', 'paddingBottom'] })
+    buttonSet: Object.freeze({ upstream: '.c4p--tearsheet__buttons', ours: '[data-part="buttonSet"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor'] }),
+    buttons: Object.freeze({ upstream: '.c4p--tearsheet__buttons .cds--btn', all: true, ours: '[data-part="buttonSet"] [role="button"]', measure: 'box', optional: true, compare: ['x', 'y', 'width', 'height', 'paddingTop', 'paddingBottom'] })
   })
 });
