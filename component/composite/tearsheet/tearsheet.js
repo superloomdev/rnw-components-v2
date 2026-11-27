@@ -273,6 +273,9 @@ export default function Tearsheet (ctx) {
         disabled: action && action.disabled === true,
         fill: true,
         kind: (action && action.kind) || 'primary',
+        // Upstream centers the label between the paddings
+        // (`ActionSet/_action-set.scss:26-29`)
+        labelCentered: true,
         onMinContentWidth: function (width) {
           setFloors(function (previous) {
             return previous[i] === width ? previous : Object.assign({}, previous, { [i]: width });

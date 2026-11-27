@@ -26,6 +26,7 @@ export default Object.freeze({
     paddingStart: { type: 'number', required: false, description: 'Composition prop: overrides the computed start padding (the fluid set\'s ghost items).' },
     paddingTop: { type: 'number', required: false, description: 'Composition prop: overrides the top padding (the dialog actions row reads it from its cells).' },
     paddingBottom: { type: 'number', required: false, description: 'Composition prop: overrides the bottom padding (the dialog actions row reads it from its cells).' },
+    labelCentered: { type: 'boolean', required: false, description: 'Composition prop: with `fill`, centers the label between the top and bottom paddings; a wrapping label runs into both by the smaller, so it grows the button before it leaves it (the tearsheet\'s action set).' },
     buttonRef: { type: 'object', required: false, description: 'Composition prop: a ref forwarded to the root pressable (a dialog\'s initial focus).' },
     fillLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws at rest (the notification action); default the kind\'s container cell.' },
     fillHoverLeaf: { type: 'string', required: false, description: 'Composition prop: the color leaf the face draws on hover (the notification action); default the kind\'s hover cell.' },

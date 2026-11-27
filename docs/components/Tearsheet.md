@@ -26,6 +26,15 @@ and Button draw the parts.
   rule; the button container wraps it transparent, as upstream's Wrap.
 - Initial focus: the close button when drawn (passive or `hasCloseIcon`),
   else the first action button. Outside press closes only when passive.
+- The action label is centered between the paddings, as upstream's
+  action button (`ActionSet/_action-set.scss:26-29`, `align-items: center`;
+  80 tall, padding 16 / 32): 32 below the top for one line, where the
+  Button's top placement drew it at 26 (U8, read from the narrow
+  screenshots). A wrapped label runs into both paddings by the smaller
+  (16), so a scaled label grows the button before it leaves it.
+- The browser gates focus each state's first action before its shot
+  (`refocus`): upstream draws one state per page, where the open focus
+  rings that action; ours draws every state on one page.
 - Enter: from `min(0.95 x layer height, tearsheet_enter_offset)` below over
   `motion.duration_moderate_02`; reduced motion and measurement draw at
   rest.

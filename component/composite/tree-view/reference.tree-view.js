@@ -17,7 +17,11 @@ export default Object.freeze({
       // parent's expansion key on it) and the icon through `upstream.icon`
       return React.createElement(upstream.TreeNode, { disabled: n.disabled === true, id: n.id, isExpanded: n.expanded === true, key: i, label: n.label, renderIcon: typeof n.icon === 'string' ? upstream.icon(n.icon) : undefined, value: n.id }, kids);
     };
-    return React.createElement(upstream.TreeView, {
+    // Upstream's tree is a fragment, its inline-block label first, which
+    // sits 2 below its line's top; the perceptual crop aligns both sides
+    // at the first element's top-left, so a plain block holds the fragment
+    // and starts at the line's top, as ours does (the parts do not move)
+    return React.createElement('div', null, React.createElement(upstream.TreeView, {
       active: props.active,
       hideLabel: props.hideLabel === true,
       label: props.label,
@@ -25,7 +29,7 @@ export default Object.freeze({
       size: props.size
     }, props.nodes.map(function (n, i) {
       return node(n, i);
-    }));
+    })));
   },
   parts: Object.freeze({
     tree: Object.freeze({ upstream: '.cds--tree', ours: '[data-part="tree"]', measure: 'box' }),

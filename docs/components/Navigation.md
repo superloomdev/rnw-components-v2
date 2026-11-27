@@ -77,8 +77,10 @@ each is named.
 - **The overlay starts at the navigation's top.** Upstream's starts 48
   under the window's top, under its fixed header (`:82`), and covers the
   window; ours covers the space a layer covers from the navigation down
-  (the overlay host's when one is mounted, else the window), so the
-  narrow set compares it by its pixels.
+  (the overlay host's when one is mounted, else the window). The
+  reference moves upstream's overlay by the 48 it moves the navigation,
+  so both start at its top; the narrow set compares it by its pixels
+  (U8: the unmoved overlay left a 64 x 48 block of page, 3 %).
 - **A closed fixed navigation is moved out by its own width** and takes no
   room, as upstream's transform moves it (`:114-117`): its host clips it.
 - **A navigation narrower than full draws no link or menu text**: a closed

@@ -317,6 +317,19 @@ describe('Button: composition props', function () {
     assert.equal(plain.root.style.paddingLeft, (t['control.button_padding_start'] - t['border.width_01']) + 'px');
   });
 
+  test('labelCentered centers a filling label between its paddings; a wrapping one runs into both by the smaller', async function () {
+    const top = await renderButton(registryFor('carbon'), { children: 'C', fill: true, paddingTop: 16, paddingBottom: 32, onMinContentWidth: function () {} });
+    assert.equal(top.root.style.alignItems, 'flex-start');
+    assert.equal(top.label.style.marginBottom, '-32px');
+    assert.equal(top.label.style.marginTop, '');
+    const centered = await renderButton(registryFor('carbon'), { children: 'C', fill: true, labelCentered: true, paddingTop: 16, paddingBottom: 32, onMinContentWidth: function () {} });
+    assert.equal(centered.root.style.alignItems, 'center');
+    assert.equal(centered.label.style.marginBottom, '-16px');
+    assert.equal(centered.label.style.marginTop, '-16px');
+    const unfilled = await renderButton(registryFor('carbon'), { children: 'C', labelCentered: true });
+    assert.equal(unfilled.root.style.alignItems, 'flex-start', 'labelCentered applies to a filling button only');
+  });
+
 });
 
 

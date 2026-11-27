@@ -182,6 +182,13 @@ export default function Button (ctx) {
     // face keeps its size; a press on it bubbles to the Pressable
     const hit = props.pressFloor === true ? React.createElement(View, { 'aria-hidden': true, dataSet: { part: 'hit' }, style: ctx.pressTarget(faceSize) }) : null;
 
+    // The paddings a wrapping label may run into; a centered one runs into
+    // both by the smaller, so a label too tall for its seat grows the seat
+    // before it leaves the button's box
+    const centered = props.fill === true && props.labelCentered === true;
+    const bottomPadding = Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop;
+    const spill = Math.min(bottomPadding, Utils.isNumber(props.paddingTop) ? props.paddingTop : labelTop);
+
     // Render the root, the state layer, the label and the icon
     return React.createElement(Pressable, Object.assign({}, button.rootProps, {
       onLayout: onFaceLayout,
@@ -191,7 +198,9 @@ export default function Button (ctx) {
       testID: props.testID,
       style: [
         props.fill === true ? {
-          alignItems: 'flex-start',
+          // A composing parent may center the label between the paddings
+          // (the tearsheet's action set, `align-items: center`)
+          alignItems: props.labelCentered === true ? 'center' : 'flex-start',
           alignSelf: 'stretch',
           borderColor: ctx.color(borderLeaf),
           borderRadius: radius,
@@ -248,8 +257,9 @@ export default function Button (ctx) {
     React.createElement(Text, {
       numberOfLines: wraps ? undefined : 1,
       // A wrapping label may run into the bottom padding, as upstream's
-      // fixed-height action draws it, but never past the button's box
-      style: [labelStyle, { color: ctx.color(contentLeaf), flexShrink: wraps ? 1 : undefined, marginBottom: wraps ? -(Utils.isNumber(props.paddingBottom) ? props.paddingBottom : labelTop) : undefined }]
+      // fixed-height action draws it, but never past the button's box; a
+      // centered one runs into both paddings evenly
+      style: [labelStyle, { color: ctx.color(contentLeaf), flexShrink: wraps ? 1 : undefined, marginBottom: wraps ? -(centered ? spill : bottomPadding) : undefined, marginTop: wraps && centered ? -spill : undefined }]
     }, props.children),
     icon,
     sizer);

@@ -2,11 +2,11 @@
 // `nav.cds--side-nav` 48 under the window's top for its fixed header
 // (`ui-shell/side-nav/_side-nav.scss:30-55`); ours is in flow under a
 // header its host places, so the mount starts upstream's at the staged
-// body's top (`insetBlockStart: 0`). Its overlay keeps upstream's 48 from
-// the window's top and covers the window (`:77-101`), drawn below lg only;
-// ours covers the layer space from the navigation's top, so it is no part
-// here (the primary window never draws it) and the narrow set compares it
-// by its pixels. Ours renders hosted so the layer space is the cell
+// body's top (`insetBlockStart: 0`). Its overlay starts 48 from the
+// window's top, under that header, and covers the window (`:77-101`),
+// drawn below lg only; the mount moves it by the same 48, so both start
+// at the navigation's top as ours does. It is no part here (the primary
+// window never draws it): the narrow set compares it by its pixels. Ours renders hosted so the layer space is the cell
 // (`oursHosted`). The width follows the window (`:52-54`): the narrow set
 // draws a 320 body in a 375 window. Both pages draw the page beside the
 // navigation in `layer_01` (the sample's host row, a `div` here).
@@ -42,6 +42,8 @@ export default Object.freeze({
     // layer variable in the light scheme)
     return React.createElement(React.Fragment, null,
       React.createElement('div', { key: 'page', style: { background: upstream.tokens['color.layer_01'], inset: 0, position: 'absolute' } }),
+      // After the page: the crop aligns at the first element's top-left
+      React.createElement('style', { key: 'overlay' }, '.cds--side-nav__overlay { inset-block-start: 0 !important; }'),
       React.createElement(upstream.SideNav, Object.assign({ key: 'nav' }, options),
         React.createElement(upstream.SideNavItems, null, (props.items || []).map(function (item, index) {
           return entry(React, upstream, item, index);

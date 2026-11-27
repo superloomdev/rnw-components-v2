@@ -56,6 +56,16 @@ export default Object.freeze({
   // draws a 320 body in a 375 window
   narrow: Object.freeze({ window: 375, width: 320 }),
   oursHosted: true,
+  // Upstream draws each state on its own page (`isolate`), where its open
+  // focus holds on the first action and rings it; ours draws every state
+  // on one page, where one cell at most holds focus: each shot focuses
+  // the measured cell's first action on both pages. Passive focuses its
+  // close button, whose tooltip upstream opens with it
+  refocus: Object.freeze({
+    states: Object.freeze(['default', 'title', 'influencer', 'influencerWide', 'influencerRight', 'navigation', 'threeActions', 'lower', 'longAction']),
+    upstream: '.c4p--tearsheet__buttons .cds--btn',
+    ours: '[data-part="buttonSet"] [role="button"]'
+  }),
   parts: Object.freeze({
     scrim: Object.freeze({ upstream: '.c4p--tearsheet', pseudo: '::before', ours: '[data-part="scrim"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor'] }),
     container: Object.freeze({ upstream: '.c4p--tearsheet__container', ours: '[data-part="container"]', measure: 'box', compare: ['x', 'y', 'width', 'height', 'backgroundColor', 'borderTopWidth', 'borderTopColor'] }),
