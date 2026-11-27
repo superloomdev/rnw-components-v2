@@ -86,3 +86,10 @@ measures the hosts' glyph runs, not this layout. Both states now draw their own 
 walks' rooms (262 and 344) every line ends more than 4 short of its column and the next word passes it by more than 4,
 by the text model on the font's advances, fractional and whole-pixel alike. `twoColumns` keeps the longer text: its
 columns wait for the cell's max width, and its lines are read again after that wave.
+
+The selection states (`selection`, `selectionCondensed`, `radio`, `radioCondensed`) held three such lines in the
+condensed column at the 344 room, the iOS walk's ("Supports" 0.81 short of passing it, "standby" 3.17, "development
+and" 2.44 short, U8). Their purpose texts are now chosen the same way, over a search of the three rows and the first
+row's hyphenated text together (the first row sets the column with the others): at 262 by both advances and at 344 by
+the fractional ones every line clears its room by 4.55 at least, and "customer-" still ends a line, so the hyphen
+break keeps a state that draws it.

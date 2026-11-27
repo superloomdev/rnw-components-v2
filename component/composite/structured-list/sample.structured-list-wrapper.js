@@ -26,12 +26,14 @@ export const ROWS_LONG_WRAP = Object.freeze([
   Object.freeze({ id: 'row-0', cells: Object.freeze(['API gateway', 'Online', 'Routes and secures application traffic across environments.']) }),
   Object.freeze({ id: 'row-1', cells: Object.freeze(['Data warehouse', 'Maintenance', WRAPPED]) })
 ]);
+// The selection states' text: at the walks' rooms (262 both ways, 344 on iOS) every line ends more than 4 short of
+// its column and the next word passes it by more than 4, and row 0 still breaks after its hyphen (`notes.md`)
 export const SELECTION_COLUMNS = Object.freeze(['Environment', 'Region', 'Purpose']);
 export const SELECTION_ROWS = Object.freeze([
   Object.freeze({ id: 'row-0', cells: Object.freeze(['Production', 'Frankfurt', 'Runs customer-facing services']) }),
-  Object.freeze({ id: 'row-1', cells: Object.freeze(['Staging', 'Dallas', 'Validates releases before deployment']) }),
-  Object.freeze({ id: 'row-2', cells: Object.freeze(['Development', 'London', 'Supports feature development and integration']) }),
-  Object.freeze({ id: 'row-3', cells: Object.freeze(['Disaster recovery', 'Sydney', 'Provides a standby recovery environment']) })
+  Object.freeze({ id: 'row-1', cells: Object.freeze(['Staging', 'Dallas', 'Checks new releases before deployment']) }),
+  Object.freeze({ id: 'row-2', cells: Object.freeze(['Development', 'London', 'Serves new feature development']) }),
+  Object.freeze({ id: 'row-3', cells: Object.freeze(['Disaster recovery', 'Sydney', 'Provides a standby environment']) })
 ]);
 
 const LIST = Object.freeze({ accessibilityLabel: 'Service status', columns: COLUMNS });
