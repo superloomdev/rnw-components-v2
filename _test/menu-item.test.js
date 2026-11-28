@@ -88,10 +88,17 @@ describe('MenuItem: submenu keyboard and pointer behavior', function () {
     await act(async function () {
       item.dispatchEvent(new Event('pointerover', { bubbles: true }));
     });
+    // Half the delay on: a timer shorter than the delay has fired by now,
+    // however late the host runs timers, and the 100 ms one has not
+    await act(async function () {
+      await new Promise(function (resolve) {
+        setTimeout(resolve, 50);
+      });
+    });
     assert.equal(container.querySelector('[role="menu"] [role="menu"]') === null, true, 'inside the delay: still closed');
     await act(async function () {
       await new Promise(function (resolve) {
-        setTimeout(resolve, 110);
+        setTimeout(resolve, 70);
       });
     });
     assert.equal(container.querySelector('[role="menu"] [role="menu"]') !== null, true, 'after 100 ms the submenu opens');
